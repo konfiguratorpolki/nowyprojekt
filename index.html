@@ -516,20 +516,30 @@
     };
   </script>
   
-  <!-- Licznik odwiedzin - tylko cyferka, umieszczony w lewym dolnym rogu -->
+  <!-- Licznik odwiedzin - tylko cyferka, umieszczony w lewym dolnym rogu.
+       Licznik zwiększa się tylko, gdy pobrany adres IP nie jest równy "171.22.162.73" -->
   <div id="visitorCounter" class="fixed bottom-0 left-0 m-2 text-xs text-gray-500">
     <span id="visitorCount">0</span>
   </div>
   
   <script>
-    // Licznik odwiedzin - nie liczy wizyt, jeśli ustawiona jest flaga "doNotCount"
     document.addEventListener("DOMContentLoaded", function() {
-      if (!localStorage.getItem("doNotCount")) {
-        let count = localStorage.getItem("visitorCount") || 0;
-        count = parseInt(count) + 1;
-        localStorage.setItem("visitorCount", count);
-        document.getElementById("visitorCount").textContent = count;
-      }
+      // Pobieramy publiczny adres IP użytkownika za pomocą API ipify
+      fetch('https://api.ipify.org?format=json')
+        .then(response => response.json())
+        .then(data => {
+          const userIP = data.ip;
+          // Jeśli adres IP nie jest równy Twojemu (171.22.162.73), zwiększamy licznik
+          if (userIP !== '171.22.162.73') {
+            let count = localStorage.getItem("visitorCount") || 0;
+            count = parseInt(count) + 1;
+            localStorage.setItem("visitorCount", count);
+            document.getElementById("visitorCount").textContent = count;
+          } else {
+            console.log("Wizyty z Twojego adresu IP nie są liczone.");
+          }
+        })
+        .catch(error => console.error('Błąd pobierania adresu IP:', error));
     });
   </script>
 </body>
