@@ -203,6 +203,7 @@
       URL.revokeObjectURL(link.href);
     }
 
+    // Zaktualizowany cennik
     var pricing = {
       "34": {
         "40": { "10": { "2": 150 }, "15": { "2": 250 } },
@@ -216,12 +217,12 @@
       },
       "50": {
         "40": { "10": { "2": 175 }, "15": { "2": 275 } },
-        "60": { "10": { "2": 200, "3": 225 } },
-        "80": { "10": { "2": 225, "3": 250, "4": 300, "5": 325 } }
+        "60": { "10": { "2": 225, "3": 250 } },
+        "80": { "10": { "2": 250, "3": 250, "4": 300, "5": 325 } }
       },
       "60": {
         "40": { "10": { "2": 175 }, "15": { "2": 275 } },
-        "60": { "10": { "2": 200, "3": 225 } },
+        "60": { "10": { "2": 250, "3": 250 } },
         "80": { "10": { "2": 250, "3": 275, "4": 325, "5": 350 } }
       }
     };
@@ -513,6 +514,23 @@
       init3D();
       updateShelfCountOptions();
     };
+  </script>
+  
+  <!-- Licznik odwiedzin - tylko cyferka, umieszczony w lewym dolnym rogu -->
+  <div id="visitorCounter" class="fixed bottom-0 left-0 m-2 text-xs text-gray-500">
+    <span id="visitorCount">0</span>
+  </div>
+  
+  <script>
+    // Licznik odwiedzin - nie liczy wizyt, jeśli ustawiona jest flaga "doNotCount"
+    document.addEventListener("DOMContentLoaded", function() {
+      if (!localStorage.getItem("doNotCount")) {
+        let count = localStorage.getItem("visitorCount") || 0;
+        count = parseInt(count) + 1;
+        localStorage.setItem("visitorCount", count);
+        document.getElementById("visitorCount").textContent = count;
+      }
+    });
   </script>
 </body>
 </html>
