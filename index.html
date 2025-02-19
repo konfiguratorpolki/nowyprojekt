@@ -20,7 +20,7 @@
   <style>
     .order-summary { }
     ul.list-none { list-style-type: none; }
-    /* Animacja mignięcia dla przycisku pobierania */
+    /* Animacja mignięcia dla przycisków */
     @keyframes shimmer {
       0% { opacity: 0.8; }
       50% { opacity: 1; }
@@ -112,13 +112,13 @@
       </div>
     </div>
 
-    <!-- Kolumna 2: Widok 3D (bez instrukcji, która jest już wyświetlona jako oddzielny blok na mobilce) -->
+    <!-- Kolumna 2: Widok 3D -->
     <div class="w-full md:w-2/3 flex flex-col items-center mb-6 md:mb-0 order-3 md:order-2">
       <div id="shelfContainer" style="width:100%; max-width:500px; height:500px;"></div>
       <p id="gapDisplay" class="mt-2 text-sm text-green-600">
         Przestrzeń pomiędzy półkami: <span id="gapSummaryDisplay"></span>
       </p>
-      <!-- Wersja instrukcji dla desktopu -->
+      <!-- Instrukcje dla desktopu -->
       <div class="p-4 border rounded bg-gray-50 mt-4 w-full max-w-lg hidden md:block">
         <h2 class="text-lg font-bold text-black mb-4">Jak zamówić?</h2>
         <ul class="list-none ml-6 space-y-2">
@@ -162,10 +162,14 @@
           <p><strong>Cena:</strong> <span id="priceSummary" style="color:red; font-weight:bold;">0 zł</span></p>
           <p><strong>Zamów na Allegro:</strong> <span id="quantitySummary" style="color:red; font-weight:bold;">0 szt.</span></p>
         </div>
-        <div id="downloadOrderDiv" style="display:none;" class="mt-4 text-center">
+        <!-- Kontener przycisków: "Pobierz zamówienie" po lewej, "Zamów na Allegro" po prawej -->
+        <div id="orderButtonsContainer" style="display:none;" class="mt-4 flex justify-between">
           <button onclick="downloadOrderSummary()" class="px-2 py-1 bg-gray-600 text-white rounded text-xs shimmer">
             Pobierz zamówienie
           </button>
+          <a href="https://allegro.pl/oferta/zaprojektuj-wlasna-polke-podaj-wymiar-i-wybierz-kolory-do-kuchni-pokoju-17253898746" target="_blank" class="px-2 py-1 bg-orange-600 text-white rounded text-xs shimmer">
+            Zamów na Allegro
+          </a>
         </div>
       </div>
       <div id="orderCodeWindow" class="w-full p-2 border-2 border-blue-500 rounded bg-blue-500 text-center font-bold text-lg text-white">
@@ -211,7 +215,8 @@
       URL.revokeObjectURL(link.href);
     }
 
-    // Zaktualizowany cennik
+    // Zaktualizowany cennik – dodano wariant dla szerokości 50 cm, wysokości 60 cm, głębokości 15 cm:
+    // cena z 2 półkami = 325 zł, z 3 półkami = 350 zł.
     var pricing = {
       "34": {
         "40": { "10": { "2": 150 }, "15": { "2": 250 } },
@@ -225,15 +230,60 @@
       },
       "50": {
         "40": { "10": { "2": 175 }, "15": { "2": 275 } },
-        "60": { "10": { "2": 225, "3": 250 } },
+        // Dla szerokości 50 cm, przy wysokości 60 cm:
+        // - Głębokość 10 cm: ceny pozostają jak dotychczas (2 półki: 225 zł, 3 półki: 250 zł)
+        // - Głębokość 15 cm: ceny ustalono na 325 zł dla 2 półek i 350 zł dla 3 półek.
+        "60": { 
+          "10": { "2": 225, "3": 250 },
+          "15": { "2": 325, "3": 350 }
+        },
         "80": { "10": { "2": 250, "3": 250, "4": 300, "5": 325 } }
       },
       "60": {
         "40": { "10": { "2": 175 }, "15": { "2": 275 } },
-        "60": { "10": { "2": 250, "3": 250 } },
+        "60": { "10": { "2": 250, "3": 250 }, "15": { "2": 350, "3": 375 } },
         "80": { "10": { "2": 250, "3": 275, "4": 325, "5": 350 } }
       }
     };
+
+    // Modyfikacja funkcji updateDepthOptions – dla szerokości 50 cm umożliwiamy wybór opcji 15 cm również przy wysokości 60 cm.
+    function updateDepthOptions() {
+      var width = getCurrentWidth();
+      var height = document.getElementById("height").value;
+      var depthSelect = document.getElementById("depth");
+      depthSelect.innerHTML = "";
+      depthSelect.innerHTML += '<option value="10">10 cm</option>';
+      var allow15 = false;
+      if (document.getElementById("width").value === "custom") {
+        var customWidthVal = parseFloat(document.getElementById("customWidthInput").value) || 35;
+        var standardWidth;
+        if (customWidthVal < 39) { standardWidth = "34"; }
+        else if (customWidthVal < 47) { standardWidth = "44"; }
+        else if (customWidthVal < 54) { standardWidth = "50"; }
+        else { standardWidth = "60"; }
+        if (standardWidth === "34" || standardWidth === "44") {
+          allow15 = true;
+        } else if (standardWidth === "50" && (height === "40" || height === "60")) {
+          allow15 = true;
+        } else if (standardWidth === "60" && (height === "40" || height === "60")) {
+          allow15 = true;
+        }
+      } else {
+        if (width === "34" || width === "44") { 
+          allow15 = true; 
+        } else if (width === "50" && (height === "40" || height === "60")) { 
+          allow15 = true; 
+        } else if (width === "60" && (height === "40" || height === "60")) {
+          allow15 = true;
+        }
+      }
+      if (allow15) { 
+        depthSelect.innerHTML += '<option value="15">15 cm</option>'; 
+      }
+      if (depthSelect.value !== "10" && depthSelect.value !== "15") { 
+        depthSelect.value = "10"; 
+      }
+    }
 
     function makeTextSprite(message, parameters) {
       parameters = parameters || {};
@@ -306,25 +356,6 @@
       shelfCountSelect.value = "0";
       updatePreview();
       updateOrderSummary();
-    }
-
-    function updateDepthOptions() {
-      var width = getCurrentWidth();
-      var height = document.getElementById("height").value;
-      var depthSelect = document.getElementById("depth");
-      depthSelect.innerHTML = "";
-      depthSelect.innerHTML += '<option value="10">10 cm</option>';
-      var allow15 = false;
-      if (document.getElementById("width").value === "custom") {
-        var customWidthVal = parseFloat(document.getElementById("customWidthInput").value) || 35;
-        if (customWidthVal >= 35 && customWidthVal <= 44) { allow15 = true; }
-        else if ((customWidthVal > 44 && customWidthVal <= 59) && height === "40") { allow15 = true; }
-      } else {
-        if (width === "34" || width === "44") { allow15 = true; }
-        else if ((width === "50" || width === "60") && height === "40") { allow15 = true; }
-      }
-      if (allow15) { depthSelect.innerHTML += '<option value="15">15 cm</option>'; }
-      if (depthSelect.value !== "10" && depthSelect.value !== "15") { depthSelect.value = "10"; }
     }
 
     let scene, camera, renderer, shelfGroup;
@@ -471,7 +502,8 @@
       if(shelfType !== "" && sideColor !== "" && shelfColor !== "" && document.getElementById("shelfCount").value !== "0") {
         var code = generateOrderCode();
         document.getElementById("orderCodeVisible").textContent = code;
-        document.getElementById("downloadOrderDiv").style.display = "block";
+        // Pokaż kontener z przyciskami
+        document.getElementById("orderButtonsContainer").style.display = "flex";
         
         var orderData = {
           width: document.getElementById("widthSummary").textContent,
@@ -488,7 +520,7 @@
         localStorage.setItem("order_" + code, JSON.stringify(orderData));
       } else {
         document.getElementById("orderCodeVisible").textContent = "";
-        document.getElementById("downloadOrderDiv").style.display = "none";
+        document.getElementById("orderButtonsContainer").style.display = "none";
       }
     }
 
@@ -524,20 +556,17 @@
     };
   </script>
   
-  <!-- Licznik odwiedzin - tylko cyferka, umieszczony w lewym dolnym rogu.
-       Licznik zwiększa się tylko, gdy pobrany adres IP nie jest równy "171.22.162.73" -->
+  <!-- Licznik odwiedzin -->
   <div id="visitorCounter" class="fixed bottom-0 left-0 m-2 text-xs text-gray-500">
     <span id="visitorCount">0</span>
   </div>
   
   <script>
     document.addEventListener("DOMContentLoaded", function() {
-      // Pobieramy publiczny adres IP użytkownika za pomocą API ipify
       fetch('https://api.ipify.org?format=json')
         .then(response => response.json())
         .then(data => {
           const userIP = data.ip;
-          // Jeśli adres IP nie jest równy Twojemu (171.22.162.73), zwiększamy licznik
           if (userIP !== '171.22.162.73') {
             let count = localStorage.getItem("visitorCount") || 0;
             count = parseInt(count) + 1;
