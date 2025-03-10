@@ -179,25 +179,27 @@
   </div>
 
   <script>
+    // Nowa implementacja hash funkcji (algorytm djb2) dla spójności między przeglądarkami
     function hashString(str) {
-      var hash = 0;
-      if (str.length === 0) return hash;
+      var hash = 5381;
       for (var i = 0; i < str.length; i++) {
-        var char = str.charCodeAt(i);
-        hash = ((hash << 5) - hash) + char;
-        hash |= 0;
+        hash = ((hash << 5) + hash) + str.charCodeAt(i); // hash * 33 + c
+        hash = hash & 0xFFFFFFFF; // zapewnienie 32-bitowego wyniku
       }
       return hash;
     }
 
+    // Poprawiona funkcja generowania kodu zamówienia z parsowaniem wartości
     function generateOrderCode() {
-      var params = getCurrentWidth() + "_" +
-                   document.getElementById("height").value + "_" +
-                   document.getElementById("depth").value + "_" +
-                   document.getElementById("shelfCount").value + "_" +
-                   document.getElementById("sideColor").value + "_" +
-                   document.getElementById("shelfColor").value + "_" +
-                   document.getElementById("shelfType").value;
+      var params = [
+        parseInt(getCurrentWidth(), 10),
+        parseInt(document.getElementById("height").value, 10),
+        parseInt(document.getElementById("depth").value, 10),
+        parseInt(document.getElementById("shelfCount").value, 10),
+        document.getElementById("sideColor").value.trim(),
+        document.getElementById("shelfColor").value.trim(),
+        document.getElementById("shelfType").value.trim()
+      ].join("_");
       var hash = hashString(params);
       return Math.abs(hash).toString(36);
     }
@@ -215,8 +217,7 @@
       URL.revokeObjectURL(link.href);
     }
 
-    // Zaktualizowany cennik – dodano wariant dla szerokości 50 cm, wysokości 60 cm, głębokości 15 cm:
-    // cena z 2 półkami = 325 zł, z 3 półkami = 350 zł.
+    // Zaktualizowany cennik
     var pricing = {
       "34": {
         "40": { "10": { "2": 150 }, "15": { "2": 250 } },
@@ -230,9 +231,6 @@
       },
       "50": {
         "40": { "10": { "2": 175 }, "15": { "2": 275 } },
-        // Dla szerokości 50 cm, przy wysokości 60 cm:
-        // - Głębokość 10 cm: ceny pozostają jak dotychczas (2 półki: 225 zł, 3 półki: 250 zł)
-        // - Głębokość 15 cm: ceny ustalono na 325 zł dla 2 półek i 350 zł dla 3 półek.
         "60": { 
           "10": { "2": 225, "3": 250 },
           "15": { "2": 325, "3": 350 }
@@ -246,7 +244,6 @@
       }
     };
 
-    // Modyfikacja funkcji updateDepthOptions – dla szerokości 50 cm umożliwiamy wybór opcji 15 cm również przy wysokości 60 cm.
     function updateDepthOptions() {
       var width = getCurrentWidth();
       var height = document.getElementById("height").value;
@@ -336,9 +333,9 @@
       var widthSelect = document.getElementById("width");
       if (widthSelect.value === "custom") {
         var customWidth = document.getElementById("customWidthInput").value;
-        return customWidth ? customWidth : 35;
+        return customWidth ? parseInt(customWidth, 10) : 35;
       } else {
-        return widthSelect.value;
+        return parseInt(widthSelect.value, 10);
       }
     }
 
