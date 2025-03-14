@@ -37,10 +37,10 @@
     <h2 class="text-lg font-bold text-black mb-4">Jak zamówić?</h2>
     <ul class="list-none ml-6 space-y-2">
       <li>✅ Wybierz wymiary, kolory, dodaj półki i wybierz rodzaj półki.</li>
-      <li>📋 Sprawdź podsumowanie zamówienia i zapisz zamówienie.</li>
-      <li>🔢 Skopiuj kod zamówienia.</li>
+      <li>📋 Sprawdź i zapisz zamówienie.</li>
+      <li>🔢 Skopiuj podsumowanie zamówienia.</li>
       <li>🛒 Przejdź na aukcję na Allegro, wybierz ilość odpowiadającą kwocie zamówienia.</li>
-      <li>✍️ W formularzu dostawa i płatność w polu „Uwagi do zakupu” wklej kod zamówienia.</li>
+      <li>✍️ W formularzu dostawa i płatność w polu „Uwagi do zakupu” wklej podsumowanie zamówienia.</li>
       <li>💳 Opłać zamówienie i czekaj na dostawę!</li>
     </ul>
   </div>
@@ -123,10 +123,10 @@
         <h2 class="text-lg font-bold text-black mb-4">Jak zamówić?</h2>
         <ul class="list-none ml-6 space-y-2">
           <li>✅ Wybierz wymiary, kolory, dodaj półki i wybierz rodzaj półki.</li>
-          <li>📋 Sprawdź podsumowanie zamówienia i zapisz zamówienie.</li>
-          <li>🔢 Skopiuj kod zamówienia.</li>
+          <li>📋 Sprawdź i zapisz zamówienie.</li>
+          <li>🔢 Skopiuj podsumowanie zamówienia.</li>
           <li>🛒 Przejdź na aukcję na Allegro, wybierz ilość odpowiadającą kwocie zamówienia.</li>
-          <li>✍️ W formularzu dostawa i płatność w polu „Uwagi do zakupu” wklej kod zamówienia.</li>
+          <li>✍️ W formularzu dostawa i płatność w polu „Uwagi do zakupu” wklej podsumowanie zamówienia.</li>
           <li>💳 Opłać zamówienie i czekaj na dostawę!</li>
         </ul>
       </div>
@@ -161,8 +161,9 @@
           <p><strong>Termin realizacji:</strong> podany na aukcji allegro</p>
           <p><strong>Cena:</strong> <span id="priceSummary" style="color:red; font-weight:bold;">0 zł</span></p>
           <p><strong>Zamów na Allegro:</strong> <span id="quantitySummary" style="color:red; font-weight:bold;">0 szt.</span></p>
+          <p><strong>Kod zamówienia:</strong> <span id="orderCodeText"></span></p>
         </div>
-        <!-- Kontener przycisków: "Pobierz zamówienie" po lewej, "Zamów na Allegro" po prawej -->
+        <!-- Kontener przycisków -->
         <div id="orderButtonsContainer" style="display:none;" class="mt-4 flex justify-between">
           <button onclick="downloadOrderSummary()" class="px-2 py-1 bg-gray-600 text-white rounded text-xs shimmer">
             Pobierz zamówienie
@@ -172,24 +173,21 @@
           </a>
         </div>
       </div>
-      <div id="orderCodeWindow" class="w-full p-2 border-2 border-blue-500 rounded bg-blue-500 text-center font-bold text-lg text-white">
-        Kod zamówienia: <span id="orderCodeVisible"></span>
-      </div>
     </div>
   </div>
 
   <script>
-    // Nowa implementacja hash funkcji (algorytm djb2) dla spójności między przeglądarkami
+    // Implementacja hash funkcji (algorytm djb2)
     function hashString(str) {
       var hash = 5381;
       for (var i = 0; i < str.length; i++) {
-        hash = ((hash << 5) + hash) + str.charCodeAt(i); // hash * 33 + c
-        hash = hash & 0xFFFFFFFF; // zapewnienie 32-bitowego wyniku
+        hash = ((hash << 5) + hash) + str.charCodeAt(i);
+        hash = hash & 0xFFFFFFFF;
       }
       return hash;
     }
 
-    // Poprawiona funkcja generowania kodu zamówienia z parsowaniem wartości
+    // Funkcja generująca kod zamówienia
     function generateOrderCode() {
       var params = [
         parseInt(getCurrentWidth(), 10),
@@ -204,11 +202,9 @@
       return Math.abs(hash).toString(36);
     }
 
-    // Pobieranie podsumowania zamówienia jako plik TXT
+    // Funkcja pobierająca podsumowanie jako plik TXT
     function downloadOrderSummary() {
       var summary = document.querySelector('#orderSummaryDetails').innerText;
-      var orderCode = document.getElementById("orderCodeVisible").textContent;
-      summary += "\n\nKod zamówienia: " + orderCode;
       var blob = new Blob([summary], { type: 'text/plain;charset=utf-8' });
       var link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
@@ -217,7 +213,6 @@
       URL.revokeObjectURL(link.href);
     }
 
-    // Zaktualizowany cennik
     var pricing = {
       "34": {
         "40": { "10": { "2": 150 }, "15": { "2": 250 } },
@@ -498,7 +493,8 @@
       
       if(shelfType !== "" && sideColor !== "" && shelfColor !== "" && document.getElementById("shelfCount").value !== "0") {
         var code = generateOrderCode();
-        document.getElementById("orderCodeVisible").textContent = code;
+        // Ustawiamy kod zamówienia w elemencie podsumowania
+        document.getElementById("orderCodeText").textContent = code;
         // Pokaż kontener z przyciskami
         document.getElementById("orderButtonsContainer").style.display = "flex";
         
@@ -516,7 +512,7 @@
         };
         localStorage.setItem("order_" + code, JSON.stringify(orderData));
       } else {
-        document.getElementById("orderCodeVisible").textContent = "";
+        document.getElementById("orderCodeText").textContent = "";
         document.getElementById("orderButtonsContainer").style.display = "none";
       }
     }
