@@ -37,10 +37,10 @@
     <h2 class="text-lg font-bold text-black mb-4">Jak zamówić?</h2>
     <ul class="list-none ml-6 space-y-2">
       <li>✅ Wybierz wymiary, kolory, dodaj półki i wybierz rodzaj półki.</li>
-      <li>📋 Sprawdź i zapisz zamówienie.</li>
-      <li>🔢 Skopiuj podsumowanie zamówienia.</li>
+      <li>📋 Sprawdź podsumowanie zamówienia i zapisz zamówienie.</li>
+      <li>🔢 Skopiuj kod zamówienia.</li>
       <li>🛒 Przejdź na aukcję na Allegro, wybierz ilość odpowiadającą kwocie zamówienia.</li>
-      <li>✍️ W formularzu dostawa i płatność w polu „Uwagi do zakupu” wklej podsumowanie zamówienia.</li>
+      <li>✍️ W formularzu dostawa i płatność w polu „Uwagi do zakupu” wklej kod zamówienia.</li>
       <li>💳 Opłać zamówienie i czekaj na dostawę!</li>
     </ul>
   </div>
@@ -123,10 +123,10 @@
         <h2 class="text-lg font-bold text-black mb-4">Jak zamówić?</h2>
         <ul class="list-none ml-6 space-y-2">
           <li>✅ Wybierz wymiary, kolory, dodaj półki i wybierz rodzaj półki.</li>
-          <li>📋 Sprawdź i zapisz zamówienie.</li>
-          <li>🔢 Skopiuj podsumowanie zamówienia.</li>
+          <li>📋 Sprawdź podsumowanie zamówienia i zapisz zamówienie.</li>
+          <li>🔢 Skopiuj kod zamówienia.</li>
           <li>🛒 Przejdź na aukcję na Allegro, wybierz ilość odpowiadającą kwocie zamówienia.</li>
-          <li>✍️ W formularzu dostawa i płatność w polu „Uwagi do zakupu” wklej podsumowanie zamówienia.</li>
+          <li>✍️ W formularzu dostawa i płatność w polu „Uwagi do zakupu” wklej kod zamówienia.</li>
           <li>💳 Opłać zamówienie i czekaj na dostawę!</li>
         </ul>
       </div>
@@ -161,9 +161,8 @@
           <p><strong>Termin realizacji:</strong> podany na aukcji allegro</p>
           <p><strong>Cena:</strong> <span id="priceSummary" style="color:red; font-weight:bold;">0 zł</span></p>
           <p><strong>Zamów na Allegro:</strong> <span id="quantitySummary" style="color:red; font-weight:bold;">0 szt.</span></p>
-          <p><strong>Kod zamówienia:</strong> <span id="orderCodeText"></span></p>
         </div>
-        <!-- Kontener przycisków -->
+        <!-- Kontener przycisków: "Pobierz zamówienie" po lewej, "Zamów na Allegro" po prawej -->
         <div id="orderButtonsContainer" style="display:none;" class="mt-4 flex justify-between">
           <button onclick="downloadOrderSummary()" class="px-2 py-1 bg-gray-600 text-white rounded text-xs shimmer">
             Pobierz zamówienie
@@ -173,38 +172,41 @@
           </a>
         </div>
       </div>
+      <div id="orderCodeWindow" class="w-full p-2 border-2 border-blue-500 rounded bg-blue-500 text-center font-bold text-lg text-white">
+        Kod zamówienia: <span id="orderCodeVisible"></span>
+      </div>
     </div>
   </div>
 
   <script>
-    // Implementacja hash funkcji (algorytm djb2)
     function hashString(str) {
-      var hash = 5381;
+      var hash = 0;
+      if (str.length === 0) return hash;
       for (var i = 0; i < str.length; i++) {
-        hash = ((hash << 5) + hash) + str.charCodeAt(i);
-        hash = hash & 0xFFFFFFFF;
+        var char = str.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash |= 0;
       }
       return hash;
     }
 
-    // Funkcja generująca kod zamówienia
     function generateOrderCode() {
-      var params = [
-        parseInt(getCurrentWidth(), 10),
-        parseInt(document.getElementById("height").value, 10),
-        parseInt(document.getElementById("depth").value, 10),
-        parseInt(document.getElementById("shelfCount").value, 10),
-        document.getElementById("sideColor").value.trim(),
-        document.getElementById("shelfColor").value.trim(),
-        document.getElementById("shelfType").value.trim()
-      ].join("_");
+      var params = getCurrentWidth() + "_" +
+                   document.getElementById("height").value + "_" +
+                   document.getElementById("depth").value + "_" +
+                   document.getElementById("shelfCount").value + "_" +
+                   document.getElementById("sideColor").value + "_" +
+                   document.getElementById("shelfColor").value + "_" +
+                   document.getElementById("shelfType").value;
       var hash = hashString(params);
       return Math.abs(hash).toString(36);
     }
 
-    // Funkcja pobierająca podsumowanie jako plik TXT
+    // Pobieranie podsumowania zamówienia jako plik TXT
     function downloadOrderSummary() {
       var summary = document.querySelector('#orderSummaryDetails').innerText;
+      var orderCode = document.getElementById("orderCodeVisible").textContent;
+      summary += "\n\nKod zamówienia: " + orderCode;
       var blob = new Blob([summary], { type: 'text/plain;charset=utf-8' });
       var link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
@@ -213,6 +215,8 @@
       URL.revokeObjectURL(link.href);
     }
 
+    // Zaktualizowany cennik – dodano wariant dla szerokości 50 cm, wysokości 60 cm, głębokości 15 cm:
+    // cena z 2 półkami = 325 zł, z 3 półkami = 350 zł.
     var pricing = {
       "34": {
         "40": { "10": { "2": 150 }, "15": { "2": 250 } },
@@ -226,6 +230,9 @@
       },
       "50": {
         "40": { "10": { "2": 175 }, "15": { "2": 275 } },
+        // Dla szerokości 50 cm, przy wysokości 60 cm:
+        // - Głębokość 10 cm: ceny pozostają jak dotychczas (2 półki: 225 zł, 3 półki: 250 zł)
+        // - Głębokość 15 cm: ceny ustalono na 325 zł dla 2 półek i 350 zł dla 3 półek.
         "60": { 
           "10": { "2": 225, "3": 250 },
           "15": { "2": 325, "3": 350 }
@@ -239,6 +246,7 @@
       }
     };
 
+    // Modyfikacja funkcji updateDepthOptions – dla szerokości 50 cm umożliwiamy wybór opcji 15 cm również przy wysokości 60 cm.
     function updateDepthOptions() {
       var width = getCurrentWidth();
       var height = document.getElementById("height").value;
@@ -328,9 +336,9 @@
       var widthSelect = document.getElementById("width");
       if (widthSelect.value === "custom") {
         var customWidth = document.getElementById("customWidthInput").value;
-        return customWidth ? parseInt(customWidth, 10) : 35;
+        return customWidth ? customWidth : 35;
       } else {
-        return parseInt(widthSelect.value, 10);
+        return widthSelect.value;
       }
     }
 
@@ -493,8 +501,7 @@
       
       if(shelfType !== "" && sideColor !== "" && shelfColor !== "" && document.getElementById("shelfCount").value !== "0") {
         var code = generateOrderCode();
-        // Ustawiamy kod zamówienia w elemencie podsumowania
-        document.getElementById("orderCodeText").textContent = code;
+        document.getElementById("orderCodeVisible").textContent = code;
         // Pokaż kontener z przyciskami
         document.getElementById("orderButtonsContainer").style.display = "flex";
         
@@ -512,7 +519,7 @@
         };
         localStorage.setItem("order_" + code, JSON.stringify(orderData));
       } else {
-        document.getElementById("orderCodeText").textContent = "";
+        document.getElementById("orderCodeVisible").textContent = "";
         document.getElementById("orderButtonsContainer").style.display = "none";
       }
     }
