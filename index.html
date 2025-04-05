@@ -207,7 +207,7 @@
       var orderCode = document.getElementById("orderCodeVisible").textContent;
       summary += "\n\nKod zamówienia: " + orderCode;
       navigator.clipboard.writeText(summary).then(function() {
-        alert('✅ Gotowe! Podsumowanie zostało skopiowane do schowka.\n🛒 Wróć teraz na Allegro i wklej je w polu „Uwagi do zakupu”, aby szybko zrealizować zamówienie.');
+        alert('✅ Gotowe! Zamówienie zostało skopiowane do schowka.\n✨ Wróć teraz na Allegro i wklej je w polu „Uwagi do zakupu”');
       }, function(err) {
         alert('Wystąpił błąd podczas kopiowania: ' + err);
       });
