@@ -123,11 +123,10 @@
         <h2 class="text-lg font-bold text-black mb-4">Jak zamówić?</h2>
         <ul class="list-none ml-6 space-y-2">
           <li>✅ Wybierz wymiary, kolory, dodaj półki i wybierz rodzaj półki.</li>
-          <li>📋 Sprawdź zamówienie i zapisz.</li>
-          <li>🔢 Skopiuj podsumowanie zamówienia.</li>
+          <li>📋 Sprawdź i skopiuj zamówienie.</li>
           <li>🛒 Przejdź na aukcję na Allegro, wybierz ilość odpowiadającą kwocie zamówienia.</li>
-          <li>✍️ W formularzu dostawa i płatność w polu „Uwagi do zakupu” wklej podsumowanie zamówienia.</li>
-          <li>💳 Opłać zamówienie i czekaj na dostawę!</li>
+          <li>✍️ W formularzu dostawa i płatność w polu „Uwagi do zakupu” wklej skopiowane zamówienie.</li>
+          <li>💳 Opłać aukcje na allegro i czekaj na dostawę!</li>
         </ul>
       </div>
     </div>
@@ -162,10 +161,10 @@
           <p><strong>Cena:</strong> <span id="priceSummary" style="color:red; font-weight:bold;">0 zł</span></p>
           <p><strong>Zamów na Allegro:</strong> <span id="quantitySummary" style="color:red; font-weight:bold;">0 szt.</span></p>
         </div>
-        <!-- Kontener przycisków: "Pobierz zamówienie" po lewej, "Zamów na Allegro" po prawej -->
+        <!-- Kontener przycisków: "Skopiuj zamówienie" po lewej, "Zamów na Allegro" po prawej -->
         <div id="orderButtonsContainer" style="display:none;" class="mt-4 flex justify-between">
-          <button onclick="downloadOrderSummary()" class="px-2 py-1 bg-gray-600 text-white rounded text-xs shimmer">
-            Pobierz zamówienie
+          <button onclick="copyOrderSummary()" class="px-2 py-1 bg-gray-600 text-white rounded text-xs shimmer">
+            Skopiuj zamówienie
           </button>
           <a href="https://allegro.pl/oferta/zaprojektuj-wlasna-polke-podaj-wymiar-i-wybierz-kolory-do-kuchni-pokoju-17253898746" target="_blank" class="px-2 py-1 bg-orange-600 text-white rounded text-xs shimmer">
             Zamów na Allegro
@@ -202,17 +201,16 @@
       return Math.abs(hash).toString(36);
     }
 
-    // Pobieranie podsumowania zamówienia jako plik TXT
-    function downloadOrderSummary() {
+    // Kopiowanie podsumowania zamówienia do schowka
+    function copyOrderSummary() {
       var summary = document.querySelector('#orderSummaryDetails').innerText;
       var orderCode = document.getElementById("orderCodeVisible").textContent;
       summary += "\n\nKod zamówienia: " + orderCode;
-      var blob = new Blob([summary], { type: 'text/plain;charset=utf-8' });
-      var link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = 'podsumowanie_zamowienia.txt';
-      link.click();
-      URL.revokeObjectURL(link.href);
+      navigator.clipboard.writeText(summary).then(function() {
+        alert('Podsumowanie zamówienia zostało skopiowane do schowka!');
+      }, function(err) {
+        alert('Wystąpił błąd podczas kopiowania: ' + err);
+      });
     }
 
     // Zaktualizowany cennik – dodano wariant dla szerokości 50 cm, wysokości 60 cm, głębokości 15 cm:
@@ -230,9 +228,6 @@
       },
       "50": {
         "40": { "10": { "2": 175 }, "15": { "2": 275 } },
-        // Dla szerokości 50 cm, przy wysokości 60 cm:
-        // - Głębokość 10 cm: ceny pozostają jak dotychczas (2 półki: 225 zł, 3 półki: 250 zł)
-        // - Głębokość 15 cm: ceny ustalono na 325 zł dla 2 półek i 350 zł dla 3 półek.
         "60": { 
           "10": { "2": 225, "3": 250 },
           "15": { "2": 325, "3": 350 }
