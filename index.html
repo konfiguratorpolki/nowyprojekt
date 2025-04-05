@@ -6,7 +6,7 @@
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-DNBGJLP2FN"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
-    function gtag(){ dataLayer.push(arguments); }
+    function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
     gtag('config', 'G-DNBGJLP2FN');
   </script>
@@ -29,36 +29,10 @@
     .shimmer {
       animation: shimmer 2s infinite;
     }
-    /* Animacja migotania gwiazdek */
-    @keyframes twinkle {
-      0% { opacity: 0.3; transform: scale(1); }
-      50% { opacity: 1; transform: scale(1.2); }
-      100% { opacity: 0.3; transform: scale(1); }
-    }
-    .twinkle-star {
-      display: inline-block;
-      font-size: 1.2rem;
-      animation: twinkle 1.5s infinite;
-    }
-    /* Animacja pojawiania się toast */
-    @keyframes slideIn {
-      from { transform: translateX(100%); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
-    }
-    /* Wyśrodkowany toast */
-    #customToast {
-      display: none;
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      animation: slideIn 0.3s ease-out;
-      z-index: 1000;
-    }
   </style>
 </head>
 <body class="flex flex-col justify-center items-center min-h-screen bg-gray-100">
-  <!-- Blok instrukcji "Jak zamówić?" (mobil) -->
+  <!-- Blok instrukcji "Jak zamówić?" widoczny tylko na urządzeniach mobilnych -->
   <div class="w-full p-4 bg-gray-50 border rounded mb-4 md:hidden">
     <h2 class="text-lg font-bold text-black mb-4">Jak zamówić?</h2>
     <ul class="list-none ml-6 space-y-2">
@@ -71,9 +45,9 @@
     </ul>
   </div>
 
-  <!-- Główny kontener -->
+  <!-- Główny kontener – desktop: trzy kolumny; mobile: kolejność ustalona za pomocą klas order -->
   <div class="p-6 bg-white shadow-lg rounded-lg flex flex-col md:flex-row md:space-x-6 w-full max-w-7xl">
-    <!-- Kolumna 1: Konfigurator -->
+    <!-- Kolumna 1: Konfigurator (wybierz parametry) -->
     <div class="w-full md:w-1/3 space-y-6 mb-6 md:mb-0 order-2 md:order-1">
       <div class="p-4 border rounded bg-gray-50">
         <h2 class="text-lg font-bold mb-2">✅ Wybierz wymiary</h2>
@@ -152,7 +126,7 @@
           <li>📋 Sprawdź i skopiuj zamówienie.</li>
           <li>🛒 Przejdź na aukcję na Allegro, wybierz ilość odpowiadającą kwocie zamówienia.</li>
           <li>✍️ W formularzu dostawa i płatność w polu „Uwagi do zakupu” wklej skopiowane zamówienie.</li>
-          <li>💳 Opłać aukcję na Allegro i czekaj na dostawę!</li>
+          <li>💳 Opłać aukcje na allegro i czekaj na dostawę!</li>
         </ul>
       </div>
     </div>
@@ -183,33 +157,23 @@
           <p><strong>Rodzaj półki:</strong> <span id="shelfTypeSummary">nie wybrano</span></p>
           <p><strong>Przestrzeń między półkami:</strong> <span id="gapSummary">brak półek</span></p>
           <p><strong>Materiał:</strong> płyta laminowana gr. 1,8cm</p>
-          <p><strong>Termin realizacji:</strong> podany na aukcji Allegro</p>
+          <p><strong>Termin realizacji:</strong> podany na aukcji allegro</p>
           <p><strong>Cena:</strong> <span id="priceSummary" style="color:red; font-weight:bold;">0 zł</span></p>
           <p><strong>Zamów na Allegro:</strong> <span id="quantitySummary" style="color:red; font-weight:bold;">0 szt.</span></p>
         </div>
-        <!-- Kontener przycisku: tylko "Skopiuj zamówienie" w kolorze pomarańczowym -->
-        <div id="orderButtonsContainer" style="display:none;" class="mt-4 flex justify-center">
-          <button onclick="copyOrderSummary()" class="px-2 py-1 bg-orange-600 text-white rounded text-xs shimmer">
+        <!-- Kontener przycisków: "Skopiuj zamówienie" po lewej, "Zamów na Allegro" po prawej -->
+        <div id="orderButtonsContainer" style="display:none;" class="mt-4 flex justify-between">
+          <button onclick="copyOrderSummary()" class="px-2 py-1 bg-gray-600 text-white rounded text-xs shimmer">
             Skopiuj zamówienie
           </button>
+          <a href="https://allegro.pl/oferta/zaprojektuj-wlasna-polke-podaj-wymiar-i-wybierz-kolory-do-kuchni-pokoju-17253898746" target="_blank" class="px-2 py-1 bg-orange-600 text-white rounded text-xs shimmer">
+            Zamów na Allegro
+          </a>
         </div>
       </div>
       <div id="orderCodeWindow" class="w-full p-2 border-2 border-blue-500 rounded bg-blue-500 text-center font-bold text-lg text-white">
         Kod zamówienia: <span id="orderCodeVisible"></span>
       </div>
-    </div>
-  </div>
-
-  <!-- Toast: wyśrodkowany, z mieniącymi się gwiazdkami, przyciskiem i komunikatem -->
-  <div id="customToast" class="fixed z-50 p-4 max-w-xs bg-white rounded shadow-lg border border-green-500 flex flex-col items-center space-y-2">
-    <div class="flex space-x-1">
-      <span class="twinkle-star">⭐</span>
-      <span class="twinkle-star">⭐</span>
-      <span class="twinkle-star">⭐</span>
-    </div>
-    <div class="text-center">
-      <p class="font-semibold text-green-700">✅ Gotowe! zamówienie zostało skopiowane do schowka.</p>
-      <p class="text-sm text-gray-700">🛒 Wróć teraz na Allegro i wklej je w polu „Uwagi do zakupu”, aby szybko zrealizować zamówienie.</p>
     </div>
   </div>
 
@@ -237,31 +201,20 @@
       return Math.abs(hash).toString(36);
     }
 
-    // Kopiowanie podsumowania do schowka
+    // Kopiowanie podsumowania zamówienia do schowka
     function copyOrderSummary() {
       var summary = document.querySelector('#orderSummaryDetails').innerText;
       var orderCode = document.getElementById("orderCodeVisible").textContent;
       summary += "\n\nKod zamówienia: " + orderCode;
       navigator.clipboard.writeText(summary).then(function() {
-        showToast();
+        alert('✅ Gotowe! Podsumowanie zostało skopiowane do schowka.\n🛒 Wróć teraz na Allegro i wklej je w polu „Uwagi do zakupu”, aby szybko zrealizować zamówienie.');
       }, function(err) {
         alert('Wystąpił błąd podczas kopiowania: ' + err);
       });
     }
 
-    // Toast pojawia się wyśrodkowany i znika po kliknięciu lub dotknięciu gdziekolwiek na stronie
-    function showToast() {
-      var toast = document.getElementById("customToast");
-      toast.style.display = "flex";
-      window.addEventListener("click", hideToast, { once: true });
-      window.addEventListener("touchstart", hideToast, { once: true });
-    }
-    function hideToast() {
-      var toast = document.getElementById("customToast");
-      toast.style.display = "none";
-    }
-
-    // Cennik
+    // Zaktualizowany cennik – dodano wariant dla szerokości 50 cm, wysokości 60 cm, głębokości 15 cm:
+    // cena z 2 półkami = 325 zł, z 3 półkami = 350 zł.
     var pricing = {
       "34": {
         "40": { "10": { "2": 150 }, "15": { "2": 250 } },
@@ -288,6 +241,7 @@
       }
     };
 
+    // Modyfikacja funkcji updateDepthOptions – dla szerokości 50 cm umożliwiamy wybór opcji 15 cm również przy wysokości 60 cm.
     function updateDepthOptions() {
       var width = getCurrentWidth();
       var height = document.getElementById("height").value;
@@ -310,10 +264,10 @@
           allow15 = true;
         }
       } else {
-        if (width === "34" || width === "44") {
-          allow15 = true;
-        } else if (width === "50" && (height === "40" || height === "60")) {
-          allow15 = true;
+        if (width === "34" || width === "44") { 
+          allow15 = true; 
+        } else if (width === "50" && (height === "40" || height === "60")) { 
+          allow15 = true; 
         } else if (width === "60" && (height === "40" || height === "60")) {
           allow15 = true;
         }
@@ -505,7 +459,7 @@
       document.getElementById("depthSummary").textContent = document.getElementById("depth").value + " cm";
       
       let shelfCountValue = document.getElementById("shelfCount").value;
-      document.getElementById("shelfCountSummary").textContent = (shelfCountValue == "0") ? "brak półek" : shelfCountValue;
+      document.getElementById("shelfCountSummary").textContent = (shelfCountValue=="0") ? "brak półek" : shelfCountValue;
       
       var heightVal = parseFloat(document.getElementById("height").value);
       var shelfCountVal = parseInt(document.getElementById("shelfCount").value);
@@ -543,6 +497,7 @@
       if(shelfType !== "" && sideColor !== "" && shelfColor !== "" && document.getElementById("shelfCount").value !== "0") {
         var code = generateOrderCode();
         document.getElementById("orderCodeVisible").textContent = code;
+        // Pokaż kontener z przyciskami
         document.getElementById("orderButtonsContainer").style.display = "flex";
         
         var orderData = {
@@ -580,7 +535,7 @@
           <p><strong>Ilość półek:</strong> ${order.shelfCount}</p>
           <p><strong>Przestrzeń między półkami:</strong> ${order.gap}</p>
           <p><strong>Materiał:</strong> płyta laminowana gr. 1,8cm</p>
-          <p><strong>Termin realizacji:</strong> podany na aukcji Allegro</p>
+          <p><strong>Termin realizacji:</strong> podany na aukcji allegro</p>
           <p><strong>Cena:</strong> ${order.price}</p>
           <p><strong>Zamów na Allegro:</strong> ${order.quantity}</p>
         `;
