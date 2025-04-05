@@ -187,14 +187,11 @@
           <p><strong>Cena:</strong> <span id="priceSummary" style="color:red; font-weight:bold;">0 zł</span></p>
           <p><strong>Zamów na Allegro:</strong> <span id="quantitySummary" style="color:red; font-weight:bold;">0 szt.</span></p>
         </div>
-        <!-- Kontener przycisków -->
-        <div id="orderButtonsContainer" style="display:none;" class="mt-4 flex justify-between">
-          <button onclick="copyOrderSummary()" class="px-2 py-1 bg-gray-600 text-white rounded text-xs shimmer">
+        <!-- Kontener przycisku: tylko "Skopiuj zamówienie" w kolorze pomarańczowym -->
+        <div id="orderButtonsContainer" style="display:none;" class="mt-4 flex justify-center">
+          <button onclick="copyOrderSummary()" class="px-2 py-1 bg-orange-600 text-white rounded text-xs shimmer">
             Skopiuj zamówienie
           </button>
-          <a href="https://allegro.pl/oferta/zaprojektuj-wlasna-polke-podaj-wymiar-i-wybierz-kolory-do-kuchni-pokoju-17253898746" target="_blank" class="px-2 py-1 bg-orange-600 text-white rounded text-xs shimmer">
-            Zamów na Allegro
-          </a>
         </div>
       </div>
       <div id="orderCodeWindow" class="w-full p-2 border-2 border-blue-500 rounded bg-blue-500 text-center font-bold text-lg text-white">
@@ -203,7 +200,7 @@
     </div>
   </div>
 
-  <!-- Toast: wyśrodkowany, z mieniącymi się gwiazdkami, przyciskiem i odpowiednim komunikatem -->
+  <!-- Toast: wyśrodkowany, z mieniącymi się gwiazdkami, przyciskiem i komunikatem -->
   <div id="customToast" class="fixed z-50 p-4 max-w-xs bg-white rounded shadow-lg border border-green-500 flex flex-col items-center space-y-2">
     <div class="flex space-x-1">
       <span class="twinkle-star">⭐</span>
@@ -214,9 +211,6 @@
       <p class="font-semibold text-green-700">✅ Gotowe! zamówienie zostało skopiowane do schowka.</p>
       <p class="text-sm text-gray-700">🛒 Wróć teraz na Allegro i wklej je w polu „Uwagi do zakupu”, aby szybko zrealizować zamówienie.</p>
     </div>
-    <a href="https://allegro.pl/oferta/zaprojektuj-wlasna-polke-podaj-wymiar-i-wybierz-kolory-do-kuchni-pokoju-17253898746" target="_blank" class="px-3 py-1 bg-orange-600 text-white rounded text-xs font-semibold">
-      Zamów na Allegro
-    </a>
   </div>
 
   <script>
@@ -243,7 +237,7 @@
       return Math.abs(hash).toString(36);
     }
 
-    // Kopiowanie podsumowania zamówienia do schowka
+    // Kopiowanie podsumowania do schowka
     function copyOrderSummary() {
       var summary = document.querySelector('#orderSummaryDetails').innerText;
       var orderCode = document.getElementById("orderCodeVisible").textContent;
