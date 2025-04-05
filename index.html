@@ -29,6 +29,32 @@
     .shimmer {
       animation: shimmer 2s infinite;
     }
+    /* Animacja migotania gwiazdek */
+    @keyframes twinkle {
+      0% { opacity: 0.3; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.2); }
+      100% { opacity: 0.3; transform: scale(1); }
+    }
+    .twinkle-star {
+      display: inline-block;
+      font-size: 1.2rem;
+      animation: twinkle 1.5s infinite;
+    }
+    /* Animacja pojawiania się toast */
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    /* Wyśrodkowane toast */
+    #customToast {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      animation: slideIn 0.3s ease-out;
+      z-index: 1000;
+    }
   </style>
 </head>
 <body class="flex flex-col justify-center items-center min-h-screen bg-gray-100">
@@ -177,6 +203,22 @@
     </div>
   </div>
 
+  <!-- Powiadomienie toast z mieniącymi się gwiazdkami oraz przyciskiem, wyśrodkowane -->
+  <div id="customToast" class="fixed z-50 p-4 max-w-xs bg-white rounded shadow-lg border border-green-500 flex flex-col items-center space-y-2">
+    <div class="flex space-x-1">
+      <span class="twinkle-star">⭐</span>
+      <span class="twinkle-star">⭐</span>
+      <span class="twinkle-star">⭐</span>
+    </div>
+    <div class="text-center">
+      <p class="font-semibold text-green-700">✅ Gotowe! zamówienie zostało skopiowane do schowka.</p>
+      <p class="text-sm text-gray-700">🛒 Wróć teraz na Allegro i wklej je w polu „Uwagi do zakupu”, aby szybko zrealizować zamówienie.</p>
+    </div>
+    <a href="https://allegro.pl/oferta/zaprojektuj-wlasna-polke-podaj-wymiar-i-wybierz-kolory-do-kuchni-pokoju-17253898746" target="_blank" class="px-3 py-1 bg-orange-600 text-white rounded text-xs font-semibold">
+      Zamów na Allegro
+    </a>
+  </div>
+
   <script>
     function hashString(str) {
       var hash = 0;
@@ -207,10 +249,22 @@
       var orderCode = document.getElementById("orderCodeVisible").textContent;
       summary += "\n\nKod zamówienia: " + orderCode;
       navigator.clipboard.writeText(summary).then(function() {
-        alert('Podsumowanie zamówienia zostało skopiowane do schowka!');
+        showToast();
       }, function(err) {
         alert('Wystąpił błąd podczas kopiowania: ' + err);
       });
+    }
+
+    // Toast pojawia się wyśrodkowany i znika po kliknięciu na stronę
+    function showToast() {
+      var toast = document.getElementById("customToast");
+      toast.style.display = "flex";
+      // Dodaj listener na cały dokument – po kliknięciu schowa toast
+      document.addEventListener("click", hideToast, { once: true });
+    }
+    function hideToast() {
+      var toast = document.getElementById("customToast");
+      toast.style.display = "none";
     }
 
     // Zaktualizowany cennik – dodano wariant dla szerokości 50 cm, wysokości 60 cm, głębokości 15 cm:
