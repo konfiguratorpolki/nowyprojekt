@@ -574,5 +574,17 @@
         .catch(error => console.error('Błąd pobierania adresu IP:', error));
     });
   </script>
+
+  <!-- Skrypt pogrubiający wybraną wartość w każdym select -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const selects = document.querySelectorAll("select");
+      selects.forEach(select => {
+        select.addEventListener("change", function() {
+          this.style.fontWeight = 'bold';
+        });
+      });
+    });
+  </script>
 </body>
 </html>
