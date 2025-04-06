@@ -36,8 +36,8 @@
   <div class="w-full p-4 bg-gray-50 border rounded mb-4 md:hidden">
     <h2 class="text-lg font-bold text-black mb-4">Jak zamówić?</h2>
     <ul class="list-none ml-6 space-y-2">
-      <li>✅ Wybierz wymiary, kolory, dodaj półki i wybierz rodzaj półki.</li>
-      <li>📋 Sprawdź podsumowanie zamówienia i zapisz zamówienie.</li>
+      <li>👉 Wybierz wymiary, kolory, dodaj półki i wybierz rodzaj półki</li>
+      <li>📋 Sprawdź i kliknij Zapisz i zamów na allegro.</li>
       <li>🔢 Skopiuj kod zamówienia.</li>
       <li>🛒 Przejdź na aukcję na Allegro, wybierz ilość odpowiadającą kwocie zamówienia.</li>
       <li>✍️ W formularzu dostawa i płatność w polu „Uwagi do zakupu” wklej kod zamówienia.</li>
@@ -122,11 +122,11 @@
       <div class="p-4 border rounded bg-gray-50 mt-4 w-full max-w-lg hidden md:block">
         <h2 class="text-lg font-bold text-black mb-4">Jak zamówić?</h2>
         <ul class="list-none ml-6 space-y-2">
-          <li>✅ Wybierz wymiary, kolory, dodaj półki i wybierz rodzaj półki.</li>
-          <li>📋 Sprawdź i skopiuj zamówienie.</li>
+          <li>👉 Wybierz wymiary, kolory, dodaj półki i wybierz rodzaj półki.</li>
+          <li>📋 Sprawdź i kliknij "Zapisz i zamów na Allegro".</li>
           <li>🛒 Przejdź na aukcję na Allegro, wybierz ilość odpowiadającą kwocie zamówienia.</li>
           <li>✍️ W formularzu dostawa i płatność w polu „Uwagi do zakupu” wklej skopiowane zamówienie.</li>
-          <li>💳 Opłać aukcje na allegro i czekaj na dostawę!</li>
+          <li>💳 Opłać aukcję na Allegro i czekaj na dostawę!</li>
         </ul>
       </div>
     </div>
@@ -161,16 +161,14 @@
           <p><strong>Cena:</strong> <span id="priceSummary" style="color:red; font-weight:bold;">0 zł</span></p>
           <p><strong>Zamów na Allegro:</strong> <span id="quantitySummary" style="color:red; font-weight:bold;">0 szt.</span></p>
         </div>
-        <!-- Kontener przycisków: "Skopiuj zamówienie" po lewej, "Zamów na Allegro" po prawej -->
-        <div id="orderButtonsContainer" style="display:none;" class="mt-4 flex justify-between">
-          <button onclick="copyOrderSummary()" class="px-2 py-1 bg-gray-600 text-white rounded text-xs shimmer">
-            Skopiuj zamówienie
+        <!-- Kontener przycisków: tylko "Zapisz i zamów na Allegro" -->
+        <div id="orderButtonsContainer" style="display:none;" class="mt-4 flex justify-center">
+          <button onclick="copyOrderSummary()" class="px-4 py-2 bg-orange-600 text-white rounded text-lg shimmer">
+            Zapisz i zamów na Allegro
           </button>
-          <a href="https://allegro.pl/oferta/zaprojektuj-wlasna-polke-podaj-wymiar-i-wybierz-kolory-do-kuchni-pokoju-17253898746" target="_blank" class="px-2 py-1 bg-orange-600 text-white rounded text-xs shimmer">
-            Zamów na Allegro
-          </a>
         </div>
       </div>
+      <!-- Oryginalne okienko wyświetlające kod zamówienia -->
       <div id="orderCodeWindow" class="w-full p-2 border-2 border-blue-500 rounded bg-blue-500 text-center font-bold text-lg text-white">
         Kod zamówienia: <span id="orderCodeVisible"></span>
       </div>
@@ -207,7 +205,7 @@
       var orderCode = document.getElementById("orderCodeVisible").textContent;
       summary += "\n\nKod zamówienia: " + orderCode;
       navigator.clipboard.writeText(summary).then(function() {
-        alert('✅ Gotowe! Zamówienie zostało skopiowane do schowka.\n✨ Wróć teraz na Allegro i wklej je w polu „Uwagi do zakupu”');
+        alert('✅ Gotowe! Zamówienie zostało skopiowane do schowka.\n🔄 Wróć teraz na Allegro i wklej je w polu „Uwagi do zakupu”');
       }, function(err) {
         alert('Wystąpił błąd podczas kopiowania: ' + err);
       });
@@ -267,7 +265,7 @@
         if (width === "34" || width === "44") { 
           allow15 = true; 
         } else if (width === "50" && (height === "40" || height === "60")) { 
-          allow15 = true; 
+          allow15 = true;
         } else if (width === "60" && (height === "40" || height === "60")) {
           allow15 = true;
         }
@@ -575,13 +573,18 @@
     });
   </script>
 
-  <!-- Skrypt pogrubiający wybraną wartość w każdym select -->
+  <!-- Skrypt pogrubiający wybraną wartość w każdym select (nie pogrubia opcji "nie wybrano") -->
   <script>
     document.addEventListener("DOMContentLoaded", function() {
       const selects = document.querySelectorAll("select");
       selects.forEach(select => {
         select.addEventListener("change", function() {
-          this.style.fontWeight = 'bold';
+          const selectedText = this.options[this.selectedIndex].text.toLowerCase();
+          if(selectedText !== 'nie wybrano') {
+            this.style.fontWeight = 'bold';
+          } else {
+            this.style.fontWeight = 'normal';
+          }
         });
       });
     });
