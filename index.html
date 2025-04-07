@@ -199,13 +199,18 @@
       return Math.abs(hash).toString(36);
     }
 
-    // Kopiowanie podsumowania zamówienia do schowka
+    // Kopiowanie podsumowania zamówienia do schowka z nowym komunikatem
     function copyOrderSummary() {
       var summary = document.querySelector('#orderSummaryDetails').innerText;
       var orderCode = document.getElementById("orderCodeVisible").textContent;
+      // Pobranie wyliczonej ceny z elementu priceSummary
+      var priceText = document.getElementById("priceSummary").textContent;
       summary += "\n\nKod zamówienia: " + orderCode;
+      summary += "\n\nZamów na Allegro: " + priceText;
       navigator.clipboard.writeText(summary).then(function() {
-        alert('✅ Gotowe! Zamówienie zostało skopiowane do schowka.\n🔄 Wróć teraz na Allegro i wklej je w polu „Uwagi do zakupu”');
+        alert("✅ Gotowe! Zamówienie zostało skopiowane do schowka\n" +
+              "🔄 Wróć teraz na Allegro i zamów na kwotę " + priceText + "\n" +
+              "📋 W formularzu dostawa i płatność w polu „Uwagi do zakupu” wklej skopiowane zamówienie");
       }, function(err) {
         alert('Wystąpił błąd podczas kopiowania: ' + err);
       });
