@@ -80,7 +80,8 @@
                  updateShelfCountOptions(); updateDepthOptions(); updatePreview(); updateOrderSummary();
                ">
         <span id="customWidthDisplay" style="display:none; font-weight:bold;"></span>
-        <small id="customWidthFee" style="display:none; font-size:0.8rem; color:#555;">dopłata +50 zł</small>
+        <!-- Tekst zmieniony na kolor czerwony -->
+        <small id="customWidthFee" style="display:none; font-size:0.8rem; color:red;">dopłata +50 zł</small>
         <label class="block font-medium mt-4">Wysokość:</label>
         <select id="height" class="w-full p-2 border rounded"
                 onchange="updateShelfCountOptions(); updateDepthOptions(); updatePreview(); updateOrderSummary();">
@@ -126,8 +127,8 @@
                 onchange="updatePreview(); updateOrderSummary();">
           <!-- Opcje generowane dynamicznie -->
         </select>
-        <!-- Miejsce wyświetlania przestrzeni między półkami -->
-        <p id="gapDisplay" class="mt-2 text-sm text-green-600">
+        <!-- Miejsce wyświetlania przestrzeni między półkami – zmienione klasy na szary kolor i pogrubienie -->
+        <p id="gapDisplay" class="mt-2 text-sm text-gray-600 font-bold">
           Przestrzeń pomiędzy półkami: <span id="gapSummaryDisplay"></span>
         </p>
       </div>
