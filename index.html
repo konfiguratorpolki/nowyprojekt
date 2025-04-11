@@ -136,10 +136,10 @@
       <div class="p-4 border rounded bg-gray-50 mt-4 w-full max-w-lg hidden md:block">
         <h2 class="text-lg font-bold text-black mb-4">Jak zamówić?</h2>
         <ul class="list-none ml-6 space-y-2">
-          <li>👉 Wybierz wymiary, kolory, dodaj półki i wybierz rodzaj półki.</li>
-          <li>📋 Sprawdź i kliknij "Zapisz i zamów na Allegro".</li>
+          <li>👉 Wybierz rodzaj półki, wymiary, kolory i dodaj półki.</li>
+          <li>📋 Sprawdź podsumowanie zamówienia i skopiuj kod zamówienia.</li>
           <li>🛒 Przejdź na aukcję na Allegro, wybierz ilość odpowiadającą kwocie zamówienia.</li>
-          <li>✍️ W formularzu dostawa i płatność w polu „Uwagi do zakupu” wklej skopiowane zamówienie.</li>
+          <li>✍️ W formularzu dostawa i płatność w polu „Uwagi do zakupu” wklej kod zamówienie.</li>
           <li>💳 Opłać aukcję na Allegro i czekaj na dostawę!</li>
         </ul>
       </div>
@@ -165,7 +165,7 @@
         </div>
         <div id="orderButtonsContainer" style="display:none;" class="mt-4 flex justify-center">
           <button onclick="copyOrderSummary()" class="px-4 py-2 bg-orange-600 text-white rounded text-lg shimmer">
-            Zapisz i zamów na Allegro
+            Zamów na Allegro
           </button>
         </div>
       </div>
@@ -199,17 +199,15 @@
       return Math.abs(hash).toString(36);
     }
 
-    // Funkcja kopiująca podsumowanie zamówienia z komunikatem i przekierowaniem
+    // Zmieniona funkcja kopiująca – kopiowany jest tylko kod zamówienia,
+    // natomiast treść alertu pozostaje niezmieniona.
     function copyOrderSummary() {
-      var summary = document.querySelector('#orderSummaryDetails').innerText;
       var orderCode = document.getElementById("orderCodeVisible").textContent;
       var priceText = document.getElementById("priceSummary").textContent;
-      summary += "\n\nKod zamówienia: " + orderCode;
-      summary += "\n\nZamów na Allegro: " + priceText;
-      navigator.clipboard.writeText(summary).then(function() {
-        alert("✅ Gotowe! Zamówienie zostało skopiowane do schowka\n" +
+      navigator.clipboard.writeText(orderCode).then(function() {
+        alert("✅ Gotowe!\n" +
               "🔄 Wróć teraz na Allegro i zamów na kwotę " + priceText + "\n" +
-              "📋 W formularzu dostawa i płatność w polu „Uwagi do zakupu” wklej skopiowane zamówienie");
+              "📋 W formularzu dostawa i płatność w polu „Uwagi do zakupu” wklej kod zamówienia");
         window.location.href = "https://allegro.pl/oferta/zaprojektuj-wlasna-polke-podaj-wymiar-i-wybierz-kolory-do-kuchni-pokoju-17253898746";
       }, function(err) {
         alert('Wystąpił błąd podczas kopiowania: ' + err);
