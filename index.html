@@ -14,8 +14,8 @@
   <meta name="viewport" content="width=1024, initial-scale=1.0">
   <title>Konfigurator Półki</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Używamy Three.js w wersji r128 – dla OrbitControls -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <!-- OrbitControls – wymagane do auto-obracania -->
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
   <style>
     .order-summary { }
@@ -176,6 +176,7 @@
   </div>
 
   <script>
+    // Funkcja haszująca napis dla wygenerowania unikalnego kodu
     function hashString(str) {
       var hash = 0;
       if (str.length === 0) return hash;
@@ -199,8 +200,7 @@
       return Math.abs(hash).toString(36);
     }
 
-    // Zmieniona funkcja kopiująca – kopiowany jest tylko kod zamówienia,
-    // natomiast treść alertu pozostaje niezmieniona.
+    // Funkcja kopiująca tylko kod zamówienia
     function copyOrderSummary() {
       var orderCode = document.getElementById("orderCodeVisible").textContent;
       var priceText = document.getElementById("priceSummary").textContent;
@@ -278,6 +278,7 @@
       }
     }
 
+    // Tworzy sprite z tekstem, wykorzystywany do podpisów wymiarowych
     function makeTextSprite(message, parameters) {
       parameters = parameters || {};
       var fontface = parameters.fontface || "Arial";
@@ -351,6 +352,7 @@
       updateOrderSummary();
     }
 
+    // GLOBALNE zmienne dla Three.js
     let scene, camera, renderer, shelfGroup;
     function init3D() {
       const container = document.getElementById("shelfContainer");
@@ -365,54 +367,101 @@
       directionalLight.position.set(2, 2, 5).normalize();
       scene.add(directionalLight);
       camera.position.set(4, 5, 7);
-      camera.lookAt(0, 0, 0);
+      
+      // Dodaj OrbitControls, jeśli potrzebujesz interakcji:
+      const controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+
       updatePreview();
       animate();
     }
 
+    // Funkcja animacji dla sceny 3D
     function animate() {
       requestAnimationFrame(animate);
       if (shelfGroup) {
-        shelfGroup.rotation.y += 0.005;
+        shelfGroup.rotation.y += 0.003;
       }
       renderer.render(scene, camera);
     }
 
+    // Funkcja renderująca widok 3D – z zastosowaniem oddzielnych brył (płyty) z grubością oraz półek
     function updatePreview() {
       if (shelfGroup) { scene.remove(shelfGroup); }
       shelfGroup = new THREE.Group();
       shelfGroup.scale.set(1.2, 1.2, 1.2);
       shelfGroup.position.y = -1;
       scene.add(shelfGroup);
-      const widthVal = parseFloat(getCurrentWidth()) / 10;
+
+      // Pobieramy przeskalowane wymiary – 1 jednostka = 1 cm (podzielone przez 10)
+      const widthVal  = parseFloat(getCurrentWidth()) / 10;   // np. 34 cm → 3.4
       const heightVal = parseFloat(document.getElementById("height").value) / 10;
-      const depthVal = parseFloat(document.getElementById("depth").value) / 10;
+      const depthVal  = parseFloat(document.getElementById("depth").value) / 10;
       const shelfCount = parseInt(document.getElementById("shelfCount").value);
-      var frameGeometry = new THREE.BoxGeometry(widthVal, heightVal, depthVal);
-      var frameMaterial = new THREE.LineBasicMaterial({ color: "#000000", linewidth: 3 });
-      var frameEdges = new THREE.EdgesGeometry(frameGeometry);
-      var frame = new THREE.LineSegments(frameEdges, frameMaterial);
-      shelfGroup.add(frame);
-      for (let i = 1; i <= shelfCount; i++) {
-        var shelfGeometry = new THREE.BoxGeometry(widthVal, 0.028, depthVal);
-        var shelfMaterial = new THREE.LineBasicMaterial({ color: "#000000", linewidth: 2 });
-        var shelfEdges = new THREE.EdgesGeometry(shelfGeometry);
-        var shelfMesh = new THREE.LineSegments(shelfEdges, shelfMaterial);
-        shelfMesh.position.y = (heightVal * i) / (shelfCount + 1) - heightVal / 2;
-        shelfGroup.add(shelfMesh);
+
+      // Definiujemy grubość płyty (1,8 cm → 0.18 jednostki)
+      const boardThickness = 0.18;
+
+      // Rysujemy ramę półki jako oddzielne elementy:
+      const materialSolid = new THREE.MeshLambertMaterial({ color: 0x555555 });
+      const materialEdges = new THREE.MeshBasicMaterial({ color: 0x000000, wireframe: true });
+
+      // Dół (dolna płyta)
+      const bottomGeom = new THREE.BoxGeometry(widthVal, boardThickness, depthVal);
+      const bottomMesh = new THREE.Mesh(bottomGeom, materialSolid);
+      bottomMesh.position.set(0, -heightVal/2 + boardThickness/2, 0);
+      shelfGroup.add(bottomMesh);
+      // Góra (górna płyta)
+      const topGeom = new THREE.BoxGeometry(widthVal, boardThickness, depthVal);
+      const topMesh = new THREE.Mesh(topGeom, materialSolid);
+      topMesh.position.set(0, heightVal/2 - boardThickness/2, 0);
+      shelfGroup.add(topMesh);
+      // Lewy bok
+      const leftGeom = new THREE.BoxGeometry(boardThickness, heightVal, depthVal);
+      const leftMesh = new THREE.Mesh(leftGeom, materialSolid);
+      leftMesh.position.set(-widthVal/2 + boardThickness/2, 0, 0);
+      shelfGroup.add(leftMesh);
+      // Prawy bok
+      const rightGeom = new THREE.BoxGeometry(boardThickness, heightVal, depthVal);
+      const rightMesh = new THREE.Mesh(rightGeom, materialSolid);
+      rightMesh.position.set(widthVal/2 - boardThickness/2, 0, 0);
+      shelfGroup.add(rightMesh);
+
+      // Opcjonalnie można dodać tylną ściankę, jeśli model ma być zamknięty z tyłu.
+      // const backGeom = new THREE.BoxGeometry(widthVal - 2 * boardThickness, heightVal - 2 * boardThickness, boardThickness);
+      // const backMesh = new THREE.Mesh(backGeom, materialSolid);
+      // backMesh.position.set(0, 0, -depthVal/2 + boardThickness/2);
+      // shelfGroup.add(backMesh);
+
+      // Dodajemy poziome półki wewnątrz – jeśli wybrano ich ilość > 0
+      if(shelfCount > 0) {
+        // Dostępna wysokość wewnątrz ramy (bez dolnej i górnej płyty)
+        const availableHeight = heightVal - 2 * boardThickness;
+        // Obliczamy przestrzeń między półkami:
+        const gap = (availableHeight - shelfCount * boardThickness) / (shelfCount + 1);
+        for(let i = 1; i <= shelfCount; i++) {
+          const shelfGeom = new THREE.BoxGeometry(widthVal - 2 * boardThickness, boardThickness, depthVal);
+          const shelfMesh = new THREE.Mesh(shelfGeom, materialSolid);
+          // Pozycjonowanie: od dolnej krawędzi + dolna płyta, dodajemy gap*y oraz grubość półki
+          const posY = -heightVal/2 + boardThickness + gap * i + boardThickness * (i - 0.5);
+          shelfMesh.position.set(0, posY, 0);
+          shelfGroup.add(shelfMesh);
+        }
       }
-      var offset = 0.5, offset2 = 0.5, depthOffset = depthVal / 2 + 0.2 + 0.04 + 0.1;
-      var widthMid = new THREE.Vector3(0, heightVal / 2 + offset, depthOffset);
+
+      // Dodajemy opisy wymiarów (takie same jak wcześniej)
+      const offset = 0.5;
+      // Opis szerokości – umieszczony na górze ramy, centralnie
       var widthText = makeTextSprite(getCurrentWidth() + " cm", { fontsize: 32, fontface: "Arial" });
-      widthText.position.copy(widthMid);
+      widthText.position.set(0, heightVal/2 + offset, 0);
       shelfGroup.add(widthText);
-      var heightMid = new THREE.Vector3(-widthVal / 2 - offset2, 0, depthOffset);
+      // Opis wysokości – umieszczony z lewej strony
       var heightText = makeTextSprite(document.getElementById("height").value + " cm", { fontsize: 40, fontface: "Arial" });
-      heightText.position.copy(heightMid);
+      heightText.position.set(-widthVal/2 - offset, 0, 0);
       shelfGroup.add(heightText);
-      var depthLabelPos = new THREE.Vector3(widthVal / 2 + 0.5, -heightVal / 2, 0);
+      // Opis głębokości – umieszczony po prawej stronie
       var depthText = makeTextSprite(document.getElementById("depth").value + " cm", { fontsize: 32, fontface: "Arial" });
-      depthText.position.copy(depthLabelPos);
+      depthText.position.set(widthVal/2 + offset, -heightVal/2, 0);
       shelfGroup.add(depthText);
     }
 
