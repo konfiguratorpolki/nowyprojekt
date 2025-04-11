@@ -380,7 +380,7 @@
     function animate() {
       requestAnimationFrame(animate);
       if (shelfGroup) {
-        shelfGroup.rotation.y += 0.003;
+        shelfGroup.rotation.y += 0.004;
       }
       renderer.render(scene, camera);
     }
@@ -403,7 +403,7 @@
       const boardThickness = 0.18;
 
       // Rysujemy ramę półki jako oddzielne elementy:
-      const materialSolid = new THREE.MeshLambertMaterial({ color: 0x555555 });
+      const materialSolid = new THREE.MeshLambertMaterial({ color: 0x777777 });
       const materialEdges = new THREE.MeshBasicMaterial({ color: 0x000000, wireframe: true });
 
       // Dół (dolna płyta)
