@@ -56,7 +56,7 @@
         </h2>
         <select id="shelfType" class="w-full p-2 border rounded" onchange="updateOrderSummary();">
           <option value="">Nie wybrano</option>
-          <option value="standing">Stojąca</option>
+          <option value="standing">Stojąca na blacie</option>
           <option value="hanging">Wisząca</option>
         </select>
       </div>
@@ -180,7 +180,7 @@
             <span id="shelfTypeSummary">nie wybrano</span>
           </li>
           <li class="py-1 flex justify-between">
-            <span class="font-medium">Przestrzeń między półkami:</span>
+            <span class="font-medium">Przestrzeń pomiędzy półkami:</span>
             <span id="gapSummary">brak półek</span>
           </li>
           <li class="py-1 flex justify-between">
@@ -197,7 +197,7 @@
         <div class="mt-4 p-3 border-t flex flex-col items-start space-y-3">
           <p class="text-base md:text-sm">
             <strong>Cena:</strong>
-            <span class="text-red-600 font-bold" id="priceSummary">0 zł</span>
+            <span class="text-red-600 font-bold text-2xl" id="priceSummary">0 zł</span>
           </p>
           <p class="text-base md:text-sm">
             <strong>Zamów na Allegro:</strong>
@@ -627,7 +627,7 @@
           <p><strong>Kolor półek i podstaw:</strong> ${order.shelfColor}</p>
           <p><strong>Rodzaj półki:</strong> ${order.shelfType}</p>
           <p><strong>Ilość półek:</strong> ${order.shelfCount}</p>
-          <p><strong>Przestrzeń między półkami:</strong> ${order.gap}</p>
+          <p><strong>Przestrzeń pomiędzy półkami:</strong> ${order.gap}</p>
           <p><strong>Materiał:</strong> płyta laminowana gr. 1,8cm</p>
           <p><strong>Termin realizacji:</strong> podany na aukcji Allegro</p>
           <p><strong>Cena:</strong> ${order.price}</p>
