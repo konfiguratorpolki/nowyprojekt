@@ -43,7 +43,7 @@
   </style>
 </head>
 <body class="flex flex-col justify-center items-center min-h-screen bg-gray-100">
-  <!-- Blok instrukcji "Jak zamówić?" widoczny tylko na mobilnych -->
+  <!-- Blok instrukcji "Jak zamówić?" (tylko dla mobilnych) -->
   <div class="w-full p-4 bg-gray-50 border rounded mb-4 md:hidden">
     <h2 class="text-lg font-bold text-black mb-4">Jak zamówić?</h2>
     <ul class="list-none ml-6 space-y-2">
@@ -58,7 +58,7 @@
 
   <!-- Główny kontener -->
   <div class="p-6 bg-white shadow-lg rounded-lg flex flex-col md:flex-row md:space-x-6 w-full max-w-7xl">
-    <!-- Kolumna 1: Konfigurator -->
+    <!-- Kolumna 1: Konfigurator (bez okienka 'Dodaj półki') -->
     <div class="w-full md:w-1/3 space-y-6 mb-6 md:mb-0 order-2 md:order-1">
       <!-- Grupa 1: Rodzaj półki -->
       <div class="p-4 border rounded bg-gray-50">
@@ -86,11 +86,9 @@
         </select>
         <input type="range" id="customWidthInput" min="35" max="59" step="1" value="35"
                style="display:none; margin-top:0.5rem; width:100%;"
-               oninput="
-                 if(this.value == 44){ this.value = 45; }
-                 document.getElementById('customWidthDisplay').textContent = this.value + ' cm';
-                 updateShelfCountOptions(); updateDepthOptions(); updatePreview(); updateOrderSummary(); updateHighlight();
-               ">
+               oninput="if(this.value == 44){ this.value = 45; }
+                        document.getElementById('customWidthDisplay').textContent = this.value + ' cm';
+                        updateShelfCountOptions(); updateDepthOptions(); updatePreview(); updateOrderSummary(); updateHighlight();">
         <span id="customWidthDisplay" style="display:none; font-weight:bold;"></span>
         <small id="customWidthFee" style="display:none; font-size:0.8rem; color:red;">dopłata +50 zł</small>
         <label class="block font-medium mt-4">Wysokość:</label>
@@ -125,8 +123,13 @@
           <option value="#000000">Czarny matowy</option>
         </select>
       </div>
-      <!-- Grupa 4: Ilość półek -->
-      <div class="p-4 border rounded bg-gray-50">
+    </div>
+
+    <!-- Kolumna 2: Widok 3D oraz okienko "Dodaj półki" (przeniesione pod projekt 3D) -->
+    <div class="w-full md:w-2/3 flex flex-col items-center mb-6 md:mb-0 order-3 md:order-2">
+      <div id="shelfContainer" style="width:100%; max-width:500px; height:500px;"></div>
+      <!-- Okienko "Dodaj półki" umieszczone pod projektem 3D -->
+      <div class="p-4 border rounded bg-gray-50 mt-4 w-full max-w-lg">
         <h2 class="text-lg font-bold mb-2">✅ Dodaj półki</h2>
         <select id="shelfCount" class="w-full p-2 border rounded"
                 onchange="updatePreview(); updateOrderSummary(); updateHighlight();">
@@ -136,11 +139,6 @@
           Przestrzeń pomiędzy półkami: <span id="gapSummaryDisplay"></span>
         </p>
       </div>
-    </div>
-
-    <!-- Kolumna 2: Widok 3D -->
-    <div class="w-full md:w-2/3 flex flex-col items-center mb-6 md:mb-0 order-3 md:order-2">
-      <div id="shelfContainer" style="width:100%; max-width:500px; height:500px;"></div>
       <div class="p-4 border rounded bg-gray-50 mt-4 w-full max-w-lg hidden md:block">
         <h2 class="text-lg font-bold text-black mb-4">Jak zamówić?</h2>
         <ul class="list-none ml-6 space-y-2">
@@ -153,7 +151,7 @@
       </div>
     </div>
 
-    <!-- Kolumna 3: Podsumowanie zamówienia i Kod zamówienia -->
+    <!-- Kolumna 3: Podsumowanie zamówienia oraz blok z kodem zamówienia -->
     <div class="w-full md:w-1/3 p-4 bg-gray-50 border rounded space-y-4 order-4 md:order-3">
       <div class="order-summary bg-white shadow-md rounded p-4">
         <h2 class="text-lg font-bold mb-3">📋 Podsumowanie Zamówienia</h2>
@@ -215,7 +213,6 @@
           </div>
         </div>
       </div>
-      <!-- Grupa 5: Blok z kodem zamówienia -->
       <div id="orderCodeWindow" class="w-full p-2 border-2 border-blue-500 rounded bg-blue-500 text-center font-bold text-lg text-white">
         Kod zamówienia: <span id="orderCodeVisible"></span>
       </div>
@@ -419,9 +416,7 @@
 
     function animate() {
       requestAnimationFrame(animate);
-      if (shelfGroup) {
-        shelfGroup.rotation.y += 0.004;
-      }
+      if (shelfGroup) { shelfGroup.rotation.y += 0.004; }
       renderer.render(scene, camera);
     }
 
@@ -637,24 +632,28 @@
     });
   </script>
 
-  <!-- Skrypt sterujący podświetlaniem wg grup, który czeka na pogrubienie wszystkich selectów w grupie -->
+  <!-- Skrypt sterujący podświetleniem wg grup -->
   <script>
-    // Definiujemy grupy selectów:
+    /* Definiujemy grupy selectów:
+         1. Rodzaj półki – dla tej grupy podświetlamy wyłącznie nagłówek (w tym przypadku cały element select pozostaje poza grupą)
+         2. Wymiary: ["width", "height", "depth"]
+         3. Kolory: ["sideColor", "shelfColor"]
+         4. Ilość półek: ["shelfCount"]
+         5. Końcowy blok: orderCodeWindow
+    */
     const groups = [
-      { ids: ["shelfType"], container: document.querySelector("#shelfType").closest("div") },
+      { ids: ["shelfType"], container: document.getElementById("shelfType") },
       { ids: ["width", "height", "depth"], container: document.querySelector("#width").closest("div") },
       { ids: ["sideColor", "shelfColor"], container: document.querySelector("#sideColor").closest("div") },
       { ids: ["shelfCount"], container: document.querySelector("#shelfCount").closest("div") },
-      { ids: [], container: document.querySelector("#orderCodeWindow") } // grupa końcowa
+      { ids: [], container: document.querySelector("#orderCodeWindow") }
     ];
     let currentGroup = 0;
     
-    // Funkcja sprawdzająca, czy wszystkie selecty danej grupy są pogrubione
     function groupIsReady(group) {
       for (let id of group.ids) {
         const selectEl = document.getElementById(id);
         const fontWeight = window.getComputedStyle(selectEl).fontWeight;
-        // Jeżeli nie jest pogrubiony – pomijamy (można dodatkowo logować dla debugowania)
         if (fontWeight === "normal" || parseInt(fontWeight) < 600) {
           return false;
         }
@@ -662,7 +661,6 @@
       return true;
     }
     
-    // Aktualizacja podświetlenia – używamy krótkiego opóźnienia, aby computed style się zaktualizowały
     function updateHighlight() {
       setTimeout(() => {
         for (let i = 0; i < groups.length - 1; i++) {
@@ -670,7 +668,6 @@
             currentGroup = i;
             break;
           }
-          // Jeśli wszystkie grupy (poza ostatnią) są gotowe:
           currentGroup = groups.length - 1;
         }
         groups.forEach((group, idx) => {
@@ -683,8 +680,7 @@
       }, 0);
     }
     
-    // Nasłuchiwanie zdarzeń change dla wszystkich selectów w grupach (poza ostatnią grupą)
-    groups.forEach((group, idx) => {
+    groups.forEach((group) => {
       group.ids.forEach(id => {
         document.getElementById(id).addEventListener("change", updateHighlight);
       });
