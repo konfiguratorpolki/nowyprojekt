@@ -39,7 +39,7 @@
       <li>👉 Wybierz wymiary, kolory, dodaj półki i wybierz rodzaj półki</li>
       <li>📋 Sprawdź i kliknij Zapisz i zamów na Allegro.</li>
       <li>🔢 Skopiuj kod zamówienia.</li>
-      <li>🛒 Przejdź na aukcję na Allegro, wybierz ilość odpowiadającą kwocie zamówienia.(np. jeśli cena wynosi 200 zł, kup 200 szt. — 1 szt. = 1 zł)</li>
+      <li>🛒 Przejdź na aukcję na Allegro, wybierz ilość odpowiadającą kwocie zamówienia. (np. jeśli cena wynosi 200 zł, kup 200 szt. — 1 szt. = 1 zł)</li>
       <li>✍️ W formularzu dostawa i płatność w polu „Uwagi do zakupu” wklej kod zamówienia.</li>
       <li>💳 Opłać zamówienie i czekaj na dostawę!</li>
     </ul>
@@ -138,9 +138,9 @@
         <ul class="list-none ml-6 space-y-2">
           <li>👉 Wybierz rodzaj półki, wymiary, kolory i dodaj półki.</li>
           <li>📋 Sprawdź podsumowanie zamówienia i skopiuj kod zamówienia.</li>
-          <li>🛒 Przejdź na aukcję na Allegro, wybierz ilość odpowiadającą kwocie zamówienia.</li>
-          <li>(np. jeśli cena wynosi 200 zł, kup 200 szt. — 1 szt. = 1 zł)</li>
-          <li>✍️ W formularzu dostawa i płatność w polu „Uwagi do zakupu” wklej kod zamówienie.</li>
+          <li>🛒 Przejdź na aukcję na Allegro, wybierz ilość odpowiadającą kwocie zamówienia.
+            (np. jeśli cena wynosi 200 zł, kup 200 szt. — 1 szt. = 1 zł)</li>
+          <li>✍️ W formularzu dostawa i płatność w polu „Uwagi do zakupu” wklej kod zamówienia.</li>
           <li>💳 Opłać aukcję na Allegro i czekaj na dostawę!</li>
         </ul>
       </div>
@@ -150,7 +150,6 @@
     <div class="w-full md:w-1/3 p-4 bg-gray-50 border rounded space-y-4 order-4 md:order-3">
       <div class="order-summary bg-white shadow-md rounded p-4">
         <h2 class="text-lg font-bold mb-3">📋 Podsumowanie Zamówienia</h2>
-        <!-- Większa czcionka na mobile, mniejsza na desktop: text-base md:text-sm -->
         <ul class="divide-y divide-gray-200 text-base md:text-sm">
           <li class="py-1 flex justify-between">
             <span class="font-medium">Szerokość:</span>
@@ -194,15 +193,17 @@
           </li>
         </ul>
 
-        <!-- Sekcja ceny i ilości do zamówienia -->
-        <div class="mt-4 p-3 border-t flex flex-col items-start space-y-3">
+        <!-- Sekcja ceny i ilości do zamówienia – widoczna tylko gdy wszystkie dane są podane -->
+        <div class="mt-4 p-3 border-t flex flex-col items-start space-y-3" id="finalOrderSummary">
           <p class="text-base md:text-sm">
             <strong>Cena:</strong>
-            <span class="text-red-600 font-bold text-2xl" id="priceSummary">0 zł</span>
+            <span class="text-red-600 font-bold text-2xl" id="priceSummary"></span>
           </p>
+          <!-- Komunikat pomocniczy obok ceny -->
+          <small id="priceHint" class="text-gray-600 text-xs">wybierz wszystkie parametry półki aby zobaczyć cenę</small>
           <p class="text-base md:text-sm">
             <strong>Zamów na Allegro:</strong>
-            <span class="text-red-600 font-bold" id="quantitySummary">0 szt.</span>
+            <span class="text-red-600 font-bold" id="quantitySummary"></span>
           </p>
           <!-- Przyciski (kopiowanie i przejście na Allegro) -->
           <div id="orderButtonsContainer" style="display:none;">
@@ -271,10 +272,7 @@
       },
       "50": {
         "40": { "10": { "2": 175 }, "15": { "2": 275 } },
-        "60": {
-          "10": { "2": 225, "3": 250 },
-          "15": { "2": 325, "3": 350 }
-        },
+        "60": { "10": { "2": 225, "3": 250 }, "15": { "2": 325, "3": 350 } },
         "80": { "10": { "2": 250, "3": 250, "4": 300, "5": 325 } }
       },
       "60": {
@@ -490,18 +488,103 @@
 
       // Podpisy wymiarów
       const offset = 0.5;
-      // szerokość
       var widthText = makeTextSprite(getCurrentWidth() + " cm", { fontsize: 32, fontface: "Arial" });
       widthText.position.set(0, heightVal/2 + offset, 0);
       shelfGroup.add(widthText);
-      // wysokość
       var heightText = makeTextSprite(document.getElementById("height").value + " cm", { fontsize: 40, fontface: "Arial" });
       heightText.position.set(-widthVal/2 - offset, 0, 0);
       shelfGroup.add(heightText);
-      // głębokość
       var depthText = makeTextSprite(document.getElementById("depth").value + " cm", { fontsize: 32, fontface: "Arial" });
       depthText.position.set(widthVal/2 + offset, -heightVal/2, 0);
       shelfGroup.add(depthText);
+    }
+
+    // Aktualizacja podsumowania zamówienia – cena, ilość sztuk, kod zamówienia
+    function updateOrderSummary() {
+      // Aktualizacja wartości tekstowych
+      document.getElementById("sideColorSummary").textContent =
+         document.getElementById("sideColor").options[document.getElementById("sideColor").selectedIndex].text.toLowerCase();
+      document.getElementById("shelfColorSummary").textContent =
+         document.getElementById("shelfColor").options[document.getElementById("shelfColor").selectedIndex].text.toLowerCase();
+      document.getElementById("widthSummary").textContent = getCurrentWidth() + " cm";
+      document.getElementById("heightSummary").textContent = document.getElementById("height").value + " cm";
+      document.getElementById("depthSummary").textContent = document.getElementById("depth").value + " cm";
+
+      let shelfCountValue = document.getElementById("shelfCount").value;
+      document.getElementById("shelfCountSummary").textContent = (shelfCountValue == "0") ? "brak półek" : shelfCountValue;
+
+      // Obliczanie przerwy między półkami
+      var heightVal = parseFloat(document.getElementById("height").value);
+      var shelfCountVal = parseInt(document.getElementById("shelfCount").value);
+      var gapText = "";
+      if (shelfCountVal > 0) {
+         var totalThickness = (shelfCountVal + 2) * 1.8; // grubość półek + dół + góra
+         var freeSpace = heightVal - totalThickness;
+         var gaps = shelfCountVal + 1;
+         gapText = (freeSpace / gaps).toFixed(1) + " cm";
+      } else { 
+         gapText = "brak półek"; 
+      }
+      document.getElementById("gapSummary").textContent = gapText;
+      document.getElementById("gapSummaryDisplay").textContent = gapText;
+
+      // Sprawdzenie czy wymagane pola są wypełnione
+      if (
+        document.getElementById("shelfType").value === "" ||
+        document.getElementById("sideColor").value === "" ||
+        document.getElementById("shelfColor").value === "" ||
+        document.getElementById("shelfCount").value === "0"
+      ) {
+        // Jeśli nie – czyścimy pola cenowe oraz ukrywamy przycisk zamówienia
+        document.getElementById("priceSummary").textContent = "";
+        document.getElementById("quantitySummary").textContent = "";
+        document.getElementById("orderCodeVisible").textContent = "";
+        document.getElementById("orderButtonsContainer").style.display = "none";
+        // Pokazujemy komunikat przy cenie
+        document.getElementById("priceHint").style.display = "block";
+        return;
+      }
+      
+      // Jeśli wszystkie dane są uzupełnione – ukrywamy komunikat przy cenie
+      document.getElementById("priceHint").style.display = "none";
+
+      // Obliczamy cenę zamówienia
+      var priceData = computePriceDetailed();
+      if(priceData === null) {
+         document.getElementById("priceSummary").textContent = "N/A";
+      } else {
+         document.getElementById("priceSummary").textContent = priceData.total + " zł";
+      }
+
+      // Liczba sztuk – przyjmujemy 1 zł = 1 sztuka
+      var numericPrice = (priceData && priceData.total) ? priceData.total : 0;
+      document.getElementById("quantitySummary").textContent = numericPrice + " szt.";
+
+      // Uaktualnienie opisu rodzaju półki
+      var shelfTypeSelect = document.getElementById("shelfType");
+      var shelfTypeOption = shelfTypeSelect.options[shelfTypeSelect.selectedIndex];
+      document.getElementById("shelfTypeSummary").textContent =
+          (shelfTypeOption && shelfTypeOption.value !== "") ? shelfTypeOption.text.toLowerCase() : "nie wybrano";
+
+      // Generacja kodu zamówienia i wyświetlenie przycisku
+      var code = generateOrderCode();
+      document.getElementById("orderCodeVisible").textContent = code;
+      document.getElementById("orderButtonsContainer").style.display = "block";
+
+      // Zapisanie danych zamówienia w localStorage (opcjonalnie)
+      var orderData = {
+        width: document.getElementById("widthSummary").textContent,
+        height: document.getElementById("heightSummary").textContent,
+        depth: document.getElementById("depthSummary").textContent,
+        sideColor: document.getElementById("sideColorSummary").textContent,
+        shelfColor: document.getElementById("shelfColorSummary").textContent,
+        shelfType: document.getElementById("shelfTypeSummary").textContent,
+        shelfCount: document.getElementById("shelfCountSummary").textContent,
+        gap: document.getElementById("gapSummary").textContent,
+        price: document.getElementById("priceSummary").textContent,
+        quantity: document.getElementById("quantitySummary").textContent
+      };
+      localStorage.setItem("order_" + code, JSON.stringify(orderData));
     }
 
     function computePriceDetailed() {
@@ -531,86 +614,6 @@
           var basePrice = pricing[width][height][depth][shelfCount];
           return { base: basePrice, extra: 0, total: basePrice };
         } else { return null; }
-      }
-    }
-
-    function updateOrderSummary() {
-      // Ustawiamy opisy w podsumowaniu
-      document.getElementById("sideColorSummary").textContent =
-         document.getElementById("sideColor").options[document.getElementById("sideColor").selectedIndex].text.toLowerCase();
-      document.getElementById("shelfColorSummary").textContent =
-         document.getElementById("shelfColor").options[document.getElementById("shelfColor").selectedIndex].text.toLowerCase();
-      document.getElementById("widthSummary").textContent = getCurrentWidth() + " cm";
-      document.getElementById("heightSummary").textContent = document.getElementById("height").value + " cm";
-      document.getElementById("depthSummary").textContent = document.getElementById("depth").value + " cm";
-
-      let shelfCountValue = document.getElementById("shelfCount").value;
-      document.getElementById("shelfCountSummary").textContent = (shelfCountValue=="0") ? "brak półek" : shelfCountValue;
-
-      var heightVal = parseFloat(document.getElementById("height").value);
-      var shelfCountVal = parseInt(document.getElementById("shelfCount").value);
-      var gapText = "";
-      if (shelfCountVal > 0) {
-         var totalThickness = (shelfCountVal + 2) * 1.8; // grubość każdej półki + dolna + górna
-         var freeSpace = heightVal - totalThickness;
-         var gaps = shelfCountVal + 1;
-         gapText = (freeSpace / gaps).toFixed(1) + " cm";
-      } else { 
-         gapText = "brak półek"; 
-      }
-      document.getElementById("gapSummary").textContent = gapText;
-      document.getElementById("gapSummaryDisplay").textContent = gapText;
-
-      // Obliczamy cenę
-      var priceData = computePriceDetailed();
-      if(priceData === null) {
-         document.getElementById("priceSummary").textContent = "N/A";
-      } else {
-         document.getElementById("priceSummary").textContent = priceData.total + " zł";
-      }
-
-      // Ilość sztuk na Allegro
-      if(priceData === null || priceData.total === 0) {
-         document.getElementById("quantitySummary").textContent = "0 szt.";
-      } else {
-         var numericPrice = priceData.total;
-         var quantity = numericPrice;
-         document.getElementById("quantitySummary").textContent = quantity + " szt.";
-      }
-
-      // Rodzaj półki
-      var shelfTypeSelect = document.getElementById("shelfType");
-      var shelfTypeOption = shelfTypeSelect.options[shelfTypeSelect.selectedIndex];
-      document.getElementById("shelfTypeSummary").textContent = shelfTypeOption && shelfTypeOption.value !== ""
-          ? shelfTypeOption.text.toLowerCase()
-          : "nie wybrano";
-
-      // Kod zamówienia i przycisk
-      if(shelfTypeSelect.value !== "" &&
-         document.getElementById("sideColor").value !== "" &&
-         document.getElementById("shelfColor").value !== "" &&
-         document.getElementById("shelfCount").value !== "0") {
-        var code = generateOrderCode();
-        document.getElementById("orderCodeVisible").textContent = code;
-        document.getElementById("orderButtonsContainer").style.display = "block";
-
-        var orderData = {
-          width: document.getElementById("widthSummary").textContent,
-          height: document.getElementById("heightSummary").textContent,
-          depth: document.getElementById("depthSummary").textContent,
-          sideColor: document.getElementById("sideColorSummary").textContent,
-          shelfColor: document.getElementById("shelfColorSummary").textContent,
-          shelfType: document.getElementById("shelfTypeSummary").textContent,
-          shelfCount: document.getElementById("shelfCountSummary").textContent,
-          gap: document.getElementById("gapSummary").textContent,
-          price: document.getElementById("priceSummary").textContent,
-          quantity: document.getElementById("quantitySummary").textContent
-        };
-        // Zapisywanie w localStorage
-        localStorage.setItem("order_" + code, JSON.stringify(orderData));
-      } else {
-        document.getElementById("orderCodeVisible").textContent = "";
-        document.getElementById("orderButtonsContainer").style.display = "none";
       }
     }
 
