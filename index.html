@@ -573,7 +573,7 @@
          document.getElementById("quantitySummary").textContent = "0 szt.";
       } else {
          var numericPrice = priceData.total;
-         var quantity = Math.floor(numericPrice / 25);
+         var quantity = numericPrice;
          document.getElementById("quantitySummary").textContent = quantity + " szt.";
       }
 
