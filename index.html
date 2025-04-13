@@ -133,9 +133,9 @@
     <div class="w-full md:w-2/3 flex flex-col items-center mb-6 md:mb-0 order-3 md:order-2">
       <div id="shelfContainer" style="width:100%; max-width:500px; height:500px;"></div>
       <div class="text-sm text-gray-600 mt-2 text-center">
-  🔄 Obróć lub zbliż model
-</div>
- <div class="p-4 border rounded bg-gray-50 mt-4 w-full max-w-lg">
+        🔄 Obróć lub zbliż model
+      </div>
+      <div class="p-4 border rounded bg-gray-50 mt-4 w-full max-w-lg">
         <h2 class="text-lg font-bold mb-2">✅ Dodaj półki</h2>
         <select id="shelfCount" class="w-full p-2 border rounded"
                 onchange="updatePreview(); updateOrderSummary();">
@@ -273,6 +273,7 @@
       });
     }
 
+    // Cennik
     var pricing = {
       "34": {
         "40": { "10": { "2": 150 }, "15": { "2": 250 } },
@@ -296,6 +297,7 @@
       }
     };
 
+    // Aktualizacja opcji głębokości w zależności od szerokości i wysokości
     function updateDepthOptions() {
       var width = getCurrentWidth();
       var height = document.getElementById("height").value;
@@ -334,7 +336,7 @@
       }
     }
 
-    // Tworzenie sprite'a z tekstem do opisów wymiarów
+    // Tworzenie sprite'a z tekstem (do etykiet wymiarów)
     function makeTextSprite(message, parameters) {
       parameters = parameters || {};
       var fontface = parameters.fontface || "Arial";
@@ -349,17 +351,17 @@
       var textWidth = metrics.width;
       canvas.width = textWidth + borderThickness * 2;
       canvas.height = fontsize * 1.2 + borderThickness * 2;
-      // Tło i ramka
-      context.fillStyle = "rgba(" + backgroundColor.r + "," + backgroundColor.g + "," + backgroundColor.b + "," + backgroundColor.a + ")";
+
+      context.fillStyle = `rgba(${backgroundColor.r},${backgroundColor.g},${backgroundColor.b},${backgroundColor.a})`;
       context.fillRect(0, 0, canvas.width, canvas.height);
-      context.strokeStyle = "rgba(" + borderColor.r + "," + borderColor.g + "," + borderColor.b + "," + borderColor.a + ")";
+      context.strokeStyle = `rgba(${borderColor.r},${borderColor.g},${borderColor.b},${borderColor.a})`;
       context.lineWidth = borderThickness;
       context.strokeRect(0, 0, canvas.width, canvas.height);
-      // Tekst
+
       context.fillStyle = "rgba(0, 0, 0, 1.0)";
       context.font = "bold " + fontsize + "px " + fontface;
       context.fillText(message, borderThickness, fontsize + borderThickness);
-      // Tekstura i sprite
+
       var texture = new THREE.Texture(canvas);
       texture.needsUpdate = true;
       var spriteMaterial = new THREE.SpriteMaterial({ map: texture });
@@ -368,6 +370,7 @@
       return sprite;
     }
 
+    // Obsługa niestandardowej szerokości
     function checkCustomWidth() {
       var widthSelect = document.getElementById("width");
       var customInput = document.getElementById("customWidthInput");
@@ -385,6 +388,7 @@
       }
     }
 
+    // Zwraca aktualną szerokość (uwzględnia niestandardową)
     function getCurrentWidth() {
       var widthSelect = document.getElementById("width");
       if (widthSelect.value === "custom") {
@@ -399,6 +403,8 @@
       var heightVal = document.getElementById("height").value;
       var shelfCountSelect = document.getElementById("shelfCount");
       shelfCountSelect.innerHTML = "";
+
+      // Dostępne ilości półek w zależności od height
       if (heightVal === "40") {
         shelfCountSelect.innerHTML = '<option value="0">brak półek</option><option value="2">2 półki</option>';
       } else if (heightVal === "60") {
@@ -411,26 +417,31 @@
       updateOrderSummary();
     }
 
-    // Zmienne globalne Three.js
+    // --- Three.js: scena, kamera, renderer ---
     let scene, camera, renderer, shelfGroup;
     function init3D() {
       const container = document.getElementById("shelfContainer");
       scene = new THREE.Scene();
       scene.background = new THREE.Color(0xf0f0f0);
+
       camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+      camera.position.set(4, 5, 7);
+
       renderer = new THREE.WebGLRenderer({ antialias: true });
       renderer.setSize(container.clientWidth, container.clientHeight);
       container.appendChild(renderer.domElement);
 
-      // Światło
-      scene.add(new THREE.AmbientLight(0xffffff, 0.8));
-      var directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-      directionalLight.position.set(2, 2, 5).normalize();
+      // Zamiast samego AmbientLight → Hemilight + directional → ale uprośćmy:
+      // Oto HemisphereLight
+      const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 1.0);
+      scene.add(hemiLight);
+
+      // DirectionalLight (trochę mniejsze natężenie)
+      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.6);
+      directionalLight.position.set(4, 8, 3);
       scene.add(directionalLight);
 
-      camera.position.set(4, 5, 7);
-
-      // OrbitControls (opcjonalnie do nawigacji)
+      // OrbitControls
       const controls = new THREE.OrbitControls(camera, renderer.domElement);
       controls.enableDamping = true;
 
@@ -446,30 +457,40 @@
       renderer.render(scene, camera);
     }
 
+    // --- Tworzenie półki i etykiet w scenie
     function updatePreview() {
+      // Usuwamy starą półkę, jeśli istnieje
       if (shelfGroup) { scene.remove(shelfGroup); }
+
+      // Tworzymy grupę
       shelfGroup = new THREE.Group();
       shelfGroup.scale.set(1.2, 1.2, 1.2);
       shelfGroup.position.y = -1;
       scene.add(shelfGroup);
 
-      // Przeliczanie cm → jednostek 3D (1 = 1cm, dzielimy przez 10 żeby były sensowne)
+      // Przeliczanie cm → "jednostki"
       const widthVal  = parseFloat(getCurrentWidth()) / 10;
       const heightVal = parseFloat(document.getElementById("height").value) / 10;
       const depthVal  = parseFloat(document.getElementById("depth").value) / 10;
       const shelfCount = parseInt(document.getElementById("shelfCount").value);
 
-      // Grubość płyty 1,8 cm → 0.18
+      // Grubość płyty
       const boardThickness = 0.18;
-      const materialSolid = new THREE.MeshLambertMaterial({ color: 0x777777 });
 
-      // Dół (dolna płyta)
+      // Używamy materiału standard (PBR) z parametrami:
+      const materialSolid = new THREE.MeshStandardMaterial({
+        color: 0x777777,
+        metalness: 0.0,
+        roughness: 0.6
+      });
+
+      // Dół
       const bottomGeom = new THREE.BoxGeometry(widthVal, boardThickness, depthVal);
       const bottomMesh = new THREE.Mesh(bottomGeom, materialSolid);
       bottomMesh.position.set(0, -heightVal/2 + boardThickness/2, 0);
       shelfGroup.add(bottomMesh);
 
-      // Góra (górna płyta)
+      // Góra
       const topGeom = new THREE.BoxGeometry(widthVal, boardThickness, depthVal);
       const topMesh = new THREE.Mesh(topGeom, materialSolid);
       topMesh.position.set(0, heightVal/2 - boardThickness/2, 0);
@@ -500,22 +521,27 @@
         }
       }
 
-      // Podpisy wymiarów
+      // Podpisy wymiarów (etykiety)
       const offset = 0.5;
+
+      // szerokość
       var widthText = makeTextSprite(getCurrentWidth() + " cm", { fontsize: 32, fontface: "Arial" });
       widthText.position.set(0, heightVal/2 + offset, 0);
       shelfGroup.add(widthText);
+
+      // wysokość
       var heightText = makeTextSprite(document.getElementById("height").value + " cm", { fontsize: 40, fontface: "Arial" });
       heightText.position.set(-widthVal/2 - offset, 0, 0);
       shelfGroup.add(heightText);
+
+      // głębokość
       var depthText = makeTextSprite(document.getElementById("depth").value + " cm", { fontsize: 32, fontface: "Arial" });
       depthText.position.set(widthVal/2 + offset, -heightVal/2, 0);
       shelfGroup.add(depthText);
     }
 
-    // Aktualizacja podsumowania zamówienia – cena, ilość sztuk, kod zamówienia
+    // Obsługa podsumowania zamówienia
     function updateOrderSummary() {
-      // Aktualizacja wartości tekstowych
       document.getElementById("sideColorSummary").textContent =
          document.getElementById("sideColor").options[document.getElementById("sideColor").selectedIndex].text.toLowerCase();
       document.getElementById("shelfColorSummary").textContent =
@@ -525,14 +551,13 @@
       document.getElementById("depthSummary").textContent = document.getElementById("depth").value + " cm";
 
       let shelfCountValue = document.getElementById("shelfCount").value;
-      document.getElementById("shelfCountSummary").textContent = (shelfCountValue == "0") ? "brak półek" : shelfCountValue;
+      document.getElementById("shelfCountSummary").textContent = (shelfCountValue === "0") ? "brak półek" : shelfCountValue;
 
-      // Obliczanie przerwy między półkami
       var heightVal = parseFloat(document.getElementById("height").value);
       var shelfCountVal = parseInt(document.getElementById("shelfCount").value);
       var gapText = "";
       if (shelfCountVal > 0) {
-         var totalThickness = (shelfCountVal + 2) * 1.8; // grubość półek + dół + góra
+         var totalThickness = (shelfCountVal + 2) * 1.8;
          var freeSpace = heightVal - totalThickness;
          var gaps = shelfCountVal + 1;
          gapText = (freeSpace / gaps).toFixed(1) + " cm";
@@ -542,29 +567,24 @@
       document.getElementById("gapSummary").textContent = gapText;
       document.getElementById("gapSummaryDisplay").textContent = gapText;
 
-      // Sprawdzenie czy wymagane pola są wypełnione
       if (
         document.getElementById("shelfType").value === "" ||
         document.getElementById("sideColor").value === "" ||
         document.getElementById("shelfColor").value === "" ||
         document.getElementById("shelfCount").value === "0"
       ) {
-        // Jeśli nie – czyścimy pola cenowe oraz ukrywamy przycisk zamówienia
+        // Brak wszystkich parametrów → czyścimy cenę, ukrywamy przyciski, usuwamy animację glow
         document.getElementById("priceSummary").textContent = "";
         document.getElementById("quantitySummary").textContent = "";
         document.getElementById("orderCodeVisible").textContent = "";
         document.getElementById("orderButtonsContainer").style.display = "none";
-        // Usuwamy ewentualną animację glow
         document.getElementById("orderCodeWindow").classList.remove("glow-animation");
-        // Pokazujemy komunikat przy cenie
         document.getElementById("priceHint").style.display = "block";
         return;
       }
-      
-      // Jeśli wszystkie dane są uzupełnione – ukrywamy komunikat przy cenie
-      document.getElementById("priceHint").style.display = "none";
 
-      // Obliczamy cenę zamówienia
+      // Inaczej → pokazujemy cenę, generujemy kod
+      document.getElementById("priceHint").style.display = "none";
       var priceData = computePriceDetailed();
       if(priceData === null) {
          document.getElementById("priceSummary").textContent = "N/A";
@@ -572,27 +592,20 @@
          document.getElementById("priceSummary").textContent = priceData.total + " zł";
       }
 
-      // Liczba sztuk – przyjmujemy 1 zł = 1 sztuka
       var numericPrice = (priceData && priceData.total) ? priceData.total : 0;
       document.getElementById("quantitySummary").textContent = numericPrice + " szt.";
 
-      // Uaktualnienie opisu rodzaju półki
       var shelfTypeSelect = document.getElementById("shelfType");
       var shelfTypeOption = shelfTypeSelect.options[shelfTypeSelect.selectedIndex];
       document.getElementById("shelfTypeSummary").textContent =
           (shelfTypeOption && shelfTypeOption.value !== "") ? shelfTypeOption.text.toLowerCase() : "nie wybrano";
 
-      // Generacja kodu zamówienia
       var code = generateOrderCode();
       document.getElementById("orderCodeVisible").textContent = code;
-
-      // Pokazujemy przyciski Zamów na Allegro
       document.getElementById("orderButtonsContainer").style.display = "block";
-
-      // Dodajemy animację glow – bo wszystkie dane są uzupełnione
       document.getElementById("orderCodeWindow").classList.add("glow-animation");
-
-      // Zapisanie danych zamówienia w localStorage (opcjonalnie)
+      
+      // Zapis w localStorage (opcjonalny)
       var orderData = {
         width: document.getElementById("widthSummary").textContent,
         height: document.getElementById("heightSummary").textContent,
@@ -608,6 +621,7 @@
       localStorage.setItem("order_" + code, JSON.stringify(orderData));
     }
 
+    // Obliczanie ceny na podstawie pricing
     function computePriceDetailed() {
       var height = document.getElementById("height").value;
       var depth = document.getElementById("depth").value;
@@ -622,12 +636,14 @@
         else if (customWidth < 47) { standardWidth = "44"; }
         else if (customWidth < 54) { standardWidth = "50"; }
         else { standardWidth = "60"; }
+
         if (pricing[standardWidth] && pricing[standardWidth][height] &&
             pricing[standardWidth][height][depth] && pricing[standardWidth][height][depth][shelfCount]) {
           var basePrice = pricing[standardWidth][height][depth][shelfCount];
           var extra = 50;
           return { base: basePrice, extra: extra, total: basePrice + extra };
         } else { return null; }
+
       } else {
         var width = getCurrentWidth();
         if (pricing[width] && pricing[width][height] &&
@@ -638,6 +654,7 @@
       }
     }
 
+    // Podgląd zamówienia po wpisaniu kodu (opcjonalne)
     function checkOrder() {
       var inputCode = document.getElementById("orderCodeInput").value.trim();
       var orderJSON = localStorage.getItem("order_" + inputCode);
@@ -666,7 +683,7 @@
     // Inicjalizacja przy ładowaniu strony
     window.onload = function() {
       updateDepthOptions();
-      init3D();
+      init3D();           // Startujemy Three.js
       updateShelfCountOptions();
     };
   </script>
