@@ -29,6 +29,16 @@
     .shimmer {
       animation: shimmer 2s infinite;
     }
+
+    /* Animacja Rozświetlenia (Glow Animation) */
+    @keyframes glow {
+      0% { box-shadow: 0 0 5px rgba(255, 255, 255, 0.5); }
+      50% { box-shadow: 0 0 20px rgba(255, 255, 255, 1); }
+      100% { box-shadow: 0 0 5px rgba(255, 255, 255, 0.5); }
+    }
+    .glow-animation {
+      animation: glow 2s infinite ease-in-out;
+    }
   </style>
 </head>
 <body class="flex flex-col justify-center items-center min-h-screen bg-gray-100">
@@ -200,7 +210,7 @@
             <span class="text-red-600 font-bold text-2xl" id="priceSummary"></span>
           </p>
           <!-- Komunikat pomocniczy obok ceny -->
-          <small id="priceHint" class="text-gray-600 text-xs">wybierz wszystkie parametry półki aby zobaczyć cenę</small>
+          <small id="priceHint" class="text-gray-600 text-xs">wybierz wszystkie parametry półki aby zobaczyć cenę i kod zamówienia</small>
           <p class="text-base md:text-sm">
             <strong>Zamów na Allegro:</strong>
             <span class="text-red-600 font-bold" id="quantitySummary"></span>
@@ -213,6 +223,7 @@
           </div>
         </div>
       </div>
+
       <!-- Kod zamówienia -->
       <div id="orderCodeWindow" class="w-full p-2 border-2 border-blue-500 rounded bg-blue-500 text-center font-bold text-lg text-white">
         Kod zamówienia: <span id="orderCodeVisible"></span>
@@ -540,6 +551,8 @@
         document.getElementById("quantitySummary").textContent = "";
         document.getElementById("orderCodeVisible").textContent = "";
         document.getElementById("orderButtonsContainer").style.display = "none";
+        // Usuwamy ewentualną animację glow
+        document.getElementById("orderCodeWindow").classList.remove("glow-animation");
         // Pokazujemy komunikat przy cenie
         document.getElementById("priceHint").style.display = "block";
         return;
@@ -566,10 +579,15 @@
       document.getElementById("shelfTypeSummary").textContent =
           (shelfTypeOption && shelfTypeOption.value !== "") ? shelfTypeOption.text.toLowerCase() : "nie wybrano";
 
-      // Generacja kodu zamówienia i wyświetlenie przycisku
+      // Generacja kodu zamówienia
       var code = generateOrderCode();
       document.getElementById("orderCodeVisible").textContent = code;
+
+      // Pokazujemy przyciski Zamów na Allegro
       document.getElementById("orderButtonsContainer").style.display = "block";
+
+      // Dodajemy animację glow – bo wszystkie dane są uzupełnione
+      document.getElementById("orderCodeWindow").classList.add("glow-animation");
 
       // Zapisanie danych zamówienia w localStorage (opcjonalnie)
       var orderData = {
