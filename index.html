@@ -6,7 +6,7 @@
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-DNBGJLP2FN"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
+    function gtag(){dataLayer.push(arguments);} 
     gtag('js', new Date());
     gtag('config', 'G-DNBGJLP2FN');
   </script>
@@ -14,113 +14,81 @@
   <meta name="viewport" content="width=1024, initial-scale=1.0">
   <title>Konfigurator Półki</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Używamy Three.js w wersji r128 – dla OrbitControls -->
+  <!-- Three.js i OrbitControls -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
   <style>
     .order-summary { }
     ul.list-none { list-style-type: none; }
-    /* Animacja mignięcia dla przycisków */
-    @keyframes shimmer {
-      0% { opacity: 0.8; }
-      50% { opacity: 1; }
-      100% { opacity: 0.8; }
-    }
-    .shimmer {
-      animation: shimmer 2s infinite;
-    }
-
-    /* Animacja Rozświetlenia (Glow Animation) */
-    @keyframes glow {
-      0% { box-shadow: 0 0 5px rgba(255, 255, 255, 0.5); }
-      50% { box-shadow: 0 0 20px rgba(255, 255, 255, 1); }
-      100% { box-shadow: 0 0 5px rgba(255, 255, 255, 0.5); }
-    }
-    .glow-animation {
-      animation: glow 2s infinite ease-in-out;
-    }
+    @keyframes shimmer { 0% {opacity:.8;} 50% {opacity:1;} 100% {opacity:.8;} }
+    .shimmer { animation: shimmer 2s infinite; }
+    @keyframes glow { 0% {box-shadow:0 0 5px rgba(255,255,255,.5);} 50% {box-shadow:0 0 20px rgba(255,255,255,1);} 100% {box-shadow:0 0 5px rgba(255,255,255,.5);} }
+    .glow-animation { animation: glow 2s infinite ease-in-out; }
   </style>
 </head>
 <body class="flex flex-col justify-center items-center min-h-screen bg-gray-100">
-  <!-- Blok instrukcji "Jak zamówić?" widoczny tylko na urządzeniach mobilnych -->
+  <!-- Blok instrukcji "Jak zamówić?" mobile -->
   <div class="w-full p-4 bg-gray-50 border rounded mb-4 md:hidden">
     <h2 class="text-lg font-bold text-black mb-4">Jak zamówić?</h2>
     <ul class="list-none ml-6 space-y-2">
       <li>👉 Wybierz wymiary, kolory, dodaj półki i wybierz rodzaj półki</li>
       <li>📋 Sprawdź i kliknij Zapisz i zamów na Allegro.</li>
       <li>🔢 Skopiuj kod zamówienia.</li>
-      <li>🛒 Przejdź na aukcję na Allegro, wybierz ilość odpowiadającą kwocie zamówienia. (np. jeśli cena wynosi 200 zł, kup 200 szt. — 1 szt. = 1 zł)</li>
-      <li>✍️ W formularzu dostawa i płatność w polu „Uwagi do zakupu” wklej kod zamówienia.</li>
+      <li>🛒 Przejdź na aukcję na Allegro, wybierz ilość odpowiadającą kwocie zamówienia (1 szt. = 1 zł)</li>
+      <li>✍️ W polu „Uwagi do zakupu” wklej kod zamówienia.</li>
       <li>💳 Opłać zamówienie i czekaj na dostawę!</li>
     </ul>
   </div>
 
-  <!-- Główny kontener – na desktopie trzy kolumny (md:flex-row), na mobilu jedna kolumna (flex-col) -->
+  <!-- GŁÓWNY KONTENER -->
   <div class="p-6 bg-white shadow-lg rounded-lg flex flex-col md:flex-row md:space-x-6 w-full max-w-7xl">
-    <!-- Kolumna 1: Konfigurator (wybór parametrów, bez wyboru liczby półek) -->
+    <!-- KOLUMNA 1: Konfigurator -->
     <div class="w-full md:w-1/3 space-y-6 mb-6 md:mb-0 order-2 md:order-1">
-      <!-- Blok wyboru rodzaju półki -->
+      <!-- Rodzaj półki -->
       <div class="p-4 border rounded bg-gray-50">
-        <h2 class="text-lg font-bold mb-2 flex items-center">
-          <span class="text-green-600 mr-2">✅</span>Rodzaj półki
-        </h2>
-        <select id="shelfType" class="w-full p-2 border rounded" onchange="updateOrderSummary();">
+        <h2 class="text-lg font-bold mb-2 flex items-center"><span class="text-green-600 mr-2">✅</span>Rodzaj półki</h2>
+        <select id="shelfType" class="w-full p-2 border rounded" onchange="updateShelfTypeOptions(); updateOrderSummary();">
           <option value="">Nie wybrano</option>
           <option value="standing">Stojąca na blacie</option>
           <option value="hanging">Wisząca</option>
         </select>
+        <div id="shelfTypeOptions" style="display:none; margin-top:1rem;"></div>
       </div>
-
+      <!-- Wymiary -->
       <div class="p-4 border rounded bg-gray-50">
         <h2 class="text-lg font-bold mb-2">✅ Wybierz wymiary</h2>
         <label class="block font-medium">Szerokość:</label>
-        <select id="width" class="w-full p-2 border rounded"
-                onchange="checkCustomWidth(); updateShelfCountOptions(); updateDepthOptions(); updatePreview(); updateOrderSummary();">
+        <select id="width" class="w-full p-2 border rounded" onchange="checkCustomWidth(); updateShelfCountOptions(); updateDepthOptions(); updatePreview(); updateOrderSummary();">
           <option value="34">34 cm</option>
           <option value="44">44 cm</option>
           <option value="50">50 cm</option>
           <option value="60">60 cm</option>
           <option value="custom">Niestandardowa szerokość</option>
         </select>
-        <!-- Suwak dla niestandardowej szerokości -->
-        <input type="range" id="customWidthInput" min="35" max="59" step="1" value="35"
-               style="display:none; margin-top:0.5rem; width:100%;"
-               oninput="
-                 if(this.value == 44){ this.value = 45; }
-                 document.getElementById('customWidthDisplay').textContent = this.value + ' cm';
-                 updateShelfCountOptions(); updateDepthOptions(); updatePreview(); updateOrderSummary();
-               ">
-        <span id="customWidthDisplay" style="display:none; font-weight:bold;"></span>
-        <!-- Tekst dopłaty na czerwono -->
-        <small id="customWidthFee" style="display:none; font-size:0.8rem; color:red;">dopłata +50 zł</small>
-
+        <input type="range" id="customWidthInput" min="35" max="59" step="1" value="35" style="display:none;margin-top:.5rem;width:100%;" oninput="if(this.value==44){this.value=45;}document.getElementById('customWidthDisplay').textContent=this.value+' cm';updateShelfCountOptions();updateDepthOptions();updatePreview();updateOrderSummary();">
+        <span id="customWidthDisplay" style="display:none;font-weight:bold;"></span>
+        <small id="customWidthFee" style="display:none;font-size:.8rem;color:red;">dopłata +50 zł</small>
         <label class="block font-medium mt-4">Wysokość:</label>
-        <select id="height" class="w-full p-2 border rounded"
-                onchange="updateShelfCountOptions(); updateDepthOptions(); updatePreview(); updateOrderSummary();">
+        <select id="height" class="w-full p-2 border rounded" onchange="updateShelfCountOptions(); updateDepthOptions(); updatePreview(); updateOrderSummary();">
           <option value="40">40 cm</option>
           <option value="60">60 cm</option>
           <option value="80">80 cm</option>
         </select>
-
         <label class="block font-medium mt-4">Głębokość:</label>
-        <select id="depth" class="w-full p-2 border rounded"
-                onchange="updatePreview(); updateOrderSummary();">
-        </select>
+        <select id="depth" class="w-full p-2 border rounded" onchange="updatePreview(); updateOrderSummary();"></select>
       </div>
-      <!-- Wybierz kolor -->
+      <!-- Kolory -->
       <div class="p-4 border rounded bg-gray-50 space-y-4">
         <h2 class="text-lg font-bold mb-2">✅ Wybierz kolor</h2>
         <label class="block font-medium">Kolor boków:</label>
-        <select id="sideColor" class="w-full p-2 border rounded"
-                onchange="updateOrderSummary(); updatePreview();">
+        <select id="sideColor" class="w-full p-2 border rounded" onchange="updateOrderSummary(); updatePreview();">
           <option value="">Nie wybrano</option>
           <option value="#8B5A2B">Dąb Craft Złoty</option>
           <option value="#FFFFFF">Biały matowy</option>
           <option value="#000000">Czarny matowy</option>
         </select>
         <label class="block font-medium">Kolor półek i podstaw:</label>
-        <select id="shelfColor" class="w-full p-2 border rounded"
-                onchange="updateOrderSummary(); updatePreview();">
+        <select id="shelfColor" class="w-full p-2 border rounded" onchange="updateOrderSummary(); updatePreview();">
           <option value="">Nie wybrano</option>
           <option value="#8B5A2B">Dąb Craft Złoty</option>
           <option value="#FFFFFF">Biały matowy</option>
@@ -129,599 +97,144 @@
       </div>
     </div>
 
-    <!-- Kolumna 2: Widok 3D + wybór liczby półek -->
+    <!-- KOLUMNA 2: Widok 3D -->
     <div class="w-full md:w-2/3 flex flex-col items-center mb-6 md:mb-0 order-3 md:order-2">
-      <div id="shelfContainer" style="width:100%; max-width:500px; height:500px;"></div>
-      <div class="text-sm text-gray-600 mt-2 text-center">
-        🔄 Obróć lub zbliż model
-      </div>
+      <div id="shelfContainer" style="width:100%;max-width:500px;height:500px;"></div>
+      <div class="text-sm text-gray-600 mt-2 text-center">🔄 Obróć lub zbliż model</div>
       <div class="p-4 border rounded bg-gray-50 mt-4 w-full max-w-lg">
         <h2 class="text-lg font-bold mb-2">✅ Dodaj półki</h2>
-        <select id="shelfCount" class="w-full p-2 border rounded"
-                onchange="updatePreview(); updateOrderSummary();">
-          <!-- Opcje generowane dynamicznie w JS -->
-        </select>
-        <p id="gapDisplay" class="mt-2 text-sm text-gray-600 font-bold">
-          Przestrzeń pomiędzy półkami: <span id="gapSummaryDisplay"></span>
-        </p>
+        <select id="shelfCount" class="w-full p-2 border rounded" onchange="updatePreview(); updateOrderSummary();"></select>
+        <p id="gapDisplay" class="mt-2 text-sm text-gray-600 font-bold">Przestrzeń pomiędzy półkami: <span id="gapSummaryDisplay"></span></p>
       </div>
-      <!-- Instrukcje dla desktopu -->
+      <!-- Instrukcje desktop -->
       <div class="p-4 border rounded bg-gray-50 mt-4 w-full max-w-lg hidden md:block">
         <h2 class="text-lg font-bold text-black mb-4">Jak zamówić?</h2>
         <ul class="list-none ml-6 space-y-2">
           <li>👉 Wybierz rodzaj półki, wymiary, kolory i dodaj półki.</li>
-          <li>📋 Sprawdź podsumowanie zamówienia i skopiuj kod zamówienia.</li>
-          <li>🛒 Przejdź na aukcję na Allegro, wybierz ilość odpowiadającą kwocie zamówienia.
-            (np. jeśli cena wynosi 200 zł, kup 200 szt. — 1 szt. = 1 zł)</li>
-          <li>✍️ W formularzu dostawa i płatność w polu „Uwagi do zakupu” wklej kod zamówienia.</li>
-          <li>💳 Opłać aukcję na Allegro i czekaj na dostawę!</li>
+          <li>📋 Skopiuj kod zamówienia z podsumowania.</li>
+          <li>🛒 Kup na Allegro liczbę sztuk równą cenie (1 zł = 1 szt.).</li>
+          <li>✍️ W „Uwagi do zakupu” wklej kod zamówienia.</li>
         </ul>
       </div>
     </div>
 
-    <!-- Kolumna 3: Podsumowanie zamówienia -->
+    <!-- KOLUMNA 3: Podsumowanie -->
     <div class="w-full md:w-1/3 p-4 bg-gray-50 border rounded space-y-4 order-4 md:order-3">
       <div class="order-summary bg-white shadow-md rounded p-4">
         <h2 class="text-lg font-bold mb-3">📋 Podsumowanie Zamówienia</h2>
         <ul class="divide-y divide-gray-200 text-base md:text-sm">
-          <li class="py-1 flex justify-between">
-            <span class="font-medium">Szerokość:</span>
-            <span id="widthSummary">34 cm</span>
-          </li>
-          <li class="py-1 flex justify-between">
-            <span class="font-medium">Wysokość:</span>
-            <span id="heightSummary">40 cm</span>
-          </li>
-          <li class="py-1 flex justify-between">
-            <span class="font-medium">Głębokość:</span>
-            <span id="depthSummary">10 cm</span>
-          </li>
-          <li class="py-1 flex justify-between">
-            <span class="font-medium">Kolor boków:</span>
-            <span id="sideColorSummary">nie wybrano</span>
-          </li>
-          <li class="py-1 flex justify-between">
-            <span class="font-medium">Kolor półek i podstaw:</span>
-            <span id="shelfColorSummary">nie wybrano</span>
-          </li>
-          <li class="py-1 flex justify-between">
-            <span class="font-medium">Ilość półek:</span>
-            <span id="shelfCountSummary">brak półek</span>
-          </li>
-          <li class="py-1 flex justify-between">
-            <span class="font-medium">Rodzaj półki:</span>
-            <span id="shelfTypeSummary">nie wybrano</span>
-          </li>
-          <li class="py-1 flex justify-between">
-            <span class="font-medium">Przestrzeń pomiędzy półkami:</span>
-            <span id="gapSummary">brak półek</span>
-          </li>
-          <li class="py-1 flex justify-between">
-            <span class="font-medium">Materiał:</span>
-            <span>płyta laminowana gr. 1,8cm</span>
-          </li>
-          <li class="py-1 flex justify-between">
-            <span class="font-medium">Termin realizacji:</span>
-            <span>5-7 dni roboczych</span>
-          </li>
+          <li class="py-1 flex justify-between"><span class="font-medium">Szerokość:</span><span id="widthSummary">34 cm</span></li>
+          <li class="py-1 flex justify-between"><span class="font-medium">Wysokość:</span><span id="heightSummary">40 cm</span></li>
+          <li class="py-1 flex justify-between"><span class="font-medium">Głębokość:</span><span id="depthSummary">10 cm</span></li>
+          <li class="py-1 flex justify-between"><span class="font-medium">Kolor boków:</span><span id="sideColorSummary">nie wybrano</span></li>
+          <li class="py-1 flex justify-between"><span class="font-medium">Kolor półek i podstaw:</span><span id="shelfColorSummary">nie wybrano</span></li>
+          <li class="py-1 flex justify-between"><span class="font-medium">Ilość półek:</span><span id="shelfCountSummary">brak półek</span></li>
+          <li class="py-1 flex justify-between"><span class="font-medium">Rodzaj półki:</span><span id="shelfTypeSummary">nie wybrano</span></li>
+          <li class="py-1 flex justify-between"><span class="font-medium">Przestrzeń pomiędzy półkami:</span><span id="gapSummary">brak półek</span></li>
+          <li class="py-1 flex justify-between"><span class="font-medium">Opcje dodatkowe:</span><span id="extraOptionsSummary">–</span></li>
+          <li class="py-1 flex justify-between"><span class="font-medium">Materiał:</span><span>płyta laminowana gr. 1,8 cm</span></li>
+          <li class="py-1 flex justify-between"><span class="font-medium">Termin realizacji:</span><span>5‑7&nbsp;dni roboczych</span></li>
         </ul>
-
-        <!-- Sekcja ceny i ilości do zamówienia – widoczna tylko gdy wszystkie dane są podane -->
+        <!-- Cena & Allegro -->
         <div class="mt-4 p-3 border-t flex flex-col items-start space-y-3" id="finalOrderSummary">
-          <p class="text-base md:text-sm">
-            <strong>Cena:</strong>
-            <span class="text-red-600 font-bold text-2xl" id="priceSummary"></span>
-          </p>
-          <!-- Komunikat pomocniczy obok ceny -->
-          <small id="priceHint" class="text-gray-600 text-xs">wybierz wszystkie parametry półki aby zobaczyć cenę i kod zamówienia</small>
-          <p class="text-base md:text-sm">
-            <strong>Zamów na Allegro:</strong>
-            <span class="text-red-600 font-bold" id="quantitySummary"></span>
-          </p>
-          <!-- Przyciski (kopiowanie i przejście na Allegro) -->
+          <p class="text-base md:text-sm"><strong>Cena:</strong> <span class="text-red-600 font-bold text-2xl" id="priceSummary"></span></p>
+          <small id="priceHint" class="text-gray-600 text-xs">wybierz wszystkie parametry półki, aby zobaczyć cenę i kod zamówienia</small>
+          <p class="text-base md:text-sm"><strong>Zamów na Allegro:</strong> <span class="text-red-600 font-bold" id="quantitySummary"></span></p>
           <div id="orderButtonsContainer" style="display:none;">
-            <button onclick="copyOrderSummary()" class="mt-2 px-4 py-2 bg-orange-600 text-white rounded text-lg shimmer">
-              Zamów na Allegro
-            </button>
+            <button onclick="copyOrderSummary()" class="mt-2 px-4 py-2 bg-orange-600 text-white rounded text-lg shimmer">Zamów na Allegro</button>
           </div>
         </div>
       </div>
-
-      <!-- Kod zamówienia -->
-      <div id="orderCodeWindow" class="w-full p-2 border-2 border-blue-500 rounded bg-blue-500 text-center font-bold text-lg text-white">
-        Kod zamówienia: <span id="orderCodeVisible"></span>
-      </div>
+      <!-- Kod -->
+      <div id="orderCodeWindow" class="w-full p-2 border-2 border-blue-500 rounded bg-blue-500 text-center font-bold text-lg text-white">Kod zamówienia: <span id="orderCodeVisible"></span></div>
     </div>
   </div>
 
+  <!-- ***** SCRIPTY JS ***** -->
   <script>
-    // Funkcja haszująca napis dla wygenerowania unikalnego kodu
-    function hashString(str) {
-      var hash = 0;
-      if (str.length === 0) return hash;
-      for (var i = 0; i < str.length; i++) {
-        var char = str.charCodeAt(i);
-        hash = ((hash << 5) - hash) + char;
-        hash |= 0;
-      }
-      return hash;
+    // Hash do kodu zamówienia
+    function hashString(str){var hash=0;if(str.length===0)return hash;for(var i=0;i<str.length;i++){var chr=str.charCodeAt(i);hash=((hash<<5)-hash)+chr;hash|=0;}return hash;}
+    // Parametry -> kod zam.
+    function generateOrderCode(){
+      const sideColorOption=document.getElementById("sideColor").options[document.getElementById("sideColor").selectedIndex].text.toLowerCase();
+      const shelfColorOption=document.getElementById("shelfColor").options[document.getElementById("shelfColor").selectedIndex].text.toLowerCase();
+      const shelfTypeVal=document.getElementById("shelfType").value;
+      let shelfTypeText=shelfTypeVal==="standing"?"stojąca na blacie":shelfTypeVal==="hanging"?"wisząca":"nie wybrano";
+      const opts=[];
+      if(document.getElementById("noTopShelf")?.checked){opts.push("bez górnej półki");}
+      if(shelfTypeVal==="standing"&&document.getElementById("noBottomShelf")?.checked){opts.push("bez dolnej półki");}
+      const optsStr=opts.length?opts.join(" / "):"-";
+      const params=[getCurrentWidth(),document.getElementById("height").value,document.getElementById("depth").value,document.getElementById("shelfCount").value,sideColorOption,shelfColorOption,shelfTypeText,optsStr].join("_");
+      return Math.abs(hashString(params)).toString(36);
     }
 
-    function generateOrderCode() {
-      var params = getCurrentWidth() + "_" +
-                   document.getElementById("height").value + "_" +
-                   document.getElementById("depth").value + "_" +
-                   document.getElementById("shelfCount").value + "_" +
-                   document.getElementById("sideColor").value + "_" +
-                   document.getElementById("shelfColor").value + "_" +
-                   document.getElementById("shelfType").value;
-      var hash = hashString(params);
-      return Math.abs(hash).toString(36);
-    }
+    function copyOrderSummary(){const code=document.getElementById("orderCodeVisible").textContent;const price=document.getElementById("priceSummary").textContent;navigator.clipboard.writeText(code).then(()=>{alert(`✅ Gotowe!\n🔄 Wróć teraz na Allegro i zamów na kwotę ${price}\n📋 W „Uwagi do zakupu” wklej kod zamówienia`);window.location.href="https://allegro.pl/oferta/zaprojektuj-wlasna-polke-podaj-wymiar-i-wybierz-kolory-do-kuchni-pokoju-17253898746";});}
 
-    // Funkcja kopiująca tylko kod zamówienia
-    function copyOrderSummary() {
-      var orderCode = document.getElementById("orderCodeVisible").textContent;
-      var priceText = document.getElementById("priceSummary").textContent;
-      navigator.clipboard.writeText(orderCode).then(function() {
-        alert("✅ Gotowe!\n" +
-              "🔄 Wróć teraz na Allegro i zamów na kwotę " + priceText + "\n" +
-              "📋 W formularzu dostawa i płatność w polu „Uwagi do zakupu” wklej kod zamówienia");
-        window.location.href = "https://allegro.pl/oferta/zaprojektuj-wlasna-polke-podaj-wymiar-i-wybierz-kolory-do-kuchni-pokoju-17253898746";
-      }, function(err) {
-        alert('Wystąpił błąd podczas kopiowania: ' + err);
-      });
-    }
+    /* ---------- CENNIK ---------- */
+    const pricing={"34":{"40":{"10":{"2":150},"15":{"2":250}},"60":{"10":{"2":175,"3":200},"15":{"2":275,"3":300}},"80":{"10":{"2":200,"3":225,"4":250,"5":279},"15":{"2":300,"3":325,"4":350,"5":379}}},"44":{"40":{"10":{"2":169},"15":{"2":269}},"60":{"10":{"2":179,"3":189},"15":{"2":279,"3":289}},"80":{"10":{"2":200,"3":250,"4":275,"5":299},"15":{"2":300,"3":350,"4":375,"5":399}}},"50":{"40":{"10":{"2":179},"15":{"2":279}},"60":{"10":{"2":189,"3":199},"15":{"2":289,"3":299}},"80":{"10":{"2":250,"3":250,"4":300,"5":329}}},"60":{"40":{"10":{"2":179},"15":{"2":279}},"60":{"10":{"2":209,"3":219},"15":{"2":309,"3":319}},"80":{"10":{"2":250,"3":275,"4":325,"5":319}}}};
 
-    // Cennik
-    var pricing = {
-      "34": {
-        "40": { "10": { "2": 150 }, "15": { "2": 250 } },
-        "60": { "10": { "2": 175, "3": 200 }, "15": { "2": 275, "3": 300 } },
-        "80": { "10": { "2": 200, "3": 225, "4": 250, "5": 275 }, "15": { "2": 300, "3": 325, "4": 350, "5": 375 } }
-      },
-      "44": {
-        "40": { "10": { "2": 175 }, "15": { "2": 275 } },
-        "60": { "10": { "2": 175, "3": 200 }, "15": { "2": 275, "3": 300 } },
-        "80": { "10": { "2": 200, "3": 250, "4": 275, "5": 300 }, "15": { "2": 300, "3": 350, "4": 375, "5": 400 } }
-      },
-      "50": {
-        "40": { "10": { "2": 175 }, "15": { "2": 275 } },
-        "60": { "10": { "2": 225, "3": 250 }, "15": { "2": 325, "3": 350 } },
-        "80": { "10": { "2": 250, "3": 250, "4": 300, "5": 325 } }
-      },
-      "60": {
-        "40": { "10": { "2": 175 }, "15": { "2": 275 } },
-        "60": { "10": { "2": 250, "3": 250 }, "15": { "2": 350, "3": 375 } },
-        "80": { "10": { "2": 250, "3": 275, "4": 325, "5": 350 } }
-      }
-    };
+    /* ---------- DYNAMICZNE OPCJE GŁĘBOKOŚCI ---------- */
+    function updateDepthOptions(){const width=getCurrentWidth();const height=document.getElementById("height").value;const depthSel=document.getElementById("depth");depthSel.innerHTML="<option value=\"10\">10 cm</option>";let allow15=false;if(document.getElementById("width").value==="custom"){const cw=parseFloat(document.getElementById("customWidthInput").value)||35;const std=cw<39?"34":cw<47?"44":cw<54?"50":"60";if(["34","44"].includes(std)||(std==="50"&&["40","60"].includes(height))||(std==="60"&&["40","60"].includes(height))){allow15=true;}}
+      else{if(["34","44"].includes(width)||(width==="50"&&["40","60"].includes(height))||(width==="60"&&["40","60"].includes(height))){allow15=true;}}
+      if(allow15){depthSel.innerHTML+='<option value="15">15 cm</option>';}
+      if(!["10","15"].includes(depthSel.value)){depthSel.value="10";}}
 
-    // Aktualizacja opcji głębokości w zależności od szerokości i wysokości
-    function updateDepthOptions() {
-      var width = getCurrentWidth();
-      var height = document.getElementById("height").value;
-      var depthSelect = document.getElementById("depth");
-      depthSelect.innerHTML = "";
-      depthSelect.innerHTML += '<option value="10">10 cm</option>';
-      var allow15 = false;
-      if (document.getElementById("width").value === "custom") {
-        var customWidthVal = parseFloat(document.getElementById("customWidthInput").value) || 35;
-        var standardWidth;
-        if (customWidthVal < 39) { standardWidth = "34"; }
-        else if (customWidthVal < 47) { standardWidth = "44"; }
-        else if (customWidthVal < 54) { standardWidth = "50"; }
-        else { standardWidth = "60"; }
-        if (standardWidth === "34" || standardWidth === "44") {
-          allow15 = true;
-        } else if (standardWidth === "50" && (height === "40" || height === "60")) {
-          allow15 = true;
-        } else if (standardWidth === "60" && (height === "40" || height === "60")) {
-          allow15 = true;
-        }
-      } else {
-        if (width === "34" || width === "44") {
-          allow15 = true;
-        } else if (width === "50" && (height === "40" || height === "60")) {
-          allow15 = true;
-        } else if (width === "60" && (height === "40" || height === "60")) {
-          allow15 = true;
-        }
-      }
-      if (allow15) {
-        depthSelect.innerHTML += '<option value="15">15 cm</option>';
-      }
-      if (depthSelect.value !== "10" && depthSelect.value !== "15") {
-        depthSelect.value = "10";
-      }
-    }
+    /* ---------- CHECK CUSTOM WIDTH ---------- */
+    function checkCustomWidth(){const sel=document.getElementById("width");const input=document.getElementById("customWidthInput");const disp=document.getElementById("customWidthDisplay");const fee=document.getElementById("customWidthFee");if(sel.value==="custom"){input.style.display=disp.style.display=fee.style.display="block";disp.textContent=input.value+" cm";}else{input.style.display=disp.style.display=fee.style.display="none";}}
+    function getCurrentWidth(){return document.getElementById("width").value==="custom"?(document.getElementById("customWidthInput").value||35):document.getElementById("width").value;}
 
-    // Tworzenie sprite'a z tekstem (do etykiet wymiarów)
-    function makeTextSprite(message, parameters) {
-      parameters = parameters || {};
-      var fontface = parameters.fontface || "Arial";
-      var fontsize = parameters.fontsize || 64;
-      var borderThickness = parameters.borderThickness || 4;
-      var borderColor = parameters.borderColor || { r: 0, g: 0, b: 0, a: 1.0 };
-      var backgroundColor = parameters.backgroundColor || { r: 255, g: 255, b: 255, a: 1.0 };
-      var canvas = document.createElement("canvas");
-      var context = canvas.getContext("2d");
-      context.font = "bold " + fontsize + "px " + fontface;
-      var metrics = context.measureText(message);
-      var textWidth = metrics.width;
-      canvas.width = textWidth + borderThickness * 2;
-      canvas.height = fontsize * 1.2 + borderThickness * 2;
+    /* ---------- OPCJE ILOŚCI PÓŁEK ---------- */
+    function updateShelfCountOptions(){const h=document.getElementById("height").value;const sel=document.getElementById("shelfCount");sel.innerHTML="";if(h==="40"){sel.innerHTML='<option value="0">brak półek</option><option value="2">2 półki</option>';}else if(h==="60"){sel.innerHTML='<option value="0">brak półek</option><option value="2">2 półki</option><option value="3">3 półki</option>';}else{sel.innerHTML='<option value="0">brak półek</option><option value="2">2 półki</option><option value="3">3 półki</option><option value="4">4 półki</option><option value="5">5 półek</option>';}
+      sel.value="0";updatePreview();updateOrderSummary();}
 
-      context.fillStyle = `rgba(${backgroundColor.r},${backgroundColor.g},${backgroundColor.b},${backgroundColor.a})`;
-      context.fillRect(0, 0, canvas.width, canvas.height);
-      context.strokeStyle = `rgba(${borderColor.r},${borderColor.g},${borderColor.b},${borderColor.a})`;
-      context.lineWidth = borderThickness;
-      context.strokeRect(0, 0, canvas.width, canvas.height);
+    /* ---------- THREE.JS ---------- */
+    let scene,camera,renderer,shelfGroup;
+    function init3D(){const c=document.getElementById("shelfContainer");scene=new THREE.Scene();scene.background=new THREE.Color(0xf0f0f0);camera=new THREE.PerspectiveCamera(75,c.clientWidth/c.clientHeight,.1,1000);camera.position.set(4,5,7);renderer=new THREE.WebGLRenderer({antialias:true});renderer.setSize(c.clientWidth,c.clientHeight);c.appendChild(renderer.domElement);scene.add(new THREE.HemisphereLight(0xffffff,0x444444,1));const dirLight=new THREE.DirectionalLight(0xffffff,.6);dirLight.position.set(4,8,3);scene.add(dirLight);const controls=new THREE.OrbitControls(camera,renderer.domElement);controls.enableDamping=true;updatePreview();animate();}
+    function animate(){requestAnimationFrame(animate);if(shelfGroup)shelfGroup.rotation.y+=.004;renderer.render(scene,camera);}
 
-      context.fillStyle = "rgba(0, 0, 0, 1.0)";
-      context.font = "bold " + fontsize + "px " + fontface;
-      context.fillText(message, borderThickness, fontsize + borderThickness);
+    /* ---------- MAKE TEXT SPRITE ---------- */
+    function makeTextSprite(msg,params={}){const font=params.fontface||"Arial",size=params.fontsize||64;const canvas=document.createElement("canvas"),ctx=canvas.getContext("2d");ctx.font=`bold ${size}px ${font}`;const w=ctx.measureText(msg).width;canvas.width=w+8;canvas.height=size*1.2+8;ctx.fillStyle="rgba(255,255,255,1)";ctx.fillRect(0,0,canvas.width,canvas.height);ctx.strokeStyle="rgba(0,0,0,1)";ctx.lineWidth=4;ctx.strokeRect(0,0,canvas.width,canvas.height);ctx.fillStyle="rgba(0,0,0,1)";ctx.font=`bold ${size}px ${font}`;ctx.fillText(msg,4,size+4);const tex=new THREE.Texture(canvas);tex.needsUpdate=true;const sprite=new THREE.Sprite(new THREE.SpriteMaterial({map:tex}));sprite.scale.set(canvas.width/100,canvas.height/100,1);return sprite;}
 
-      var texture = new THREE.Texture(canvas);
-      texture.needsUpdate = true;
-      var spriteMaterial = new THREE.SpriteMaterial({ map: texture });
-      var sprite = new THREE.Sprite(spriteMaterial);
-      sprite.scale.set(canvas.width / 100, canvas.height / 100, 1);
-      return sprite;
-    }
+    /* ---------- PREVIEW 3D ---------- */
+    function updatePreview(){if(shelfGroup)scene.remove(shelfGroup);shelfGroup=new THREE.Group();shelfGroup.scale.set(1.2,1.2,1.2);shelfGroup.position.y=-1;scene.add(shelfGroup);
+      const w=parseFloat(getCurrentWidth())/10,h=parseFloat(document.getElementById("height").value)/10,d=parseFloat(document.getElementById("depth").value)/10;
+      const count=parseInt(document.getElementById("shelfCount").value),t=.18,mat=new THREE.MeshStandardMaterial({color:0x777777,metalness:0,roughness:.6});
+      const type=document.getElementById("shelfType").value,notop=document.getElementById("noTopShelf")?.checked,nobot=(type==="standing"&&document.getElementById("noBottomShelf")?.checked);
+      if(!(type==="standing"&&nobot)){const g=new THREE.BoxGeometry(w,t,d),m=new THREE.Mesh(g,mat);m.position.set(0,-h/2+t/2,0);shelfGroup.add(m);} if(!notop){const g=new THREE.BoxGeometry(w,t,d),m=new THREE.Mesh(g,mat);m.position.set(0,h/2-t/2,0);shelfGroup.add(m);} const gL=new THREE.BoxGeometry(t,h,d),mL=new THREE.Mesh(gL,mat);mL.position.set(-w/2+t/2,0,0);shelfGroup.add(mL);const mR=mL.clone();mR.position.x=w/2-t/2;shelfGroup.add(mR);
+      if(count>0){const avail=h-2*t,gap=(avail-count*t)/(count+1);for(let i=1;i<=count;i++){const g=new THREE.BoxGeometry(w-2*t,t,d),m=new THREE.Mesh(g,mat);m.position.set(0,-h/2+t+gap*i+t*(i-.5),0);shelfGroup.add(m);}}
+      const offset=.5;widthText=makeTextSprite(getCurrentWidth()+" cm",{fontsize:32});widthText.position.set(0,h/2+offset,0);shelfGroup.add(widthText);heightText=makeTextSprite(document.getElementById("height").value+" cm",{fontsize:40});heightText.position.set(-w/2-offset,0,0);shelfGroup.add(heightText);depthText=makeTextSprite(document.getElementById("depth").value+" cm",{fontsize:32});depthText.position.set(w/2+offset,-h/2,0);shelfGroup.add(depthText);}
 
-    // Obsługa niestandardowej szerokości
-    function checkCustomWidth() {
-      var widthSelect = document.getElementById("width");
-      var customInput = document.getElementById("customWidthInput");
-      var customDisplay = document.getElementById("customWidthDisplay");
-      var customFee = document.getElementById("customWidthFee");
-      if (widthSelect.value === "custom") {
-        customInput.style.display = "block";
-        customDisplay.style.display = "block";
-        customFee.style.display = "block";
-        customDisplay.textContent = customInput.value + " cm";
-      } else {
-        customInput.style.display = "none";
-        customDisplay.style.display = "none";
-        customFee.style.display = "none";
-      }
-    }
+    /* ---------- TYP PÓŁKI -> OPCJE ---------- */
+    function updateShelfTypeOptions(){const type=document.getElementById("shelfType").value,div=document.getElementById("shelfTypeOptions");if(type==="standing"){div.style.display="block";div.innerHTML='<label class="block mb-1"><input type="checkbox" id="noBottomShelf" onchange="updatePreview(); updateOrderSummary();"> Bez dolnej półki</label><label class="block"><input type="checkbox" id="noTopShelf" onchange="updatePreview(); updateOrderSummary();"> Bez górnej półki</label>';}else if(type==="hanging"){div.style.display="block";div.innerHTML='<label class="block"><input type="checkbox" id="noTopShelf" onchange="updatePreview(); updateOrderSummary();"> Bez górnej półki</label>';}else{div.style.display="none";div.innerHTML="";}updatePreview();updateOrderSummary();}
 
-    // Zwraca aktualną szerokość (uwzględnia niestandardową)
-    function getCurrentWidth() {
-      var widthSelect = document.getElementById("width");
-      if (widthSelect.value === "custom") {
-        var customWidth = document.getElementById("customWidthInput").value;
-        return customWidth ? customWidth : 35;
-      } else {
-        return widthSelect.value;
-      }
-    }
+    /* ---------- PODSUMOWANIE ---------- */
+    function updateOrderSummary(){const sideText=document.getElementById("sideColor").options[document.getElementById("sideColor").selectedIndex].text.toLowerCase();document.getElementById("sideColorSummary").textContent=sideText;const shelfText=document.getElementById("shelfColor").options[document.getElementById("shelfColor").selectedIndex].text.toLowerCase();document.getElementById("shelfColorSummary").textContent=shelfText;document.getElementById("widthSummary").textContent=getCurrentWidth()+" cm";document.getElementById("heightSummary").textContent=document.getElementById("height").value+" cm";document.getElementById("depthSummary").textContent=document.getElementById("depth").value+" cm";
+      const scVal=document.getElementById("shelfCount").value;document.getElementById("shelfCountSummary").textContent=scVal==="0"?"brak półek":scVal;const h=parseFloat(document.getElementById("height").value),sc=parseInt(scVal);let gap="brak półek";if(sc>0){const free=h-(sc+2)*1.8;gap=(free/(sc+1)).toFixed(1)+" cm";}document.getElementById("gapSummary").textContent=gap;document.getElementById("gapSummaryDisplay").textContent=gap;
+      // OPCJE DODATKOWE
+      const opts=[];if(document.getElementById("noTopShelf")?.checked)opts.push("bez górnej półki");if(document.getElementById("shelfType").value==="standing"&&document.getElementById("noBottomShelf")?.checked)opts.push("bez dolnej półki");document.getElementById("extraOptionsSummary").textContent=opts.length?opts.join(" / "):"–";
+      // Sprawdź kompletność
+      if(document.getElementById("shelfType").value===""||document.getElementById("sideColor").value===""||document.getElementById("shelfColor").value===""||scVal==="0"){document.getElementById("priceSummary").textContent="";document.getElementById("quantitySummary").textContent="";document.getElementById("orderCodeVisible").textContent="";document.getElementById("orderButtonsContainer").style.display="none";document.getElementById("orderCodeWindow").classList.remove("glow-animation");document.getElementById("priceHint").style.display="block";return;}
+      document.getElementById("priceHint").style.display="none";
+      const pData=computePriceDetailed();document.getElementById("priceSummary").textContent=(pData?pData.total:"N/A")+" zł";document.getElementById("quantitySummary").textContent=(pData?pData.total:0)+" szt.";
+      const stSel=document.getElementById("shelfType"),stText=stSel.options[stSel.selectedIndex];document.getElementById("shelfTypeSummary").textContent=stText.value!==""?stText.text.toLowerCase():"nie wybrano";
+      const code=generateOrderCode();document.getElementById("orderCodeVisible").textContent=code;document.getElementById("orderButtonsContainer").style.display="block";document.getElementById("orderCodeWindow").classList.add("glow-animation");
+      const order={width:getCurrentWidth()+" cm",height:document.getElementById("heightSummary").textContent,depth:document.getElementById("depthSummary").textContent,sideColor:sideText,shelfColor:shelfText,shelfType:document.getElementById("shelfTypeSummary").textContent,shelfCount:document.getElementById("shelfCountSummary").textContent,gap:gap,extra:opts.join(" / "),price:pData.total+" zł",quantity:pData.total+" szt."};localStorage.setItem("order_"+code,JSON.stringify(order));}
 
-    function updateShelfCountOptions() {
-      var heightVal = document.getElementById("height").value;
-      var shelfCountSelect = document.getElementById("shelfCount");
-      shelfCountSelect.innerHTML = "";
+    /* ---------- CENA ---------- */
+    function computePriceDetailed(){const h=document.getElementById("height").value,d=document.getElementById("depth").value,sc=document.getElementById("shelfCount").value;if(sc==="0")return{base:0,extra:0,deduction:0,total:0};let base=null,extra=0;if(document.getElementById("width").value==="custom"){const cw=parseInt(document.getElementById("customWidthInput").value);const std=cw<39?"34":cw<47?"44":cw<54?"50":"60";if(pricing[std]?.[h]?.[d]?.[sc]){base=pricing[std][h][d][sc];extra=50;}else return null;}else{const w=getCurrentWidth();if(pricing[w]?.[h]?.[d]?.[sc]){base=pricing[w][h][d][sc];}else return null;}let total=base+extra;let ded=0;if(document.getElementById("noTopShelf")?.checked)ded+=10;if(document.getElementById("shelfType").value==="standing"&&document.getElementById("noBottomShelf")?.checked)ded+=10;total-=ded;return{base,extra,deduction:ded,total};}
 
-      // Dostępne ilości półek w zależności od height
-      if (heightVal === "40") {
-        shelfCountSelect.innerHTML = '<option value="0">brak półek</option><option value="2">2 półki</option>';
-      } else if (heightVal === "60") {
-        shelfCountSelect.innerHTML = '<option value="0">brak półek</option><option value="2">2 półki</option><option value="3">3 półki</option>';
-      } else {
-        shelfCountSelect.innerHTML = '<option value="0">brak półek</option><option value="2">2 półki</option><option value="3">3 półki</option><option value="4">4 półki</option><option value="5">5 półek</option>';
-      }
-      shelfCountSelect.value = "0";
-      updatePreview();
-      updateOrderSummary();
-    }
-
-    // --- Three.js: scena, kamera, renderer ---
-    let scene, camera, renderer, shelfGroup;
-    function init3D() {
-      const container = document.getElementById("shelfContainer");
-      scene = new THREE.Scene();
-      scene.background = new THREE.Color(0xf0f0f0);
-
-      camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
-      camera.position.set(4, 5, 7);
-
-      renderer = new THREE.WebGLRenderer({ antialias: true });
-      renderer.setSize(container.clientWidth, container.clientHeight);
-      container.appendChild(renderer.domElement);
-
-      // Zamiast samego AmbientLight → Hemilight + directional → ale uprośćmy:
-      // Oto HemisphereLight
-      const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 1.0);
-      scene.add(hemiLight);
-
-      // DirectionalLight (trochę mniejsze natężenie)
-      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.6);
-      directionalLight.position.set(4, 8, 3);
-      scene.add(directionalLight);
-
-      // OrbitControls
-      const controls = new THREE.OrbitControls(camera, renderer.domElement);
-      controls.enableDamping = true;
-
-      updatePreview();
-      animate();
-    }
-
-    function animate() {
-      requestAnimationFrame(animate);
-      if (shelfGroup) {
-        shelfGroup.rotation.y += 0.004;
-      }
-      renderer.render(scene, camera);
-    }
-
-    // --- Tworzenie półki i etykiet w scenie
-    function updatePreview() {
-      // Usuwamy starą półkę, jeśli istnieje
-      if (shelfGroup) { scene.remove(shelfGroup); }
-
-      // Tworzymy grupę
-      shelfGroup = new THREE.Group();
-      shelfGroup.scale.set(1.2, 1.2, 1.2);
-      shelfGroup.position.y = -1;
-      scene.add(shelfGroup);
-
-      // Przeliczanie cm → "jednostki"
-      const widthVal  = parseFloat(getCurrentWidth()) / 10;
-      const heightVal = parseFloat(document.getElementById("height").value) / 10;
-      const depthVal  = parseFloat(document.getElementById("depth").value) / 10;
-      const shelfCount = parseInt(document.getElementById("shelfCount").value);
-
-      // Grubość płyty
-      const boardThickness = 0.18;
-
-      // Używamy materiału standard (PBR) z parametrami:
-      const materialSolid = new THREE.MeshStandardMaterial({
-        color: 0x777777,
-        metalness: 0.0,
-        roughness: 0.6
-      });
-
-      // Dół
-      const bottomGeom = new THREE.BoxGeometry(widthVal, boardThickness, depthVal);
-      const bottomMesh = new THREE.Mesh(bottomGeom, materialSolid);
-      bottomMesh.position.set(0, -heightVal/2 + boardThickness/2, 0);
-      shelfGroup.add(bottomMesh);
-
-      // Góra
-      const topGeom = new THREE.BoxGeometry(widthVal, boardThickness, depthVal);
-      const topMesh = new THREE.Mesh(topGeom, materialSolid);
-      topMesh.position.set(0, heightVal/2 - boardThickness/2, 0);
-      shelfGroup.add(topMesh);
-
-      // Lewy bok
-      const leftGeom = new THREE.BoxGeometry(boardThickness, heightVal, depthVal);
-      const leftMesh = new THREE.Mesh(leftGeom, materialSolid);
-      leftMesh.position.set(-widthVal/2 + boardThickness/2, 0, 0);
-      shelfGroup.add(leftMesh);
-
-      // Prawy bok
-      const rightGeom = new THREE.BoxGeometry(boardThickness, heightVal, depthVal);
-      const rightMesh = new THREE.Mesh(rightGeom, materialSolid);
-      rightMesh.position.set(widthVal/2 - boardThickness/2, 0, 0);
-      shelfGroup.add(rightMesh);
-
-      // Półki wewnętrzne
-      if(shelfCount > 0) {
-        const availableHeight = heightVal - 2 * boardThickness;
-        const gap = (availableHeight - shelfCount * boardThickness) / (shelfCount + 1);
-        for(let i = 1; i <= shelfCount; i++) {
-          const shelfGeom = new THREE.BoxGeometry(widthVal - 2 * boardThickness, boardThickness, depthVal);
-          const shelfMesh = new THREE.Mesh(shelfGeom, materialSolid);
-          const posY = -heightVal/2 + boardThickness + gap * i + boardThickness * (i - 0.5);
-          shelfMesh.position.set(0, posY, 0);
-          shelfGroup.add(shelfMesh);
-        }
-      }
-
-      // Podpisy wymiarów (etykiety)
-      const offset = 0.5;
-
-      // szerokość
-      var widthText = makeTextSprite(getCurrentWidth() + " cm", { fontsize: 32, fontface: "Arial" });
-      widthText.position.set(0, heightVal/2 + offset, 0);
-      shelfGroup.add(widthText);
-
-      // wysokość
-      var heightText = makeTextSprite(document.getElementById("height").value + " cm", { fontsize: 40, fontface: "Arial" });
-      heightText.position.set(-widthVal/2 - offset, 0, 0);
-      shelfGroup.add(heightText);
-
-      // głębokość
-      var depthText = makeTextSprite(document.getElementById("depth").value + " cm", { fontsize: 32, fontface: "Arial" });
-      depthText.position.set(widthVal/2 + offset, -heightVal/2, 0);
-      shelfGroup.add(depthText);
-    }
-
-    // Obsługa podsumowania zamówienia
-    function updateOrderSummary() {
-      document.getElementById("sideColorSummary").textContent =
-         document.getElementById("sideColor").options[document.getElementById("sideColor").selectedIndex].text.toLowerCase();
-      document.getElementById("shelfColorSummary").textContent =
-         document.getElementById("shelfColor").options[document.getElementById("shelfColor").selectedIndex].text.toLowerCase();
-      document.getElementById("widthSummary").textContent = getCurrentWidth() + " cm";
-      document.getElementById("heightSummary").textContent = document.getElementById("height").value + " cm";
-      document.getElementById("depthSummary").textContent = document.getElementById("depth").value + " cm";
-
-      let shelfCountValue = document.getElementById("shelfCount").value;
-      document.getElementById("shelfCountSummary").textContent = (shelfCountValue === "0") ? "brak półek" : shelfCountValue;
-
-      var heightVal = parseFloat(document.getElementById("height").value);
-      var shelfCountVal = parseInt(document.getElementById("shelfCount").value);
-      var gapText = "";
-      if (shelfCountVal > 0) {
-         var totalThickness = (shelfCountVal + 2) * 1.8;
-         var freeSpace = heightVal - totalThickness;
-         var gaps = shelfCountVal + 1;
-         gapText = (freeSpace / gaps).toFixed(1) + " cm";
-      } else { 
-         gapText = "brak półek"; 
-      }
-      document.getElementById("gapSummary").textContent = gapText;
-      document.getElementById("gapSummaryDisplay").textContent = gapText;
-
-      if (
-        document.getElementById("shelfType").value === "" ||
-        document.getElementById("sideColor").value === "" ||
-        document.getElementById("shelfColor").value === "" ||
-        document.getElementById("shelfCount").value === "0"
-      ) {
-        // Brak wszystkich parametrów → czyścimy cenę, ukrywamy przyciski, usuwamy animację glow
-        document.getElementById("priceSummary").textContent = "";
-        document.getElementById("quantitySummary").textContent = "";
-        document.getElementById("orderCodeVisible").textContent = "";
-        document.getElementById("orderButtonsContainer").style.display = "none";
-        document.getElementById("orderCodeWindow").classList.remove("glow-animation");
-        document.getElementById("priceHint").style.display = "block";
-        return;
-      }
-
-      // Inaczej → pokazujemy cenę, generujemy kod
-      document.getElementById("priceHint").style.display = "none";
-      var priceData = computePriceDetailed();
-      if(priceData === null) {
-         document.getElementById("priceSummary").textContent = "N/A";
-      } else {
-         document.getElementById("priceSummary").textContent = priceData.total + " zł";
-      }
-
-      var numericPrice = (priceData && priceData.total) ? priceData.total : 0;
-      document.getElementById("quantitySummary").textContent = numericPrice + " szt.";
-
-      var shelfTypeSelect = document.getElementById("shelfType");
-      var shelfTypeOption = shelfTypeSelect.options[shelfTypeSelect.selectedIndex];
-      document.getElementById("shelfTypeSummary").textContent =
-          (shelfTypeOption && shelfTypeOption.value !== "") ? shelfTypeOption.text.toLowerCase() : "nie wybrano";
-
-      var code = generateOrderCode();
-      document.getElementById("orderCodeVisible").textContent = code;
-      document.getElementById("orderButtonsContainer").style.display = "block";
-      document.getElementById("orderCodeWindow").classList.add("glow-animation");
-      
-      // Zapis w localStorage (opcjonalny)
-      var orderData = {
-        width: document.getElementById("widthSummary").textContent,
-        height: document.getElementById("heightSummary").textContent,
-        depth: document.getElementById("depthSummary").textContent,
-        sideColor: document.getElementById("sideColorSummary").textContent,
-        shelfColor: document.getElementById("shelfColorSummary").textContent,
-        shelfType: document.getElementById("shelfTypeSummary").textContent,
-        shelfCount: document.getElementById("shelfCountSummary").textContent,
-        gap: document.getElementById("gapSummary").textContent,
-        price: document.getElementById("priceSummary").textContent,
-        quantity: document.getElementById("quantitySummary").textContent
-      };
-      localStorage.setItem("order_" + code, JSON.stringify(orderData));
-    }
-
-    // Obliczanie ceny na podstawie pricing
-    function computePriceDetailed() {
-      var height = document.getElementById("height").value;
-      var depth = document.getElementById("depth").value;
-      var shelfCount = document.getElementById("shelfCount").value;
-      if (shelfCount === "0") { return { base: 0, extra: 0, total: 0 }; }
-
-      var widthSelect = document.getElementById("width");
-      if (widthSelect.value === "custom") {
-        var customWidth = parseInt(document.getElementById("customWidthInput").value);
-        var standardWidth;
-        if (customWidth < 39) { standardWidth = "34"; }
-        else if (customWidth < 47) { standardWidth = "44"; }
-        else if (customWidth < 54) { standardWidth = "50"; }
-        else { standardWidth = "60"; }
-
-        if (pricing[standardWidth] && pricing[standardWidth][height] &&
-            pricing[standardWidth][height][depth] && pricing[standardWidth][height][depth][shelfCount]) {
-          var basePrice = pricing[standardWidth][height][depth][shelfCount];
-          var extra = 50;
-          return { base: basePrice, extra: extra, total: basePrice + extra };
-        } else { return null; }
-
-      } else {
-        var width = getCurrentWidth();
-        if (pricing[width] && pricing[width][height] &&
-            pricing[width][height][depth] && pricing[width][height][depth][shelfCount]) {
-          var basePrice = pricing[width][height][depth][shelfCount];
-          return { base: basePrice, extra: 0, total: basePrice };
-        } else { return null; }
-      }
-    }
-
-    // Podgląd zamówienia po wpisaniu kodu (opcjonalne)
-    function checkOrder() {
-      var inputCode = document.getElementById("orderCodeInput").value.trim();
-      var orderJSON = localStorage.getItem("order_" + inputCode);
-      var resultDiv = document.getElementById("orderResult");
-      if(orderJSON) {
-        var order = JSON.parse(orderJSON);
-        resultDiv.innerHTML = `
-          <p><strong>Szerokość:</strong> ${order.width}</p>
-          <p><strong>Wysokość:</strong> ${order.height}</p>
-          <p><strong>Głębokość:</strong> ${order.depth}</p>
-          <p><strong>Kolor boków:</strong> ${order.sideColor}</p>
-          <p><strong>Kolor półek i podstaw:</strong> ${order.shelfColor}</p>
-          <p><strong>Rodzaj półki:</strong> ${order.shelfType}</p>
-          <p><strong>Ilość półek:</strong> ${order.shelfCount}</p>
-          <p><strong>Przestrzeń pomiędzy półkami:</strong> ${order.gap}</p>
-          <p><strong>Materiał:</strong> płyta laminowana gr. 1,8cm</p>
-          <p><strong>Termin realizacji:</strong> podany na aukcji Allegro</p>
-          <p><strong>Cena:</strong> ${order.price}</p>
-          <p><strong>Zamów na Allegro:</strong> ${order.quantity}</p>
-        `;
-      } else {
-        resultDiv.textContent = "Nie znaleziono zamówienia o podanym kodzie.";
-      }
-    }
-
-    // Inicjalizacja przy ładowaniu strony
-    window.onload = function() {
-      updateDepthOptions();
-      init3D();           // Startujemy Three.js
-      updateShelfCountOptions();
-    };
+    /* ---------- INICJALIZACJA ---------- */
+    window.onload=function(){updateDepthOptions();init3D();updateShelfCountOptions();};
   </script>
 
-  <!-- Licznik odwiedzin -->
-  <div id="visitorCounter" class="fixed bottom-0 left-0 m-2 text-xs text-gray-500">
-    <span id="visitorCount">0</span>
-  </div>
+  <!-- LICZNIK ODWIEDZIN (pomijany przy IP właściciela) -->
   <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      fetch('https://api.ipify.org?format=json')
-        .then(response => response.json())
-        .then(data => {
-          const userIP = data.ip;
-          if (userIP !== '171.22.162.73') {
-            let count = localStorage.getItem("visitorCount") || 0;
-            count = parseInt(count) + 1;
-            localStorage.setItem("visitorCount", count);
-            document.getElementById("visitorCount").textContent = count;
-          } else {
-            console.log("Wizyty z Twojego adresu IP nie są liczone.");
-          }
-        })
-        .catch(error => console.error('Błąd pobierania adresu IP:', error));
-    });
+    document.addEventListener("DOMContentLoaded",()=>{fetch('https://api.ipify.org?format=json').then(r=>r.json()).then(d=>{if(d.ip!=="171.22.162.73"){let c=parseInt(localStorage.getItem("visitorCount")||0)+1;localStorage.setItem("visitorCount",c);document.getElementById("visitorCount").textContent=c;}});});
   </script>
+  <div id="visitorCounter" class="fixed bottom-0 left-0 m-2 text-xs text-gray-500"><span id="visitorCount">0</span></div>
 
   <script>
-    // Zmiana pogrubienia w <select> jeśli coś wybrano
-    document.addEventListener("DOMContentLoaded", function() {
-      const selects = document.querySelectorAll("select");
-      selects.forEach(select => {
-        select.addEventListener("change", function() {
-          const selectedText = this.options[this.selectedIndex].text.toLowerCase();
-          this.style.fontWeight = selectedText !== 'nie wybrano' ? 'bold' : 'normal';
-        });
-      });
-    });
+    document.addEventListener("DOMContentLoaded",()=>{document.querySelectorAll("select").forEach(sel=>{sel.addEventListener("change",function(){this.style.fontWeight=this.options[this.selectedIndex].text.toLowerCase()!=='nie wybrano'?'bold':'normal';});});});
   </script>
 </body>
 </html>
