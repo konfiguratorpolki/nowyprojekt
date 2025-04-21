@@ -1,7 +1,11 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="UTF-8">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+<!-- Swiper CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+  
+<meta charset="UTF-8">
   <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-DNBGJLP2FN"></script>
   <script>
@@ -11,8 +15,9 @@
     gtag('config', 'G-DNBGJLP2FN');
   </script>
   <!-- Ustawienie stałej szerokości widoku – desktopowy układ -->
-  <meta name="viewport" content="width=1024, initial-scale=1.0">
-  <title>Konfigurator Półki</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Konfigurator Półki</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Three.js i OrbitControls -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -236,5 +241,65 @@
   <script>
     document.addEventListener("DOMContentLoaded",()=>{document.querySelectorAll("select").forEach(sel=>{sel.addEventListener("change",function(){this.style.fontWeight=this.options[this.selectedIndex].text.toLowerCase()!=='nie wybrano'?'bold':'normal';});});});
   </script>
+<!-- SEK C J A  Inspiracje (Swiper) -->
+<section class="w-full bg-white py-10 px-4">
+  <h2 class="text-3xl font-bold text-center text-gray-800 mb-8">Inspiracje</h2>
+
+<!-- Swiper wrapper -->
+<div class="swiper mySwiper max-w-6xl mx-auto">
+  <div class="swiper-wrapper">
+    <!-- Slajd 1 -->
+    <div class="swiper-slide">
+      <img src="img/1a.jpg" alt="Inspiracja 1" class="w-full h-auto object-cover rounded-xl shadow-md transition-transform hover:scale-105 duration-300" />
+    </div>
+    <!-- Slajd 2 -->
+    <div class="swiper-slide">
+      <img src="img/2a.jpg" alt="Inspiracja 2" class="w-full h-auto object-cover rounded-xl shadow-md transition-transform hover:scale-105 duration-300" />
+    </div>
+    <!-- Slajd 3 -->
+    <div class="swiper-slide">
+      <img src="img/3a.jpg" alt="Inspiracja 3" class="w-full h-auto object-cover rounded-xl shadow-md transition-transform hover:scale-105 duration-300" />
+    </div>
+    <!-- ✅ Slajd 4 -->
+    <div class="swiper-slide">
+      <img src="img/4a.jpg" alt="Inspiracja 4" class="w-full h-auto object-cover rounded-xl shadow-md transition-transform hover:scale-105 duration-300" />
+    </div>
+  </div>
+
+<!-- Nawigacja i paginacja -->
+<div class="swiper-pagination mt-4"></div>
+<div class="swiper-button-prev text-black text-2xl hidden md:block"></div>
+<div class="swiper-button-next text-black hidden md:block"></div>
+
+
+
+
 </body>
+<!-- Swiper JS -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+<script>
+  const swiper = new Swiper(".mySwiper", {
+    loop: true, // zapętlanie
+    spaceBetween: 20,
+    slidesPerView: 1,
+    navigation: {
+      nextEl: ".swiper-button-next",
+      prevEl: ".swiper-button-prev"
+    },
+    pagination: {
+      el: ".swiper-pagination",
+      clickable: true
+    },
+    breakpoints: {
+      640: { slidesPerView: 1 },
+      768: { slidesPerView: 2 },
+      1024: { slidesPerView: 3 }
+    }
+  });
+</script>
+
+
+
+
 </html>
