@@ -242,32 +242,30 @@
   </script>
 <!-- SEK C J A  Inspiracje (Swiper) -->
 <section class="w-full bg-white py-10 px-4">
-  <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Inspiracje</h2>
+  <h2 class="text-3xl font-bold text-center text-gray-800 mb-8">Inspiracje</h2>
 
-  <!-- Swiper wrapper -->
-  <div class="swiper mySwiper max-w-6xl mx-auto">
-    <div class="swiper-wrapper">
-      <!-- Slajd 1 -->
-      <div class="swiper-slide">
-        <img src="1a.jpg" alt="Inspiracja 1" class="w-full h-64 sm:h-80 md:h-96 object-cover rounded-xl shadow-md transition-transform hover:scale-105 duration-300" />
-      </div>
-      <!-- Slajd 2 -->
-      <div class="swiper-slide">
-        <img src="2a.jpg" alt="Inspiracja 2" class="w-full h-64 sm:h-80 md:h-96 object-cover rounded-xl shadow-md transition-transform hover:scale-105 duration-300" />
-      </div>
-      <!-- Slajd 3 -->
-      <div class="swiper-slide">
-        <img src="3a.jpg" alt="Inspiracja 3" class="w-full h-64 sm:h-80 md:h-96 object-cover rounded-xl shadow-md transition-transform hover:scale-105 duration-300" />
-      </div>
+<!-- Swiper wrapper -->
+<div class="swiper mySwiper max-w-6xl mx-auto">
+  <div class="swiper-wrapper">
+    <!-- Slajd 1 -->
+    <div class="swiper-slide flex justify-center items-center">
+      <img src="1a.jpg" alt="Inspiracja 1" class="max-h-[400px] w-auto object-contain rounded-xl shadow-md transition-transform hover:scale-105 duration-300" />
     </div>
-
-    <!-- Paginacja i strzałki -->
-    <div class="swiper-pagination mt-4"></div>
-    <div class="swiper-button-prev text-gray-500"></div>
-    <div class="swiper-button-next text-gray-500"></div>
+    <!-- Slajd 2 -->
+    <div class="swiper-slide flex justify-center items-center">
+      <img src="2a.jpg" alt="Inspiracja 2" class="max-h-[400px] w-auto object-contain rounded-xl shadow-md transition-transform hover:scale-105 duration-300" />
+    </div>
+    <!-- Slajd 3 -->
+    <div class="swiper-slide flex justify-center items-center">
+      <img src="3a.jpg" alt="Inspiracja 3" class="max-h-[400px] w-auto object-contain rounded-xl shadow-md transition-transform hover:scale-105 duration-300" />
+    </div>
   </div>
-</section>
 
+  <!-- Nawigacja i paginacja -->
+  <div class="swiper-pagination mt-4"></div>
+<div class="swiper-button-prev hidden md:block text-gray-500"></div>
+<div class="swiper-button-next hidden md:block text-gray-500"></div>
+</div>
 
 
 </body>
