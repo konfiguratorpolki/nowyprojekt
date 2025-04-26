@@ -29,10 +29,79 @@
     .shimmer { animation: shimmer 2s infinite; }
     @keyframes glow { 0% {box-shadow:0 0 5px rgba(255,255,255,.5);} 50% {box-shadow:0 0 20px rgba(255,255,255,1);} 100% {box-shadow:0 0 5px rgba(255,255,255,.5);} }
     .glow-animation { animation: glow 2s infinite ease-in-out; }
+    .swiper-slide img { cursor: pointer; transition: transform 0.3s ease; }
+    .swiper-slide img:hover { transform: scale(1.05); }
   </style>
 </head>
 <body class="flex flex-col justify-center items-center min-h-screen bg-gray-100">
-  <!-- Blok instrukcji "Jak zamówić?" mobile -->
+  <!-- SEK C J A  Inspiracje (Swiper) -->
+<section class="w-full bg-gray-50 py-12 px-4">
+  <h2 class="text-2xl font-bold text-center text-gray-800 mb-10">Wybierz wzór</h2>
+
+  <div class="relative max-w-7xl mx-auto">
+    <button onclick="scrollGalleryLeft()" class="absolute left-0 top-1/2 transform -translate-y-1/2 bg-white shadow p-2 rounded-full z-10">◀</button>
+    <div id="galleryWrapper" class="overflow-x-auto whitespace-nowrap scrollbar-hide px-10">
+      <div id="scrollGallery" class="inline-flex space-x-4 transition-transform duration-500 ease-in-out">
+        <div class="bg-white rounded-xl shadow p-2 flex flex-col items-center transition-transform transform hover:scale-110 text-center min-w-[200px]">
+          <img src="img/1a.jpg" alt="Inspiracja 1" onclick="presetConfig(80, 44, 10, 5, 'hanging')" />
+        </div>
+        <div class="bg-white rounded-xl shadow p-2 flex flex-col items-center transition-transform transform hover:scale-110 text-center min-w-[200px]">
+          <img src="img/2a.jpg" alt="Inspiracja 2" onclick="presetConfig(60, 44, 10, 3, 'hanging', true)" />
+        </div>
+        <div class="bg-white rounded-xl shadow p-2 flex flex-col items-center transition-transform transform hover:scale-110 text-center min-w-[200px]">
+          <img src="img/3a.jpg" alt="Inspiracja 3" onclick="presetConfig(40, 44, 10, 2, 'hanging', true)" />
+        </div>
+        <div class="bg-white rounded-xl shadow p-2 flex flex-col items-center transition-transform transform hover:scale-110 text-center min-w-[200px]">
+          <img src="img/4a.jpg" alt="Inspiracja 4" onclick="presetConfig(40, 60, 10, 2, 'hanging')" />
+        </div>
+        <div class="bg-white rounded-xl shadow p-2 flex flex-col items-center transition-transform transform hover:scale-110 text-center min-w-[200px]">
+          <img src="img/5a.jpg" alt="Inspiracja 5" onclick="presetConfig(40, 60, 10, 2, 'standing')" />
+        </div>
+        <div class="bg-white rounded-xl shadow p-2 flex flex-col items-center transition-transform transform hover:scale-110 text-center min-w-[200px]">
+          <img src="img/6a.jpg" alt="Inspiracja 6" onclick="presetConfig(40, 60, 10, 2, 'standing', false, true)" />
+        </div>
+        <div class="bg-white rounded-xl shadow p-2 flex flex-col items-center transition-transform transform hover:scale-110 text-center min-w-[200px]">
+          <img src="img/7a.jpg" alt="Inspiracja 7" onclick="presetConfig(40, 60, 10, 2, 'standing', true, true)" />
+        </div>
+        <div class="bg-white rounded-xl shadow p-2 flex flex-col items-center transition-transform transform hover:scale-110 text-center min-w-[200px]">
+          <img src="img/8a.jpg" alt="Inspiracja 8" onclick="presetConfig(40, 60, 15, 2, 'standing', true, true)" />
+        </div>
+        <div class="bg-white rounded-xl shadow p-2 flex flex-col items-center transition-transform transform hover:scale-110 text-center min-w-[200px]">
+          <img src="img/9a.jpg" alt="Inspiracja 9" onclick="presetConfig(40, 60, 10, 2, 'standing', false, true)" />
+        </div>
+        <div class="bg-white rounded-xl shadow p-2 flex flex-col items-center transition-transform transform hover:scale-110 text-center min-w-[200px]">
+          <img src="img/10a.jpg" alt="Inspiracja 10" onclick="presetConfig(40, 44, 10, 2, 'standing', true, true)" />
+        </div>
+      </div>
+    </div>
+    <button onclick="scrollGalleryRight()" class="absolute right-0 top-1/2 transform -translate-y-1/2 bg-white shadow p-2 rounded-full z-10">▶</button>
+  </div>
+</section>
+
+<style>
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+</style>
+
+<script>
+  function scrollGalleryLeft() {
+    const container = document.getElementById('galleryWrapper');
+    container.scrollBy({ left: -220, behavior: 'smooth' });
+  }
+  function scrollGalleryRight() {
+    const container = document.getElementById('galleryWrapper');
+    container.scrollBy({ left: 220, behavior: 'smooth' });
+  }
+</script>
+
+
+
+<!-- Blok instrukcji "Jak zamówić?" mobile -->
   <div class="w-full p-4 bg-gray-50 border rounded mb-4 md:hidden">
     <h2 class="text-lg font-bold text-black mb-4">Jak zamówić?</h2>
     <ul class="list-none ml-6 space-y-2">
@@ -228,78 +297,78 @@
     /* ---------- CENA ---------- */
     function computePriceDetailed(){const h=document.getElementById("height").value,d=document.getElementById("depth").value,sc=document.getElementById("shelfCount").value;if(sc==="0")return{base:0,extra:0,deduction:0,total:0};let base=null,extra=0;if(document.getElementById("width").value==="custom"){const cw=parseInt(document.getElementById("customWidthInput").value);const std=cw<39?"34":cw<47?"44":cw<54?"50":"60";if(pricing[std]?.[h]?.[d]?.[sc]){base=pricing[std][h][d][sc];extra=50;}else return null;}else{const w=getCurrentWidth();if(pricing[w]?.[h]?.[d]?.[sc]){base=pricing[w][h][d][sc];}else return null;}let total=base+extra;let ded=0;if(document.getElementById("noTopShelf")?.checked)ded+=10;if(document.getElementById("shelfType").value==="standing"&&document.getElementById("noBottomShelf")?.checked)ded+=10;total-=ded;return{base,extra,deduction:ded,total};}
 
+    /* ---------- PRESET CONFIGURATION FROM IMAGE CLICK ---------- */
+    function presetConfig(height, width, depth, shelfCount, shelfType = "standing", noTopShelf = false, noBottomShelf = false) {
+  // Set width
+  if (["34", "44", "50", "60"].includes(width.toString())) {
+    document.getElementById("width").value = width;
+    document.getElementById("width").dispatchEvent(new Event('change'));
+  } else {
+    document.getElementById("width").value = "custom";
+    document.getElementById("customWidthInput").value = width;
+    document.getElementById("customWidthInput").dispatchEvent(new Event('input'));
+  }
+
+  // Set height
+  document.getElementById("height").value = height;
+  document.getElementById("height").dispatchEvent(new Event('change'));
+
+  // Set depth
+  setTimeout(() => {
+    document.getElementById("depth").value = depth;
+    document.getElementById("depth").dispatchEvent(new Event('change'));
+
+    // Set shelf count
+    document.getElementById("shelfCount").value = shelfCount;
+    document.getElementById("shelfCount").dispatchEvent(new Event('change'));
+
+    // Default colors
+    if (document.getElementById("sideColor").value === "") {
+      document.getElementById("sideColor").value = "#8B5A2B";
+      document.getElementById("sideColor").dispatchEvent(new Event('change'));
+    }
+    if (document.getElementById("shelfColor").value === "") {
+      document.getElementById("shelfColor").value = "#8B5A2B";
+      document.getElementById("shelfColor").dispatchEvent(new Event('change'));
+    }
+
+    // Set shelf type (wisząca / stojąca)
+    document.getElementById("shelfType").value = shelfType;
+    document.getElementById("shelfType").dispatchEvent(new Event('change'));
+
+    // Jeśli ma być bez górnej
+    if (noTopShelf) {
+      setTimeout(() => {
+        const noTopCheckbox = document.getElementById('noTopShelf');
+        if (noTopCheckbox) {
+          noTopCheckbox.checked = true;
+          noTopCheckbox.dispatchEvent(new Event('change'));
+        }
+      }, 200);
+    }
+
+    // Jeśli ma być bez dolnej (tylko dla stojących)
+    if (noBottomShelf) {
+      setTimeout(() => {
+        const noBottomCheckbox = document.getElementById('noBottomShelf');
+        if (noBottomCheckbox) {
+          noBottomCheckbox.checked = true;
+          noBottomCheckbox.dispatchEvent(new Event('change'));
+        }
+      }, 200);
+    }
+
+    // Scroll do konfiguratora
+    document.querySelector('.p-6.bg-white.shadow-lg.rounded-lg').scrollIntoView({
+      behavior: 'smooth'
+    });
+
+  }, 100);
+}
+
+
     /* ---------- INICJALIZACJA ---------- */
     window.onload=function(){updateDepthOptions();init3D();updateShelfCountOptions();};
   </script>
-
-  <!-- LICZNIK ODWIEDZIN (pomijany przy IP właściciela) -->
-  <script>
-    document.addEventListener("DOMContentLoaded",()=>{fetch('https://api.ipify.org?format=json').then(r=>r.json()).then(d=>{if(d.ip!=="171.22.162.73"){let c=parseInt(localStorage.getItem("visitorCount")||0)+1;localStorage.setItem("visitorCount",c);document.getElementById("visitorCount").textContent=c;}});});
-  </script>
-  <div id="visitorCounter" class="fixed bottom-0 left-0 m-2 text-xs text-gray-500"><span id="visitorCount">0</span></div>
-
-  <script>
-    document.addEventListener("DOMContentLoaded",()=>{document.querySelectorAll("select").forEach(sel=>{sel.addEventListener("change",function(){this.style.fontWeight=this.options[this.selectedIndex].text.toLowerCase()!=='nie wybrano'?'bold':'normal';});});});
-  </script>
-<!-- SEK C J A  Inspiracje (Swiper) -->
-<section class="w-full bg-white py-10 px-4">
-  <h2 class="text-3xl font-bold text-center text-gray-800 mb-8">Inspiracje</h2>
-
-<!-- Swiper wrapper -->
-<div class="swiper mySwiper max-w-6xl mx-auto">
-  <div class="swiper-wrapper">
-    <!-- Slajd 1 -->
-    <div class="swiper-slide">
-      <img src="img/1a.jpg" alt="Inspiracja 1" class="w-full h-auto object-cover rounded-xl shadow-md transition-transform hover:scale-105 duration-300" />
-    </div>
-    <!-- Slajd 2 -->
-    <div class="swiper-slide">
-      <img src="img/2a.jpg" alt="Inspiracja 2" class="w-full h-auto object-cover rounded-xl shadow-md transition-transform hover:scale-105 duration-300" />
-    </div>
-    <!-- Slajd 3 -->
-    <div class="swiper-slide">
-      <img src="img/3a.jpg" alt="Inspiracja 3" class="w-full h-auto object-cover rounded-xl shadow-md transition-transform hover:scale-105 duration-300" />
-    </div>
-    <!-- ✅ Slajd 4 -->
-    <div class="swiper-slide">
-      <img src="img/4a.jpg" alt="Inspiracja 4" class="w-full h-auto object-cover rounded-xl shadow-md transition-transform hover:scale-105 duration-300" />
-    </div>
-  </div>
-
-<!-- Nawigacja i paginacja -->
-<div class="swiper-pagination mt-4"></div>
-<div class="swiper-button-prev text-black text-2xl hidden md:block"></div>
-<div class="swiper-button-next text-black hidden md:block"></div>
-
-
-
-
 </body>
-<!-- Swiper JS -->
-<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-
-<script>
-  const swiper = new Swiper(".mySwiper", {
-    loop: true, // zapętlanie
-    spaceBetween: 20,
-    slidesPerView: 1,
-    navigation: {
-      nextEl: ".swiper-button-next",
-      prevEl: ".swiper-button-prev"
-    },
-    pagination: {
-      el: ".swiper-pagination",
-      clickable: true
-    },
-    breakpoints: {
-      640: { slidesPerView: 1 },
-      768: { slidesPerView: 2 },
-      1024: { slidesPerView: 3 }
-    }
-  });
-</script>
-
-
-
-
 </html>
