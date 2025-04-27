@@ -214,9 +214,16 @@
           <p class="text-base md:text-sm"><strong>Cena:</strong> <span class="text-red-600 font-bold text-2xl" id="priceSummary"></span></p>
           <small id="priceHint" class="text-gray-600 text-xs">wybierz wszystkie parametry półki, aby zobaczyć cenę i kod zamówienia</small>
           <p class="text-base md:text-sm"><strong>Zamów na Allegro:</strong> <span class="text-red-600 font-bold" id="quantitySummary"></span></p>
-          <div id="orderButtonsContainer" style="display:none;">
-            <button onclick="copyOrderSummary()" class="mt-2 px-4 py-2 bg-orange-600 text-white rounded text-lg shimmer">Zamów na Allegro</button>
-          </div>
+          <div id="orderButtonsContainer" style="display:none;" class="flex flex-col space-y-2">
+  <button onclick="copyOrderSummary()" class="px-4 py-2 bg-orange-600 text-white rounded text-lg shimmer">Zamów na Allegro</button>
+  <a onclick="downloadOrderSummary()" class="flex items-center space-x-2 text-blue-500 font-semibold cursor-pointer hover:underline mt-2">
+  <span>Pobierz zamówienie</span>
+  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+    <path d="M10 3a1 1 0 011 1v8.586l3.293-3.293a1 1 0 111.414 1.414l-5 5a1 1 0 01-1.414 0l-5-5a1 1 0 111.414-1.414L9 12.586V4a1 1 0 011-1z"/>
+  </svg>
+</a>
+
+</div>
         </div>
       </div>
       <!-- Kod -->
@@ -243,6 +250,54 @@
     }
 
     function copyOrderSummary(){const code=document.getElementById("orderCodeVisible").textContent;const price=document.getElementById("priceSummary").textContent;navigator.clipboard.writeText(code).then(()=>{alert(`✅ Gotowe!\n🔄 Wróć teraz na Allegro i zamów na kwotę ${price}\n📋 W „Uwagi do zakupu” wklej kod zamówienia`);window.location.href="https://allegro.pl/oferta/zaprojektuj-wlasna-polke-podaj-wymiar-i-wybierz-kolory-do-kuchni-pokoju-17253898746";});}
+
+
+function downloadOrderSummary() {
+  const width = document.getElementById("widthSummary").textContent;
+  const height = document.getElementById("heightSummary").textContent;
+  const depth = document.getElementById("depthSummary").textContent;
+  const sideColor = document.getElementById("sideColorSummary").textContent;
+  const shelfColor = document.getElementById("shelfColorSummary").textContent;
+  const shelfCount = document.getElementById("shelfCountSummary").textContent;
+  const shelfType = document.getElementById("shelfTypeSummary").textContent;
+  const gap = document.getElementById("gapSummary").textContent;
+  const extraOptions = document.getElementById("extraOptionsSummary").textContent;
+  const price = document.getElementById("priceSummary").textContent;
+  const orderCode = document.getElementById("orderCodeVisible").textContent;
+
+  const content = `📦 Podsumowanie Zamówienia
+
+↔️ Szerokość: ${width}
+⬆️ Wysokość: ${height}
+↕️ Głębokość: ${depth}
+
+- Kolor boków: ${sideColor}
+- Kolor półek i podstaw: ${shelfColor}
+
+- Ilość półek: ${shelfCount}
+- Rodzaj półki: ${shelfType}
+- Przestrzeń pomiędzy półkami: ${gap}
+
+- Opcje dodatkowe: ${extraOptions}
+- Materiał: płyta laminowana gr. 1,8 cm
+
+- Termin realizacji: 5‑7 dni roboczych
+
+Cena: ${price}
+
+🏷️ Kod zamówienia: ${orderCode}`;
+
+  const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `zamowienie-${orderCode}.txt`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
 
     /* ---------- CENNIK ---------- */
     const pricing={"34":{"40":{"10":{"2":150},"15":{"2":250}},"60":{"10":{"2":175,"3":200},"15":{"2":275,"3":300}},"80":{"10":{"2":200,"3":225,"4":250,"5":279},"15":{"2":300,"3":325,"4":350,"5":379}}},"44":{"40":{"10":{"2":169},"15":{"2":269}},"60":{"10":{"2":179,"3":189},"15":{"2":279,"3":289}},"80":{"10":{"2":200,"3":250,"4":275,"5":299},"15":{"2":300,"3":350,"4":375,"5":399}}},"50":{"40":{"10":{"2":179},"15":{"2":279}},"60":{"10":{"2":189,"3":199},"15":{"2":289,"3":299}},"80":{"10":{"2":250,"3":250,"4":300,"5":329}}},"60":{"40":{"10":{"2":179},"15":{"2":279}},"60":{"10":{"2":209,"3":219},"15":{"2":309,"3":319}},"80":{"10":{"2":250,"3":275,"4":325,"5":319}}}};
