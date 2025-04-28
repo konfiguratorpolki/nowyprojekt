@@ -211,19 +211,21 @@
           <li class="py-1 flex justify-between"><span class="font-medium">Materiał:</span><span>płyta laminowana gr. 1,8 cm</span></li>
           <li class="py-1 flex justify-between"><span class="font-medium">Termin realizacji:</span><span>5‑7&nbsp;dni roboczych</span></li>
         </ul>
+ <a id="downloadOrderButton" onclick="downloadOrderSummary()" class="flex items-center space-x-2 text-black font-semibold cursor-pointer hover:underline mt-2 text-sm" style="display: none;">
+  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+    <path d="M10 3a1 1 0 011 1v8.586l3.293-3.293a1 1 0 111.414 1.414l-5 5a1 1 0 01-1.414 0l-5-5a1 1 0 111.414-1.414L9 12.586V4a1 1 0 011-1z"/>
+  </svg>
+  <span>Zapisz zamówienie</span>
+</a>
         <!-- Cena & Allegro -->
         <div class="mt-4 p-3 border-t flex flex-col items-start space-y-3" id="finalOrderSummary">
+
           <p class="text-base md:text-sm"><strong>Cena:</strong> <span class="text-red-600 font-bold text-2xl" id="priceSummary"></span></p>
           <small id="priceHint" class="text-gray-600 text-xs">wybierz wszystkie parametry półki, aby zobaczyć cenę i kod zamówienia</small>
           <p class="text-base md:text-sm"><strong>Zamów na Allegro:</strong> <span class="text-red-600 font-bold" id="quantitySummary"></span></p>
           <div id="orderButtonsContainer" style="display:none;" class="flex flex-col space-y-2">
   <button onclick="copyOrderSummary()" class="px-4 py-2 bg-orange-600 text-white rounded text-lg shimmer">Zamów na Allegro</button>
-  <a onclick="downloadOrderSummary()" class="flex items-center space-x-2 text-black font-semibold cursor-pointer hover:underline mt-2 text-sm">
-  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
-    <path d="M10 3a1 1 0 011 1v8.586l3.293-3.293a1 1 0 111.414 1.414l-5 5a1 1 0 01-1.414 0l-5-5a1 1 0 111.414-1.414L9 12.586V4a1 1 0 011-1z"/>
-  </svg>
-  <span>Pobierz zamówienie</span>
-</a>
+ 
 
 
 </div>
@@ -354,11 +356,15 @@ Cena: ${price}
       // OPCJE DODATKOWE
       const opts=[];if(document.getElementById("noTopShelf")?.checked)opts.push("bez górnej półki");if(document.getElementById("shelfType").value==="standing"&&document.getElementById("noBottomShelf")?.checked)opts.push("bez dolnej półki");document.getElementById("extraOptionsSummary").textContent=opts.length?opts.join(" / "):"–";
       // Sprawdź kompletność
-      if(document.getElementById("shelfType").value===""||document.getElementById("sideColor").value===""||document.getElementById("shelfColor").value===""||scVal==="0"){document.getElementById("priceSummary").textContent="";document.getElementById("quantitySummary").textContent="";document.getElementById("orderCodeVisible").textContent="";document.getElementById("orderButtonsContainer").style.display="none";document.getElementById("orderCodeWindow").classList.remove("glow-animation");document.getElementById("priceHint").style.display="block";return;}
+      if(document.getElementById("shelfType").value===""||document.getElementById("sideColor").value===""||document.getElementById("shelfColor").value===""||scVal==="0"){document.getElementById("priceSummary").textContent="";document.getElementById("quantitySummary").textContent="";document.getElementById("orderCodeVisible").textContent="";document.getElementById("orderButtonsContainer").style.display="none";
+document.getElementById("downloadOrderButton").style.display="none";
+document.getElementById("orderCodeWindow").classList.remove("glow-animation");document.getElementById("priceHint").style.display="block";return;}
       document.getElementById("priceHint").style.display="none";
       const pData=computePriceDetailed();document.getElementById("priceSummary").textContent=(pData?pData.total:"N/A")+" zł";document.getElementById("quantitySummary").textContent=(pData?pData.total:0)+" szt.";
       const stSel=document.getElementById("shelfType"),stText=stSel.options[stSel.selectedIndex];document.getElementById("shelfTypeSummary").textContent=stText.value!==""?stText.text.toLowerCase():"nie wybrano";
-      const code=generateOrderCode();document.getElementById("orderCodeVisible").textContent=code;document.getElementById("orderButtonsContainer").style.display="block";document.getElementById("orderCodeWindow").classList.add("glow-animation");
+      const code=generateOrderCode();document.getElementById("orderCodeVisible").textContent=code;document.getElementById("orderButtonsContainer").style.display="block";
+document.getElementById("downloadOrderButton").style.display="flex";
+document.getElementById("orderCodeWindow").classList.add("glow-animation");
       const order={width:getCurrentWidth()+" cm",height:document.getElementById("heightSummary").textContent,depth:document.getElementById("depthSummary").textContent,sideColor:sideText,shelfColor:shelfText,shelfType:document.getElementById("shelfTypeSummary").textContent,shelfCount:document.getElementById("shelfCountSummary").textContent,gap:gap,extra:opts.join(" / "),price:pData.total+" zł",quantity:pData.total+" szt."};localStorage.setItem("order_"+code,JSON.stringify(order));}
 
     /* ---------- CENA ---------- */
