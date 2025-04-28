@@ -78,6 +78,7 @@
   </div>
 </section>
 
+
 <style>
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
@@ -229,9 +230,18 @@
         </div>
       </div>
       <!-- Kod -->
-      <div id="orderCodeWindow" class="w-full p-2 border-2 border-blue-500 rounded bg-blue-500 text-center font-bold text-lg text-white">Kod zamówienia: <span id="orderCodeVisible"></span></div>
-    </div>
-  </div>
+      <div id="orderCodeWindow" class="w-full p-2 border-2 border-blue-500 rounded bg-blue-500 text-center font-bold text-lg text-white">
+  Kod zamówienia: <span id="orderCodeVisible"></span>
+</div>
+
+<!-- ✨ Opinie klientów w osobnym okienku -->
+<div class="mt-6 bg-white p-4 rounded-lg shadow text-center">
+  <h3 class="text-gray-800 font-semibold mb-2 text-sm">Opinie naszych klientów na Allegro</h3>
+  <div id="customerReview" class="text-gray-600 text-sm opacity-0 transition-opacity duration-1000"></div>
+</div>
+
+
+
 
   <!-- ***** SCRIPTY JS ***** -->
   <script>
@@ -428,4 +438,39 @@ Cena: ${price}
     window.onload=function(){updateDepthOptions();init3D();updateShelfCountOptions();};
   </script>
 </body>
+
+<script>
+  const reviews = [
+    '"Fantastyczna półeczka, przyszła od razu zmontowana i idealnie pasuje w wielu miejscach. Serdecznie polecam!"',
+  '"Piękna, zgrabna półka. Solidnie wykonana, bez żadnych wad. Polecam!"',
+  '"Bardzo ładna i funkcjonalna półka, świetnie zapakowana na czas transportu. Polecam!"',
+  '"Super produkt – pięknie wykonany, idealnie pasuje do małych słoiczków z przyprawami w kuchni. Polecam!"',
+  '"Ładna i solidna półka, starannie wykonana. Kolor świetnie wpasował się w meble. Polecam!"'
+];
+
+  let currentReview = 0;
+  const reviewDiv = document.getElementById('customerReview');
+
+  function showNextReview() {
+    // Ukryj aktualną opinię
+    reviewDiv.classList.remove('opacity-100');
+    reviewDiv.classList.add('opacity-0');
+
+    setTimeout(() => {
+      // Zmień tekst
+      reviewDiv.innerHTML = `⭐ ${reviews[currentReview]}`;
+      // Pokaż nową opinię
+      reviewDiv.classList.remove('opacity-0');
+      reviewDiv.classList.add('opacity-100');
+
+      // Przejdź do następnej opinii
+      currentReview = (currentReview + 1) % reviews.length;
+    }, 1000); // czas zanikania (w ms)
+  }
+
+  // Start
+  showNextReview();
+  setInterval(showNextReview, 6000); // zmiana co 6 sekund
+</script>
+
 </html>
