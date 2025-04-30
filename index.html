@@ -130,6 +130,7 @@
             border: 1px solid #D1D5DB; /* gray-300 */
             box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05); /* Lekki wewnętrzny cień */
             transition: background-color 0.2s ease-in-out;
+            flex-shrink: 0; /* Zapobiega kurczeniu się kwadracika */
         }
          .color-swatch-display.swatch-white-display {
              border-color: #9CA3AF; /* gray-400 - mocniejsza ramka dla białego */
@@ -212,52 +213,52 @@
                 <div class="swiper-wrapper">
                     <div class="swiper-slide">
                         <div class="slide-content">
-                            <img src="img/1a.jpg" alt="Inspiracja 1" onclick="presetConfig(80, 44, 10, 5, 'hanging')" />
+                            <img src="img/1a.jpg" alt="Inspiracja 1" onclick="presetConfig(80, 44, 10, 5, 'hanging', false, false, '#8B5A2B', '#8B5A2B')" />
                         </div>
                     </div>
                     <div class="swiper-slide">
                          <div class="slide-content">
-                            <img src="img/2a.jpg" alt="Inspiracja 2" onclick="presetConfig(60, 44, 10, 3, 'hanging', true)" />
+                            <img src="img/2a.jpg" alt="Inspiracja 2" onclick="presetConfig(60, 44, 10, 3, 'hanging', true, false, '#000000', '#8B5A2B')" />
                         </div>
                     </div>
                     <div class="swiper-slide">
                          <div class="slide-content">
-                            <img src="img/3a.jpg" alt="Inspiracja 3" onclick="presetConfig(40, 44, 10, 2, 'hanging', true)" />
+                            <img src="img/3a.jpg" alt="Inspiracja 3" onclick="presetConfig(40, 44, 10, 2, 'hanging', true, false, '#8B5A2B', '#FFFFFF')" />
                         </div>
                     </div>
                     <div class="swiper-slide">
                          <div class="slide-content">
-                            <img src="img/4a.jpg" alt="Inspiracja 4" onclick="presetConfig(40, 60, 10, 2, 'hanging')" />
+                            <img src="img/4a.jpg" alt="Inspiracja 4" onclick="presetConfig(40, 60, 10, 2, 'hanging', false, false, '#8B5A2B', '#8B5A2B')" />
                         </div>
                     </div>
                     <div class="swiper-slide">
                          <div class="slide-content">
-                            <img src="img/5a.jpg" alt="Inspiracja 5" onclick="presetConfig(40, 60, 10, 2, 'standing')" />
+                            <img src="img/5a.jpg" alt="Inspiracja 5" onclick="presetConfig(40, 60, 10, 2, 'standing', false, false, '#8B5A2B', '#8B5A2B')" />
                         </div>
                     </div>
                      <div class="swiper-slide">
                          <div class="slide-content">
-                            <img src="img/6a.jpg" alt="Inspiracja 6" onclick="presetConfig(40, 60, 10, 2, 'standing', false, true)" />
+                            <img src="img/6a.jpg" alt="Inspiracja 6" onclick="presetConfig(40, 60, 10, 2, 'standing', false, true, '#8B5A2B', '#8B5A2B')" />
                         </div>
                     </div>
                      <div class="swiper-slide">
                          <div class="slide-content">
-                            <img src="img/7a.jpg" alt="Inspiracja 7" onclick="presetConfig(40, 60, 10, 2, 'standing', true, true)" />
+                            <img src="img/7a.jpg" alt="Inspiracja 7" onclick="presetConfig(40, 60, 10, 2, 'standing', true, true, '#8B5A2B', '#8B5A2B')" />
                         </div>
                     </div>
                      <div class="swiper-slide">
                          <div class="slide-content">
-                            <img src="img/8a.jpg" alt="Inspiracja 8" onclick="presetConfig(40, 60, 15, 2, 'standing', true, true)" />
+                            <img src="img/8a.jpg" alt="Inspiracja 8" onclick="presetConfig(40, 60, 15, 2, 'standing', true, true, '#8B5A2B', '#FFFFFF')" />
                         </div>
                     </div>
                      <div class="swiper-slide">
                          <div class="slide-content">
-                            <img src="img/9a.jpg" alt="Inspiracja 9" onclick="presetConfig(40, 60, 10, 2, 'standing', false, true)" />
+                            <img src="img/9a.jpg" alt="Inspiracja 9" onclick="presetConfig(40, 60, 10, 2, 'standing', false, true, '#8B5A2B', '#FFFFFF')" />
                         </div>
                     </div>
                      <div class="swiper-slide">
                          <div class="slide-content">
-                            <img src="img/10a.jpg" alt="Inspiracja 10" onclick="presetConfig(40, 44, 10, 2, 'standing', true, true)" />
+                            <img src="img/10a.jpg" alt="Inspiracja 10" onclick="presetConfig(40, 44, 10, 2, 'standing', true, true, '#FFFFFF', '#8B5A2B')" />
                         </div>
                     </div>
                 </div>
@@ -323,23 +324,27 @@
                  <h2 class="text-lg font-semibold mb-4 flex items-center text-stone-800"><span class="text-green-600 mr-2 text-xl font-bold">3</span>Wybierz kolor</h2>
                  <div>
                      <label for="sideColor" class="block font-medium text-sm mb-1 text-stone-700">Kolor boków:</label>
-                     <div class="flex items-center"> <select id="sideColor" class="custom-select flex-grow" onchange="updateOrderSummary(); updateSwatchDisplay('sideColor', 'sideColorSwatchDisplay');">
+                     <div class="flex items-center">
+                         <select id="sideColor" class="custom-select flex-grow" onchange="updateOrderSummary(); updateSwatchDisplay('sideColor', 'sideColorSwatchDisplay');">
                              <option value="">-- Wybierz --</option>
                              <option value="#8B5A2B" data-color="#8B5A2B">Dąb Craft Złoty</option>
                              <option value="#FFFFFF" data-color="#FFFFFF">Biały matowy</option>
                              <option value="#000000" data-color="#000000">Czarny matowy</option>
                          </select>
-                         <span id="sideColorSwatchDisplay" class="color-swatch-display flex-shrink-0"></span> </div>
+                         <span id="sideColorSwatchDisplay" class="color-swatch-display"></span>
+                    </div>
                  </div>
                  <div class="pt-2">
                      <label for="shelfColor" class="block font-medium text-sm mb-1 text-stone-700">Kolor półek i podstaw:</label>
-                      <div class="flex items-center"> <select id="shelfColor" class="custom-select flex-grow" onchange="updateOrderSummary(); updateSwatchDisplay('shelfColor', 'shelfColorSwatchDisplay');">
+                      <div class="flex items-center">
+                         <select id="shelfColor" class="custom-select flex-grow" onchange="updateOrderSummary(); updateSwatchDisplay('shelfColor', 'shelfColorSwatchDisplay');">
                              <option value="">-- Wybierz --</option>
                              <option value="#8B5A2B" data-color="#8B5A2B">Dąb Craft Złoty</option>
                              <option value="#FFFFFF" data-color="#FFFFFF">Biały matowy</option>
                              <option value="#000000" data-color="#000000">Czarny matowy</option>
                          </select>
-                          <span id="shelfColorSwatchDisplay" class="color-swatch-display flex-shrink-0"></span> </div>
+                          <span id="shelfColorSwatchDisplay" class="color-swatch-display"></span>
+                     </div>
                  </div>
              </div>
         </div>
@@ -415,41 +420,155 @@
         function checkCustomWidth() { const select = document.getElementById('width'); const input = document.getElementById('customWidthInput'); const display = document.getElementById('customWidthDisplay'); const fee = document.getElementById('customWidthFee'); if (select.value === 'custom') { input.style.display = 'block'; display.style.display = 'inline'; fee.style.display = 'inline'; display.textContent = input.value + ' cm'; } else { input.style.display = 'none'; display.style.display = 'none'; fee.style.display = 'none'; } handleDimensionChange(); }
         function handleDimensionChange() { updateDepthOptions(); updateShelfCountOptions(); updatePreview(); updateOrderSummary(); }
 
+        // --- Logika 3D (bez zmian funkcjonalnych) ---
         function init3D() {
             const container = document.getElementById("shelfContainer");
             if (!container) return;
             scene = new THREE.Scene();
             scene.background = new THREE.Color(0xf0f0f0);
             camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
-            camera.position.set(4, 5, 7);
+            camera.position.set(4, 5, 7); // Ustawienie początkowe kamery
             renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize(container.clientWidth, container.clientHeight);
-            container.innerHTML = '';
+            container.innerHTML = ''; // Wyczyść kontener przed dodaniem rendera
             container.appendChild(renderer.domElement);
-            scene.add(new THREE.HemisphereLight(0xffffff, 0x444444, 1));
+            // Światła
+            scene.add(new THREE.HemisphereLight(0xffffff, 0x444444, 1)); // Górne i dolne światło
             const directionalLight = new THREE.DirectionalLight(0xffffff, 0.6);
-            directionalLight.position.set(4, 8, 3);
+            directionalLight.position.set(4, 8, 3); // Pozycja światła kierunkowego
             scene.add(directionalLight);
+            // Kontrolery
             controls = new THREE.OrbitControls(camera, renderer.domElement);
-            controls.enableDamping = true;
+            controls.enableDamping = true; // Wygładzenie ruchu
+            // Obsługa resize
             window.addEventListener('resize', onWindowResize, false);
-            updatePreview();
-            animate();
+            updatePreview(); // Pierwsze renderowanie
+            animate(); // Start animacji
         }
 
-        function onWindowResize() { if (!camera || !renderer || !shelfContainer) return; camera.aspect = shelfContainer.clientWidth / shelfContainer.clientHeight; camera.updateProjectionMatrix(); renderer.setSize(shelfContainer.clientWidth, shelfContainer.clientHeight); }
+        function onWindowResize() {
+             if (!camera || !renderer || !shelfContainer) return;
+             camera.aspect = shelfContainer.clientWidth / shelfContainer.clientHeight;
+             camera.updateProjectionMatrix();
+             renderer.setSize(shelfContainer.clientWidth, shelfContainer.clientHeight);
+        }
 
         function animate() {
             requestAnimationFrame(animate);
              if (shelfGroup) { // Obrót modelu 3D
                 shelfGroup.rotation.y += 0.004;
              }
-            controls.update();
-            renderer.render(scene, camera);
+            controls.update(); // Aktualizacja kontrolerów (ważne dla damping)
+            renderer.render(scene, camera); // Renderowanie sceny
         }
 
-        function makeTextSprite(message, parameters = {}) { const fontface = parameters.fontface || "Arial"; const fontsize = parameters.fontsize || 64; const canvas = document.createElement("canvas"); const context = canvas.getContext("2d"); context.font = `bold ${fontsize}px ${fontface}`; const padding = 8; const textWidth = context.measureText(message).width; canvas.width = textWidth + padding * 2; canvas.height = fontsize * 1.2 + padding * 2; context.fillStyle = "rgba(255, 255, 255, 1)"; context.fillRect(0, 0, canvas.width, canvas.height); context.strokeStyle = "rgba(0, 0, 0, 1)"; context.lineWidth = 4; context.strokeRect(0, 0, canvas.width, canvas.height); context.fillStyle = "rgba(0, 0, 0, 1)"; context.font = `bold ${fontsize}px ${fontface}`; context.fillText(message, padding, fontsize + padding); const texture = new THREE.Texture(canvas); texture.needsUpdate = true; const spriteMaterial = new THREE.SpriteMaterial({ map: texture }); const sprite = new THREE.Sprite(spriteMaterial); sprite.scale.set(canvas.width / 100, canvas.height / 100, 1.0); return sprite; }
-        function updatePreview() { if (!scene) return; if (shelfGroup) scene.remove(shelfGroup); shelfGroup = new THREE.Group(); shelfGroup.scale.set(1.2, 1.2, 1.2); shelfGroup.position.y = -1; scene.add(shelfGroup); const width = parseFloat(getCurrentWidth()) / 10; const height = parseFloat(document.getElementById("height").value) / 10; const depth = parseFloat(document.getElementById("depth").value) / 10; const shelfCount = parseInt(document.getElementById("shelfCount").value); const thickness = 0.18; const material = new THREE.MeshStandardMaterial({ color: 0x777777, metalness: 0, roughness: 0.6 }); const shelfType = document.getElementById("shelfType").value; const noTopShelf = document.getElementById("noTopShelf")?.checked; const noBottomShelf = (shelfType === "standing" && document.getElementById("noBottomShelf")?.checked); if (!(shelfType === "standing" && noBottomShelf)) { const bottomGeometry = new THREE.BoxGeometry(width, thickness, depth); const bottomMesh = new THREE.Mesh(bottomGeometry, material.clone()); bottomMesh.position.set(0, -height / 2 + thickness / 2, 0); shelfGroup.add(bottomMesh); } if (!noTopShelf) { const topGeometry = new THREE.BoxGeometry(width, thickness, depth); const topMesh = new THREE.Mesh(topGeometry, material.clone()); topMesh.position.set(0, height / 2 - thickness / 2, 0); shelfGroup.add(topMesh); } const sideGeometry = new THREE.BoxGeometry(thickness, height, depth); const leftSideMesh = new THREE.Mesh(sideGeometry, material.clone()); leftSideMesh.position.set(-width / 2 + thickness / 2, 0, 0); shelfGroup.add(leftSideMesh); const rightSideMesh = leftSideMesh.clone(); rightSideMesh.position.x = width / 2 - thickness / 2; shelfGroup.add(rightSideMesh); if (!isNaN(shelfCount) && shelfCount > 0) { const totalAvailableHeight = height - 2 * thickness; const gap = (totalAvailableHeight - shelfCount * thickness) / (shelfCount + 1); let startY = -height / 2 + thickness; for (let i = 1; i <= shelfCount; i++) { const shelfGeometry = new THREE.BoxGeometry(width - 2 * thickness, thickness, depth); const shelfMesh = new THREE.Mesh(shelfGeometry, material.clone()); shelfMesh.position.set(0, startY + gap * i + thickness * (i - 0.5) , 0); shelfGroup.add(shelfMesh); } } shelfGroup.children.filter(child => child instanceof THREE.Sprite).forEach(sprite => { if (sprite.material.map) sprite.material.map.dispose(); sprite.material.dispose(); shelfGroup.remove(sprite); }); const labelOffset = 0.5; const widthText = makeTextSprite(getCurrentWidth() + " cm", { fontsize: 32 }); widthText.position.set(0, height / 2 + labelOffset, 0); shelfGroup.add(widthText); const heightText = makeTextSprite(document.getElementById("height").value + " cm", { fontsize: 40 }); heightText.position.set(-width / 2 - labelOffset, 0, 0); shelfGroup.add(heightText); const depthText = makeTextSprite(document.getElementById("depth").value + " cm", { fontsize: 32 }); depthText.position.set(width / 2 + labelOffset, -height/2, 0); shelfGroup.add(depthText); }
+        function makeTextSprite(message, parameters = {}) {
+            const fontface = parameters.fontface || "Arial";
+            const fontsize = parameters.fontsize || 64; // Zwiększona rozdzielczość etykiety
+            const canvas = document.createElement("canvas");
+            const context = canvas.getContext("2d");
+            context.font = `bold ${fontsize}px ${fontface}`;
+            const padding = 8; // Zwiększony padding
+            const textWidth = context.measureText(message).width;
+            canvas.width = textWidth + padding * 2;
+            canvas.height = fontsize * 1.2 + padding * 2; // Dostosowanie wysokości do fontu
+            // Tło etykiety (opcjonalnie, może być przezroczyste)
+            context.fillStyle = "rgba(255, 255, 255, 1)"; // Białe tło
+            context.fillRect(0, 0, canvas.width, canvas.height);
+             // Ramka etykiety (opcjonalnie)
+            context.strokeStyle = "rgba(0, 0, 0, 1)"; // Czarna ramka
+            context.lineWidth = 4; // Grubość ramki
+            context.strokeRect(0, 0, canvas.width, canvas.height);
+            // Tekst
+            context.fillStyle = "rgba(0, 0, 0, 1)"; // Czarny tekst
+            context.font = `bold ${fontsize}px ${fontface}`;
+            context.fillText(message, padding, fontsize + padding); // Pozycja tekstu z paddingiem
+            const texture = new THREE.Texture(canvas);
+            texture.needsUpdate = true;
+            const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
+            const sprite = new THREE.Sprite(spriteMaterial);
+             // Skalowanie sprite'a - dostosuj, aby uzyskać odpowiedni rozmiar w scenie
+            sprite.scale.set(canvas.width / 100, canvas.height / 100, 1.0);
+            return sprite;
+        }
+
+        function updatePreview() {
+             if (!scene) return;
+             // Usuń starą grupę półki, jeśli istnieje
+             if (shelfGroup) scene.remove(shelfGroup);
+             // Stwórz nową grupę dla półki
+             shelfGroup = new THREE.Group();
+             shelfGroup.scale.set(1.2, 1.2, 1.2); // Lekkie powiększenie modelu
+             shelfGroup.position.y = -1; // Lekkie obniżenie modelu
+             scene.add(shelfGroup);
+             // Pobierz wymiary (przeliczone na jednostki Three.js - np. cm / 10)
+             const width = parseFloat(getCurrentWidth()) / 10;
+             const height = parseFloat(document.getElementById("height").value) / 10;
+             const depth = parseFloat(document.getElementById("depth").value) / 10;
+             const shelfCount = parseInt(document.getElementById("shelfCount").value);
+             const thickness = 0.18; // Grubość płyty (1.8 cm / 10)
+             // Materiał (prosty, szary - bez dynamicznej zmiany koloru w 3D w tej wersji)
+             const material = new THREE.MeshStandardMaterial({ color: 0x777777, metalness: 0, roughness: 0.6 });
+             // Opcje dodatkowe
+             const shelfType = document.getElementById("shelfType").value;
+             const noTopShelf = document.getElementById("noTopShelf")?.checked;
+             const noBottomShelf = (shelfType === "standing" && document.getElementById("noBottomShelf")?.checked);
+             // Dolna półka (lub podstawa dla stojącej)
+             if (!(shelfType === "standing" && noBottomShelf)) {
+                 const bottomGeometry = new THREE.BoxGeometry(width, thickness, depth);
+                 const bottomMesh = new THREE.Mesh(bottomGeometry, material.clone());
+                 bottomMesh.position.set(0, -height / 2 + thickness / 2, 0);
+                 shelfGroup.add(bottomMesh);
+             }
+             // Górna półka
+             if (!noTopShelf) {
+                 const topGeometry = new THREE.BoxGeometry(width, thickness, depth);
+                 const topMesh = new THREE.Mesh(topGeometry, material.clone());
+                 topMesh.position.set(0, height / 2 - thickness / 2, 0);
+                 shelfGroup.add(topMesh);
+             }
+             // Boki
+             const sideGeometry = new THREE.BoxGeometry(thickness, height, depth);
+             const leftSideMesh = new THREE.Mesh(sideGeometry, material.clone());
+             leftSideMesh.position.set(-width / 2 + thickness / 2, 0, 0);
+             shelfGroup.add(leftSideMesh);
+             const rightSideMesh = leftSideMesh.clone(); // Klonuj lewy bok
+             rightSideMesh.position.x = width / 2 - thickness / 2; // Przesuń na prawo
+             shelfGroup.add(rightSideMesh);
+             // Półki wewnętrzne
+             if (!isNaN(shelfCount) && shelfCount > 0) {
+                 const totalAvailableHeight = height - 2 * thickness; // Wysokość dostępna na półki wewnętrzne
+                 const gap = (totalAvailableHeight - shelfCount * thickness) / (shelfCount + 1); // Odstęp między półkami
+                 let startY = -height / 2 + thickness; // Pozycja Y dolnej krawędzi pierwszej luki
+                 for (let i = 1; i <= shelfCount; i++) {
+                     const shelfGeometry = new THREE.BoxGeometry(width - 2 * thickness, thickness, depth); // Szerokość półki wewn.
+                     const shelfMesh = new THREE.Mesh(shelfGeometry, material.clone());
+                     // Ustawienie pozycji Y - środek półki
+                     shelfMesh.position.set(0, startY + gap * i + thickness * (i - 0.5) , 0);
+                     shelfGroup.add(shelfMesh);
+                 }
+             }
+             // Usuń stare etykiety wymiarów
+             shelfGroup.children.filter(child => child instanceof THREE.Sprite).forEach(sprite => {
+                  if (sprite.material.map) sprite.material.map.dispose(); // Zwolnij teksturę
+                  sprite.material.dispose(); // Zwolnij materiał
+                  shelfGroup.remove(sprite); // Usuń sprite
+             });
+             // Dodaj nowe etykiety wymiarów
+             const labelOffset = 0.5; // Odległość etykiety od krawędzi
+             const widthText = makeTextSprite(getCurrentWidth() + " cm", { fontsize: 32 });
+             widthText.position.set(0, height / 2 + labelOffset, 0); // Nad górną półką
+             shelfGroup.add(widthText);
+             const heightText = makeTextSprite(document.getElementById("height").value + " cm", { fontsize: 40 });
+             heightText.position.set(-width / 2 - labelOffset, 0, 0); // Obok lewego boku
+             shelfGroup.add(heightText);
+             const depthText = makeTextSprite(document.getElementById("depth").value + " cm", { fontsize: 32 });
+             depthText.position.set(width / 2 + labelOffset, -height/2, 0); // Obok prawego boku, na dole
+             shelfGroup.add(depthText);
+        }
+        // --- Koniec logiki 3D ---
+
+
         function updateShelfTypeOptions() { const shelfType = document.getElementById('shelfType').value; const optionsDiv = document.getElementById('shelfTypeOptions'); const noTopChecked = document.getElementById('noTopShelf')?.checked || false; const noBottomChecked = document.getElementById('noBottomShelf')?.checked || false; optionsDiv.innerHTML = ''; if (shelfType === 'standing') { optionsDiv.style.display = 'block'; optionsDiv.innerHTML = `<label class="flex items-center space-x-2 text-sm cursor-pointer"><input type="checkbox" id="noTopShelf" class="rounded border-stone-300 text-green-600 shadow-sm focus:ring-green-500" onchange="updatePreview(); updateOrderSummary();" ${noTopChecked ? 'checked' : ''}> <span class="text-stone-700">Bez górnej półki</span></label><label class="flex items-center space-x-2 text-sm mt-1 cursor-pointer"><input type="checkbox" id="noBottomShelf" class="rounded border-stone-300 text-green-600 shadow-sm focus:ring-green-500" onchange="updatePreview(); updateOrderSummary();" ${noBottomChecked ? 'checked' : ''}> <span class="text-stone-700">Bez dolnej półki (podstawy)</span></label>`; } else if (shelfType === 'hanging') { optionsDiv.style.display = 'block'; optionsDiv.innerHTML = `<label class="flex items-center space-x-2 text-sm mt-1 cursor-pointer"><input type="checkbox" id="noTopShelf" class="rounded border-stone-300 text-green-600 shadow-sm focus:ring-green-500" onchange="updatePreview(); updateOrderSummary();" ${noTopChecked ? 'checked' : ''}> <span class="text-stone-700">Bez górnej półki</span></label>`; const bottomCheckbox = document.getElementById('noBottomShelf'); if (bottomCheckbox) bottomCheckbox.checked = false; } else { optionsDiv.style.display = 'none'; } updatePreview(); updateOrderSummary(); }
         function computePriceDetailed() { const height = document.getElementById('height').value; const depth = document.getElementById('depth').value; const shelfCount = document.getElementById('shelfCount').value; let basePrice = null; let extraFee = 0; let baseWidthKey; const isCustomWidth = document.getElementById('width').value === 'custom'; if (isCustomWidth) { const customWidth = parseInt(getCurrentWidth()); if (customWidth < 35 || customWidth > 59) return null; baseWidthKey = customWidth < 39 ? "34" : customWidth < 47 ? "44" : customWidth < 54 ? "50" : "60"; extraFee = 50; } else { baseWidthKey = getCurrentWidth(); } if (pricing[baseWidthKey]?.[height]?.[depth]?.[shelfCount] !== undefined) { basePrice = pricing[baseWidthKey][height][depth][shelfCount]; } else if (shelfCount === '0' && pricing[baseWidthKey]?.[height]?.[depth]) { const availableShelfCounts = Object.keys(pricing[baseWidthKey][height][depth]).map(Number).filter(n => n >= 0); if (availableShelfCounts.length > 0) { const minShelfCount = Math.min(...availableShelfCounts); basePrice = pricing[baseWidthKey][height][depth][minShelfCount.toString()]; } else { return null; } } else { return null; } if (basePrice === null) return null; let totalPrice = basePrice + extraFee; let deduction = 0; if (document.getElementById('noTopShelf')?.checked) deduction += 10; if (document.getElementById('shelfType').value === 'standing' && document.getElementById('noBottomShelf')?.checked) deduction += 10; totalPrice -= deduction; return { base: basePrice, extra: extraFee, deduction: deduction, total: Math.max(50, totalPrice) }; }
         function generateOrderCode() { const sideColorText = document.getElementById("sideColor").options[document.getElementById("sideColor").selectedIndex].text.toLowerCase(); const shelfColorText = document.getElementById("shelfColor").options[document.getElementById("shelfColor").selectedIndex].text.toLowerCase(); const shelfTypeValue = document.getElementById("shelfType").value; let shelfTypeText = shelfTypeValue === "standing" ? "stojąca na blacie" : shelfTypeValue === "hanging" ? "wisząca" : "nie wybrano"; const options = []; if (document.getElementById("noTopShelf")?.checked) options.push("bez górnej półki"); if (shelfTypeValue === "standing" && document.getElementById("noBottomShelf")?.checked) options.push("bez dolnej półki"); const optionsString = options.length ? options.join(" / ") : "-"; const parameters = [ getCurrentWidth(), document.getElementById("height").value, document.getElementById("depth").value, document.getElementById("shelfCount").value, sideColorText, shelfColorText, shelfTypeText, optionsString ].join("_"); return Math.abs(hashString(parameters)).toString(36); }
@@ -478,19 +597,21 @@
 
              let gT = "n/d";
              if (!isNaN(sc) && sc > 0) {
-                 const totalAvailableHeight = h - 2 * t;
+                 const totalAvailableHeight = h - (nT ? t : 2*t) - (nB ? 0 : t); // Adjust height based on missing top/bottom
                  const totalShelvesThickness = sc * t;
-                 if (totalAvailableHeight > totalShelvesThickness) {
+                 if (totalAvailableHeight >= totalShelvesThickness) { // Use >= to allow tight fit
                      const freeSpace = totalAvailableHeight - totalShelvesThickness;
                      gT = (freeSpace / (sc + 1)).toFixed(1) + " cm";
                  } else {
                      gT = "za mało miejsca";
                  }
              } else {
-                 gT = "brak półek wewn.";
-             }
+                 // Calculate gap even if 0 shelves, between top and bottom
+                 const totalAvailableHeight = h - (nT ? t : 2*t) - (nB ? 0 : t);
+                  gT = totalAvailableHeight > 0 ? totalAvailableHeight.toFixed(1) + " cm" : "brak miejsca";
+              }
              document.getElementById("gapSummary").textContent = gT;
-             document.getElementById("gapSummaryDisplay").textContent = gT;
+             document.getElementById("gapSummaryDisplay").textContent = gT; // Update the other display too
 
              const o = []; if (nT) o.push("bez górnej półki"); if (nB) o.push("bez dolnej półki");
              document.getElementById("extraOptionsSummary").textContent = o.length ? o.join(" / ") : "standardowa";
@@ -530,41 +651,99 @@
              }
           }
 
-        // *** NOWA FUNKCJA: Aktualizacja kwadracika obok selecta ***
+        // *** Aktualizacja kwadracika obok selecta ***
         function updateSwatchDisplay(selectElementId, swatchDisplayId) {
             const selectElement = document.getElementById(selectElementId);
             const swatchDisplay = document.getElementById(swatchDisplayId);
             if (!selectElement || !swatchDisplay) return;
 
             const selectedOption = selectElement.options[selectElement.selectedIndex];
-            const color = selectedOption ? selectedOption.dataset.color : null; // Pobierz kolor z atrybutu data-color
+            const color = selectedOption ? selectedOption.dataset.color : null;
 
             if (color) {
                 swatchDisplay.style.backgroundColor = color;
-                swatchDisplay.style.display = 'inline-block'; // Pokaż kwadracik
-                // Specjalna obsługa dla białego koloru (dodanie/usunięcie klasy dla ramki)
+                swatchDisplay.style.display = 'inline-block';
                  if (color.toUpperCase() === '#FFFFFF') {
                      swatchDisplay.classList.add('swatch-white-display');
                  } else {
                      swatchDisplay.classList.remove('swatch-white-display');
                  }
             } else {
-                // Jeśli wybrano opcję bez koloru (np. "-- Wybierz --"), ukryj kwadracik lub ustaw domyślny styl
-                swatchDisplay.style.backgroundColor = '#E5E7EB'; // Domyślne tło (np. szare)
+                swatchDisplay.style.backgroundColor = '#E5E7EB';
                 swatchDisplay.classList.remove('swatch-white-display');
-                // Możesz też ukryć: swatchDisplay.style.display = 'none';
+                // Opcjonalnie ukryj, jeśli "-- Wybierz --"
+                // swatchDisplay.style.display = 'none';
              }
          }
 
 
         function copyOrderSummary() { const code = document.getElementById("orderCodeVisible").textContent; const price = document.getElementById("priceSummary").textContent; if (!code || code.includes("NIEDOSTĘPNA") || code.includes("BŁĄD")) { alert("Wystąpił błąd lub konfiguracja jest niekompletna/niedostępna."); return; } navigator.clipboard.writeText(code).then(() => { alert(`✅ Kod zamówienia skopiowany: ${code}\n\n🔄 Przejdź teraz na Allegro i zamów na kwotę ${price}\n📋 W „Uwagi do zakupu” wklej skopiowany kod zamówienia.`); window.open("https://allegro.pl/oferta/zaprojektuj-wlasna-polke-podaj-wymiar-i-wybierz-kolory-do-kuchni-pokoju-17253898746", "_blank"); }).catch(err => { console.error('Błąd kopiowania: ', err); alert('Błąd kopiowania kodu.'); }); }
         function downloadOrderSummary() { const width = document.getElementById("widthSummary").textContent; const height = document.getElementById("heightSummary").textContent; const depth = document.getElementById("depthSummary").textContent; const sideColor = document.getElementById("sideColorSummary").textContent; const shelfColor = document.getElementById("shelfColorSummary").textContent; const shelfCount = document.getElementById("shelfCountSummary").textContent; const shelfType = document.getElementById("shelfTypeSummary").textContent; const gap = document.getElementById("gapSummary").textContent; const extraOptions = document.getElementById("extraOptionsSummary").textContent; const price = document.getElementById("priceSummary").textContent; const orderCode = document.getElementById("orderCodeVisible").textContent; if (!orderCode || orderCode.includes("NIEDOSTĘPNA") || orderCode.includes("BŁĄD")) { alert("Wystąpił błąd lub konfiguracja jest niekompletna/niedostępna."); return; } const content = `📦 Podsumowanie Zamówienia\n\n` + `↔️ Szerokość: ${width}\n` + `⬆️ Wysokość: ${height}\n` + `↕️ Głębokość: ${depth}\n\n` + `- Kolor boków: ${sideColor}\n` + `- Kolor półek i podstaw: ${shelfColor}\n\n` + `- Ilość półek: ${shelfCount}\n` + `- Rodzaj półki: ${shelfType}\n` + `- Odległość między półkami: ${gap}\n\n` + `- Opcje dodatkowe: ${extraOptions}\n` + `- Materiał: płyta laminowana gr. 1,8 cm\n\n` + `- Termin realizacji: 5‑7 dni roboczych\n\n` + `Cena: ${price}\n\n` + `🏷️ Kod zamówienia: ${orderCode}`; const blob = new Blob([content], { type: "text/plain;charset=utf-8" }); const url = URL.createObjectURL(blob); const link = document.createElement("a"); link.href = url; link.download = `zamowienie-${orderCode}.txt`; document.body.appendChild(link); link.click(); document.body.removeChild(link); URL.revokeObjectURL(url); }
-        function presetConfig(height, width, depth, shelfCount, shelfType = "standing", noTopShelf = false, noBottomShelf = false) { if (["34", "44", "50", "60"].includes(width.toString())) { document.getElementById("width").value = width.toString(); checkCustomWidth(); } else { document.getElementById("width").value = "custom"; document.getElementById("customWidthInput").value = width; checkCustomWidth(); } document.getElementById("height").value = height.toString(); document.getElementById("height").dispatchEvent(new Event('change')); setTimeout(() => { const depthSelect = document.getElementById("depth"); if (Array.from(depthSelect.options).some(opt => opt.value == depth.toString())) { depthSelect.value = depth.toString(); depthSelect.dispatchEvent(new Event('change')); } else { depthSelect.dispatchEvent(new Event('change')); } const shelfCountSelect = document.getElementById("shelfCount"); if (Array.from(shelfCountSelect.options).some(opt => opt.value == shelfCount.toString())) { shelfCountSelect.value = shelfCount.toString(); shelfCountSelect.dispatchEvent(new Event('change')); } else { shelfCountSelect.dispatchEvent(new Event('change')); } if (document.getElementById("sideColor").value === "") { document.getElementById("sideColor").value = "#8B5A2B"; document.getElementById("sideColor").dispatchEvent(new Event('change')); } if (document.getElementById("shelfColor").value === "") { document.getElementById("shelfColor").value = "#8B5A2B"; document.getElementById("shelfColor").dispatchEvent(new Event('change')); } document.getElementById("shelfType").value = shelfType; document.getElementById("shelfType").dispatchEvent(new Event('change')); setTimeout(() => { const noTopCheckbox = document.getElementById('noTopShelf'); if (noTopCheckbox) { noTopCheckbox.checked = noTopShelf; noTopCheckbox.dispatchEvent(new Event('change')); } const noBottomCheckbox = document.getElementById('noBottomShelf'); if (noBottomCheckbox && document.getElementById('shelfType').value === 'standing') { noBottomCheckbox.checked = noBottomShelf; noBottomCheckbox.dispatchEvent(new Event('change')); } else if (noBottomCheckbox) { noBottomCheckbox.checked = false; } updatePreview(); updateOrderSummary(); // Upewnij się, że podsumowanie jest aktualizowane
-                    // Dodatkowo zaktualizuj wyświetlanie kwadracików
-                     updateSwatchDisplay('sideColor', 'sideColorSwatchDisplay');
-                     updateSwatchDisplay('shelfColor', 'shelfColorSwatchDisplay');
-                    document.querySelector('.p-6.bg-white.shadow-lg').scrollIntoView({ behavior: 'smooth', block: 'start' });
-                 }, 50); }, 100); }
+
+        // *** Poprawiona funkcja presetConfig ***
+        function presetConfig(height, width, depth, shelfCount, shelfType = "standing", noTopShelf = false, noBottomShelf = false, sideColorValue = null, shelfColorValue = null) {
+            // Ustawienie wymiarów i typu
+             if (["34", "44", "50", "60"].includes(width.toString())) {
+                 document.getElementById("width").value = width.toString();
+             } else {
+                 document.getElementById("width").value = "custom";
+                 document.getElementById("customWidthInput").value = width;
+             }
+             checkCustomWidth(); // Aktualizuje widoczność i wartość suwaka
+
+             document.getElementById("height").value = height.toString();
+             // Najpierw zaktualizuj opcje zależne od wysokości
+             updateDepthOptions();
+             updateShelfCountOptions();
+
+             // Ustaw głębokość i liczbę półek
+            const depthSelect = document.getElementById("depth");
+            if (Array.from(depthSelect.options).some(opt => opt.value == depth.toString())) {
+                depthSelect.value = depth.toString();
+             }
+            const shelfCountSelect = document.getElementById("shelfCount");
+            if (Array.from(shelfCountSelect.options).some(opt => opt.value == shelfCount.toString())) {
+                shelfCountSelect.value = shelfCount.toString();
+             }
+
+             // Ustaw kolory
+             const sideColorSelect = document.getElementById("sideColor");
+             const shelfColorSelect = document.getElementById("shelfColor");
+             if (sideColorValue && Array.from(sideColorSelect.options).some(opt => opt.value === sideColorValue)) {
+                 sideColorSelect.value = sideColorValue;
+             }
+             if (shelfColorValue && Array.from(shelfColorSelect.options).some(opt => opt.value === shelfColorValue)) {
+                 shelfColorSelect.value = shelfColorValue;
+             }
+
+             // Ustaw typ półki
+             document.getElementById("shelfType").value = shelfType;
+             updateShelfTypeOptions(); // Ważne, aby pokazać/ukryć checkboxy
+
+             // Użyj setTimeout, aby dać czas na pojawienie się checkboxów przed ich ustawieniem
+             setTimeout(() => {
+                 const noTopCheckbox = document.getElementById('noTopShelf');
+                 if (noTopCheckbox) {
+                     noTopCheckbox.checked = noTopShelf;
+                 }
+                 const noBottomCheckbox = document.getElementById('noBottomShelf');
+                 if (noBottomCheckbox && document.getElementById('shelfType').value === 'standing') {
+                      noBottomCheckbox.checked = noBottomShelf;
+                 } else if (noBottomCheckbox) {
+                     noBottomCheckbox.checked = false; // Zresetuj dla wiszącej
+                 }
+
+                 // Na sam koniec zaktualizuj wszystko
+                 updatePreview();
+                 updateOrderSummary();
+                 updateSwatchDisplay('sideColor', 'sideColorSwatchDisplay');
+                 updateSwatchDisplay('shelfColor', 'shelfColorSwatchDisplay');
+
+                 // Przewiń do panelu konfiguracji
+                 document.querySelector('.p-6.bg-white.shadow-lg').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+            }, 50); // Krótkie opóźnienie
+        }
 
 
         window.onload = function() {
@@ -575,9 +754,7 @@
                 updateShelfTypeOptions();
                 checkCustomWidth();
 
-                // Usunięto inicjalizację setupSwatchInteraction i syncSwatches
-
-                 // *** NOWY KOD: Inicjalizacja wyświetlania kwadracików obok selectów ***
+                 // Inicjalizacja wyświetlania kwadracików obok selectów
                  updateSwatchDisplay('sideColor', 'sideColorSwatchDisplay');
                  updateSwatchDisplay('shelfColor', 'shelfColorSwatchDisplay');
 
@@ -613,9 +790,7 @@
 
                 setTimeout(() => {
                     const reviewData = reviews[currentReviewIndex];
-                    // === TUTAJ ZMIENIONO ROZMIAR IKONKI (h-8 w-8) ===
                     reviewDisplay.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-lime-500 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg> ${reviewData}`;
-                    // ============================================
                     reviewDisplay.classList.add('review-fade-enter-active');
                     currentReviewIndex = (currentReviewIndex + 1) % reviews.length;
                 }, 700);
