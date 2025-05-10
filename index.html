@@ -929,8 +929,144 @@ if (addDividersBottom && levels.length > 2) {
         function closeOrderDetailsModal() { if (!orderDetailsModalOverlay) return; orderDetailsModalOverlay.classList.remove('visible'); if (viewOrderCodeInput) viewOrderCodeInput.value = ''; }
 
         function updateOrderSummary() {
-            const shelfColorSummaryLabel = document.getElementById('shelfColorSummaryLabel'); const currentShelfType = shelfTypeSelect.value; if (shelfColorSummaryLabel) { if (currentShelfType === 'mug_shelf') shelfColorSummaryLabel.textContent = 'Kolor półek i przegródek:'; else shelfColorSummaryLabel.textContent = 'Kolor półek i podstaw:'; } document.getElementById("shelfTypeSummary").textContent = currentShelfType && shelfTypeSelect.selectedIndex > 0 ? shelfTypeSelect.options[shelfTypeSelect.selectedIndex].text : "-- Wybierz --"; const mugShelfMountItem = document.getElementById("mugShelfMountSummaryItem"); const mugShelfMountSummary = document.getElementById("mugShelfMountSummary"); if (currentShelfType === 'mug_shelf') { const selectedMountRadio = document.querySelector('input[name="mugShelfMount"]:checked'); mugShelfMountSummary.textContent = selectedMountRadio ? (selectedMountRadio.value === 'hanging' ? 'Wisząca' : 'Stojąca') : 'nie wybrano'; mugShelfMountItem.style.display = 'flex'; } else { mugShelfMountItem.style.display = 'none'; } const widthValue = getCurrentWidth(); const heightValue = heightSelect.value; const depthValue = depthSelect.value; const shelfCountValue = shelfCountSelect.value; document.getElementById("widthSummary").textContent = !isNaN(widthValue) ? widthValue + " cm" : "--"; document.getElementById("heightSummary").textContent = heightValue && heightValue !== "" ? heightValue + " cm" : "--"; document.getElementById("depthSummary").textContent = depthValue && depthValue !== "" ? depthValue + " cm" : "--"; document.getElementById("sideColorSummary").textContent = sideColorSelect.value && sideColorSelect.selectedIndex > 0 ? sideColorSelect.options[sideColorSelect.selectedIndex].text : "nie wybrano"; document.getElementById("shelfColorSummary").textContent = shelfColorSelect.value && shelfColorSelect.selectedIndex > 0 ? shelfColorSelect.options[shelfColorSelect.selectedIndex].text : "nie wybrano"; document.getElementById("shelfCountSummary").textContent = shelfCountValue !== "" ? (shelfCountSelect.options[shelfCountSelect.selectedIndex]?.text || '--') : '-- Wybierz --'; const h = parseFloat(heightValue); const sc = parseInt(shelfCountValue); const t = 1.8; let gT = "n/d"; if (!isNaN(h) && h > 0 && !isNaN(sc) && sc >= 0) { if (currentShelfType === 'mug_shelf') { const mugGapHeight = h - 2 * t; const mugGapFreeSpace = mugGapHeight - sc * t; const mugGapsCount = sc + 1; if (mugGapFreeSpace >=0 && mugGapsCount > 0) { gT = `ok. ${(mugGapFreeSpace / mugGapsCount).toFixed(1)} cm`; } else { gT = "za mało miejsca"; } } else { const displayGapHeight = h - 2 * t; const totalShelvesThickness = sc * t; if (displayGapHeight >= totalShelvesThickness && (sc + 1) > 0) { const freeSpace = displayGapHeight - totalShelvesThickness; const gapsCount = sc + 1; const calculatedGap = freeSpace / gapsCount; gT = `${calculatedGap.toFixed(1)} cm`; } else { gT = "za mało miejsca"; } } } else { gT = "wybierz H i S"; } document.getElementById("gapSummary").textContent = gT; document.getElementById("gapSummaryDisplay").textContent = gT; const o = []; if (currentShelfType === 'mug_shelf') { const selectedMount = document.querySelector('input[name="mugShelfMount"]:checked'); if (selectedMount) o.push(selectedMount.value === 'hanging' ? 'Montaż wiszący' : 'Montaż stojący'); const dividersSelected = []; if (dividersTopCheckbox?.checked) dividersSelected.push("góra"); if (dividersMiddleCheckbox?.checked) dividersSelected.push("środek"); if (dividersBottomCheckbox?.checked) dividersSelected.push("dół"); if (dividersSelected.length > 0) o.push("Przegródki: " + dividersSelected.join(", ")); } else { if (document.getElementById("noTopShelf")?.checked) o.push("bez górnej półki"); const isStandingType = (currentShelfType === "standing"); if (isStandingType && document.getElementById("noBottomShelf")?.checked) o.push("bez dolnej półki (podstawy)"); } document.getElementById("extraOptionsSummary").textContent = o.length ? o.join(" / ") : "standardowa";
-             const orderCode = generateOrderCode(); const isComplete = !!orderCode; const pH = document.getElementById("priceHint"); const orderActionsWrapper = document.getElementById("orderActionsWrapper"); const oCW = document.getElementById("orderCodeWindow"); const pSE = document.getElementById("priceSummary"); const oCVE = document.getElementById("orderCodeVisible"); const oCI = document.getElementById("orderCodeIcon"); if (oCI) oCI.classList.remove('icon-bounce'); const indicator = document.getElementById('selectionCompleteIndicator'); const footerPriceText = document.getElementById("footerPriceText"); const footerPriceDisplay = document.getElementById("footerPriceDisplay"); if (isComplete) { const pD = computePriceDetailed(); if (pD !== null) { const priceText = pD.total + " zł"; pSE.textContent = priceText; if (footerPriceText) footerPriceText.textContent = priceText; oCVE.textContent = orderCode; pH.style.display = "none"; orderActionsWrapper.style.display = "flex"; if (oCI) oCI.classList.add('icon-bounce'); if (indicator) indicator.style.display = 'inline'; if (footerPriceDisplay) footerPriceDisplay.style.cursor = 'pointer'; } else { pSE.textContent = "N/D"; if (footerPriceText) footerPriceText.textContent = ""; oCVE.textContent = "BŁĄD CENY"; pH.textContent = "Błąd obliczania ceny. Sprawdź opcje."; pH.style.display = "block"; orderActionsWrapper.style.display = "none"; oCW.style.display = "block"; if (indicator) indicator.style.display = 'none'; if (footerPriceDisplay) footerPriceDisplay.style.cursor = 'default'; } } else { pSE.textContent = ""; if (footerPriceText) footerPriceText.textContent = ""; oCVE.textContent = ""; pH.textContent = "Wybierz wszystkie parametry, aby zobaczyć cenę."; pH.style.display = "block"; orderActionsWrapper.style.display = "none"; if (oCW) oCW.style.display="block"; if (indicator) indicator.style.display = 'none'; if (footerPriceDisplay) footerPriceDisplay.style.cursor = 'default'; }
+            const shelfColorSummaryLabel = document.getElementById('shelfColorSummaryLabel');
+            const currentShelfType = shelfTypeSelect.value;
+            if (shelfColorSummaryLabel) {
+                if (currentShelfType === 'mug_shelf') shelfColorSummaryLabel.textContent = 'Kolor półek i przegródek:';
+                else shelfColorSummaryLabel.textContent = 'Kolor półek i podstaw:';
+            }
+            document.getElementById("shelfTypeSummary").textContent = currentShelfType && shelfTypeSelect.selectedIndex > 0 ? shelfTypeSelect.options[shelfTypeSelect.selectedIndex].text : "-- Wybierz --";
+            const mugShelfMountItem = document.getElementById("mugShelfMountSummaryItem");
+            const mugShelfMountSummary = document.getElementById("mugShelfMountSummary");
+
+            if (currentShelfType === 'mug_shelf') {
+                const selectedMountRadio = document.querySelector('input[name="mugShelfMount"]:checked');
+                mugShelfMountSummary.textContent = selectedMountRadio ? (selectedMountRadio.value === 'hanging' ? 'Wisząca' : 'Stojąca') : 'nie wybrano';
+                mugShelfMountItem.style.display = 'flex';
+            } else {
+                mugShelfMountItem.style.display = 'none';
+            }
+
+            const widthValue = getCurrentWidth();
+            const heightValue = heightSelect.value;
+            const depthValue = depthSelect.value;
+            const shelfCountValue = shelfCountSelect.value;
+            document.getElementById("widthSummary").textContent = !isNaN(widthValue) ? widthValue + " cm" : "--";
+            document.getElementById("heightSummary").textContent = heightValue && heightValue !== "" ? heightValue + " cm" : "--";
+            document.getElementById("depthSummary").textContent = depthValue && depthValue !== "" ? depthValue + " cm" : "--";
+            document.getElementById("sideColorSummary").textContent = sideColorSelect.value && sideColorSelect.selectedIndex > 0 ? sideColorSelect.options[sideColorSelect.selectedIndex].text : "nie wybrano";
+            document.getElementById("shelfColorSummary").textContent = shelfColorSelect.value && shelfColorSelect.selectedIndex > 0 ? shelfColorSelect.options[shelfColorSelect.selectedIndex].text : "nie wybrano";
+            document.getElementById("shelfCountSummary").textContent = shelfCountValue !== "" ? (shelfCountSelect.options[shelfCountSelect.selectedIndex]?.text || '--') : '-- Wybierz --';
+
+            const h = parseFloat(heightValue);
+            const sc = parseInt(shelfCountValue);
+            const t = 1.8; // thickness in cm
+            let gT = "n/d"; // gapText
+
+            if (!isNaN(h) && h > 0 && !isNaN(sc) && sc >= 0) {
+                if (currentShelfType === 'mug_shelf') {
+                    const mugGapHeight = h - 2 * t;
+                    const mugGapFreeSpace = mugGapHeight - sc * t;
+                    const mugGapsCount = sc + 1;
+                    if (mugGapFreeSpace >=0 && mugGapsCount > 0) {
+                        gT = `ok. ${(mugGapFreeSpace / mugGapsCount).toFixed(1)} cm`;
+                    } else {
+                        gT = "za mało miejsca";
+                    }
+                } else {
+                    const displayGapHeight = h - 2 * t;
+                    const totalShelvesThickness = sc * t;
+                    if (displayGapHeight >= totalShelvesThickness && (sc + 1) > 0) {
+                        const freeSpace = displayGapHeight - totalShelvesThickness;
+                        const gapsCount = sc + 1;
+                        const calculatedGap = freeSpace / gapsCount;
+                        gT = `${calculatedGap.toFixed(1)} cm`;
+                    } else {
+                        gT = "za mało miejsca";
+                    }
+                }
+            } else {
+                gT = "wybierz H i S";
+            }
+            document.getElementById("gapSummary").textContent = gT;
+            document.getElementById("gapSummaryDisplay").textContent = gT;
+
+            // <<< POCZĄTEK DODANEJ LOGIKI >>>
+            const gapSummaryLi = document.getElementById("gapSummary")?.parentElement;
+            const gapDisplayP = document.getElementById("gapDisplay");
+
+            if (currentShelfType === 'mug_shelf') {
+                if (gapSummaryLi) gapSummaryLi.style.display = 'none';
+                if (gapDisplayP) gapDisplayP.style.display = 'none';
+            } else {
+                if (gapSummaryLi) gapSummaryLi.style.display = 'flex'; // Przywrócenie oryginalnego stylu wyświetlania
+                if (gapDisplayP) gapDisplayP.style.display = 'block'; // Przywrócenie oryginalnego stylu wyświetlania
+            }
+            // <<< KONIEC DODANEJ LOGIKI >>>
+
+            const o = [];
+            if (currentShelfType === 'mug_shelf') {
+                const selectedMount = document.querySelector('input[name="mugShelfMount"]:checked');
+                if (selectedMount) o.push(selectedMount.value === 'hanging' ? 'Montaż wiszący' : 'Montaż stojący');
+                const dividersSelected = [];
+                if (dividersTopCheckbox?.checked) dividersSelected.push("góra");
+                if (dividersMiddleCheckbox?.checked) dividersSelected.push("środek");
+                if (dividersBottomCheckbox?.checked) dividersSelected.push("dół");
+                if (dividersSelected.length > 0) o.push("Przegródki: " + dividersSelected.join(", "));
+            } else {
+                if (document.getElementById("noTopShelf")?.checked) o.push("bez górnej półki");
+                const isStandingType = (currentShelfType === "standing");
+                if (isStandingType && document.getElementById("noBottomShelf")?.checked) o.push("bez dolnej półki (podstawy)");
+            }
+            document.getElementById("extraOptionsSummary").textContent = o.length ? o.join(" / ") : "standardowa";
+
+             const orderCode = generateOrderCode();
+             const isComplete = !!orderCode;
+             const pH = document.getElementById("priceHint");
+             const orderActionsWrapper = document.getElementById("orderActionsWrapper");
+             const oCW = document.getElementById("orderCodeWindow");
+             const pSE = document.getElementById("priceSummary");
+             const oCVE = document.getElementById("orderCodeVisible");
+             const oCI = document.getElementById("orderCodeIcon");
+             if (oCI) oCI.classList.remove('icon-bounce');
+             const indicator = document.getElementById('selectionCompleteIndicator');
+             const footerPriceText = document.getElementById("footerPriceText");
+             const footerPriceDisplay = document.getElementById("footerPriceDisplay");
+
+             if (isComplete) {
+                 const pD = computePriceDetailed();
+                 if (pD !== null) {
+                     const priceText = pD.total + " zł";
+                     pSE.textContent = priceText;
+                     if (footerPriceText) footerPriceText.textContent = priceText;
+                     oCVE.textContent = orderCode;
+                     pH.style.display = "none";
+                     orderActionsWrapper.style.display = "flex";
+                     if (oCI) oCI.classList.add('icon-bounce');
+                     if (indicator) indicator.style.display = 'inline';
+                     if (footerPriceDisplay) footerPriceDisplay.style.cursor = 'pointer';
+                 } else {
+                     pSE.textContent = "N/D";
+                     if (footerPriceText) footerPriceText.textContent = "";
+                     oCVE.textContent = "BŁĄD CENY";
+                     pH.textContent = "Błąd obliczania ceny. Sprawdź opcje.";
+                     pH.style.display = "block";
+                     orderActionsWrapper.style.display = "none";
+                     oCW.style.display = "block";
+                     if (indicator) indicator.style.display = 'none';
+                     if (footerPriceDisplay) footerPriceDisplay.style.cursor = 'default';
+                 }
+             } else {
+                 pSE.textContent = "";
+                 if (footerPriceText) footerPriceText.textContent = "";
+                 oCVE.textContent = "";
+                 pH.textContent = "Wybierz wszystkie parametry, aby zobaczyć cenę.";
+                 pH.style.display = "block";
+                 orderActionsWrapper.style.display = "none";
+                 if (oCW) oCW.style.display="block";
+                 if (indicator) indicator.style.display = 'none';
+                 if (footerPriceDisplay) footerPriceDisplay.style.cursor = 'default';
+             }
             updateDividerDimensionVisibility();
         }
         function updateSwatchDisplay(selectElementId, swatchDisplayId) { const selectElement = document.getElementById(selectElementId); const swatchDisplay = document.getElementById(swatchDisplayId); if (!selectElement || !swatchDisplay) return; const selectedOption = selectElement.options[selectElement.selectedIndex]; const color = selectedOption ? selectedOption.dataset.color : null; if (color) { swatchDisplay.style.backgroundColor = color; swatchDisplay.style.display = 'inline-block'; if (color.toUpperCase() === '#FFFFFF') { swatchDisplay.classList.add('swatch-white-display'); } else { swatchDisplay.classList.remove('swatch-white-display'); } } else { swatchDisplay.style.backgroundColor = '#E5E7EB'; swatchDisplay.classList.remove('swatch-white-display'); } }
