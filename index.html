@@ -1071,7 +1071,56 @@ if (addDividersBottom && levels.length > 2) {
         }
         function updateSwatchDisplay(selectElementId, swatchDisplayId) { const selectElement = document.getElementById(selectElementId); const swatchDisplay = document.getElementById(swatchDisplayId); if (!selectElement || !swatchDisplay) return; const selectedOption = selectElement.options[selectElement.selectedIndex]; const color = selectedOption ? selectedOption.dataset.color : null; if (color) { swatchDisplay.style.backgroundColor = color; swatchDisplay.style.display = 'inline-block'; if (color.toUpperCase() === '#FFFFFF') { swatchDisplay.classList.add('swatch-white-display'); } else { swatchDisplay.classList.remove('swatch-white-display'); } } else { swatchDisplay.style.backgroundColor = '#E5E7EB'; swatchDisplay.classList.remove('swatch-white-display'); } }
         function copyOrderSummary() { const code = document.getElementById("orderCodeVisible").textContent; const priceText = document.getElementById("priceSummary").textContent; const priceValue = parseFloat(priceText.replace(/\s*zł/i, '').replace(',', '.')); if (!code || code === "" || code.toUpperCase().includes("BŁĄD") || !priceText || priceText === "" || priceText === "N/D" || isNaN(priceValue)) { alert("Wystąpił błąd. Konfiguracja jest niekompletna lub cena jest nieprawidłowa. Nie można przejść do Allegro."); return; } navigator.clipboard.writeText(code).then(() => { if (allegroOrderModalOverlay && allegroModalOrderCodeEl && allegroModalPriceEl && allegroModalUnitsInstructionEl) { allegroModalOrderCodeEl.textContent = code; allegroModalPriceEl.textContent = priceText; allegroModalUnitsInstructionEl.innerHTML = `Na stronie Allegro zamów produkt w liczbie sztuk równej cenie Twojej półki (czyli <strong>${priceValue} szt.</strong>).`; allegroOrderModalOverlay.classList.add('visible'); } else { console.error("Elementy modala Allegro nie zostały znalezione. Używam alertu zapasowego."); alert(`✅ Kod zamówienia skopiowany: ${code}\n\n🛒 Cena: ${priceText}\n\nAllegro otworzy się w nowej karcie.\n\n📋 INSTRUKCJA:\n1. Na Allegro zamów ${priceValue} szt. produktu.\n2. W „Uwagi do zakupu” wklej kod: ${code}`); window.open("https://allegro.pl/oferta/zaprojektuj-wlasna-polke-podaj-wymiar-i-wybierz-kolory-do-kuchni-pokoju-17253898746", "_blank"); } }).catch(err => { console.error('Błąd kopiowania do schowka: ', err); alert('Nie udało się skopiować kodu zamówienia do schowka. Spróbuj ręcznie lub sprawdź uprawnienia przeglądarki.'); }); }
-        function downloadOrderSummary() { const shelfType = document.getElementById("shelfTypeSummary").textContent; const mugShelfMount = shelfType === 'Półka na kubki' ? document.getElementById("mugShelfMountSummary").textContent : ''; const width = document.getElementById("widthSummary").textContent; const height = document.getElementById("heightSummary").textContent; const depth = document.getElementById("depthSummary").textContent; const sideColor = document.getElementById("sideColorSummary").textContent; const shelfColor = document.getElementById("shelfColorSummary").textContent; const shelfCount = document.getElementById("shelfCountSummary").textContent; const gap = document.getElementById("gapSummary").textContent; const extraOptions = document.getElementById("extraOptionsSummary").textContent; const price = document.getElementById("priceSummary").textContent; const orderCode = document.getElementById("orderCodeVisible").textContent; if (!orderCode || orderCode === "" || orderCode.toUpperCase().includes("BŁĄD") || !price || price === "" || price === "N/D") { alert("Wystąpił błąd, konfiguracja jest niekompletna lub niedostępna."); return; } let content = `📦 Podsumowanie Zamówienia\n\n* Rodzaj półki: ${shelfType}\n`; if (mugShelfMount && mugShelfMount !== 'nie wybrano') { content += `* Montaż: ${mugShelfMount}\n`; } content += `* Szerokość: ${width}\n* Wysokość: ${height}\n* Głębokość: ${depth}\n\n* Kolor boków: ${sideColor}\n* Kolor półek i podstaw: ${shelfColor}\n\n* Ilość półek wewn.: ${shelfCount}\n* Odległość między półkami: ${gap}\n* Opcje dodatkowe: ${extraOptions}\n\n* Materiał: płyta laminowana gr. 1,8 cm\n* Termin realizacji: 5‑7 dni roboczych\n\nCena: ${price}\nKod zamówienia: ${orderCode}`; const blob = new Blob([content], { type: "text/plain;charset=utf-8" }); const url = URL.createObjectURL(blob); const link = document.createElement("a"); link.href = url; link.download = `zamowienie-${orderCode}.txt`; document.body.appendChild(link); link.click(); document.body.removeChild(link); URL.revokeObjectURL(url); }
+        function downloadOrderSummary() {
+            const shelfType = document.getElementById("shelfTypeSummary").textContent;
+            const mugShelfMount = shelfType === 'Półka na kubki' ? document.getElementById("mugShelfMountSummary").textContent : '';
+            const width = document.getElementById("widthSummary").textContent;
+            const height = document.getElementById("heightSummary").textContent; // Będziemy go używać do sprawdzenia warunku
+            const depth = document.getElementById("depthSummary").textContent;
+            const sideColor = document.getElementById("sideColorSummary").textContent;
+            const shelfColor = document.getElementById("shelfColorSummary").textContent;
+            const shelfCount = document.getElementById("shelfCountSummary").textContent;
+            
+            // Pobierz oryginalnie obliczoną odległość
+            let gap = document.getElementById("gapSummary").textContent; 
+            const extraOptions = document.getElementById("extraOptionsSummary").textContent;
+            const price = document.getElementById("priceSummary").textContent;
+            const orderCode = document.getElementById("orderCodeVisible").textContent;
+
+            // <<< POCZĄTEK DODANEJ LOGIKI >>>
+            // Sprawdź aktualny typ półki i jej wysokość bezpośrednio z selectów
+            const currentShelfTypeValue = shelfTypeSelect.value; // np. 'mug_shelf'
+            const currentHeightValue = heightSelect.value;   // np. '60'
+
+            if (currentShelfTypeValue === 'mug_shelf' && currentHeightValue === '60') {
+                gap = "10,9 cm"; // Ustawienie żądanej wartości dla tej konkretnej konfiguracji
+            }
+            // <<< KONIEC DODANEJ LOGIKI >>>
+
+            if (!orderCode || orderCode === "" || orderCode.toUpperCase().includes("BŁĄD") || !price || price === "" || price === "N/D") {
+                alert("Wystąpił błąd, konfiguracja jest niekompletna lub niedostępna.");
+                return;
+            }
+            let content = `📦 Podsumowanie Zamówienia\n\n* Rodzaj półki: ${shelfType}\n`;
+            if (mugShelfMount && mugShelfMount !== 'nie wybrano') {
+                content += `* Montaż: ${mugShelfMount}\n`;
+            }
+            content += `* Szerokość: ${width}\n* Wysokość: ${height}\n* Głębokość: ${depth}\n\n`;
+            content += `* Kolor boków: ${sideColor}\n* ${document.getElementById('shelfColorSummaryLabel').textContent} ${shelfColor}\n\n`; // Użycie labela dla poprawności
+            content += `* Ilość półek wewn.: ${shelfCount}\n* Odległość między półkami: ${gap}\n* Opcje dodatkowe: ${extraOptions}\n\n`;
+            content += `* Materiał: płyta laminowana gr. 1,8 cm\n* Termin realizacji: 5‑7 dni roboczych\n\n`;
+            content += `Cena: ${price}\nKod zamówienia: ${orderCode}`;
+            
+            const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = `zamowienie-${orderCode}.txt`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
         function closeDetailsPanelIfNeeded() { const detailsPanel = document.getElementById('materialSamplesDetails'); if (detailsPanel && detailsPanel.open) { detailsPanel.open = false; } }
         function setActiveMobileIcon(clickedButton) { const mobileIconsContainer = document.getElementById('mobilePanelIcons'); if (!mobileIconsContainer) return; const buttons = mobileIconsContainer.querySelectorAll('button'); buttons.forEach(button => { button.classList.remove('mobile-icon-active'); }); if (clickedButton && buttons.length > 0) { clickedButton.classList.add('mobile-icon-active'); } }
         function scrollToElementAndHighlight(elementId, blockPosition = 'start', clickedButton = null, inlinePosition = 'nearest') { const element = document.getElementById(elementId); if (element) { let highlightTarget = element.closest('.p-6.shadow.rounded-lg'); if (!highlightTarget) { highlightTarget = element.closest('.w-full.max-w-lg') || element; } document.querySelectorAll('.section-highlight-persistent').forEach(el => { if (el !== highlightTarget) { el.classList.remove('section-highlight-persistent'); } }); highlightTarget.scrollIntoView({ behavior: 'smooth', block: blockPosition, inline: inlinePosition }); if (clickedButton) { setActiveMobileIcon(clickedButton); } highlightTarget.classList.remove('section-highlight-flash'); void highlightTarget.offsetWidth; highlightTarget.classList.add('section-highlight-flash'); highlightTarget.classList.add('section-highlight-persistent'); setTimeout(() => { highlightTarget.classList.remove('section-highlight-flash'); }, 750); } else { console.error('Nie znaleziono elementu o ID do podświetlenia:', elementId); } }
