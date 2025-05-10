@@ -635,47 +635,35 @@ function updateDividerIconActiveStates() {
         }
 
         function updateDividerDimensionVisibility() {
-            if (!desktopDividerDimensionsInfo || !shelfTypeSelect ) {
+            if (!desktopDividerDimensionsInfo || !shelfTypeSelect || !heightSelect || !dividersTopCheckbox || !dividersMiddleCheckbox || !dividersBottomCheckbox) {
+                 // Upewnij się, że wszystkie niezbędne elementy są dostępne
+                 console.error("updateDividerDimensionVisibility: Brakuje jednego lub więcej wymaganych elementów DOM.");
+                 if(desktopDividerDimensionsInfo) desktopDividerDimensionsInfo.style.display = 'none';
                  return;
             }
-            const isMugShelf = shelfTypeSelect.value === 'mug_shelf';
-            const currentWidth = getCurrentWidth();
-            const areDividersSelected = (dividersTopCheckbox?.checked || dividersMiddleCheckbox?.checked || dividersBottomCheckbox?.checked);
-            const shouldShow = isMugShelf && areDividersSelected;
+
+            const isMugShelfType = shelfTypeSelect.value === 'mug_shelf';
+            // Upewnij się, że currentWidth jest uzyskane. Zazwyczaj jest zdefiniowane w zewnętrznym zakresie, gdzie ta funkcja jest umieszczona, lub musi zostać pobrane.
+            // Jeśli nie jest dostępne w bezpośrednim zakresie, być może będziesz musiał wywołać getCurrentWidth(), jeśli jest to globalna lub dostępna funkcja pomocnicza.
+            // Dla tego przykładu załóżmy, że getCurrentWidth() jest dostępne lub currentWidth jest dostępne z zewnętrznego zakresu funkcji.
+            // const currentWidth = getCurrentWidth(); // Upewnij się, że jest to poprawnie odwołane lub uzyskane.
+
+            const areDividersSelectedForMugShelf = (dividersTopCheckbox?.checked || dividersMiddleCheckbox?.checked || dividersBottomCheckbox?.checked);
+            const shouldShow = isMugShelfType && areDividersSelectedForMugShelf;
 
             try {
                 if (shouldShow) {
                     const heightVal = heightSelect.value;
-                    let sectionHeightCm = "n/d";
-                    const thicknessCm = 1.8;
-                    const numInternalShelves = shelfCountSelect ? parseInt(shelfCountSelect.value) : 0;
-                    const numSections = numInternalShelves + 1;
-
-                    if (heightVal && numInternalShelves >= 0 && numSections > 0) {
-                        const totalInternalShelvesThicknessCm = numInternalShelves * thicknessCm;
-                        const totalSideThicknessCm = 2 * thicknessCm;
-                        const availableHeightForSectionsCm = parseFloat(heightVal) - totalSideThicknessCm - totalInternalShelvesThicknessCm;
-                        if (availableHeightForSectionsCm > 0) {
-                            sectionHeightCm = (availableHeightForSectionsCm / numSections).toFixed(1);
-                        }
+                    
+                    let dimensionsText = "wymiar przegródek szer. 12,5cm wys. 10,9cm";
+                    if (heightVal === '60') {
+                        dimensionsText += " wnęka od podstawy wys. 18cm";
                     }
-
-if (currentWidth === 84) {
-    const numPhysicalDividers84 = 3;
-    const numCompartments84 = numPhysicalDividers84 + 1;
-    const compartmentWidthCm84 = 12.5;
-    desktopDividerDimensionsInfo.textContent = `${numPhysicalDividers84} przegródki / ${numCompartments84} komory (w lewej połowie), szer. komory: ${compartmentWidthCm84.toFixed(1)}cm, wys. ~${sectionHeightCm}cm`;
-} else if (currentWidth === 60) {
-                         desktopDividerDimensionsInfo.textContent = `3 przegródki / 4 komory, szer. komory: ~${((60 - 2*1.8 - 3*1.8)/4).toFixed(1)}cm, wys. ~${sectionHeightCm}cm`;
-                    } else if (currentWidth === 44) {
-                         desktopDividerDimensionsInfo.textContent = `2 przegródki / 3 komory, szer. komory: ~${((44 - 2*1.8 - 2*1.8)/3).toFixed(1)}cm, wys. ~${sectionHeightCm}cm`;
-                    } else {
-                         desktopDividerDimensionsInfo.textContent = 'Wymiary przegródek (info)';
-                    }
+                    desktopDividerDimensionsInfo.textContent = dimensionsText;
                 }
                 desktopDividerDimensionsInfo.style.display = shouldShow ? 'block' : 'none';
             } catch (e) {
-                console.error("Error setting display for desktopDividerDimensionsInfo:", e);
+                console.error("Błąd podczas ustawiania wyświetlania dla desktopDividerDimensionsInfo:", e);
                  if(desktopDividerDimensionsInfo) desktopDividerDimensionsInfo.style.display = 'none';
             }
         }
