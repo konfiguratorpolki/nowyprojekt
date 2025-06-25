@@ -205,6 +205,26 @@
         margin-bottom: 1rem;
         padding-bottom: 1rem;
     }
+    
+    /* --- NOWE STYLE DLA PODGLĄDU 3D W KOSZYKU --- */
+    .summary-snapshot-container {
+        flex-shrink: 0;
+        width: 96px; /* ok. 100px */
+        height: 96px;
+        background-color: #f5f5f4; /* tło takie jak w konfiguratorze */
+        border-radius: 0.375rem; /* 6px */
+        border: 1px solid #e5e7eb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+    
+    .summary-snapshot-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
 
     @media (max-width: 640px) {
         .modal { width: 95%; border-radius: 0.5rem; max-width: 95%;}
@@ -601,8 +621,7 @@
             </div>
         </div>
     </div>
-
-    <div class="w-full max-w-7xl mx-auto px-4 md:px-6 my-6">
+<div class="w-full max-w-7xl mx-auto px-4 md:px-6 my-6">
         <details class="p-4 bg-emerald-50 border border-emerald-200 rounded-lg md:hidden group"> <summary class="flex justify-between items-center cursor-pointer list-none"> <h2 class="text-lg font-semibold text-emerald-800">Jak zamówić półkę?</h2> <span class="marker transform transition-transform duration-200 rotate-0 group-open:rotate-180"> <svg class="w-5 h-5 text-emerald-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /> </svg> </span> </summary> <div class="mt-4 pt-4 border-t border-emerald-200"> <ul class="list-none instruction-list text-stone-700 space-y-3 text-sm"> <li><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 0 1 0 1.905c-.007.379.137.75.431.99l1.005.828c.428.355.53 1.005.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.063-.374-.313-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 0 1 0-1.905c.007-.379-.137-.75-.43-.99l-1.004-.828a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg> <span>Wybierz rodzaj półki, wymiary, kolory i liczbę półek.</span></li>
     <li><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" /></svg> <span>Dodaj skonfigurowaną półkę do koszyka. Możesz dodać wiele różnych półek.</span></li>
     <li><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" /></svg> <span>Gdy wszystko gotowe, kliknij w ikonę koszyka, aby zobaczyć podsumowanie.</span></li>
@@ -696,7 +715,7 @@
                              </div>
                         </div>
 
-                        <button id="addToCartBtn" onclick="addToCart()" class="group w-full px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg text-lg font-semibold transition-all duration-150 ease-in-out flex items-center justify-center space-x-2 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 active:scale-95 mb-4">
+                        <button id="addToCartBtn" class="group w-full px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg text-lg font-semibold transition-all duration-150 ease-in-out flex items-center justify-center space-x-2 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 active:scale-95 mb-4">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
@@ -876,7 +895,7 @@
             }
         }
         
-        function addToCart() {
+        async function addToCart() {
             const orderCode = generateOrderCode();
             const priceDetails = computePriceDetailed();
 
@@ -885,21 +904,38 @@
                 return;
             }
 
-            const item = {
-                id: Date.now(),
-                name: shelfTypeSelect.options[shelfTypeSelect.selectedIndex].text,
-                summary: `${document.getElementById("widthSummary").textContent} x ${document.getElementById("heightSummary").textContent} x ${document.getElementById("depthSummary").textContent}`,
-                shelfCountText: document.getElementById("shelfCountSummary").textContent,
-                sideColor: document.getElementById("sideColorSummary").textContent,
-                shelfColor: document.getElementById("shelfColorSummary").textContent,
-                extras: document.getElementById("extraOptionsSummary").textContent,
-                price: priceDetails.total,
-                code: orderCode
-            };
-            
-            cart.push(item);
-            updateCartDisplay();
-            openCart(); 
+            const addToCartButton = document.getElementById('addToCartBtn');
+            const originalButtonContent = addToCartButton.innerHTML;
+            addToCartButton.innerHTML = `<svg class="animate-spin h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> <span>Generuję...</span>`;
+            addToCartButton.disabled = true;
+
+            try {
+                const snapshotDataUrl = await generate3dSnapshotFromCurrentModel();
+                
+                const item = {
+                    id: Date.now(),
+                    name: shelfTypeSelect.options[shelfTypeSelect.selectedIndex].text,
+                    summary: `${document.getElementById("widthSummary").textContent} x ${document.getElementById("heightSummary").textContent} x ${document.getElementById("depthSummary").textContent}`,
+                    shelfCountText: document.getElementById("shelfCountSummary").textContent,
+                    sideColor: document.getElementById("sideColorSummary").textContent,
+                    shelfColor: document.getElementById("shelfColorSummary").textContent,
+                    extras: document.getElementById("extraOptionsSummary").textContent,
+                    price: priceDetails.total,
+                    code: orderCode,
+                    snapshot: snapshotDataUrl
+                };
+                
+                cart.push(item);
+                updateCartDisplay();
+                openCart(); 
+
+            } catch (e) {
+                console.error("Nie udało się wygenerować miniatury przy dodawaniu do koszyka:", e);
+                alert("Wystąpił błąd podczas generowania podglądu. Spróbuj ponownie.");
+            } finally {
+                 addToCartButton.innerHTML = originalButtonContent;
+                 addToCartButton.disabled = false;
+            }
         }
 
         function removeFromCart(itemId) {
@@ -976,102 +1012,6 @@
             cartCheckoutButton.disabled = cart.length === 0;
         }
         
-        function drawShelfSketch(canvasId, orderCode) {
-            const canvas = document.getElementById(canvasId);
-            if (!canvas) return;
-
-            const ctx = canvas.getContext('2d');
-            const details = parseOrderCode(orderCode);
-            if (details.error) return;
-
-            const w = canvas.width;
-            const h = canvas.height;
-            const padding = 5;
-            const strokeColor = '#57534e';
-            const fillColor = '#a8a29e';
-
-            ctx.clearRect(0, 0, w, h);
-            ctx.strokeStyle = strokeColor;
-            ctx.fillStyle = fillColor;
-            ctx.lineWidth = 1.5;
-
-            const shelfW = parseFloat(details.width);
-            const shelfH = parseFloat(details.height);
-            const shelfCount = parseInt(details.shelfCount);
-            
-            const aspectRatio = shelfW / shelfH;
-            let drawW, drawH;
-
-            if (w / h > aspectRatio) {
-                drawH = h - padding * 2;
-                drawW = drawH * aspectRatio;
-            } else {
-                drawW = w - padding * 2;
-                drawH = drawW / aspectRatio;
-            }
-
-            const x0 = (w - drawW) / 2;
-            const y0 = (h - drawH) / 2;
-            const thickness = drawH * (1.8 / shelfH); // Proportional thickness
-
-            // Draw sides
-            ctx.fillRect(x0, y0, thickness, drawH);
-            ctx.fillRect(x0 + drawW - thickness, y0, thickness, drawH);
-
-            // Draw top and bottom shelves
-            const hasTopShelf = details.options.indexOf('Bez górnej półki') === -1;
-            const hasBottomShelf = details.options.indexOf('Bez dolnej półki') === -1;
-
-            if (hasTopShelf) {
-                ctx.fillRect(x0, y0, drawW, thickness);
-            }
-            if (hasBottomShelf) {
-                ctx.fillRect(x0, y0 + drawH - thickness, drawW, thickness);
-            }
-            
-            // Draw inner shelves
-            if (shelfCount > 0) {
-                 const topOffset = hasTopShelf ? thickness : 0;
-                 const bottomOffset = hasBottomShelf ? thickness : 0;
-                 const innerHeight = drawH - topOffset - bottomOffset;
-                 const gap = (innerHeight - (shelfCount * thickness)) / (shelfCount + 1);
-
-                 for (let i = 0; i < shelfCount; i++) {
-                     const shelfY = y0 + topOffset + ((i + 1) * gap) + (i * thickness);
-                     ctx.fillRect(x0 + thickness, shelfY, drawW - 2 * thickness, thickness);
-                 }
-            }
-            
-            // Draw dividers for mug shelf
-            if (details.shelfType === 'Półka na kubki' && details.options.includes('Przegródki')) {
-                const innerW = drawW - 2 * thickness;
-                const numDividers = (shelfW == 60) ? 3 : ((shelfW == 44) ? 2 : 0);
-                const dividerSpacing = innerW / (numDividers + 1);
-
-                const levels = [];
-                const topY = y0 + (hasTopShelf ? thickness : 0);
-                const bottomY = y0 + drawH - (hasBottomShelf ? thickness : 0);
-                
-                // This is a simplified representation of levels
-                if (details.options.includes('góra')) levels.push({top: topY, bottom: y0 + drawH/3});
-                if (details.options.includes('środek')) levels.push({top: y0 + drawH/3, bottom: y0 + (drawH/3)*2});
-                if (details.options.includes('dół')) levels.push({top: y0 + (drawH/3)*2, bottom: bottomY});
-                
-                if (levels.length > 0) {
-                     levels.forEach(level => {
-                        for(let i=1; i <= numDividers; i++) {
-                            const divX = x0 + thickness + (i * dividerSpacing);
-                            ctx.beginPath();
-                            ctx.moveTo(divX, level.top);
-                            ctx.lineTo(divX, level.bottom);
-                            ctx.stroke();
-                        }
-                     });
-                }
-            }
-        }
-
-
         function handleCheckout() {
             if (cart.length === 0) return;
 
@@ -1079,9 +1019,8 @@
 
             const totals = calculateCartTotal();
             const allCodes = cart.map(item => item.code).join('\n');
-            
-            cartSummaryItemsContainer.innerHTML = '';
 
+            cartSummaryItemsContainer.innerHTML = '';
             cart.forEach(item => {
                 const itemCard = document.createElement('div');
                 itemCard.className = 'p-3 bg-stone-50 rounded-lg border border-stone-200 flex items-center gap-4';
@@ -1095,33 +1034,26 @@
                         </ul>
                         <p class="font-bold text-lg text-stone-800 mt-2">${item.price.toFixed(2)} zł</p>
                     </div>
-                    <div class="flex-shrink-0 w-24 h-24 bg-white rounded-md border border-stone-200 p-1">
-                         <canvas id="sketch-${item.id}" width="94" height="94"></canvas>
+                    <div class="summary-snapshot-container" id="snapshot-container-${item.id}">
+                        ${item.snapshot ? `<img src="${item.snapshot}" alt="Podgląd 3D półki: ${item.name}" />` : '<div class="text-xs text-stone-500">Brak podglądu</div>'}
                     </div>
                 `;
                 cartSummaryItemsContainer.appendChild(itemCard);
             });
             
-            // After creating the DOM elements, draw the sketches
-            cart.forEach(item => {
-                drawShelfSketch(`sketch-${item.id}`, item.code);
-            });
-
-
             if (totals.discount > 0) {
                 cartSummarySubtotalLine.style.display = 'flex';
                 cartSummaryDiscountLine.style.display = 'flex';
                 cartSummarySubtotalPrice.textContent = `${totals.subtotal.toFixed(2)} zł`;
-                cartSummaryDiscountAmount.textContent = `- ${totals.discount.toFixed(2)} zł`;
+                cartDiscountAmount.textContent = `- ${totals.discount.toFixed(2)} zł`;
             } else {
                 cartSummarySubtotalLine.style.display = 'none';
                 cartSummaryDiscountLine.style.display = 'none';
             }
             cartSummaryTotalPrice.textContent = `${totals.total.toFixed(2)} zł`;
-
             cartSummaryAllCodes.value = allCodes;
             cartSummaryInstructionUnits.innerHTML = `Na stronie Allegro dodaj do koszyka tyle sztuk, ile wynosi łączna cena Twojego zamówienia (<strong>${Math.round(totals.total)} szt.</strong>).`;
-
+            
             cartSummaryModalOverlay.classList.add('visible');
         }
         
@@ -1407,35 +1339,103 @@
         function init3D() { const container = threeJsCanvasWrapper; if (!container) { console.error("Three.js canvas wrapper (#threeJsCanvasWrapper) not found."); return; } scene = new THREE.Scene(); scene.background = new THREE.Color(0xf0f0f0); camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000); camera.position.set(initialCameraPosition.x, initialCameraPosition.y, initialCameraPosition.z); renderer = new THREE.WebGLRenderer({ antialias: true }); renderer.setSize(container.clientWidth, container.clientHeight); container.innerHTML = ''; container.appendChild(renderer.domElement); scene.add(new THREE.HemisphereLight(0xffffff, 0x444444, 1)); const directionalLight = new THREE.DirectionalLight(0xffffff, 0.6); directionalLight.position.set(4, 8, 3); scene.add(directionalLight); controls = new THREE.OrbitControls(camera, renderer.domElement); controls.enableDamping = true; controls.target.set(0, 0, 0); if (controls) { controls.addEventListener('start', () => { autoRotateEnabled = false; }); controls.addEventListener('end', () => { if (shelfTypeSelect && shelfTypeSelect.value !== 'mug_shelf') { autoRotateEnabled = true; } else { autoRotateEnabled = false; } }); } window.addEventListener('resize', onWindowResize, false); updatePreview(); animate(); }
         function onWindowResize() { const container = threeJsCanvasWrapper; if (!camera || !renderer || !container) return; const width = container.clientWidth; const height = container.clientHeight; if (width > 0 && height > 0) { camera.aspect = width / height; camera.updateProjectionMatrix(); renderer.setSize(width, height); } else { console.warn("Skipping resize for 3D canvas wrapper with zero dimensions."); } updateDividerIconsVisibility(); }
         function animate() { requestAnimationFrame(animate); if (autoRotateEnabled && shelfGroup) { shelfGroup.rotation.y += 0.005; } if(controls) controls.update(); if(renderer && scene && camera) renderer.render(scene, camera); }
-        function makeTextSprite(message, parameters = {}) { const fontface = parameters.fontface || "Arial"; const fontsize = parameters.fontsize || 64; const canvas = document.createElement("canvas"); const context = canvas.getContext("2d"); context.font = `bold ${fontsize}px ${fontface}`; const padding = 8; const textWidth = context.measureText(message).width; canvas.width = textWidth + padding * 2; canvas.height = fontsize * 1.2 + padding * 2; context.fillStyle = "rgba(255, 255, 255, 1)"; context.fillRect(0, 0, canvas.width, canvas.height); context.strokeStyle = "rgba(0, 0, 0, 1)"; context.lineWidth = 4; context.strokeRect(0, 0, canvas.width, canvas.height); context.fillStyle = "rgba(0, 0, 0, 1)"; context.font = `bold ${fontsize}px ${fontface}`; context.fillText(message, padding, fontsize + padding); const texture = new THREE.Texture(canvas); texture.needsUpdate = true; const spriteMaterial = new THREE.SpriteMaterial({ map: texture }); const sprite = new THREE.Sprite(spriteMaterial); sprite.scale.set(canvas.width / 100, canvas.height / 100, 1.0); return sprite; }
+        
+        // --- POPRAWIONA FUNKCJA buildShelfModel ---
+        function buildShelfModel(config) {
+            const group = new THREE.Group();
+            const {
+                width: widthNum, height: heightVal, depth: depthVal, shelfCount: shelfCountVal,
+                shelfType, noTopShelf, noBottomShelf,
+                addDividersTop, addDividersMiddle, addDividersBottom
+            } = config;
 
-        function updatePreview() {
-            updateDividerIconActiveStates();
-             if (!scene) return; if (shelfGroup) scene.remove(shelfGroup); shelfGroup = new THREE.Group(); shelfGroup.scale.set(1.2, 1.2, 1.2); shelfGroup.position.y = -1; scene.add(shelfGroup); const widthNum = getCurrentWidth(); const heightVal = heightSelect.value; const depthVal = depthSelect.value; const shelfCountVal = shelfCountSelect.value; const thickness = 0.18; const previewMaterial = new THREE.MeshStandardMaterial(originalPreviewMaterialParams); const shelfType = shelfTypeSelect.value; const dimensionsValid = !isNaN(widthNum) && widthNum > 0 && heightVal && depthVal && heightVal !== "" && depthVal !== ""; let width = 0, height = 0, depth = 0, shelfCount = 0; if (dimensionsValid) { width = widthNum / 10; height = parseFloat(heightVal) / 10; depth = parseFloat(depthVal) / 10; shelfCount = parseInt(shelfCountVal); } shelfGroup.children.filter(child => child instanceof THREE.Sprite).forEach(sprite => { if (sprite.material.map) sprite.material.map.dispose(); sprite.material.dispose(); shelfGroup.remove(sprite); }); if (dimensionsValid && width > 0 && height > 0 && depth > 0) { const noTopShelf = document.getElementById("noTopShelf")?.checked; const isMugShelfStanding = (shelfType === "mug_shelf" && document.querySelector('input[name="mugShelfMount"]:checked')?.value === 'standing'); const isStandingType = (shelfType === "standing") || isMugShelfStanding; const noBottomShelf = (isStandingType && document.getElementById("noBottomShelf")?.checked); let topPanel, bottomPanel; if (!noBottomShelf) { const bottomGeometry = new THREE.BoxGeometry(width, thickness, depth); bottomPanel = new THREE.Mesh(bottomGeometry, previewMaterial); bottomPanel.position.set(0, -height / 2 + thickness / 2, 0); shelfGroup.add(bottomPanel); } if (!noTopShelf) { const topGeometry = new THREE.BoxGeometry(width, thickness, depth); topPanel = new THREE.Mesh(topGeometry, previewMaterial); topPanel.position.set(0, height / 2 - thickness / 2, 0); shelfGroup.add(topPanel); } const sideGeometry = new THREE.BoxGeometry(thickness, height, depth); const leftSideMesh = new THREE.Mesh(sideGeometry, previewMaterial); leftSideMesh.position.set(-width / 2 + thickness / 2, 0, 0); shelfGroup.add(leftSideMesh); const rightSideMesh = new THREE.Mesh(sideGeometry, previewMaterial); rightSideMesh.position.set(width / 2 - thickness / 2, 0, 0); shelfGroup.add(rightSideMesh); const internalShelves = []; if (!isNaN(shelfCount) && shelfCount > 0) { if (shelfType === 'mug_shelf' && heightVal === '60' && shelfCount === 3 && topPanel) { const fixedGap = 1.09; const topPanelBottomY = topPanel.position.y - thickness / 2; let lastShelfY = topPanelBottomY; for (let i = 0; i < shelfCount; i++) { const shelfY = lastShelfY - fixedGap - thickness / 2; const shelfGeometry = new THREE.BoxGeometry(width - 2 * thickness, thickness, depth); const shelfMesh = new THREE.Mesh(shelfGeometry, previewMaterial); shelfMesh.position.set(0, shelfY, 0); shelfGroup.add(shelfMesh); internalShelves.push(shelfMesh); lastShelfY = shelfY - thickness / 2; } } else { const topExists = !!topPanel; const bottomExists = !!bottomPanel; const topThicknessActual = topExists ? thickness : 0; const bottomThicknessActual = bottomExists ? thickness : 0; const totalAvailableHeight = height - topThicknessActual - bottomThicknessActual; if (totalAvailableHeight >= shelfCount * thickness && (shelfCount + 1) > 0) { const gap = (totalAvailableHeight - shelfCount * thickness) / (shelfCount + 1); let startY = bottomExists ? (-height / 2 + bottomThicknessActual) : (-height / 2); for (let i = 1; i <= shelfCount; i++) { const shelfY = startY + i * gap + (i - 0.5) * thickness; const shelfGeometry = new THREE.BoxGeometry(width - 2 * thickness, thickness, depth); const shelfMesh = new THREE.Mesh(shelfGeometry, previewMaterial); shelfMesh.position.set(0, shelfY, 0); shelfGroup.add(shelfMesh); internalShelves.push(shelfMesh); } } } }
+            const thickness = 0.18;
+            const width = widthNum / 10;
+            const height = parseFloat(heightVal) / 10;
+            const depth = parseFloat(depthVal) / 10;
+            const shelfCount = parseInt(shelfCountVal);
+            // Zgodnie z prośbą, używamy tylko jednego, szarego materiału
+            const defaultMaterial = new THREE.MeshStandardMaterial(originalPreviewMaterialParams);
+
+            if (isNaN(width) || isNaN(height) || isNaN(depth) || width <= 0 || height <= 0 || depth <= 0) return group;
+
+            let topPanel, bottomPanel;
+            if (!noBottomShelf) {
+                const bottomGeometry = new THREE.BoxGeometry(width, thickness, depth);
+                bottomPanel = new THREE.Mesh(bottomGeometry, defaultMaterial);
+                bottomPanel.position.set(0, -height / 2 + thickness / 2, 0);
+                group.add(bottomPanel);
+            }
+            if (!noTopShelf) {
+                const topGeometry = new THREE.BoxGeometry(width, thickness, depth);
+                topPanel = new THREE.Mesh(topGeometry, defaultMaterial);
+                topPanel.position.set(0, height / 2 - thickness / 2, 0);
+                group.add(topPanel);
+            }
+
+            const sideGeometry = new THREE.BoxGeometry(thickness, height, depth);
+            const leftSideMesh = new THREE.Mesh(sideGeometry, defaultMaterial);
+            leftSideMesh.position.set(-width / 2 + thickness / 2, 0, 0);
+            group.add(leftSideMesh);
+            const rightSideMesh = new THREE.Mesh(sideGeometry, defaultMaterial);
+            rightSideMesh.position.set(width / 2 - thickness / 2, 0, 0);
+            group.add(rightSideMesh);
+
+            const internalShelves = [];
+            if (!isNaN(shelfCount) && shelfCount > 0) {
+                 if (shelfType === 'mug_shelf' && heightVal === '60' && shelfCount === 3 && topPanel) {
+                    const fixedGap = 1.09;
+                    const topPanelBottomY = topPanel.position.y - thickness / 2;
+                    let lastShelfY = topPanelBottomY;
+                    for (let i = 0; i < shelfCount; i++) {
+                        const shelfY = lastShelfY - fixedGap - thickness / 2;
+                        const shelfGeometry = new THREE.BoxGeometry(width - 2 * thickness, thickness, depth);
+                        const shelfMesh = new THREE.Mesh(shelfGeometry, defaultMaterial);
+                        shelfMesh.position.set(0, shelfY, 0);
+                        group.add(shelfMesh);
+                        internalShelves.push(shelfMesh);
+                        lastShelfY = shelfY - thickness / 2;
+                    }
+                } else {
+                    const topExists = !!topPanel; const bottomExists = !!bottomPanel;
+                    const topThicknessActual = topExists ? thickness : 0; const bottomThicknessActual = bottomExists ? thickness : 0;
+                    const totalAvailableHeight = height - topThicknessActual - bottomThicknessActual;
+                    if (totalAvailableHeight >= shelfCount * thickness && (shelfCount + 1) > 0) {
+                        const gap = (totalAvailableHeight - shelfCount * thickness) / (shelfCount + 1);
+                        let startY = bottomExists ? (-height / 2 + bottomThicknessActual) : (-height / 2);
+                        for (let i = 1; i <= shelfCount; i++) {
+                            const shelfY = startY + i * gap + (i - 0.5) * thickness;
+                            const shelfGeometry = new THREE.BoxGeometry(width - 2 * thickness, thickness, depth);
+                            const shelfMesh = new THREE.Mesh(shelfGeometry, defaultMaterial);
+                            shelfMesh.position.set(0, shelfY, 0);
+                            group.add(shelfMesh);
+                            internalShelves.push(shelfMesh);
+                        }
+                    }
+                }
+            }
 
             if (shelfType === 'mug_shelf' && topPanel && bottomPanel && internalShelves.length > 0) {
-                const addDividersTop = dividersTopCheckbox?.checked;
-                const addDividersMiddle = dividersMiddleCheckbox?.checked;
-                const addDividersBottom = dividersBottomCheckbox?.checked;
-                const dividersChecked = addDividersTop || addDividersMiddle || addDividersBottom;
-
-                if (dividersChecked) {
+                if (addDividersTop || addDividersMiddle || addDividersBottom) {
                     const innerWidthForDividers = width - 2 * thickness;
                     const dividerThicknessThreeJs = thickness;
-
                     let levels = [];
-                    internalShelves.sort((a, b) => a.position.y - b.position.y);
+                    // **POWRÓT DO ORYGINALNEGO, POPRAWNEGO SORTOWANIA**
+                    internalShelves.sort((a, b) => a.position.y - b.position.y); // Sortuj od dołu do góry
 
                     if (heightVal === '60' && internalShelves.length === 3) {
-                        const shelf1_bottom = internalShelves[0].position.y - thickness / 2; const shelf1_top = internalShelves[0].position.y + thickness / 2;
-                        const shelf2_bottom = internalShelves[1].position.y - thickness / 2; const shelf2_top = internalShelves[1].position.y + thickness / 2;
-                        const shelf3_bottom = internalShelves[2].position.y - thickness / 2; const shelf3_top = internalShelves[2].position.y + thickness / 2;
-                        levels = [ { top: topPanel.position.y - thickness / 2, bottom: shelf3_top }, { top: shelf3_bottom, bottom: shelf2_top }, { top: shelf2_bottom, bottom: shelf1_top }, { top: shelf1_bottom, bottom: bottomPanel.position.y + thickness / 2 } ];
+                         levels = [
+                            { top: topPanel.position.y - thickness / 2, bottom: internalShelves[2].position.y + thickness/2 },
+                            { top: internalShelves[2].position.y - thickness/2, bottom: internalShelves[1].position.y + thickness/2 },
+                            { top: internalShelves[1].position.y - thickness/2, bottom: internalShelves[0].position.y + thickness/2 },
+                            { top: internalShelves[0].position.y - thickness/2, bottom: bottomPanel.position.y + thickness / 2 }
+                        ];
                     } else if (heightVal === '40' && internalShelves.length === 2) {
-                        const lowerShelfY = internalShelves[0].position.y; const upperShelfY = internalShelves[1].position.y;
-                        const lowerShelfTop = lowerShelfY + thickness / 2; const lowerShelfBottom = lowerShelfY - thickness / 2;
-                        const upperShelfTop = upperShelfY + thickness / 2; const upperShelfBottom = upperShelfY - thickness / 2;
-                        levels = [ { top: topPanel.position.y - thickness / 2, bottom: upperShelfTop }, { top: upperShelfBottom, bottom: lowerShelfTop }, { top: lowerShelfBottom, bottom: bottomPanel.position.y + thickness / 2 } ];
+                         levels = [
+                            { top: topPanel.position.y - thickness / 2, bottom: internalShelves[1].position.y + thickness/2 },
+                            { top: internalShelves[1].position.y - thickness/2, bottom: internalShelves[0].position.y + thickness/2 },
+                            { top: internalShelves[0].position.y - thickness/2, bottom: bottomPanel.position.y + thickness / 2 }
+                        ];
                     }
 
                     const drawDividersForLevel = (levelData) => {
@@ -1443,49 +1443,126 @@
                         if (levelH <= 0.01) return;
                         const yCenter = levelData.bottom + levelH / 2;
                         const dividerGeometry = new THREE.BoxGeometry(dividerThicknessThreeJs, levelH, depth);
-
-if (widthNum === 84) {
-    const numPhysicalDividers = 3;
-    const singleCompartmentWidth = 1.25;
-    let currentXPos = -innerWidthForDividers / 2;
-
-    for (let i = 0; i < numPhysicalDividers; i++) {
-        currentXPos += singleCompartmentWidth;
-        const dividerXCenter = currentXPos + (dividerThicknessThreeJs / 2);
-        const dividerMesh = new THREE.Mesh(dividerGeometry.clone(), previewMaterial);
-        dividerMesh.position.set(dividerXCenter, yCenter, 0);
-        shelfGroup.add(dividerMesh);
-        currentXPos += dividerThicknessThreeJs;
-    }
-} else {
+                        if (widthNum == 84) {
+                            const numPhysicalDividers = 3; const singleCompartmentWidth = 1.25; let currentXPos = -innerWidthForDividers / 2;
+                            for (let i = 0; i < numPhysicalDividers; i++) {
+                                currentXPos += singleCompartmentWidth; const dividerXCenter = currentXPos + (dividerThicknessThreeJs / 2); const dividerMesh = new THREE.Mesh(dividerGeometry.clone(), defaultMaterial); dividerMesh.position.set(dividerXCenter, yCenter, 0); group.add(dividerMesh); currentXPos += dividerThicknessThreeJs;
+                            }
+                        } else {
                             const numDividersOriginal = (widthNum == 60) ? 3 : ((widthNum == 44) ? 2 : 0);
                             if (numDividersOriginal > 0) {
                                 const dividerSpacing = innerWidthForDividers / (numDividersOriginal + 1);
                                 for (let i = 1; i <= numDividersOriginal; i++) {
                                     const xPos = (-innerWidthForDividers / 2) + i * dividerSpacing;
-                                    const dividerMesh = new THREE.Mesh(dividerGeometry.clone(), previewMaterial);
+                                    const dividerMesh = new THREE.Mesh(dividerGeometry.clone(), defaultMaterial);
                                     dividerMesh.position.set(xPos, yCenter, 0);
-                                    shelfGroup.add(dividerMesh);
+                                    group.add(dividerMesh);
                                 }
                             }
                         }
                     };
-
-if (addDividersTop && levels.length > 0) {
-    drawDividersForLevel(levels[0]);
-}
-
-if (addDividersMiddle && levels.length > 1) {
-    drawDividersForLevel(levels[1]);
-}
-
-if (addDividersBottom && levels.length > 2) {
-    drawDividersForLevel(levels[2]);
-}
-                        }
-                    }
-                    const labelOffset = 0.5; const widthText = makeTextSprite(widthNum + " cm", { fontsize: 32 }); widthText.position.set(0, height / 2 + labelOffset, 0); shelfGroup.add(widthText); const heightText = makeTextSprite(heightVal + " cm", { fontsize: 40 }); heightText.position.set(-width / 2 - labelOffset - thickness, 0, 0); shelfGroup.add(heightText); const depthText = makeTextSprite(depthVal + " cm", { fontsize: 32 }); depthText.position.set(width / 2 + labelOffset / 2, -height / 2 - labelOffset, depth / 2); shelfGroup.add(depthText); }
+                    
+                    // --- POPRAWIONA, PROSTA LOGIKA RYSUJĄCA - BAZUJĄCA NA ORYGINALE ---
+                    if (addDividersTop && levels[0]) drawDividersForLevel(levels[0]);
+                    if (addDividersMiddle && levels[1]) drawDividersForLevel(levels[1]);
+                    if (addDividersBottom && levels[2]) drawDividersForLevel(levels[2]);
+                }
+            }
+            return group;
         }
+
+        function updatePreview() {
+            updateDividerIconActiveStates();
+            if (!scene) return;
+            if (shelfGroup) scene.remove(shelfGroup);
+            
+            const shelfType = shelfTypeSelect.value;
+            const config = {
+                width: getCurrentWidth(),
+                height: heightSelect.value,
+                depth: depthSelect.value,
+                shelfCount: shelfCountSelect.value,
+                shelfType: shelfType,
+                noTopShelf: document.getElementById("noTopShelf")?.checked,
+                noBottomShelf: (shelfType === "standing" && document.getElementById("noBottomShelf")?.checked),
+                addDividersTop: shelfType === 'mug_shelf' && dividersTopCheckbox?.checked,
+                addDividersMiddle: shelfType === 'mug_shelf' && dividersMiddleCheckbox?.checked,
+                addDividersBottom: shelfType === 'mug_shelf' && dividersBottomCheckbox?.checked
+            };
+
+            shelfGroup = buildShelfModel(config);
+            // Zgodnie z prośbą, nie ma tu logiki kolorowania, model pozostaje szary
+            shelfGroup.scale.set(1.2, 1.2, 1.2);
+            shelfGroup.position.y = -1;
+            scene.add(shelfGroup);
+        }
+        
+        // NOWA, UPROSZCZONA FUNKCJA GENERUJĄCA MINIATURĘ Z AKTUALNEGO MODELU
+        function generate3dSnapshotFromCurrentModel() {
+             return new Promise((resolve, reject) => {
+                if (!shelfGroup) {
+                    return reject(new Error("Główny model 3D (shelfGroup) nie istnieje."));
+                }
+                const modelToClone = shelfGroup;
+
+                const snapshotScene = new THREE.Scene();
+                snapshotScene.background = new THREE.Color(0xf5f5f4);
+                
+                const snapshotCamera = new THREE.PerspectiveCamera(50, 1, 0.1, 1000);
+                snapshotCamera.position.set(4, 3, 6.5);
+                snapshotCamera.lookAt(0, -0.5, 0);
+
+                snapshotScene.add(new THREE.HemisphereLight(0xffffff, 0x444444, 1.2));
+                const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+                dirLight.position.set(5, 10, 7.5);
+                snapshotScene.add(dirLight);
+
+                const clonedGroup = modelToClone.clone(true);
+                clonedGroup.scale.set(1, 1, 1);
+                clonedGroup.position.set(0, 0, 0);
+
+                const box = new THREE.Box3().setFromObject(clonedGroup);
+                const size = box.getSize(new THREE.Vector3());
+                const center = box.getCenter(new THREE.Vector3());
+                clonedGroup.position.sub(center);
+                const maxDim = Math.max(size.x, size.y, size.z);
+                const fov = snapshotCamera.fov * (Math.PI / 180);
+                const cameraDistance = Math.abs(maxDim / (2 * Math.tan(fov / 2)));
+                snapshotCamera.position.z = cameraDistance * 1.6;
+                snapshotCamera.lookAt(0,0,0);
+
+                snapshotScene.add(clonedGroup);
+
+                const snapshotRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+                snapshotRenderer.setPixelRatio(window.devicePixelRatio);
+                snapshotRenderer.setSize(128, 128);
+
+                setTimeout(() => {
+                    try {
+                        snapshotRenderer.render(snapshotScene, snapshotCamera);
+                        const dataUrl = snapshotRenderer.domElement.toDataURL('image/png');
+                        
+                        snapshotScene.traverse(object => {
+                            if (!object.isMesh) return;
+                            if (object.geometry) object.geometry.dispose();
+                            if (object.material) {
+                                if (Array.isArray(object.material)) {
+                                    object.material.forEach(material => material.dispose());
+                                } else {
+                                    object.material.dispose();
+                                }
+                            }
+                        });
+                        snapshotRenderer.dispose();
+                        resolve(dataUrl);
+                    } catch (e) {
+                        snapshotRenderer.dispose();
+                        reject(e);
+                    }
+                }, 50);
+            });
+        }
+
 
         function reset3DView() { if (controls && camera) { controls.reset(); camera.position.set(initialCameraPosition.x, initialCameraPosition.y, initialCameraPosition.z); controls.target.set(0, 0, 0); controls.update(); setActiveMobileIcon(null); if (shelfTypeSelect && shelfTypeSelect.value !== 'mug_shelf') { autoRotateEnabled = true; } } }
         function computePriceDetailed() {
@@ -1872,7 +1949,12 @@ if (addDividersBottom && levels.length > 2) {
                 if(typeof initialize3dPanel === 'function') initialize3dPanel(); else console.error("initialize3dPanel is not defined");
                 if(typeof initializeReviews === 'function') initializeReviews(); else console.error("initializeReviews is not defined");
                 
-                // --- Inicjalizacja koszyka i podpięcie zdarzeń ---
+                // --- KLUCZOWA POPRAWKA: Nowoczesne podpięcie eventu do przycisku ---
+                if (addToCartBtn) {
+                    addToCartBtn.addEventListener('click', addToCart);
+                }
+
+                // --- Inicjalizacja koszyka i reszty zdarzeń ---
                 if (desktopCartContainer) desktopCartContainer.addEventListener('click', openCart);
                 if (mobileCartButton) mobileCartButton.addEventListener('click', openCart);
                 if (cartPanelCloseBtn) cartPanelCloseBtn.addEventListener('click', closeCart);
@@ -1880,7 +1962,6 @@ if (addDividersBottom && levels.length > 2) {
                 if (cartCheckoutButton) cartCheckoutButton.addEventListener('click', handleCheckout);
                 updateCartDisplay(); 
                 
-                // --- Podpięcie zdarzeń dla NOWEGO MODALA PODSUMOWANIA ---
                 if (cartSummaryModalOverlay) {
                     cartSummaryModalOverlay.addEventListener('click', (event) => { if (event.target === cartSummaryModalOverlay) closeCartSummaryModal(); });
                     cartSummaryModalCloseBtnTop.addEventListener('click', closeCartSummaryModal);
@@ -1907,13 +1988,11 @@ if (addDividersBottom && levels.length > 2) {
                      console.error("Nie znaleziono elementów nowego modala podsumowania koszyka.");
                 }
 
-                // --- Ustawienie domyślnej konfiguracji po załadowaniu ---
                 if (shelfTypeSelect) {
                     shelfTypeSelect.value = 'standing';
                     shelfTypeSelect.dispatchEvent(new Event('change', { bubbles: true }));
                 }
 
-                // Stare listenery...
                 const setupDividerButton = (btn, checkbox) => {
                     if (!btn || !checkbox) { return; }
                     btn.addEventListener('click', () => {
