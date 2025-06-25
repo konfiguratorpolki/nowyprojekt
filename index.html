@@ -145,6 +145,8 @@
     select.custom-select:disabled { background-color: #F5F5F4; color: #A8A29E; cursor: not-allowed; border-color: #E7E5E4; background-image: none; }
     .color-swatch-display { display: inline-block; width: 1.25rem; height: 1.25rem; border-radius: 0.25rem; margin-left: 0.5rem; vertical-align: middle; background-color: #E5E7EB; border: 1px solid #D1D5DB; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05); transition: background-color 0.2s ease-in-out; flex-shrink: 0; }
     .color-swatch-display.swatch-white-display { border-color: #9CA3AF; }
+    
+    /* Animacje */
     @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 40% {transform: translateY(-10px);} 60% {transform: translateY(-5px);} }
     .icon-bounce { animation: bounce 1s infinite; }
     @keyframes bg-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.85; } }
@@ -152,6 +154,21 @@
     @keyframes icon-rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     .animate-icon-rotate { animation: icon-rotate 15s linear infinite; }
     @keyframes gallery-spin { to { transform: rotate(360deg); } }
+    @keyframes pulse-bg-effect {
+        0% { background-color: rgba(22, 163, 74, 0); transform: scale(1); }
+        50% { background-color: rgba(22, 163, 74, 0.1); transform: scale(1.05); }
+        100% { background-color: rgba(22, 163, 74, 0); transform: scale(1); }
+    }
+    .animate-pulse-bg {
+        animation: pulse-bg-effect 1.2s ease-in-out 2;
+    }
+    @keyframes subtle-bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(3px); }
+    }
+    .animate-subtle-bounce {
+        animation: subtle-bounce 2.5s ease-in-out infinite;
+    }
 
     #mugShelfDividersOptions label, #mugShelfMountOptions label { display: block; margin-bottom: 0.5rem; cursor: pointer; font-size: 0.875rem; color: #374151; }
     #mugShelfDividersOptions input[type="checkbox"], #mugShelfMountOptions input[type="radio"] { margin-right: 0.5rem; cursor: pointer; border-color: #D1D5DB; color: #16A34A; transition: all 0.15s ease-in-out; }
@@ -163,7 +180,7 @@
     #mugShelfDividersOptions { display: none; margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed #e5e7eb; }
 
     .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.6); display: none; align-items: center; justify-content: center; z-index: 1050; opacity: 0; transition: opacity 0.3s ease-in-out; }
-    .modal-overlay.visible { display: flex; opacity: 1; }
+.modal-overlay.visible { display: flex; opacity: 1; }
     .modal { position: relative; background-color: #ffffff; border-radius: 0.75rem; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); width: 90%; max-width: 520px; max-height: 90vh; overflow: hidden; display: flex; flex-direction: column; transform: translateY(20px) scale(0.95); opacity: 0; transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.3s ease-in-out; }
     .modal-overlay.visible .modal { transform: translateY(0) scale(1); opacity: 1; }
     .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; border-bottom: 1px solid #e5e7eb; background-color: #f9fafb; }
@@ -174,11 +191,20 @@
     .modal-body { padding: 1.25rem 1.5rem; overflow-y: auto; flex-grow: 1; color: #4b5563; }
     .modal-body p, .modal-body li { line-height: 1.6; margin-bottom: 0.75rem; }
     .modal-body strong { color: #374151; }
-    .modal-footer { padding: 1rem 1.5rem; background-color: #f9fafb; border-top: 1px solid #e5e7eb; text-align: right; }
+    .modal-footer { padding: 1rem 1.5rem; background-color: #f9fafb; border-top: 1px solid #e5e7eb; display: flex; justify-content: flex-end; align-items: center; gap: 0.75rem; }
     #orderDetailsModal .modal-body h4 { font-weight: 600; margin-top: 1rem; margin-bottom: 0.5rem; color: #111827; }
-    #allegroOrderModal .modal-body ol { padding-left: 1.25rem; }
-    #allegroOrderModal .modal-body li { margin-bottom: 0.5rem; }
-    #allegroOrderModal .modal-footer button { transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out; }
+    
+    #cartSummaryModal .modal-body ol { padding-left: 1.25rem; }
+    #cartSummaryModal .modal-body li { margin-bottom: 0.5rem; }
+    #cartSummaryItemsContainer {
+        max-height: 45vh;
+        overflow-y: auto;
+        margin: -0.75rem;
+        padding: 0.75rem;
+        border-bottom: 1px solid #e5e7eb;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+    }
 
     @media (max-width: 640px) {
         .modal { width: 95%; border-radius: 0.5rem; max-width: 95%;}
@@ -186,7 +212,7 @@
         .modal-title { font-size: 1rem; }
         .modal-close-button { font-size: 1.5rem; }
         .modal-body { padding: 1rem; font-size: 0.9rem; }
-        .modal-footer { padding: 0.75rem 1rem; display: flex; flex-direction: column-reverse; gap: 0.75rem; }
+        .modal-footer { padding: 0.75rem 1rem; flex-direction: column-reverse; }
         .modal-footer button { width: 100%; margin-left: 0 !important; }
     }
 
@@ -209,7 +235,7 @@
     .gallery-tile.gallery-tile--active { transform: translateY(-2px) scale(1.01); opacity: 1 !important; } 
     .gallery-image-container { position: relative; width: 100%; height: 180px; border-radius: 6px; overflow: hidden; background: #fff; box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.08); transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); }
     .gallery-image-container img { width: 100%; height: 100%; object-fit: contain; background: #fff; transition: transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1); }
-    .config-btn { display: none !important; } /* Całkowite ukrycie starego przycisku .config-btn */
+    .config-btn { display: none !important; }
 
     .gallery-caption { margin-top: 8px; font-size: .8em; font-weight: 500; color: #57534E; opacity: 0; transform: translateY(5px); transition: opacity 0.3s ease 0.1s, transform 0.3s ease 0.1s; text-align: center; width: 100%; }
     .gallery-tile:hover .gallery-caption { opacity: 1; transform: translateY(0); } 
@@ -221,9 +247,7 @@
     #stickyFooterBar { transform: translateY(0); transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out; padding: 0.5rem 0.25rem; height: 60px; z-index: 990; }
     #stickyFooterBar > * { background: none; border: none; padding: 0; margin: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; font-size: 0.75rem; line-height: 1rem; text-align: center; flex-grow: 1; flex-basis: 0; height: 100%; transition: background-color 0.15s ease-in-out; min-width: 0; cursor: pointer; }
     #stickyFooterBar > *:hover, #stickyFooterBar > *:focus { background-color: rgba(255, 255, 255, 0.1); outline: none; border-radius: 0.25rem; }
-    #stickyFooterBar button svg, #stickyFooterBar #footerPriceDisplay svg { width: 1.5rem; height: 1.5rem; margin-bottom: 0.125rem; pointer-events: none; }
-    #footerPriceDisplay { font-weight: bold; font-size: 0.875rem; line-height: 1.25rem; padding: 0 0.25rem; cursor: default; }
-    #footerPriceDisplay > svg { width: 1.25rem; height: 1.25rem; }
+    #stickyFooterBar button svg { width: 1.5rem; height: 1.5rem; margin-bottom: 0.125rem; pointer-events: none; }
     @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     .animate-spin-slow { animation: spin 4s linear infinite; }
     @keyframes section-highlight-anim { 0% { background-color: rgba(22, 163, 74, 0) !important; } 50% { background-color: rgba(22, 163, 74, 0.15) !important; } 100% { background-color: rgba(22, 163, 74, 0) !important; } }
@@ -309,18 +333,199 @@
         display: block;
     }
 
-    /* NOWE/ZMODYFIKOWANE STYLE DLA CIĄGLE KRĘCĄCEJ SIĘ IKONKI KONFIGURACJI */
     .image-actions-bar .action-icon-btn.gallery-configure-btn svg {
         animation-name: gallery-spin;
-        animation-duration: 2.5s; /* Możesz dostosować prędkość, np. '4s' dla wolniejszego */
+        animation-duration: 2.5s;
         animation-timing-function: linear;
         animation-iteration-count: infinite;
-        animation-play-state: running; /* Zmieniono z 'paused' na 'running' */
+        animation-play-state: running;
     }
-    /* Usunięto pseudoklasę :hover dla animacji, ponieważ ma się kręcić cały czas */
+
+    /* ---- ZMIENIONE STYLE KOSZYKA I PODSUMOWANIA ---- */
+    .order-summary-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    #desktopCartContainer {
+        position: relative;
+        /* Usunięto domyślny padding, będzie on w elemencie wewnętrznym */
+    }
+
+    .cart-badge {
+        position: absolute;
+        top: -5px;
+        right: -8px;
+        background-color: #ef4444;
+        color: white;
+        border-radius: 9999px;
+        width: 1.25rem;
+        height: 1.25rem;
+        font-size: 0.75rem;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+        border: 2px solid #ffffff;
+        transform: scale(1);
+        transition: transform 0.2s ease;
+    }
+    #desktopCartContainer:hover .cart-badge {
+        transform: scale(1.1);
+    }
+    
+    #cartPanelOverlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1040;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease-in-out, visibility 0s linear 0.3s;
+    }
+    #cartPanelOverlay.visible {
+        opacity: 1;
+        visibility: visible;
+        transition: opacity 0.3s ease-in-out, visibility 0s linear 0s;
+    }
+
+    #cartPanel {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        max-width: 400px;
+        background-color: #ffffff;
+        box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+        z-index: 1041;
+        transform: translateX(100%);
+        transition: transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+        display: flex;
+        flex-direction: column;
+    }
+    #cartPanel.visible {
+        transform: translateX(0);
+    }
+    @media (max-width: 480px) {
+        #cartPanel {
+            max-width: 90%;
+        }
+    }
+    #cartPanelHeader {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid #e5e7eb;
+        background-color: #f9fafb;
+    }
+    #cartPanelTitle {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #1f2937;
+    }
+    #cartPanelCloseBtn {
+        background: none; border: none; font-size: 1.75rem; line-height: 1; 
+        color: #9ca3af; cursor: pointer; padding: 0.25rem; transition: color 0.2s ease;
+    }
+    #cartPanelCloseBtn:hover { color: #374151; }
+    
+    #cartItemsContainer {
+        flex-grow: 1;
+        overflow-y: auto;
+        padding: 1rem;
+    }
+    #cartEmptyMessage {
+        text-align: center;
+        color: #6b7280;
+        padding-top: 4rem;
+    }
+    #cartEmptyMessage svg {
+        margin: 0 auto 1rem;
+    }
+
+    #cartPanelFooter {
+        padding: 1.5rem;
+        border-top: 1px solid #e5e7eb;
+        background-color: #f9fafb;
+        box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+    }
+
+    #cartCheckoutButton {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        font-weight: 600;
+        color: white;
+        background-color: #16A34A;
+        border: none;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: background-color 0.2s ease, transform 0.1s ease;
+        text-align: center;
+        display: block;
+        margin-top: 1rem;
+    }
+    #cartCheckoutButton:hover {
+        background-color: #15803d;
+    }
+    #cartCheckoutButton:active {
+        transform: scale(0.98);
+    }
+    #cartCheckoutButton:disabled {
+        background-color: #d1d5db;
+        cursor: not-allowed;
+        transform: scale(1);
+    }
+
 </style>
 </head>
 <body class="flex flex-col justify-center items-center min-h-screen bg-stone-100 font-sans text-stone-800 pb-20 md:pb-0">
+
+    <div id="cartPanelOverlay"></div>
+    <div id="cartPanel">
+        <div id="cartPanelHeader">
+            <h2 id="cartPanelTitle">Twój koszyk</h2>
+            <button id="cartPanelCloseBtn" aria-label="Zamknij koszyk">&times;</button>
+        </div>
+        <div id="cartDiscountReminder" class="p-3 bg-emerald-50 border-b border-emerald-200 text-center text-sm text-emerald-800" style="display: none;">
+            </div>
+        <div id="cartItemsContainer">
+            <div id="cartEmptyMessage">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-stone-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                </svg>
+                <p>Twój koszyk jest pusty.</p>
+                <p class="text-sm mt-1">Dodaj produkty z konfiguratora.</p>
+            </div>
+        </div>
+        <div id="cartPanelFooter">
+            <div id="cartTotalContainer" class="space-y-1 text-sm">
+                 <div class="flex justify-between" id="cartSubtotalLine" style="display: none;">
+                    <span>Suma częściowa:</span>
+                    <span id="cartSubtotalPrice"></span>
+                 </div>
+                 <div class="flex justify-between text-green-600 font-semibold" id="cartDiscountLine" style="display: none;">
+                    <span>Rabat (-25%):</span>
+                    <span id="cartDiscountAmount"></span>
+                 </div>
+                 <div class="flex justify-between items-baseline font-bold text-base border-t border-stone-200 pt-1 mt-1">
+                     <span>Do zapłaty:</span>
+                     <span id="cartTotalPrice">0,00 zł</span>
+                 </div>
+            </div>
+            <button id="cartCheckoutButton" disabled>
+                Przejdź do podsumowania
+            </button>
+        </div>
+    </div>
 
     <div id="imageLightbox" class="fixed inset-0 bg-black bg-opacity-85 flex items-center justify-center z-[1060] hidden p-4 transition-opacity duration-300 ease-in-out">
         <div class="relative">
@@ -333,23 +538,104 @@
         </div>
     </div>
     <div id="orderDetailsModalOverlay" class="modal-overlay"> <div id="orderDetailsModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"> <div class="modal-header"> <h3 id="modalTitle" class="modal-title">Szczegóły Zamówienia</h3> <button class="modal-close-button" aria-label="Zamknij">&times;</button> </div> <div class="modal-body"> <h4>Kod Zamówienia:</h4> <p><strong id="modalOrderCode">Ładowanie...</strong></p> <h4>Podsumowanie:</h4> <p id="modalOrderSummary">Tutaj pojawią się szczegóły zamówienia po implementacji logiki...</p> </div> </div> </div>
-    <div id="allegroOrderModalOverlay" class="modal-overlay"> <div id="allegroOrderModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="allegroModalTitle"> <div class="modal-header"> <h3 id="allegroModalTitle" class="modal-title">Potwierdzenie i Instrukcje</h3> <button id="allegroModalCloseButtonTop" class="modal-close-button" aria-label="Zamknij">&times;</button> </div> <div class="modal-body" id="allegroModalBody"> <p class="text-green-600 font-semibold text-center text-lg mb-3"> <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block mr-2 -mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /> </svg> Kod zamówienia został skopiowany! </p> <div class="mb-4 p-3 bg-stone-100 rounded-md border border-stone-300"> <p class="text-sm text-stone-600 mb-1">Twój kod zamówienia:</p> <p id="allegroModalOrderCode" class="font-mono text-lg font-bold text-stone-800 break-all select-all text-center"></p> </div> <div class="mb-4 p-3 bg-amber-50 rounded-md border border-amber-300"> <p class="text-sm text-stone-700">Cena półki: <strong id="allegroModalPrice" class="text-red-600"></strong></p> </div> <h4 class="font-semibold text-stone-700 mb-2 mt-4 text-base">Co dalej?</h4> <p class="text-sm text-stone-600 mb-2"></p> <ol class="list-decimal text-sm text-stone-600 space-y-1 pl-5"> <li id="allegroModalInstructionUnits">Na stronie Allegro dodaj do koszyka tyle sztuk, ile wynosi cena Twojej półki (wyliczona kwota).</li> <li>W zakładce Dostawa i płatność, w polu „Uwagi do zakupu”, wklej kod zamówienia.</li> <li>Złóż i opłać zamówienie – a my zajmiemy się resztą 😊</li> </ol> </div> <div class="modal-footer space-x-3"> <button id="allegroModalCloseButtonBottom" class="px-4 py-2 text-sm font-medium text-stone-700 bg-stone-200 hover:bg-stone-300 rounded-md">Zamknij</button> <button id="allegroModalGoButton" class="px-6 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-md shadow-sm hover:shadow-lg"> <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-1.5 -ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /> </svg> Przejdź do Allegro </button> </div> </div> </div>
+    
+    <div id="cartSummaryModalOverlay" class="modal-overlay">
+        <div id="cartSummaryModal" class="modal !max-w-2xl" role="dialog" aria-modal="true" aria-labelledby="cartSummaryModalTitle">
+            <div class="modal-header">
+                <h3 id="cartSummaryModalTitle" class="modal-title">Podsumowanie Twojego zamówienia</h3>
+                <button id="cartSummaryModalCloseBtnTop" class="modal-close-button" aria-label="Zamknij">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="cartSummaryItemsContainer" class="space-y-4">
+                    </div>
+                <div class="mt-4 pt-4">
+                     <div id="cartSummaryTotalContainer" class="space-y-2 mb-4">
+                         <div class="flex justify-between text-base" id="cartSummarySubtotalLine" style="display: none;">
+                            <span>Suma częściowa:</span>
+                            <span id="cartSummarySubtotalPrice"></span>
+                         </div>
+                         <div class="flex justify-between text-lg text-green-600 font-semibold" id="cartSummaryDiscountLine" style="display: none;">
+                            <span>Rabat (-25%):</span>
+                            <span id="cartSummaryDiscountAmount"></span>
+                         </div>
+                         <div class="flex justify-between items-baseline font-bold text-2xl border-t-2 border-stone-300 pt-2 mt-2">
+                             <span>Do zapłaty:</span>
+                             <span id="cartSummaryTotalPrice" class="text-red-600">0,00 zł</span>
+                         </div>
+                    </div>
+                    <div class="mt-4">
+                        <label for="cartSummaryAllCodes" class="block text-sm font-medium text-stone-600 mb-1">Kody do wklejenia w "Uwagach do zakupu" na Allegro:</label>
+                        <div class="relative">
+                            <textarea id="cartSummaryAllCodes" rows="4" class="w-full rounded-md border-stone-300 shadow-sm text-xs p-2 bg-stone-50 focus:ring-green-500 focus:border-green-500" readonly></textarea>
+                            <button id="copyAllCodesBtn" title="Skopiuj wszystkie kody" class="absolute top-2 right-2 p-1.5 text-stone-500 hover:text-green-600 bg-white rounded-md hover:bg-stone-100 transition">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="mt-4 p-3 bg-amber-50 rounded-md border border-amber-200">
+                        <h4 class="font-semibold text-stone-700 mb-2 text-base">Co dalej?</h4>
+                        <ol class="list-decimal text-sm text-stone-600 space-y-1.5 pl-5">
+                            <li id="cartSummaryInstructionUnits">Na stronie Allegro dodaj do koszyka tyle sztuk, ile wynosi łączna cena Twojego zamówienia.</li>
+                            <li>W zakładce "Dostawa i płatność", w polu „Uwagi do zakupu”, wklej skopiowane kody zamówień.</li>
+                            <li>Złóż i opłać zamówienie – a my zajmiemy się resztą 😊</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="downloadCartSummaryBtn" class="px-4 py-2 text-sm font-medium text-stone-700 bg-stone-100 hover:bg-stone-200 rounded-md flex items-center gap-2 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 animate-subtle-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                    <span>Pobierz podsumowanie</span>
+                </button>
+                <button id="cartSummaryModalCloseBtnBottom" class="px-4 py-2 text-sm font-medium text-stone-700 bg-stone-200 hover:bg-stone-300 rounded-md">Zamknij</button>
+                <button id="cartSummaryGoToAllegroBtn" class="px-6 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-md shadow-sm hover:shadow-lg flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                    <span>Skopiuj kody i przejdź do Allegro</span>
+                </button>
+            </div>
+        </div>
+    </div>
 
-    <div class="w-full max-w-7xl mx-auto px-4 md:px-6 my-6"> <details class="p-4 bg-emerald-50 border border-emerald-200 rounded-lg md:hidden group"> <summary class="flex justify-between items-center cursor-pointer list-none"> <h2 class="text-lg font-semibold text-emerald-800">Jak zamówić półkę?</h2> <span class="marker transform transition-transform duration-200 rotate-0 group-open:rotate-180"> <svg class="w-5 h-5 text-emerald-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /> </svg> </span> </summary> <div class="mt-4 pt-4 border-t border-emerald-200"> <ul class="list-none instruction-list text-stone-700 space-y-3 text-sm"> <li><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 0 1 0 1.905c-.007.379.137.75.431.99l1.005.828c.428.355.53 1.005.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.063-.374-.313-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 0 1 0-1.905c.007-.379-.137-.75-.43-.99l-1.004-.828a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg> <span>Wybierz rodzaj półki, wymiary, kolory i liczbę półek.</span></li>
-    <li><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg> <span>Sprawdź podsumowanie zamówienia.</span></li>
-    <li><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 4.25-3-3m0 0-3 3m3-3v12.75" /></svg> <span>Gdy wszystko ustawisz, strona poda cenę i kod zamówienia.</span></li>
-    <li><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" /></svg> <span>Kliknij zielony przycisk, aby skopiować kod i przejść na Allegro.</span></li>
-    <li><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" /></svg> <span>Na Allegro zamów dokładnie tyle sztuk, ile wynosi cena (np. 200 zł = 200 szt.).</span></li>
-    <li><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" /></svg> <span>W polu „Uwagi do zakupu” wklej skopiowany kod.</span></li>
+    <div class="w-full max-w-7xl mx-auto px-4 md:px-6 my-6">
+        <details class="p-4 bg-emerald-50 border border-emerald-200 rounded-lg md:hidden group"> <summary class="flex justify-between items-center cursor-pointer list-none"> <h2 class="text-lg font-semibold text-emerald-800">Jak zamówić półkę?</h2> <span class="marker transform transition-transform duration-200 rotate-0 group-open:rotate-180"> <svg class="w-5 h-5 text-emerald-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /> </svg> </span> </summary> <div class="mt-4 pt-4 border-t border-emerald-200"> <ul class="list-none instruction-list text-stone-700 space-y-3 text-sm"> <li><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 0 1 0 1.905c-.007.379.137.75.431.99l1.005.828c.428.355.53 1.005.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.063-.374-.313-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 0 1 0-1.905c.007-.379-.137-.75-.43-.99l-1.004-.828a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg> <span>Wybierz rodzaj półki, wymiary, kolory i liczbę półek.</span></li>
+    <li><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" /></svg> <span>Dodaj skonfigurowaną półkę do koszyka. Możesz dodać wiele różnych półek.</span></li>
+    <li><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" /></svg> <span>Gdy wszystko gotowe, kliknij w ikonę koszyka, aby zobaczyć podsumowanie.</span></li>
+    <li><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 4.25-3-3m0 0-3 3m3-3v12.75" /></svg> <span>W podsumowaniu strona poda łączną cenę i wszystkie kody zamówień.</span></li>
+    <li><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" /></svg> <span>Kliknij zielony przycisk, aby skopiować kody i przejść na Allegro.</span></li>
+    <li><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" /></svg> <span>Na Allegro zamów tyle sztuk, ile wynosi **łączna cena** (np. 350 zł = 350 szt.).</span></li>
+    <li><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" /></svg> <span>W polu „Uwagi do zakupu” wklej **wszystkie** skopiowane kody.</span></li>
     <li><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" /></svg> <span>Opłać zamówienie – my zajmiemy się resztą! 😊</span></li>
 </ul> </div> </details> </div>
 <div id="tabbedGalleryContainer" class="w-full max-w-7xl mx-auto px-4 md:px-6"> <div class="gallery-tabs" id="galleryTabsContainer"></div> <div class="gallery-content-wrapper"> <button class="gallery-arrow gallery-prev-arrow" aria-label="Poprzednie zdjęcia">&#10094;</button> <div class="gallery-image-area" id="galleryImageArea"> <div class="gallery-grid" id="galleryGridContainer"></div> </div> <button class="gallery-arrow gallery-next-arrow" aria-label="Następne zdjęcia">&#10095;</button> </div> </div>
+
+<div class="w-full max-w-7xl mx-auto px-4 md:px-6 mb-6">
+    <div class="bg-emerald-50 border-2 border-dashed border-emerald-300 rounded-xl p-4 md:p-5 flex items-center space-x-4 shadow-sm">
+        <div class="flex-shrink-0">
+             <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 md:h-12 md:w-12 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+             </svg>
+        </div>
+        <div>
+            <h3 class="font-bold text-emerald-800 text-base md:text-lg">Rabat na drugą półkę!</h3>
+            <p class="text-emerald-700 text-sm md:text-base mt-1">Zamów dwie dowolne półki, a na drugą (tańszą) otrzymasz <span class="font-bold">25% rabatu</span>.</p>
+        </div>
+    </div>
+</div>
+
 <div id="configuratorSection" class="p-4 md:p-8 bg-white shadow-lg rounded-xl flex flex-col md:flex-row md:space-x-8 w-full max-w-7xl mx-auto mb-6">
         <div class="w-full md:w-1/3 space-y-8 mb-8 md:mb-0 order-1 md:order-1">
              <div id="shelfTypeSectionAnchor" class="p-6 shadow rounded-lg bg-white border border-stone-200 transition-shadow duration-200 hover:shadow-md"> <h2 class="text-lg font-semibold mb-4 flex items-center text-stone-800"> <svg class="h-6 w-6 mr-2 text-green-600 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 0 1 0 1.905c-.007.379.137.75.431.99l1.005.828c.428.355.53 1.005.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.063-.374-.313-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 0 1 0-1.905c.007-.379-.137-.75-.43-.99l-1.004-.828a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281Z" /> <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /> </svg> Rodzaj półki </h2> <select id="shelfType" class="custom-select w-full" onchange="handleShelfTypeChange();"> <option value="">-- Wybierz --</option> <option value="standing">Stojąca na blacie</option> <option value="hanging">Wisząca</option> <option value="mug_shelf">Półka na kubki</option> </select> <div id="shelfTypeOptions" style="display:none; margin-top:1rem;" class="space-y-2"></div> <div id="mugShelfSpecificOptionsContainer" style="display:none;"> <div id="mugShelfMountOptions" class="mt-4 pt-4 border-t border-dashed border-stone-200"></div> <div id="mugShelfDividersOptions" class="mt-4 pt-4 border-t border-dashed border-stone-200"> <h3 class="text-md font-semibold mb-2 text-stone-700">Wstaw przegródki:</h3> <label class="flex items-center space-x-2"><input type="checkbox" id="dividersTop" class="rounded border-stone-300 text-green-600 shadow-sm focus:ring-green-500 focus:ring-offset-0 focus:ring-2" onchange="updatePreview(); updateOrderSummary();"><span>Na górze</span></label> <label class="flex items-center space-x-2 mt-1"><input type="checkbox" id="dividersMiddle" class="rounded border-stone-300 text-green-600 shadow-sm focus:ring-green-500 focus:ring-offset-0 focus:ring-2" onchange="updatePreview(); updateOrderSummary();"><span>Pośrodku</span></label> <label class="flex items-center space-x-2 mt-1"><input type="checkbox" id="dividersBottom" class="rounded border-stone-300 text-green-600 shadow-sm focus:ring-green-500 focus:ring-offset-0 focus:ring-2" onchange="updatePreview(); updateOrderSummary();"><span>Na dole</span></label> </div> </div> </div>
 <div id="dimensionSectionAnchor" class="p-6 shadow rounded-lg bg-white border border-stone-200 transition-shadow duration-200 hover:shadow-md"> <h2 class="text-lg font-semibold mb-4 flex items-center text-stone-800"> <svg class="h-6 w-6 mr-2 text-green-600 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75" /> <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v16.5M20.25 3.75v16.5" /> </svg> Wybierz wymiary </h2> <label class="block font-medium text-sm mb-1 text-stone-700">Szerokość:</label> <div id="widthSelectionArea"> <select id="width" class="custom-select w-full" onchange="checkCustomWidth();"> <option value="">-- Wybierz --</option> <option value="34">34 cm</option> <option value="44">44 cm</option> <option value="50">50 cm</option> <option value="60">60 cm</option> <option value="custom">Niestandardowa (35-59 cm)</option> </select> <div class="mt-2"> <input type="range" id="customWidthInput" min="35" max="59" step="1" value="35" style="display:none;" class="mt-2 cursor-pointer" oninput="let val = this.value; if (val === '50') { val = '49'; this.value = val; } document.getElementById('customWidthDisplay').textContent=val+' cm'; handleDimensionChange();"> <div class="flex justify-between items-center mt-1"> <span id="customWidthDisplay" style="display:none; font-weight:bold;" class="text-stone-700"></span> <small id="customWidthFee" style="display:none; font-size:.8rem; color:red;">dopłata +50 zł</small> </div> </div> </div> <label id="heightLabel" class="block font-medium text-sm mt-4 mb-1 text-stone-700">Wysokość:</label> <select id="height" class="custom-select w-full" onchange="handleDimensionChange();"> <option value="">-- Wybierz --</option> <option value="40">40 cm</option> <option value="60">60 cm</option> <option value="80">80 cm</option> </select> <label id="depthLabel" class="block font-medium text-sm mt-4 mb-1 text-stone-700">Głębokość:</label> <select id="depth" class="custom-select w-full" onchange="updatePreview(); updateOrderSummary();"> <option value="">-- Wybierz --</option> </select> </div>
              <div id="colorSectionAnchor" class="p-6 shadow rounded-lg bg-white border border-stone-200 transition-shadow duration-200 hover:shadow-md space-y-4"> <h2 class="text-lg font-semibold mb-4 flex items-center text-stone-800"> <svg class="h-6 w-6 mr-2 text-green-600 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42" /> </svg> Wybierz kolor </h2> <div> <label for="sideColor" class="block font-medium text-sm mb-1 text-stone-700">Kolor boków:</label> <div class="flex items-center"> <select id="sideColor" class="custom-select flex-grow" onchange="updateOrderSummary(); updateSwatchDisplay('sideColor', 'sideColorSwatchDisplay');"> <option value="">-- Wybierz --</option> <option value="#8B5A2B" data-color="#8B5A2B">Dąb Craft Złoty</option> <option value="#FFFFFF" data-color="#FFFFFF">Biały matowy</option> <option value="#000000" data-color="#000000">Czarny matowy</option> </select> <span id="sideColorSwatchDisplay" class="color-swatch-display"></span> </div> </div> <div class="pt-2"> <label id="shelfColorLabel" for="shelfColor" class="block font-medium text-sm mb-1 text-stone-700">Kolor półek i podstaw:</label> <div class="flex items-center"> <select id="shelfColor" class="custom-select flex-grow" onchange="updateOrderSummary(); updateSwatchDisplay('shelfColor', 'shelfColorSwatchDisplay');"> <option value="">-- Wybierz --</option> <option value="#8B5A2B" data-color="#8B5A2B">Dąb Craft Złoty</option> <option value="#FFFFFF" data-color="#FFFFFF">Biały matowy</option> <option value="#000000" data-color="#000000">Czarny matowy</option> </select> <span id="shelfColorSwatchDisplay" class="color-swatch-display"></span> </div> </div> <details class="color-samples-details" id="materialSamplesDetails"> <summary> <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-2 text-stone-600" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5C7.305 4.5 3.135 7.515 1.5 12c1.635 4.485 5.805 7.5 10.5 7.5s8.865-3.015 10.5-7.5C20.865 7.515 16.695 4.5 12 4.5z" /><path stroke-linecap="round" stroke-linejoin="round" d="M12 9a3 3 0 100 6 3 3 0 000-6z" /></svg> <span>Zobacz próbki kolorów</span> <svg class="w-4 h-4 summary-chevron" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg> </summary> <div id="materialSwiper" class="swiper"> <div class="swiper-wrapper"> <div class="swiper-slide"> <img src="img/dabduze.jpg" alt="Dąb Craft Złoty"> <div class="material-name">Dąb Craft Złoty - struktura drewna</div> </div> <div class="swiper-slide"> <img src="img/bialyduze.jpg" alt="Biały matowy"> <div class="material-name">Biały matowy - gładki</div> </div> <div class="swiper-slide"> <img src="img/czarnyduze.jpg" alt="Czarny matowy"> <div class="material-name">Czarny matowy - gładki</div> </div> </div> <div class="material-swiper-button-prev swiper-button-prev"></div> <div class="material-swiper-button-next swiper-button-next"></div> </div> </details> </div>
-        </div> <div class="w-full md:w-2/3 flex flex-col items-center mb-8 md:mb-0 order-2 md:order-2">
+        </div>
+<div class="w-full md:w-2/3 flex flex-col items-center mb-8 md:mb-0 order-2 md:order-2">
              <div id="shelfContainer" class="mx-auto relative"> <button id="collapse3dPanelButton" onclick="close3dPanel()" title="Zwiń podgląd 3D" class="z-20"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /> </svg> <span class="sr-only">Zwiń podgląd 3D</span> </button>
                   <div id="mobilePanelIcons" class="hidden md:hidden"> <button onclick="scrollToElementAndHighlight('shelfTypeSectionAnchor', 'start', this);" title="Przewiń do rodzaju półki"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 0 1 0 1.905c-.007.379.137.75.431.99l1.005.828c.428.355.53 1.005.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.063-.374-.313-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 0 1 0-1.905c.007-.379-.137-.75-.43-.99l-1.004-.828a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281Z" /> <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /> </svg> <span>Rodzaj</span> </button> <button onclick="scrollToElementAndHighlight('dimensionSectionAnchor', 'start', this);" title="Przewiń do wymiarów"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75" /> <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v16.5M20.25 3.75v16.5" /> </svg> <span>Wymiary</span> </button> <button onclick="scrollToElementAndHighlight('colorSectionAnchor', 'start', this);" title="Przewiń do kolorów"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42" /> </svg> <span>Kolory</span> </button> <button onclick="scrollToElementAndHighlight('shelfCountSection', 'start', this);" title="Przewiń do dodawania półek">
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -364,22 +650,27 @@
              <div class="text-sm text-stone-600 italic mt-2 text-center hidden md:block"> Obróć lub zbliż model (przeciągnij myszką) </div>
              <div id="shelfCountSection" class="p-6 shadow rounded-lg bg-white border border-stone-200 transition-shadow duration-200 hover:shadow-md mt-0,1 md:mt-8 w-full max-w-lg"> <h2 class="text-lg font-semibold mb-4 flex items-center text-stone-800"> <svg class="h-6 w-6 mr-2 text-green-600 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /> <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 9h16.5M3.75 15h16.5" /> </svg> Dodaj półki wewnętrzne </h2> <select id="shelfCount" class="custom-select w-full" onchange="updatePreview(); updateOrderSummary();"> <option value="">-- Wybierz --</option> </select> <p id="gapDisplay" class="mt-3 text-sm text-stone-700 font-medium">Odległość między półkami: <span id="gapSummaryDisplay" class="font-bold text-stone-900"></span></p> <div id="desktopDividerDimensionsInfo" style="display: none;"> Wymiar przegródki: szer. 12,5cm, wys. 10,9cm </div> </div>
              <details class="bg-emerald-50 border border-emerald-200 rounded-lg mt-8 w-full max-w-lg hidden md:block transition-shadow duration-200 hover:shadow-md overflow-hidden group"> <summary class="p-6 flex justify-between items-center cursor-pointer list-none hover:bg-emerald-100 transition-colors duration-150"> <h2 class="text-xl font-semibold text-emerald-800">Jak zamówić półkę?</h2> <span class="marker transform transition-transform duration-200 rotate-0 group-open:rotate-180"> <svg class="w-5 h-5 text-emerald-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /> </svg> </span> </summary> <div class="p-6 pt-2 border-t border-emerald-200">
-<ul class="list-none instruction-list text-stone-700 space-y-3 text-sm md:text-base">
-                          <li><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 0 1 0 1.905c-.007.379.137.75.431.99l1.005.828c.428.355.53 1.005.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.063-.374-.313-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 0 1 0-1.905c.007-.379-.137-.75-.43-.99l-1.004-.828a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg> <span>Wybierz rodzaj półki, wymiary, kolory i liczbę półek.</span></li>
-                           <li><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 4.25-3-3m0 0-3 3m3-3v12.75" /></svg> <span>Gdy wszystko ustawisz, strona poda cenę i kod zamówienia.</span></li>
-                           <li><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" /></svg> <span>Kliknij zielony przycisk, aby skopiować kod i przejść na Allegro.</span></li>
-                           <li><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" /></svg> <span>Na Allegro zamów dokładnie tyle sztuk, ile wynosi cena (np. 200 zł = 200 szt.).</span></li>
-                           <li><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" /></svg> <span>W polu „Uwagi do zakupu” wklej skopiowany kod.</span></li>
-                           <li><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" /></svg> <span>Opłać zamówienie – my zajmiemy się resztą! 😊</span></li>
-                       </ul>
+                <ul class="list-none instruction-list text-stone-700 space-y-3 text-sm md:text-base">
+                    <li><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 0 1 0 1.905c-.007.379.137.75.431.99l1.005.828c.428.355.53 1.005.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.063-.374-.313-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 0 1 0-1.905c.007-.379-.137-.75-.43-.99l-1.004-.828a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg> <span>Wybierz rodzaj półki, wymiary, kolory i liczbę półek.</span></li>
+                    <li><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" /></svg> <span>Dodaj skonfigurowaną półkę do koszyka. Możesz dodać wiele różnych półek.</span></li>
+                    <li><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" /></svg> <span>Gdy wszystko gotowe, kliknij w ikonę koszyka, aby zobaczyć podsumowanie.</span></li>
+                    <li><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 4.25-3-3m0 0-3 3m3-3v12.75" /></svg> <span>W podsumowaniu strona poda łączną cenę i wszystkie kody zamówień.</span></li>
+                    <li><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" /></svg> <span>Kliknij zielony przycisk, aby skopiować kody i przejść na Allegro.</span></li>
+                    <li><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" /></svg> <span>Na Allegro zamów tyle sztuk, ile wynosi **łączna cena** (np. 350 zł = 350 szt.).</span></li>
+                    <li><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" /></svg> <span>W polu „Uwagi do zakupu” wklej **wszystkie** skopiowane kody.</span></li>
+                    <li><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" /></svg> <span>Opłać zamówienie – my zajmiemy się resztą! 😊</span></li>
+                </ul>
                    </div>
               </details> <div class="mt-8 bg-white p-6 rounded-lg shadow-md text-center border border-stone-200 transition-shadow duration-200 hover:shadow-lg w-full max-w-lg">
                    <h3 class="text-stone-700 font-semibold mb-3 text-base">Co mówią nasi klienci?</h3>
                    <div id="customerReview" class="text-stone-600 text-base italic review-fade-enter flex items-center justify-center space-x-2 min-h-[4em]"></div>
                </div>
-            </div> <div class="w-full md:w-1/3 p-6 bg-stone-50 border border-stone-200 rounded-lg space-y-6 order-3 md:order-3">
+            </div>
+<div class="w-full md:w-1/3 p-6 bg-stone-50 border border-stone-200 rounded-lg space-y-6 order-3 md:order-3">
              <div class="order-summary bg-white shadow-lg rounded-lg p-6 transition-shadow duration-200 hover:shadow-xl">
-                <h2 class="text-xl font-semibold mb-4 text-stone-800">Podsumowanie Zamówienia</h2>
+                <div class="order-summary-header">
+                    <h2 class="text-xl font-semibold text-stone-800">Podsumowanie</h2>
+                </div>
                 <ul class="divide-y divide-stone-200 text-sm">
                     <li class="py-2 flex justify-between items-center"><span class="font-medium text-stone-600">Rodzaj półki:</span><span id="shelfTypeSummary" class="text-stone-900 text-right">nie wybrano</span></li>
                     <li id="mugShelfMountSummaryItem" class="py-2 flex justify-between items-center" style="display: none;"><span class="font-medium text-stone-600">Montaż:</span><span id="mugShelfMountSummary" class="text-stone-900 text-right"></span></li>
@@ -395,23 +686,44 @@
                     <li class="pt-1 pb-2 flex justify-between items-center"><span class="font-medium text-stone-600">Termin realizacji:</span><span class="text-stone-900 text-right">5‑7 dni roboczych</span></li>
                 </ul>
 
-                <div class="mt-5 pt-4 border-t border-stone-200" id="finalOrderSummary">
-                    <div class="group bg-stone-100 border border-stone-200 rounded-lg p-4 mb-4 transition-shadow hover:shadow-sm">
-                         <div class="flex justify-between items-center mb-2"> <span class="flex items-center text-base font-medium text-stone-700"> <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-stone-500 transition-transform duration-200 ease-in-out group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" /> </svg> Cena: </span> <span class="text-red-600 font-bold text-2xl" id="priceSummary"></span> </div>
-                         <p id="priceHint" class="text-stone-500 text-xs mt-2 text-center">Wybierz wszystkie parametry, aby zobaczyć cenę.</p>
-                    </div>
+                <div class="mt-5 pt-4 border-t border-stone-200">
+                    <div id="priceAndActionsContainer" style="display: none;">
+                        
+                        <div class="bg-stone-100 border border-stone-200 rounded-lg p-4 mb-4 text-center">
+                             <div class="flex justify-center items-baseline w-full">
+                                <span class="text-lg font-medium text-stone-600 mr-3">Cena:</span>
+                                <span class="text-red-600 font-bold text-3xl" id="priceSummary"></span>
+                             </div>
+                        </div>
 
-                     <div id="orderActionsWrapper" style="display:none;" class="mt-4 flex flex-col space-y-3">
-                          <button id="downloadOrderButton" onclick="downloadOrderSummary()" class="group w-full inline-flex items-center justify-center space-x-2 px-4 py-2 border border-stone-300 rounded-md shadow-sm text-sm font-medium text-stone-700 bg-stone-100 hover:bg-stone-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 cursor-pointer transition-all duration-150 ease-in-out active:scale-95 hover:shadow-md"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 transition-transform duration-150 ease-in-out group-hover:animate-pulse"> <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" /> </svg> <span>Zapisz podsumowanie</span> </button>
-                          <div id="orderCodeWindow" class="group w-full p-3 border border-stone-200 rounded-md bg-stone-50 text-center transition-opacity duration-300 ease-in-out"> <span class="flex items-center justify-center text-xs text-stone-500 uppercase mb-1 tracking-wide"> <svg id="orderCodeIcon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-stone-400 transition-transform duration-200 ease-in-out group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /> </svg> Kod zamówienia </span> <code id="orderCodeVisible" class="block font-mono text-sm md:text-base font-bold text-stone-800 break-all select-all" style="line-height: 1.2;"></code> </div>
-                          <button onclick="copyOrderSummary()" class="group w-full px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg text-lg font-semibold transition-all duration-150 ease-in-out flex items-center justify-center space-x-2 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 active:scale-95"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 transition-transform duration-150 ease-in-out group-hover:animate-bounce"> <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" /> </svg> <span>Zamów na Allegro</span> </button>
-                     </div>
-                     <div id="viewOrderSection" class="mt-6 pt-4 border-t border-dashed border-stone-300">
+                        <button id="addToCartBtn" onclick="addToCart()" class="group w-full px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg text-lg font-semibold transition-all duration-150 ease-in-out flex items-center justify-center space-x-2 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 active:scale-95 mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span>Dodaj do koszyka</span>
+                        </button>
+                        
+                        <div id="desktopCartContainer" class="group cursor-pointer" title="Otwórz koszyk">
+                            <div class="w-full bg-white border-2 border-stone-200 group-hover:border-green-300 rounded-lg p-3 shadow-sm group-hover:shadow-lg transition-all duration-200 flex items-center justify-center text-center relative">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-stone-500 group-hover:text-green-600 transition-colors" fill="none" viewBox="0 0 24 24" stroke-width="1.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                                </svg>
+                                <span class="ml-3 text-lg font-semibold text-stone-700 group-hover:text-green-700">Zobacz koszyk</span>
+                                <span class="cart-badge" style="display: none; position: absolute; top: -10px; right: -10px; width: 1.5rem; height: 1.5rem; font-size: 0.8rem;">0</span>
+                            </div>
+                        </div>
+
+                    </div>
+                    <p id="priceHint" class="text-stone-500 text-xs mt-2 text-center">Wybierz wszystkie parametry, aby zobaczyć cenę.</p>
+                     
+                    <div id="viewOrderSection" class="mt-6 pt-4 border-t border-dashed border-stone-300">
                          <label for="viewOrderCodeInput">Masz kod zamówienia?</label>
                          <input type="text" id="viewOrderCodeInput" class="text-base" placeholder="Wklej kod tutaj, aby zobaczyć szczegóły...">
-                         </div>
-                     </div>
-            </div> </div> </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
 <script>
 // --- Zmienne globalne i elementy DOM ---
@@ -426,9 +738,14 @@
         let configuratorSection, shelfCountSection;
         let galleryTabsContainer, galleryGridContainer, galleryImageArea, galleryPrevArrow, galleryNextArrow;
         let show3dButton, collapse3dPanelButton;
-        let footerPriceTextElement, selectionCompleteIndicator;
         let autoRotateEnabled = true;
         const initialCameraPosition = { x: 4, y: 5, z: 7 };
+
+        // --- ZMIENNE DLA KOSZYKA ---
+        let cart = [];
+        let desktopCartContainer, cartPanel, cartPanelOverlay, cartPanelCloseBtn, cartItemsContainer, cartEmptyMessage, cartTotalPrice, cartCheckoutButton, cartBadges, mobileCartButton, cartDiscountReminder;
+        let cartSubtotalLine, cartSubtotalPrice, cartDiscountLine, cartDiscountAmount;
+
 
         // Zmienne dla panelu mobilnego 3D
         let mugShelfDividerIconsContainer, addTopDividerBtn, addMiddleDividerBtn, addBottomDividerBtn;
@@ -439,7 +756,12 @@
 
         // Zmienne dla modali
         let viewOrderCodeInput, orderDetailsModalOverlay, orderDetailsModal, modalCloseButton, modalOrderCodeSpan, modalOrderSummaryP;
-        let allegroOrderModalOverlay, allegroModalOrderCodeEl, allegroModalPriceEl, allegroModalUnitsInstructionEl, allegroModalGoButton, allegroModalCloseButtonTop, allegroModalCloseButtonBottom;
+        let cartSummaryModalOverlay, cartSummaryModal, cartSummaryModalTitle, cartSummaryItemsContainer, cartSummaryTotalPrice, cartSummaryAllCodes, copyAllCodesBtn, cartSummaryInstructionUnits, downloadCartSummaryBtn, cartSummaryGoToAllegroBtn, cartSummaryModalCloseBtnTop, cartSummaryModalCloseBtnBottom;
+        let cartSummarySubtotalLine, cartSummarySubtotalPrice, cartSummaryDiscountLine, cartSummaryDiscountAmount;
+        
+        // Zmienne dla poprawionej logiki widoczności
+        let priceAndActionsContainer, priceHint, addToCartBtn;
+
 
         // NOWE ZMIENNE DLA LIGHTBOXA
         let imageLightbox, lightboxImage, lightboxCloseBtn;
@@ -447,66 +769,414 @@
 
         // --- Predefined Shelf Configurations ---
         const wiszace_configs = [
-            { type: 'hanging', sideColor: '#8B5A2B', shelfColor: '#8B5A2B', height: '80', width: '44', depth: '10', shelfCount: '5' }, // 1
-            { type: 'hanging', sideColor: '#FFFFFF', shelfColor: '#FFFFFF', height: '80', width: '44', depth: '10', shelfCount: '5' }, // 2
-            { type: 'hanging', sideColor: '#8B5A2B', shelfColor: '#FFFFFF', height: '80', width: '44', depth: '10', shelfCount: '5' }, // 3
-            { type: 'hanging', sideColor: '#000000', shelfColor: '#8B5A2B', height: '80', width: '44', depth: '10', shelfCount: '5' }, // 4
-            { type: 'hanging', sideColor: '#000000', shelfColor: '#000000', height: '80', width: '44', depth: '10', shelfCount: '5' }, // 5
-            { type: 'hanging', sideColor: '#8B5A2B', shelfColor: '#8B5A2B', height: '40', width: '60', depth: '10', shelfCount: '2' }, // 6
-            { type: 'hanging', sideColor: '#FFFFFF', shelfColor: '#FFFFFF', height: '40', width: '60', depth: '10', shelfCount: '2' }, // 7
-            { type: 'hanging', sideColor: '#000000', shelfColor: '#8B5A2B', height: '40', width: '60', depth: '10', shelfCount: '2' }, // 8
-            { type: 'hanging', sideColor: '#000000', shelfColor: '#000000', height: '40', width: '60', depth: '10', shelfCount: '2' }, // 9
-            { type: 'hanging', sideColor: '#8B5A2B', shelfColor: '#FFFFFF', height: '40', width: '60', depth: '10', shelfCount: '2' }, // 10
-            { type: 'hanging', sideColor: '#FFFFFF', shelfColor: '#FFFFFF', height: '60', width: '44', depth: '10', shelfCount: '3', noTopShelf: true }, // 11
-            { type: 'hanging', sideColor: '#000000', shelfColor: '#8B5A2B', height: '60', width: '44', depth: '10', shelfCount: '3', noTopShelf: true }, // 12
-            { type: 'hanging', sideColor: '#FFFFFF', shelfColor: '#8B5A2B', height: '60', width: '44', depth: '10', shelfCount: '3', noTopShelf: true }, // 13
-            { type: 'hanging', sideColor: '#000000', shelfColor: '#000000', height: '60', width: '44', depth: '10', shelfCount: '3', noTopShelf: true }, // 14
-            { type: 'hanging', sideColor: '#FFFFFF', shelfColor: '#8B5A2B', height: '40', width: '44', depth: '10', shelfCount: '2', noTopShelf: true }  // 15
+            { type: 'hanging', sideColor: '#8B5A2B', shelfColor: '#8B5A2B', height: '80', width: '44', depth: '10', shelfCount: '5' },
+            { type: 'hanging', sideColor: '#FFFFFF', shelfColor: '#FFFFFF', height: '80', width: '44', depth: '10', shelfCount: '5' },
+            { type: 'hanging', sideColor: '#8B5A2B', shelfColor: '#FFFFFF', height: '80', width: '44', depth: '10', shelfCount: '5' },
+            { type: 'hanging', sideColor: '#000000', shelfColor: '#8B5A2B', height: '80', width: '44', depth: '10', shelfCount: '5' },
+            { type: 'hanging', sideColor: '#000000', shelfColor: '#000000', height: '80', width: '44', depth: '10', shelfCount: '5' },
+            { type: 'hanging', sideColor: '#8B5A2B', shelfColor: '#8B5A2B', height: '40', width: '60', depth: '10', shelfCount: '2' },
+            { type: 'hanging', sideColor: '#FFFFFF', shelfColor: '#FFFFFF', height: '40', width: '60', depth: '10', shelfCount: '2' },
+            { type: 'hanging', sideColor: '#000000', shelfColor: '#8B5A2B', height: '40', width: '60', depth: '10', shelfCount: '2' },
+            { type: 'hanging', sideColor: '#000000', shelfColor: '#000000', height: '40', width: '60', depth: '10', shelfCount: '2' },
+            { type: 'hanging', sideColor: '#8B5A2B', shelfColor: '#FFFFFF', height: '40', width: '60', depth: '10', shelfCount: '2' },
+            { type: 'hanging', sideColor: '#FFFFFF', shelfColor: '#FFFFFF', height: '60', width: '44', depth: '10', shelfCount: '3', noTopShelf: true },
+            { type: 'hanging', sideColor: '#000000', shelfColor: '#8B5A2B', height: '60', width: '44', depth: '10', shelfCount: '3', noTopShelf: true },
+            { type: 'hanging', sideColor: '#FFFFFF', shelfColor: '#8B5A2B', height: '60', width: '44', depth: '10', shelfCount: '3', noTopShelf: true },
+            { type: 'hanging', sideColor: '#000000', shelfColor: '#000000', height: '60', width: '44', depth: '10', shelfCount: '3', noTopShelf: true },
+            { type: 'hanging', sideColor: '#FFFFFF', shelfColor: '#8B5A2B', height: '40', width: '44', depth: '10', shelfCount: '2', noTopShelf: true }
         ];
 
         const stojace_configs = [
-            { type: 'standing', sideColor: '#8B5A2B', shelfColor: '#8B5A2B', height: '40', width: '60', depth: '10', shelfCount: '2' }, // 1
-            { type: 'standing', sideColor: '#FFFFFF', shelfColor: '#8B5A2B', height: '40', width: '60', depth: '10', shelfCount: '2' }, // 2
-            { type: 'standing', sideColor: '#000000', shelfColor: '#8B5A2B', height: '40', width: '60', depth: '10', shelfCount: '2' }, // 3
-            { type: 'standing', sideColor: '#FFFFFF', shelfColor: '#FFFFFF', height: '40', width: '60', depth: '10', shelfCount: '2' }, // 4
-            { type: 'standing', sideColor: '#000000', shelfColor: '#000000', height: '40', width: '60', depth: '10', shelfCount: '2' }, // 5
-            { type: 'standing', sideColor: '#8B5A2B', shelfColor: '#8B5A2B', height: '40', width: '60', depth: '10', shelfCount: '2', noBottomShelf: true }, // 6
-            { type: 'standing', sideColor: '#8B5A2B', shelfColor: '#FFFFFF', height: '40', width: '60', depth: '10', shelfCount: '2', noBottomShelf: true }, // 7
-            { type: 'standing', sideColor: '#8B5A2B', shelfColor: '#8B5A2B', height: '40', width: '60', depth: '15', shelfCount: '2', noBottomShelf: true, noTopShelf: true }, // 8
-            { type: 'standing', sideColor: '#000000', shelfColor: '#8B5A2B', height: '40', width: '60', depth: '15', shelfCount: '2', noBottomShelf: true, noTopShelf: true }, // 9
-            { type: 'standing', sideColor: '#8B5A2B', shelfColor: '#8B5A2B', height: '40', width: '60', depth: '10', shelfCount: '2', noBottomShelf: true, noTopShelf: true }, // 10
-            { type: 'standing', sideColor: '#000000', shelfColor: '#8B5A2B', height: '40', width: '44', depth: '10', shelfCount: '2', noBottomShelf: true, noTopShelf: true }  // 11
+            { type: 'standing', sideColor: '#8B5A2B', shelfColor: '#8B5A2B', height: '40', width: '60', depth: '10', shelfCount: '2' },
+            { type: 'standing', sideColor: '#FFFFFF', shelfColor: '#8B5A2B', height: '40', width: '60', depth: '10', shelfCount: '2' },
+            { type: 'standing', sideColor: '#000000', shelfColor: '#8B5A2B', height: '40', width: '60', depth: '10', shelfCount: '2' },
+            { type: 'standing', sideColor: '#FFFFFF', shelfColor: '#FFFFFF', height: '40', width: '60', depth: '10', shelfCount: '2' },
+            { type: 'standing', sideColor: '#000000', shelfColor: '#000000', height: '40', width: '60', depth: '10', shelfCount: '2' },
+            { type: 'standing', sideColor: '#8B5A2B', shelfColor: '#8B5A2B', height: '40', width: '60', depth: '10', shelfCount: '2', noBottomShelf: true },
+            { type: 'standing', sideColor: '#8B5A2B', shelfColor: '#FFFFFF', height: '40', width: '60', depth: '10', shelfCount: '2', noBottomShelf: true },
+            { type: 'standing', sideColor: '#8B5A2B', shelfColor: '#8B5A2B', height: '40', width: '60', depth: '15', shelfCount: '2', noBottomShelf: true, noTopShelf: true },
+            { type: 'standing', sideColor: '#000000', shelfColor: '#8B5A2B', height: '40', width: '60', depth: '15', shelfCount: '2', noBottomShelf: true, noTopShelf: true },
+            { type: 'standing', sideColor: '#8B5A2B', shelfColor: '#8B5A2B', height: '40', width: '60', depth: '10', shelfCount: '2', noBottomShelf: true, noTopShelf: true },
+            { type: 'standing', sideColor: '#000000', shelfColor: '#8B5A2B', height: '40', width: '44', depth: '10', shelfCount: '2', noBottomShelf: true, noTopShelf: true }
         ];
 
         const kubki_configs = [
-    { type: 'mug_shelf', mount: 'standing', sideColor: '#8B5A2B', shelfColor: '#8B5A2B', height: '40', width: '44', depth: '10', dividers: { top: true, middle: true, bottom: true } }, // 1
-    { type: 'mug_shelf', mount: 'standing', sideColor: '#000000', shelfColor: '#8B5A2B', height: '40', width: '44', depth: '10', dividers: { top: true, middle: true, bottom: true } }, // 2
-    { type: 'mug_shelf', mount: 'standing', sideColor: '#8B5A2B', shelfColor: '#8B5A2B', height: '40', width: '60', depth: '10', dividers: { top: true, middle: true, bottom: true } }, // 3
-    { type: 'mug_shelf', mount: 'standing', sideColor: '#8B5A2B', shelfColor: '#FFFFFF', height: '40', width: '60', depth: '10', dividers: { top: true, middle: true, bottom: true } }, // 4
-    { type: 'mug_shelf', mount: 'standing', sideColor: '#8B5A2B', shelfColor: '#000000', height: '40', width: '60', depth: '10', dividers: { top: true, middle: true, bottom: true } }, // 5
-    { type: 'mug_shelf', mount: 'standing', sideColor: '#8B5A2B', shelfColor: '#8B5A2B', height: '40', width: '44', depth: '10', dividers: { top: true, middle: true, bottom: true } }, // 6
-    { type: 'mug_shelf', mount: 'standing', sideColor: '#8B5A2B', shelfColor: '#8B5A2B', height: '40', width: '60', depth: '10', dividers: { top: true, middle: false, bottom: false } }, // 7
-    { type: 'mug_shelf', mount: 'standing', sideColor: '#8B5A2B', shelfColor: '#000000', height: '40', width: '60', depth: '10', dividers: { top: true, middle: false, bottom: true } }, // 8
-    { type: 'mug_shelf', mount: 'standing', sideColor: '#8B5A2B', shelfColor: '#FFFFFF', height: '40', width: '60', depth: '10', dividers: { top: true, middle: false, bottom: true } }, // 9
-    { type: 'mug_shelf', mount: 'hanging', sideColor: '#8B5A2B', shelfColor: '#8B5A2B', height: '40', width: '60', depth: '10', dividers: { top: true, middle: true, bottom: true } }, // 10
-    { type: 'mug_shelf', mount: 'hanging', sideColor: '#8B5A2B', shelfColor: '#FFFFFF', height: '40', width: '60', depth: '10', dividers: { top: true, middle: true, bottom: true } }, // 11
-    { type: 'mug_shelf', mount: 'hanging', sideColor: '#8B5A2B', shelfColor: '#000000', height: '40', width: '60', depth: '10', dividers: { top: true, middle: true, bottom: true } }, // 12
-    { type: 'mug_shelf', mount: 'standing', sideColor: '#8B5A2B', shelfColor: '#8B5A2B', height: '60', width: '44', depth: '10', dividers: { top: true, middle: true, bottom: true } }, // 13
-    { type: 'mug_shelf', mount: 'standing', sideColor: '#8B5A2B', shelfColor: '#8B5A2B', height: '60', width: '44', depth: '10', dividers: { top: true, middle: true, bottom: true } },  // 14
-    {
-        type: 'mug_shelf',
-        mount: 'standing',
-        sideColor: '#8B5A2B',
-        shelfColor: '#8B5A2B',
-        height: '40',
-        width: '84',
-        depth: '10',
-        dividers: { top: true, middle: true, bottom: true }
-    } // 15b
-];
+            { type: 'mug_shelf', mount: 'standing', sideColor: '#8B5A2B', shelfColor: '#8B5A2B', height: '40', width: '44', depth: '10', dividers: { top: true, middle: true, bottom: true } },
+            { type: 'mug_shelf', mount: 'standing', sideColor: '#000000', shelfColor: '#8B5A2B', height: '40', width: '44', depth: '10', dividers: { top: true, middle: true, bottom: true } },
+            { type: 'mug_shelf', mount: 'standing', sideColor: '#8B5A2B', shelfColor: '#8B5A2B', height: '40', width: '60', depth: '10', dividers: { top: true, middle: true, bottom: true } },
+            { type: 'mug_shelf', mount: 'standing', sideColor: '#8B5A2B', shelfColor: '#FFFFFF', height: '40', width: '60', depth: '10', dividers: { top: true, middle: true, bottom: true } },
+            { type: 'mug_shelf', mount: 'standing', sideColor: '#8B5A2B', shelfColor: '#000000', height: '40', width: '60', depth: '10', dividers: { top: true, middle: true, bottom: true } },
+            { type: 'mug_shelf', mount: 'standing', sideColor: '#8B5A2B', shelfColor: '#8B5A2B', height: '40', width: '44', depth: '10', dividers: { top: true, middle: true, bottom: true } },
+            { type: 'mug_shelf', mount: 'standing', sideColor: '#8B5A2B', shelfColor: '#8B5A2B', height: '40', width: '60', depth: '10', dividers: { top: true, middle: false, bottom: false } },
+            { type: 'mug_shelf', mount: 'standing', sideColor: '#8B5A2B', shelfColor: '#000000', height: '40', width: '60', depth: '10', dividers: { top: true, middle: false, bottom: true } },
+            { type: 'mug_shelf', mount: 'standing', sideColor: '#8B5A2B', shelfColor: '#FFFFFF', height: '40', width: '60', depth: '10', dividers: { top: true, middle: false, bottom: true } },
+            { type: 'mug_shelf', mount: 'hanging', sideColor: '#8B5A2B', shelfColor: '#8B5A2B', height: '40', width: '60', depth: '10', dividers: { top: true, middle: true, bottom: true } },
+            { type: 'mug_shelf', mount: 'hanging', sideColor: '#8B5A2B', shelfColor: '#FFFFFF', height: '40', width: '60', depth: '10', dividers: { top: true, middle: true, bottom: true } },
+            { type: 'mug_shelf', mount: 'hanging', sideColor: '#8B5A2B', shelfColor: '#000000', height: '40', width: '60', depth: '10', dividers: { top: true, middle: true, bottom: true } },
+            { type: 'mug_shelf', mount: 'standing', sideColor: '#8B5A2B', shelfColor: '#8B5A2B', height: '60', width: '44', depth: '10', dividers: { top: true, middle: true, bottom: true } },
+            { type: 'mug_shelf', mount: 'standing', sideColor: '#8B5A2B', shelfColor: '#8B5A2B', height: '60', width: '44', depth: '10', dividers: { top: true, middle: true, bottom: true } },
+            { type: 'mug_shelf', mount: 'standing', sideColor: '#8B5A2B', shelfColor: '#8B5A2B', height: '40', width: '84', depth: '10', dividers: { top: true, middle: true, bottom: true }}
+        ];
         const predefinedShelfConfigurations = [ wiszace_configs, stojace_configs, kubki_configs ];
+        const originalPreviewMaterialParams = { color: 0x777777, metalness: 0, roughness: 0.6 };
+        let originalWidthOptions = [];
+        let originalHeightOptions = [];
+        const pricing = {"34":{"40":{"10":{"2":150},"15":{"2":250}},"60":{"10":{"2":175,"3":200},"15":{"2":275,"3":300}},"80":{"10":{"2":200,"3":225,"4":250,"5":279},"15":{"2":300,"3":325,"4":350,"5":379}}},"44":{"40":{"10":{"2":169},"15":{"2":269}},"60":{"10":{"2":179,"3":189},"15":{"2":279,"3":289}},"80":{"10":{"2":200,"3":250,"4":275,"5":299},"15":{"2":300,"3":350,"4":375,"5":399}}},"50":{"40":{"10":{"2":179},"15":{"2":279}},"60":{"10":{"2":189,"3":199},"15":{"2":289,"3":299}},"80":{"10":{"2":250,"3":250,"4":300,"5":329},"15":{}}},"60":{"40":{"10":{"2":179},"15":{"2":279}},"60":{"10":{"2":209,"3":219},"15":{"2":309,"3":319}},"80":{"10":{"2":250,"3":275,"4":325,"5":319},"15":{}}}};
+        const mugShelfPricing = {
+            "44": { "40": 169, "60": 189 },
+            "60": { "40": 179, "60": 219 },
+            "84": { "40": 299 }
+        };
+        const galleryData = [
+    {
+        title: 'Półki wiszące',
+        imgs: ['img/1.jpg', 'img/2.jpg', 'img/3.jpg', 'img/4.jpg', 'img/5.jpg', 'img/6.jpg', 'img/7.jpg', 'img/8.jpg', 'img/9.jpg', 'img/10.jpg', 'img/11.jpg', 'img/12.jpg', 'img/13.jpg', 'img/14.jpg', 'img/15.jpg']
+    },
+    {
+        title: 'Półki stojące',
+        imgs: ['img/1a.jpg', 'img/2a.jpg', 'img/3a.jpg', 'img/4a.jpg', 'img/5a.jpg', 'img/6a.jpg', 'img/7a.jpg', 'img/8a.jpg', 'img/9a.jpg', 'img/10a.jpg', 'img/11a.jpg']
+    },
+    {
+        title: 'Półki na kubki',
+        imgs: ['img/1b.jpg', 'img/2b.jpg', 'img/3b.jpg', 'img/4b.jpg', 'img/5b.jpg', 'img/6b.jpg', 'img/7b.jpg', 'img/8b.jpg', 'img/9b.jpg', 'img/10b.jpg', 'img/11b.jpg', 'img/12b.jpg', 'img/13b.jpg', 'img/14b.jpg', 'img/15b.jpg']
+    }
+];
+        const codeToValue = { type: { s: 'standing', h: 'hanging', m: 'mug_shelf' }, color: { '0': '#8B5A2B', '1': '#FFFFFF', '2': '#000000' }, mugMount: { h: 'hanging', s: 'standing' } };
+        const valueToCode = { type: { standing: 's', hanging: 'h', mug_shelf: 'm' }, color: { '#8B5A2B': '0', '#FFFFFF': '1', '#000000': '2' } };
 
-        // --- Function to Apply Shelf Configuration from Gallery ---
+        // --- FUNKCJE KOSZYKA I RABATU ---
+
+        function calculateCartTotal() {
+            const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
+            let discount = 0;
+
+            if (cart.length >= 2) {
+                const prices = cart.map(item => item.price);
+                const minPrice = Math.min(...prices);
+                discount = minPrice * 0.25;
+            }
+
+            const total = subtotal - discount;
+            return { subtotal, discount, total };
+        }
+        
+        function openCart() {
+            if (cartPanel && cartPanelOverlay) {
+                cartPanel.classList.add('visible');
+                cartPanelOverlay.classList.add('visible');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function closeCart() {
+            if (cartPanel && cartPanelOverlay) {
+                cartPanel.classList.remove('visible');
+                cartPanelOverlay.classList.remove('visible');
+                document.body.style.overflow = '';
+            }
+        }
+        
+        function addToCart() {
+            const orderCode = generateOrderCode();
+            const priceDetails = computePriceDetailed();
+
+            if (!orderCode || !priceDetails) {
+                alert("Proszę, dokończ konfigurację półki przed dodaniem jej do koszyka.");
+                return;
+            }
+
+            const item = {
+                id: Date.now(),
+                name: shelfTypeSelect.options[shelfTypeSelect.selectedIndex].text,
+                summary: `${document.getElementById("widthSummary").textContent} x ${document.getElementById("heightSummary").textContent} x ${document.getElementById("depthSummary").textContent}`,
+                shelfCountText: document.getElementById("shelfCountSummary").textContent,
+                sideColor: document.getElementById("sideColorSummary").textContent,
+                shelfColor: document.getElementById("shelfColorSummary").textContent,
+                extras: document.getElementById("extraOptionsSummary").textContent,
+                price: priceDetails.total,
+                code: orderCode
+            };
+            
+            cart.push(item);
+            updateCartDisplay();
+            openCart(); 
+        }
+
+        function removeFromCart(itemId) {
+            cart = cart.filter(item => item.id !== itemId);
+            updateCartDisplay();
+        }
+
+        function updateCartDisplay() {
+            if (!cartItemsContainer || !cartBadges) return;
+
+            cartItemsContainer.innerHTML = '';
+            
+            if (cart.length === 0) {
+                if(cartEmptyMessage) cartItemsContainer.appendChild(cartEmptyMessage);
+                if(cartEmptyMessage) cartEmptyMessage.style.display = 'block';
+            } else {
+                if(cartEmptyMessage) cartEmptyMessage.style.display = 'none';
+                cart.forEach(item => {
+                    const itemElement = document.createElement('div');
+                    itemElement.className = 'flex items-start justify-between p-3 border-b border-stone-200 last:border-b-0';
+                    itemElement.innerHTML = `
+                        <div class="flex-grow pr-4">
+                            <p class="font-semibold text-stone-800">${item.name}</p>
+                            <p class="text-sm text-stone-600">${item.summary}</p>
+                            <p class="text-xs text-stone-500 mt-1">Boki: ${item.sideColor}, Półki: ${item.shelfColor}</p>
+                             <p class="text-xs text-stone-500 mt-1">Opcje: ${item.extras}</p>
+                            <p class="font-bold text-stone-800 mt-2">${item.price.toFixed(2)} zł</p>
+                        </div>
+                        <div class="flex-shrink-0">
+                            <button onclick="removeFromCart(${item.id})" class="text-stone-400 hover:text-red-500 transition-colors p-1" title="Usuń z koszyka">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                            </button>
+                        </div>
+                    `;
+                    cartItemsContainer.appendChild(itemElement);
+                });
+            }
+
+            if (cartDiscountReminder) {
+                if (cart.length === 1) {
+                    cartDiscountReminder.innerHTML = `✨ Świetny wybór! Dodaj jeszcze jedną półkę, aby otrzymać <b>-25% rabatu</b> na tańszą z nich.`;
+                    cartDiscountReminder.style.display = 'block';
+                } else {
+                    cartDiscountReminder.style.display = 'none';
+                }
+            }
+            
+            const totals = calculateCartTotal();
+
+            if (totals.discount > 0) {
+                cartSubtotalLine.style.display = 'flex';
+                cartDiscountLine.style.display = 'flex';
+                cartSubtotalPrice.textContent = `${totals.subtotal.toFixed(2)} zł`;
+                cartDiscountAmount.textContent = `- ${totals.discount.toFixed(2)} zł`;
+            } else {
+                cartSubtotalLine.style.display = 'none';
+                cartDiscountLine.style.display = 'none';
+            }
+            cartTotalPrice.textContent = `${totals.total.toFixed(2)} zł`;
+
+            cartBadges.forEach(badge => {
+                badge.textContent = cart.length;
+                badge.style.display = cart.length > 0 ? 'flex' : 'none';
+            });
+            
+             if(mobileCartButton) {
+                const mobileCartPriceSpan = mobileCartButton.querySelector('.mobile-cart-price');
+                if(mobileCartPriceSpan) {
+                     mobileCartPriceSpan.textContent = cart.length > 0 ? `${totals.total.toFixed(2)} zł` : 'Koszyk';
+                }
+             }
+            cartCheckoutButton.disabled = cart.length === 0;
+        }
+        
+        function drawShelfSketch(canvasId, orderCode) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+
+            const ctx = canvas.getContext('2d');
+            const details = parseOrderCode(orderCode);
+            if (details.error) return;
+
+            const w = canvas.width;
+            const h = canvas.height;
+            const padding = 5;
+            const strokeColor = '#57534e';
+            const fillColor = '#a8a29e';
+
+            ctx.clearRect(0, 0, w, h);
+            ctx.strokeStyle = strokeColor;
+            ctx.fillStyle = fillColor;
+            ctx.lineWidth = 1.5;
+
+            const shelfW = parseFloat(details.width);
+            const shelfH = parseFloat(details.height);
+            const shelfCount = parseInt(details.shelfCount);
+            
+            const aspectRatio = shelfW / shelfH;
+            let drawW, drawH;
+
+            if (w / h > aspectRatio) {
+                drawH = h - padding * 2;
+                drawW = drawH * aspectRatio;
+            } else {
+                drawW = w - padding * 2;
+                drawH = drawW / aspectRatio;
+            }
+
+            const x0 = (w - drawW) / 2;
+            const y0 = (h - drawH) / 2;
+            const thickness = drawH * (1.8 / shelfH); // Proportional thickness
+
+            // Draw sides
+            ctx.fillRect(x0, y0, thickness, drawH);
+            ctx.fillRect(x0 + drawW - thickness, y0, thickness, drawH);
+
+            // Draw top and bottom shelves
+            const hasTopShelf = details.options.indexOf('Bez górnej półki') === -1;
+            const hasBottomShelf = details.options.indexOf('Bez dolnej półki') === -1;
+
+            if (hasTopShelf) {
+                ctx.fillRect(x0, y0, drawW, thickness);
+            }
+            if (hasBottomShelf) {
+                ctx.fillRect(x0, y0 + drawH - thickness, drawW, thickness);
+            }
+            
+            // Draw inner shelves
+            if (shelfCount > 0) {
+                 const topOffset = hasTopShelf ? thickness : 0;
+                 const bottomOffset = hasBottomShelf ? thickness : 0;
+                 const innerHeight = drawH - topOffset - bottomOffset;
+                 const gap = (innerHeight - (shelfCount * thickness)) / (shelfCount + 1);
+
+                 for (let i = 0; i < shelfCount; i++) {
+                     const shelfY = y0 + topOffset + ((i + 1) * gap) + (i * thickness);
+                     ctx.fillRect(x0 + thickness, shelfY, drawW - 2 * thickness, thickness);
+                 }
+            }
+            
+            // Draw dividers for mug shelf
+            if (details.shelfType === 'Półka na kubki' && details.options.includes('Przegródki')) {
+                const innerW = drawW - 2 * thickness;
+                const numDividers = (shelfW == 60) ? 3 : ((shelfW == 44) ? 2 : 0);
+                const dividerSpacing = innerW / (numDividers + 1);
+
+                const levels = [];
+                const topY = y0 + (hasTopShelf ? thickness : 0);
+                const bottomY = y0 + drawH - (hasBottomShelf ? thickness : 0);
+                
+                // This is a simplified representation of levels
+                if (details.options.includes('góra')) levels.push({top: topY, bottom: y0 + drawH/3});
+                if (details.options.includes('środek')) levels.push({top: y0 + drawH/3, bottom: y0 + (drawH/3)*2});
+                if (details.options.includes('dół')) levels.push({top: y0 + (drawH/3)*2, bottom: bottomY});
+                
+                if (levels.length > 0) {
+                     levels.forEach(level => {
+                        for(let i=1; i <= numDividers; i++) {
+                            const divX = x0 + thickness + (i * dividerSpacing);
+                            ctx.beginPath();
+                            ctx.moveTo(divX, level.top);
+                            ctx.lineTo(divX, level.bottom);
+                            ctx.stroke();
+                        }
+                     });
+                }
+            }
+        }
+
+
+        function handleCheckout() {
+            if (cart.length === 0) return;
+
+            closeCart();
+
+            const totals = calculateCartTotal();
+            const allCodes = cart.map(item => item.code).join('\n');
+            
+            cartSummaryItemsContainer.innerHTML = '';
+
+            cart.forEach(item => {
+                const itemCard = document.createElement('div');
+                itemCard.className = 'p-3 bg-stone-50 rounded-lg border border-stone-200 flex items-center gap-4';
+                itemCard.innerHTML = `
+                    <div class="flex-grow">
+                        <p class="font-semibold text-stone-800">${item.name}</p>
+                        <p class="text-sm text-stone-600">${item.summary}</p>
+                        <ul class="text-xs text-stone-500 mt-2 space-y-0.5 pl-1">
+                            <li><strong>Kolory:</strong> ${item.sideColor} / ${item.shelfColor}</li>
+                            <li><strong>Opcje:</strong> ${item.extras}</li>
+                        </ul>
+                        <p class="font-bold text-lg text-stone-800 mt-2">${item.price.toFixed(2)} zł</p>
+                    </div>
+                    <div class="flex-shrink-0 w-24 h-24 bg-white rounded-md border border-stone-200 p-1">
+                         <canvas id="sketch-${item.id}" width="94" height="94"></canvas>
+                    </div>
+                `;
+                cartSummaryItemsContainer.appendChild(itemCard);
+            });
+            
+            // After creating the DOM elements, draw the sketches
+            cart.forEach(item => {
+                drawShelfSketch(`sketch-${item.id}`, item.code);
+            });
+
+
+            if (totals.discount > 0) {
+                cartSummarySubtotalLine.style.display = 'flex';
+                cartSummaryDiscountLine.style.display = 'flex';
+                cartSummarySubtotalPrice.textContent = `${totals.subtotal.toFixed(2)} zł`;
+                cartSummaryDiscountAmount.textContent = `- ${totals.discount.toFixed(2)} zł`;
+            } else {
+                cartSummarySubtotalLine.style.display = 'none';
+                cartSummaryDiscountLine.style.display = 'none';
+            }
+            cartSummaryTotalPrice.textContent = `${totals.total.toFixed(2)} zł`;
+
+            cartSummaryAllCodes.value = allCodes;
+            cartSummaryInstructionUnits.innerHTML = `Na stronie Allegro dodaj do koszyka tyle sztuk, ile wynosi łączna cena Twojego zamówienia (<strong>${Math.round(totals.total)} szt.</strong>).`;
+
+            cartSummaryModalOverlay.classList.add('visible');
+        }
+        
+        function closeCartSummaryModal() {
+            if (cartSummaryModalOverlay) {
+                cartSummaryModalOverlay.classList.remove('visible');
+            }
+        }
+
+        function downloadFullCartSummary() {
+            if (cart.length === 0) {
+                alert("Koszyk jest pusty.");
+                return;
+            }
+
+            const totals = calculateCartTotal();
+            const allCodes = cart.map(item => item.code).join('\n');
+            const date = new Date().toLocaleString('pl-PL');
+
+            let content = `PODSUMOWANIE ZAMÓWIENIA\n`;
+            content += `Data wygenerowania: ${date}\n`;
+            content += `========================================\n\n`;
+            
+            cart.forEach((item, index) => {
+                content += `PRODUKT ${index + 1}: ${item.name}\n`;
+                content += `  Wymiary: ${item.summary}\n`;
+                content += `  Kolor boków: ${item.sideColor}\n`;
+                content += `  Kolor półek: ${item.shelfColor}\n`;
+                content += `  Ilość półek wewn.: ${item.shelfCountText}\n`;
+                content += `  Opcje: ${item.extras}\n`;
+                content += `  Cena: ${item.price.toFixed(2)} zł\n\n`;
+            });
+
+            content += `========================================\n`;
+            if (totals.discount > 0) {
+                content += `SUMA CZĘŚCIOWA: ${totals.subtotal.toFixed(2)} zł\n`;
+                content += `RABAT (-25%): -${totals.discount.toFixed(2)} zł\n`;
+            }
+            content += `ŁĄCZNIE DO ZAPŁATY: ${totals.total.toFixed(2)} zł\n\n`;
+            content += `KODY ZAMÓWIEŃ DO WKLEJENIA NA ALLEGRO:\n`;
+            content += `${allCodes}\n`;
+            content += `========================================\n`;
+
+            const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            const filenameDate = new Date().toISOString().slice(0, 10);
+            link.download = `zamowienie-polki-${filenameDate}.txt`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+
         function applyShelfConfigurationFromGallery(galleryIndex, imageIndex) {
             const config = predefinedShelfConfigurations[galleryIndex]?.[imageIndex];
             if (!config) {
@@ -581,33 +1251,6 @@
             updateOrderSummary();
         }
 
-        const originalPreviewMaterialParams = { color: 0x777777, metalness: 0, roughness: 0.6 };
-        let originalWidthOptions = [];
-        let originalHeightOptions = [];
-        const pricing = {"34":{"40":{"10":{"2":150},"15":{"2":250}},"60":{"10":{"2":175,"3":200},"15":{"2":275,"3":300}},"80":{"10":{"2":200,"3":225,"4":250,"5":279},"15":{"2":300,"3":325,"4":350,"5":379}}},"44":{"40":{"10":{"2":169},"15":{"2":269}},"60":{"10":{"2":179,"3":189},"15":{"2":279,"3":289}},"80":{"10":{"2":200,"3":250,"4":275,"5":299},"15":{"2":300,"3":350,"4":375,"5":399}}},"50":{"40":{"10":{"2":179},"15":{"2":279}},"60":{"10":{"2":189,"3":199},"15":{"2":289,"3":299}},"80":{"10":{"2":250,"3":250,"4":300,"5":329},"15":{}}},"60":{"40":{"10":{"2":179},"15":{"2":279}},"60":{"10":{"2":209,"3":219},"15":{"2":309,"3":319}},"80":{"10":{"2":250,"3":275,"4":325,"5":319},"15":{}}}};
-        const mugShelfPricing = {
-            "44": { "40": 169, "60": 189 },
-            "60": { "40": 179, "60": 219 },
-            "84": { "40": 299 }
-        };
-        const galleryData = [
-    {
-        title: 'Półki wiszące',
-        imgs: ['img/1.jpg', 'img/2.jpg', 'img/3.jpg', 'img/4.jpg', 'img/5.jpg', 'img/6.jpg', 'img/7.jpg', 'img/8.jpg', 'img/9.jpg', 'img/10.jpg', 'img/11.jpg', 'img/12.jpg', 'img/13.jpg', 'img/14.jpg', 'img/15.jpg']
-    },
-    {
-        title: 'Półki stojące',
-        imgs: ['img/1a.jpg', 'img/2a.jpg', 'img/3a.jpg', 'img/4a.jpg', 'img/5a.jpg', 'img/6a.jpg', 'img/7a.jpg', 'img/8a.jpg', 'img/9a.jpg', 'img/10a.jpg', 'img/11a.jpg']
-    },
-    {
-        title: 'Półki na kubki',
-        imgs: ['img/1b.jpg', 'img/2b.jpg', 'img/3b.jpg', 'img/4b.jpg', 'img/5b.jpg', 'img/6b.jpg', 'img/7b.jpg', 'img/8b.jpg', 'img/9b.jpg', 'img/10b.jpg', 'img/11b.jpg', 'img/12b.jpg', 'img/13b.jpg', 'img/14b.jpg', 'img/15b.jpg']
-    }
-];
-        const codeToValue = { type: { s: 'standing', h: 'hanging', m: 'mug_shelf' }, color: { '0': '#8B5A2B', '1': '#FFFFFF', '2': '#000000' }, mugMount: { h: 'hanging', s: 'standing' } };
-        const valueToCode = { type: { standing: 's', hanging: 'h', mug_shelf: 'm' }, color: { '#8B5A2B': '0', '#FFFFFF': '1', '#000000': '2' } };
-
-
         function updateDividerIconsVisibility() {
             if (!mugShelfDividerIconsContainer || !shelfTypeSelect || !shelfContainer) return;
             const isMobile = window.innerWidth < 768;
@@ -621,7 +1264,7 @@
                 mugShelfDividerIconsContainer.classList.remove('visible');
             }
         }
-function updateDividerIconActiveStates() {
+        function updateDividerIconActiveStates() {
             if (addTopDividerBtn && dividersTopCheckbox) addTopDividerBtn.classList.toggle('active-divider-icon', dividersTopCheckbox.checked);
             if (addMiddleDividerBtn && dividersMiddleCheckbox) addMiddleDividerBtn.classList.toggle('active-divider-icon', dividersMiddleCheckbox.checked);
             if (addBottomDividerBtn && dividersBottomCheckbox) addBottomDividerBtn.classList.toggle('active-divider-icon', dividersBottomCheckbox.checked);
@@ -636,18 +1279,11 @@ function updateDividerIconActiveStates() {
 
         function updateDividerDimensionVisibility() {
             if (!desktopDividerDimensionsInfo || !shelfTypeSelect || !heightSelect || !dividersTopCheckbox || !dividersMiddleCheckbox || !dividersBottomCheckbox) {
-                 // Upewnij się, że wszystkie niezbędne elementy są dostępne
-                 console.error("updateDividerDimensionVisibility: Brakuje jednego lub więcej wymaganych elementów DOM.");
                  if(desktopDividerDimensionsInfo) desktopDividerDimensionsInfo.style.display = 'none';
                  return;
             }
 
             const isMugShelfType = shelfTypeSelect.value === 'mug_shelf';
-            // Upewnij się, że currentWidth jest uzyskane. Zazwyczaj jest zdefiniowane w zewnętrznym zakresie, gdzie ta funkcja jest umieszczona, lub musi zostać pobrane.
-            // Jeśli nie jest dostępne w bezpośrednim zakresie, być może będziesz musiał wywołać getCurrentWidth(), jeśli jest to globalna lub dostępna funkcja pomocnicza.
-            // Dla tego przykładu załóżmy, że getCurrentWidth() jest dostępne lub currentWidth jest dostępne z zewnętrznego zakresu funkcji.
-            // const currentWidth = getCurrentWidth(); // Upewnij się, że jest to poprawnie odwołane lub uzyskane.
-
             const areDividersSelectedForMugShelf = (dividersTopCheckbox?.checked || dividersMiddleCheckbox?.checked || dividersBottomCheckbox?.checked);
             const shouldShow = isMugShelfType && areDividersSelectedForMugShelf;
 
@@ -852,7 +1488,6 @@ if (addDividersBottom && levels.length > 2) {
         }
 
         function reset3DView() { if (controls && camera) { controls.reset(); camera.position.set(initialCameraPosition.x, initialCameraPosition.y, initialCameraPosition.z); controls.target.set(0, 0, 0); controls.update(); setActiveMobileIcon(null); if (shelfTypeSelect && shelfTypeSelect.value !== 'mug_shelf') { autoRotateEnabled = true; } } }
-
         function computePriceDetailed() {
             const shelfType = shelfTypeSelect.value;
             const widthVal = getCurrentWidth();
@@ -923,11 +1558,6 @@ if (addDividersBottom && levels.length > 2) {
             return { base: basePrice, extra: extraFee, divider: dividerFee, deduction: deduction, total: Math.max(50, totalPrice) };
         }
 
-        function generateOrderCode() { const shelfTypeVal = shelfTypeSelect.value; const widthNum = getCurrentWidth(); const heightVal = heightSelect.value; const depthVal = depthSelect.value; const shelfCountVal = shelfCountSelect.value; const sideColorVal = sideColorSelect.value || ''; const shelfColorVal = shelfColorSelect.value || ''; const isMugShelf = shelfTypeVal === 'mug_shelf'; if (!shelfTypeVal || isNaN(widthNum) || !heightVal || !depthVal || shelfCountVal === "" || !sideColorVal || !shelfColorVal) { return null; } const shelfCountNum = parseInt(shelfCountVal); if (isNaN(shelfCountNum) || shelfCountNum < 0) { return null; } if (!isMugShelf && shelfCountNum === 0) { return null; } let mugMountVal = null; if (isMugShelf) { mugMountVal = document.querySelector('input[name="mugShelfMount"]:checked')?.value; if (!mugMountVal) { return null; } } const typeCode = valueToCode.type[shelfTypeVal]; const sideColorCode = valueToCode.color[sideColorVal]; const shelfColorCode = valueToCode.color[shelfColorVal]; if (!typeCode || !sideColorCode || !shelfColorCode) { return null; } let optionsCode = ''; if (isMugShelf) { const mountCode = mugMountVal === 'hanging' ? 'h' : 's'; let dividerCode = ''; if (dividersTopCheckbox && dividersMiddleCheckbox && dividersBottomCheckbox) { if (dividersTopCheckbox.checked) dividerCode += 'g'; if (dividersMiddleCheckbox.checked) dividerCode += 'm'; if (dividersBottomCheckbox.checked) dividerCode += 'd'; } else { return null; } if (dividerCode === '') dividerCode = 'n'; optionsCode = `${mountCode}${dividerCode}`; } else { const noTop = document.getElementById("noTopShelf")?.checked; const noBottomCheck = document.getElementById("noBottomShelf"); const noBottom = (shelfTypeVal === "standing" && noBottomCheck?.checked); if (noTop && noBottom) optionsCode = 'tb'; else if (noTop) optionsCode = 't'; else if (noBottom) optionsCode = 'b'; else optionsCode = 's'; } const codeParts = [ typeCode, String(widthNum), heightVal, depthVal, String(shelfCountNum), sideColorCode, shelfColorCode, optionsCode ]; return codeParts.join('-'); }
-        function parseOrderCode(code) { if (!code) return { error: "Kod jest pusty." }; code = code.trim().toLowerCase(); const parts = code.split('-'); if (parts.length !== 8) { return { error: `Nieprawidłowy format kodu (oczekiwano 8 części, znaleziono ${parts.length}).` }; } const [typeCode, widthStr, heightStr, depthStr, shelfCountStr, sideColorCode, shelfColorCode, optionsCode] = parts; const typeMap = { s: 'Stojąca na blacie', h: 'Wisząca', m: 'Półka na kubki' }; const colorMap = { '0': 'Dąb Craft Złoty', '1': 'Biały matowy', '2': 'Czarny matowy' }; const mugMountMap = { h: 'Wisząca', s: 'Stojąca' }; const shelfType = typeMap[typeCode]; const sideColor = colorMap[sideColorCode]; const shelfColor = colorMap[shelfColorCode]; const width = parseInt(widthStr); const height = parseInt(heightStr); const depth = parseInt(depthStr); const shelfCount = parseInt(shelfCountStr); if (!shelfType || !sideColor || !shelfColor || isNaN(width) || isNaN(height) || isNaN(depth) || isNaN(shelfCount)) { return { error: "Nieprawidłowe podstawowe wartości w kodzie (typ, wymiary, kolory lub liczba półek)." }; } if (width < 34 || (width > 60 && width !== 84) || (width > 84) || height < 40 || height > 80 || depth < 10 || depth > 15 || shelfCount < 0 || shelfCount > 5) { return { error: "Wartości wymiarów lub liczby półek poza dozwolonym zakresem." }; } let options = []; if (shelfType === 'Półka na kubki') { const mountCode = optionsCode.charAt(0); const dividerCode = optionsCode.substring(1); const mountType = mugMountMap[mountCode]; if (!mountType) return { error: `Nieprawidłowy kod montażu kubka: ${mountCode}.` }; options.push(`Montaż: ${mountType}`); const dividers = []; if (dividerCode.includes('g')) dividers.push("góra"); if (dividerCode.includes('m')) dividers.push("środek"); if (dividerCode.includes('d')) dividers.push("dół"); if (dividers.length > 0) options.push(`Przegródki: ${dividers.join(', ')}`); else if (dividerCode !== 'n') return { error: `Nieprawidłowy kod przegródek: ${dividerCode}.` }; } else { if (optionsCode === 't') options.push("Bez górnej półki"); else if (optionsCode === 'b' && shelfType === 'Stojąca na blacie') options.push("Bez dolnej półki (podstawy)"); else if (optionsCode === 'tb') { options.push("Bez górnej półki"); if (shelfType === 'Stojąca na blacie') options.push("Bez dolnej półki (podstawy)"); } else if (optionsCode !== 's') return { error: `Nieprawidłowy kod opcji: ${optionsCode}.` }; } if (options.length === 0 && optionsCode !== 's' && !(shelfType === 'Półka na kubki' && optionsCode.substring(1) === 'n')) { options.push("Standardowa"); } else if (options.length === 0) { options.push("Standardowa"); } return { code: code.toUpperCase(), shelfType, width: `${width} cm`, height: `${height} cm`, depth: `${depth} cm`, sideColor, shelfColor, shelfCount: `${shelfCount} szt.`, options: options.join(' / ') }; }
-        function displayOrderDetailsInModal(details) { if (!orderDetailsModalOverlay || !orderDetailsModal || !modalOrderCodeSpan || !modalOrderSummaryP) return; if (details.error) { modalOrderCodeSpan.textContent = "BŁĄD"; modalOrderSummaryP.innerHTML = `<p class="text-red-600 font-semibold">${details.error}</p>`; } else { modalOrderCodeSpan.textContent = details.code; let summaryHtml = ` <p><strong>Rodzaj półki:</strong> ${details.shelfType}</p> <p><strong>Szerokość:</strong> ${details.width}</p> <p><strong>Wysokość:</strong> ${details.height}</p> <p><strong>Głębokość:</strong> ${details.depth}</p> <p><strong>Kolor boków:</strong> ${details.sideColor}</p> <p><strong>Kolor półek:</strong> ${details.shelfColor}</p> <p><strong>Ilość półek wewn.:</strong> ${details.shelfCount}</p> <p><strong>Opcje:</strong> ${details.options}</p> <p class="mt-4 text-xs text-stone-500 italic">Uwaga: Cena nie jest przechowywana w kodzie i nie jest tutaj wyświetlana.</p> `; modalOrderSummaryP.innerHTML = summaryHtml; } orderDetailsModalOverlay.classList.add('visible'); }
-        function closeOrderDetailsModal() { if (!orderDetailsModalOverlay) return; orderDetailsModalOverlay.classList.remove('visible'); if (viewOrderCodeInput) viewOrderCodeInput.value = ''; }
-
         function updateOrderSummary() {
             const shelfColorSummaryLabel = document.getElementById('shelfColorSummaryLabel');
             const currentShelfType = shelfTypeSelect.value;
@@ -960,8 +1590,8 @@ if (addDividersBottom && levels.length > 2) {
 
             const h = parseFloat(heightValue);
             const sc = parseInt(shelfCountValue);
-            const t = 1.8; // thickness in cm
-            let gT = "n/d"; // gapText
+            const t = 1.8; 
+            let gT = "n/d"; 
 
             if (!isNaN(h) && h > 0 && !isNaN(sc) && sc >= 0) {
                 if (currentShelfType === 'mug_shelf') {
@@ -991,7 +1621,6 @@ if (addDividersBottom && levels.length > 2) {
             document.getElementById("gapSummary").textContent = gT;
             document.getElementById("gapSummaryDisplay").textContent = gT;
 
-            // <<< POCZĄTEK DODANEJ LOGIKI >>>
             const gapSummaryLi = document.getElementById("gapSummary")?.parentElement;
             const gapDisplayP = document.getElementById("gapDisplay");
 
@@ -999,10 +1628,9 @@ if (addDividersBottom && levels.length > 2) {
                 if (gapSummaryLi) gapSummaryLi.style.display = 'none';
                 if (gapDisplayP) gapDisplayP.style.display = 'none';
             } else {
-                if (gapSummaryLi) gapSummaryLi.style.display = 'flex'; // Przywrócenie oryginalnego stylu wyświetlania
-                if (gapDisplayP) gapDisplayP.style.display = 'block'; // Przywrócenie oryginalnego stylu wyświetlania
+                if (gapSummaryLi) gapSummaryLi.style.display = 'flex'; 
+                if (gapDisplayP) gapDisplayP.style.display = 'block';
             }
-            // <<< KONIEC DODANEJ LOGIKI >>>
 
             const o = [];
             if (currentShelfType === 'mug_shelf') {
@@ -1020,120 +1648,51 @@ if (addDividersBottom && levels.length > 2) {
             }
             document.getElementById("extraOptionsSummary").textContent = o.length ? o.join(" / ") : "standardowa";
 
-             const orderCode = generateOrderCode();
-             const isComplete = !!orderCode;
-             const pH = document.getElementById("priceHint");
-             const orderActionsWrapper = document.getElementById("orderActionsWrapper");
-             const oCW = document.getElementById("orderCodeWindow");
-             const pSE = document.getElementById("priceSummary");
-             const oCVE = document.getElementById("orderCodeVisible");
-             const oCI = document.getElementById("orderCodeIcon");
-             if (oCI) oCI.classList.remove('icon-bounce');
-             const indicator = document.getElementById('selectionCompleteIndicator');
-             const footerPriceText = document.getElementById("footerPriceText");
-             const footerPriceDisplay = document.getElementById("footerPriceDisplay");
-
-             if (isComplete) {
-                 const pD = computePriceDetailed();
-                 if (pD !== null) {
-                     const priceText = pD.total + " zł";
-                     pSE.textContent = priceText;
-                     if (footerPriceText) footerPriceText.textContent = priceText;
-                     oCVE.textContent = orderCode;
-                     pH.style.display = "none";
-                     orderActionsWrapper.style.display = "flex";
-                     if (oCI) oCI.classList.add('icon-bounce');
-                     if (indicator) indicator.style.display = 'inline';
-                     if (footerPriceDisplay) footerPriceDisplay.style.cursor = 'pointer';
-                 } else {
-                     pSE.textContent = "N/D";
-                     if (footerPriceText) footerPriceText.textContent = "";
-                     oCVE.textContent = "BŁĄD CENY";
-                     pH.textContent = "Błąd obliczania ceny. Sprawdź opcje.";
-                     pH.style.display = "block";
-                     orderActionsWrapper.style.display = "none";
-                     oCW.style.display = "block";
-                     if (indicator) indicator.style.display = 'none';
-                     if (footerPriceDisplay) footerPriceDisplay.style.cursor = 'default';
-                 }
-             } else {
-                 pSE.textContent = "";
-                 if (footerPriceText) footerPriceText.textContent = "";
-                 oCVE.textContent = "";
-                 pH.textContent = "Wybierz wszystkie parametry, aby zobaczyć cenę.";
-                 pH.style.display = "block";
-                 orderActionsWrapper.style.display = "none";
-                 if (oCW) oCW.style.display="block";
-                 if (indicator) indicator.style.display = 'none';
-                 if (footerPriceDisplay) footerPriceDisplay.style.cursor = 'default';
-             }
+            const orderCode = generateOrderCode();
+            const isComplete = !!orderCode;
+            
+            if (isComplete) {
+                const pD = computePriceDetailed();
+                if (pD !== null) {
+                    priceAndActionsContainer.style.display = 'block';
+                    priceHint.style.display = 'none';
+                    priceSummary.textContent = pD.total + " zł";
+                    
+                    if (desktopCartContainer) {
+                       desktopCartContainer.classList.remove('animate-pulse-bg');
+                       void desktopCartContainer.offsetWidth;
+                       desktopCartContainer.classList.add('animate-pulse-bg');
+                    }
+                } else {
+                    priceAndActionsContainer.style.display = 'none';
+                    priceHint.textContent = "Błąd obliczania ceny. Sprawdź opcje.";
+                    priceHint.style.display = 'block';
+                }
+            } else {
+                priceAndActionsContainer.style.display = 'none';
+                priceHint.textContent = "Wybierz wszystkie parametry, aby zobaczyć cenę.";
+                priceHint.style.display = 'block';
+            }
             updateDividerDimensionVisibility();
         }
+
+        function generateOrderCode() { const shelfTypeVal = shelfTypeSelect.value; const widthNum = getCurrentWidth(); const heightVal = heightSelect.value; const depthVal = depthSelect.value; const shelfCountVal = shelfCountSelect.value; const sideColorVal = sideColorSelect.value || ''; const shelfColorVal = shelfColorSelect.value || ''; const isMugShelf = shelfTypeVal === 'mug_shelf'; if (!shelfTypeVal || isNaN(widthNum) || !heightVal || !depthVal || shelfCountVal === "" || !sideColorVal || !shelfColorVal) { return null; } const shelfCountNum = parseInt(shelfCountVal); if (isNaN(shelfCountNum) || shelfCountNum < 0) { return null; } if (!isMugShelf && shelfCountNum === 0) { return null; } let mugMountVal = null; if (isMugShelf) { mugMountVal = document.querySelector('input[name="mugShelfMount"]:checked')?.value; if (!mugMountVal) { return null; } } const typeCode = valueToCode.type[shelfTypeVal]; const sideColorCode = valueToCode.color[sideColorVal]; const shelfColorCode = valueToCode.color[shelfColorVal]; if (!typeCode || !sideColorCode || !shelfColorCode) { return null; } let optionsCode = ''; if (isMugShelf) { const mountCode = mugMountVal === 'hanging' ? 'h' : 's'; let dividerCode = ''; if (dividersTopCheckbox && dividersMiddleCheckbox && dividersBottomCheckbox) { if (dividersTopCheckbox.checked) dividerCode += 'g'; if (dividersMiddleCheckbox.checked) dividerCode += 'm'; if (dividersBottomCheckbox.checked) dividerCode += 'd'; } else { return null; } if (dividerCode === '') dividerCode = 'n'; optionsCode = `${mountCode}${dividerCode}`; } else { const noTop = document.getElementById("noTopShelf")?.checked; const noBottomCheck = document.getElementById("noBottomShelf"); const noBottom = (shelfTypeVal === "standing" && noBottomCheck?.checked); if (noTop && noBottom) optionsCode = 'tb'; else if (noTop) optionsCode = 't'; else if (noBottom) optionsCode = 'b'; else optionsCode = 's'; } const codeParts = [ typeCode, String(widthNum), heightVal, depthVal, String(shelfCountNum), sideColorCode, shelfColorCode, optionsCode ]; return codeParts.join('-'); }
+        function parseOrderCode(code) { if (!code) return { error: "Kod jest pusty." }; code = code.trim().toLowerCase(); const parts = code.split('-'); if (parts.length !== 8) { return { error: `Nieprawidłowy format kodu (oczekiwano 8 części, znaleziono ${parts.length}).` }; } const [typeCode, widthStr, heightStr, depthStr, shelfCountStr, sideColorCode, shelfColorCode, optionsCode] = parts; const typeMap = { s: 'Stojąca na blacie', h: 'Wisząca', m: 'Półka na kubki' }; const colorMap = { '0': 'Dąb Craft Złoty', '1': 'Biały matowy', '2': 'Czarny matowy' }; const mugMountMap = { h: 'Wisząca', s: 'Stojąca' }; const shelfType = typeMap[typeCode]; const sideColor = colorMap[sideColorCode]; const shelfColor = colorMap[shelfColorCode]; const width = parseInt(widthStr); const height = parseInt(heightStr); const depth = parseInt(depthStr); const shelfCount = parseInt(shelfCountStr); if (!shelfType || !sideColor || !shelfColor || isNaN(width) || isNaN(height) || isNaN(depth) || isNaN(shelfCount)) { return { error: "Nieprawidłowe podstawowe wartości w kodzie (typ, wymiary, kolory lub liczba półek)." }; } if (width < 34 || (width > 60 && width !== 84) || (width > 84) || height < 40 || height > 80 || depth < 10 || depth > 15 || shelfCount < 0 || shelfCount > 5) { return { error: "Wartości wymiarów lub liczby półek poza dozwolonym zakresem." }; } let options = []; if (shelfType === 'Półka na kubki') { const mountCode = optionsCode.charAt(0); const dividerCode = optionsCode.substring(1); const mountType = mugMountMap[mountCode]; if (!mountType) return { error: `Nieprawidłowy kod montażu kubka: ${mountCode}.` }; options.push(`Montaż: ${mountType}`); const dividers = []; if (dividerCode.includes('g')) dividers.push("góra"); if (dividerCode.includes('m')) dividers.push("środek"); if (dividerCode.includes('d')) dividers.push("dół"); if (dividers.length > 0) options.push(`Przegródki: ${dividers.join(', ')}`); else if (dividerCode !== 'n') return { error: `Nieprawidłowy kod przegródek: ${dividerCode}.` }; } else { if (optionsCode === 't') options.push("Bez górnej półki"); else if (optionsCode === 'b' && shelfType === 'Stojąca na blacie') options.push("Bez dolnej półki (podstawy)"); else if (optionsCode === 'tb') { options.push("Bez górnej półki"); if (shelfType === 'Stojąca na blacie') options.push("Bez dolnej półki (podstawy)"); } else if (optionsCode !== 's') return { error: `Nieprawidłowy kod opcji: ${optionsCode}.` }; } if (options.length === 0 && optionsCode !== 's' && !(shelfType === 'Półka na kubki' && optionsCode.substring(1) === 'n')) { options.push("Standardowa"); } else if (options.length === 0) { options.push("Standardowa"); } return { code: code.toUpperCase(), shelfType, width: `${width} cm`, height: `${height} cm`, depth: `${depth} cm`, sideColor, shelfColor, shelfCount: `${shelfCount} szt.`, options: options.join(' / ') }; }
+        function displayOrderDetailsInModal(details) { if (!orderDetailsModalOverlay || !orderDetailsModal || !modalOrderCodeSpan || !modalOrderSummaryP) return; if (details.error) { modalOrderCodeSpan.textContent = "BŁĄD"; modalOrderSummaryP.innerHTML = `<p class="text-red-600 font-semibold">${details.error}</p>`; } else { modalOrderCodeSpan.textContent = details.code; let summaryHtml = ` <p><strong>Rodzaj półki:</strong> ${details.shelfType}</p> <p><strong>Szerokość:</strong> ${details.width}</p> <p><strong>Wysokość:</strong> ${details.height}</p> <p><strong>Głębokość:</strong> ${details.depth}</p> <p><strong>Kolor boków:</strong> ${details.sideColor}</p> <p><strong>Kolor półek:</strong> ${details.shelfColor}</p> <p><strong>Ilość półek wewn.:</strong> ${details.shelfCount}</p> <p><strong>Opcje:</strong> ${details.options}</p> <p class="mt-4 text-xs text-stone-500 italic">Uwaga: Cena nie jest przechowywana w kodzie i nie jest tutaj wyświetlana.</p> `; modalOrderSummaryP.innerHTML = summaryHtml; } orderDetailsModalOverlay.classList.add('visible'); }
+        function closeOrderDetailsModal() { if (!orderDetailsModalOverlay) return; orderDetailsModalOverlay.classList.remove('visible'); if (viewOrderCodeInput) viewOrderCodeInput.value = ''; }
         function updateSwatchDisplay(selectElementId, swatchDisplayId) { const selectElement = document.getElementById(selectElementId); const swatchDisplay = document.getElementById(swatchDisplayId); if (!selectElement || !swatchDisplay) return; const selectedOption = selectElement.options[selectElement.selectedIndex]; const color = selectedOption ? selectedOption.dataset.color : null; if (color) { swatchDisplay.style.backgroundColor = color; swatchDisplay.style.display = 'inline-block'; if (color.toUpperCase() === '#FFFFFF') { swatchDisplay.classList.add('swatch-white-display'); } else { swatchDisplay.classList.remove('swatch-white-display'); } } else { swatchDisplay.style.backgroundColor = '#E5E7EB'; swatchDisplay.classList.remove('swatch-white-display'); } }
-        function copyOrderSummary() { const code = document.getElementById("orderCodeVisible").textContent; const priceText = document.getElementById("priceSummary").textContent; const priceValue = parseFloat(priceText.replace(/\s*zł/i, '').replace(',', '.')); if (!code || code === "" || code.toUpperCase().includes("BŁĄD") || !priceText || priceText === "" || priceText === "N/D" || isNaN(priceValue)) { alert("Wystąpił błąd. Konfiguracja jest niekompletna lub cena jest nieprawidłowa. Nie można przejść do Allegro."); return; } navigator.clipboard.writeText(code).then(() => { if (allegroOrderModalOverlay && allegroModalOrderCodeEl && allegroModalPriceEl && allegroModalUnitsInstructionEl) { allegroModalOrderCodeEl.textContent = code; allegroModalPriceEl.textContent = priceText; allegroModalUnitsInstructionEl.innerHTML = `Na stronie Allegro zamów produkt w liczbie sztuk równej cenie Twojej półki (czyli <strong>${priceValue} szt.</strong>).`; allegroOrderModalOverlay.classList.add('visible'); } else { console.error("Elementy modala Allegro nie zostały znalezione. Używam alertu zapasowego."); alert(`✅ Kod zamówienia skopiowany: ${code}\n\n🛒 Cena: ${priceText}\n\nAllegro otworzy się w nowej karcie.\n\n📋 INSTRUKCJA:\n1. Na Allegro zamów ${priceValue} szt. produktu.\n2. W „Uwagi do zakupu” wklej kod: ${code}`); window.open("https://allegro.pl/oferta/zaprojektuj-wlasna-polke-podaj-wymiar-i-wybierz-kolory-do-kuchni-pokoju-17253898746", "_blank"); } }).catch(err => { console.error('Błąd kopiowania do schowka: ', err); alert('Nie udało się skopiować kodu zamówienia do schowka. Spróbuj ręcznie lub sprawdź uprawnienia przeglądarki.'); }); }
-        function downloadOrderSummary() {
-            const shelfType = document.getElementById("shelfTypeSummary").textContent;
-            const mugShelfMount = shelfType === 'Półka na kubki' ? document.getElementById("mugShelfMountSummary").textContent : '';
-            const width = document.getElementById("widthSummary").textContent;
-            const height = document.getElementById("heightSummary").textContent; // Będziemy go używać do sprawdzenia warunku
-            const depth = document.getElementById("depthSummary").textContent;
-            const sideColor = document.getElementById("sideColorSummary").textContent;
-            const shelfColor = document.getElementById("shelfColorSummary").textContent;
-            const shelfCount = document.getElementById("shelfCountSummary").textContent;
-            
-            // Pobierz oryginalnie obliczoną odległość
-            let gap = document.getElementById("gapSummary").textContent; 
-            const extraOptions = document.getElementById("extraOptionsSummary").textContent;
-            const price = document.getElementById("priceSummary").textContent;
-            const orderCode = document.getElementById("orderCodeVisible").textContent;
-
-            // <<< POCZĄTEK DODANEJ LOGIKI >>>
-            // Sprawdź aktualny typ półki i jej wysokość bezpośrednio z selectów
-            const currentShelfTypeValue = shelfTypeSelect.value; // np. 'mug_shelf'
-            const currentHeightValue = heightSelect.value;   // np. '60'
-
-            if (currentShelfTypeValue === 'mug_shelf' && currentHeightValue === '60') {
-                gap = "10,9 cm"; // Ustawienie żądanej wartości dla tej konkretnej konfiguracji
-            }
-            // <<< KONIEC DODANEJ LOGIKI >>>
-
-            if (!orderCode || orderCode === "" || orderCode.toUpperCase().includes("BŁĄD") || !price || price === "" || price === "N/D") {
-                alert("Wystąpił błąd, konfiguracja jest niekompletna lub niedostępna.");
-                return;
-            }
-            let content = `📦 Podsumowanie Zamówienia\n\n* Rodzaj półki: ${shelfType}\n`;
-            if (mugShelfMount && mugShelfMount !== 'nie wybrano') {
-                content += `* Montaż: ${mugShelfMount}\n`;
-            }
-            content += `* Szerokość: ${width}\n* Wysokość: ${height}\n* Głębokość: ${depth}\n\n`;
-            content += `* Kolor boków: ${sideColor}\n* ${document.getElementById('shelfColorSummaryLabel').textContent} ${shelfColor}\n\n`; // Użycie labela dla poprawności
-            content += `* Ilość półek wewn.: ${shelfCount}\n* Odległość między półkami: ${gap}\n* Opcje dodatkowe: ${extraOptions}\n\n`;
-            content += `* Materiał: płyta laminowana gr. 1,8 cm\n* Termin realizacji: 5‑7 dni roboczych\n\n`;
-            content += `Cena: ${price}\nKod zamówienia: ${orderCode}`;
-            
-            const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement("a");
-            link.href = url;
-            link.download = `zamowienie-${orderCode}.txt`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
-        }
+        
         function closeDetailsPanelIfNeeded() { const detailsPanel = document.getElementById('materialSamplesDetails'); if (detailsPanel && detailsPanel.open) { detailsPanel.open = false; } }
         function setActiveMobileIcon(clickedButton) { const mobileIconsContainer = document.getElementById('mobilePanelIcons'); if (!mobileIconsContainer) return; const buttons = mobileIconsContainer.querySelectorAll('button'); buttons.forEach(button => { button.classList.remove('mobile-icon-active'); }); if (clickedButton && buttons.length > 0) { clickedButton.classList.add('mobile-icon-active'); } }
         function scrollToElementAndHighlight(elementId, blockPosition = 'start', clickedButton = null, inlinePosition = 'nearest') { const element = document.getElementById(elementId); if (element) { let highlightTarget = element.closest('.p-6.shadow.rounded-lg'); if (!highlightTarget) { highlightTarget = element.closest('.w-full.max-w-lg') || element; } document.querySelectorAll('.section-highlight-persistent').forEach(el => { if (el !== highlightTarget) { el.classList.remove('section-highlight-persistent'); } }); highlightTarget.scrollIntoView({ behavior: 'smooth', block: blockPosition, inline: inlinePosition }); if (clickedButton) { setActiveMobileIcon(clickedButton); } highlightTarget.classList.remove('section-highlight-flash'); void highlightTarget.offsetWidth; highlightTarget.classList.add('section-highlight-flash'); highlightTarget.classList.add('section-highlight-persistent'); setTimeout(() => { highlightTarget.classList.remove('section-highlight-flash'); }, 750); } else { console.error('Nie znaleziono elementu o ID do podświetlenia:', elementId); } }
         function scrollToElement(elementId, blockPosition = 'start', clickedButton = null, inlinePosition = 'nearest') { const element = document.getElementById(elementId); if (element) { let targetElement = element.closest('.p-6.shadow.rounded-lg') || element.closest('.w-full.max-w-lg') || element; targetElement.scrollIntoView({ behavior: 'smooth', block: blockPosition, inline: inlinePosition }); } else { console.error('Nie znaleziono elementu o ID (scrollToElement):', elementId); } }
         function scrollToBottom() { window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }); }
 
-        // NOWE FUNKCJE DLA LIGHTBOXA
         function openLightbox(imageSrc) {
             if (imageLightbox && lightboxImage) {
                 lightboxImage.setAttribute('src', imageSrc);
                 imageLightbox.classList.remove('hidden');
-                imageLightbox.classList.remove('opacity-0'); // Dla płynnego wejścia, jeśli używasz klas opacity
-                // Można dodać zablokowanie scrollowania tła
+                imageLightbox.classList.remove('opacity-0'); 
                 document.body.style.overflow = 'hidden';
             }
         }
@@ -1141,8 +1700,7 @@ if (addDividersBottom && levels.length > 2) {
         function closeLightbox() {
             if (imageLightbox) {
                 imageLightbox.classList.add('hidden');
-                imageLightbox.classList.add('opacity-0'); // Dla płynnego wyjścia
-                 // Przywrócenie scrollowania tła
+                imageLightbox.classList.add('opacity-0'); 
                 document.body.style.overflow = '';
             }
         }
@@ -1161,10 +1719,10 @@ if (addDividersBottom && levels.length > 2) {
                 images.forEach((imgDataOrSrc, i) => {
                     const imgSrc = typeof imgDataOrSrc === 'string' ? imgDataOrSrc : imgDataOrSrc.src;
                     const tileDiv = document.createElement('div');
-                    tileDiv.className = 'gallery-tile'; // Dodajemy klasę do kontroli widoczności paska akcji
+                    tileDiv.className = 'gallery-tile';
 
                     const imgContainer = document.createElement('div');
-                    imgContainer.className = 'gallery-image-container'; // Upewnij się, że ten kontener ma position: relative
+                    imgContainer.className = 'gallery-image-container';
 
                     const img = document.createElement('img');
                     img.src = imgSrc;
@@ -1172,7 +1730,6 @@ if (addDividersBottom && levels.length > 2) {
                     img.loading = 'lazy';
                     imgContainer.appendChild(img);
 
-                    // ---- POCZĄTEK MODYFIKACJI: Dodanie nowego paska akcji ----
                     const actionBarHTML = `
                         <div class="image-actions-bar">
                             <button class="action-icon-btn gallery-zoom-btn" title="Powiększ">
@@ -1184,68 +1741,46 @@ if (addDividersBottom && levels.length > 2) {
                         </div>
                     `;
                     imgContainer.insertAdjacentHTML('beforeend', actionBarHTML);
-                    // ---- KONIEC MODYFIKACJI: Dodanie nowego paska akcji ----
-
-                    // Komentujemy stary przycisk .config-btn, aby uniknąć konfliktu
-                    /*
-                    const configBtn = document.createElement('div');
-                    configBtn.className = 'config-btn';
-                    configBtn.title = 'Kliknij, aby przejść do konfiguracji';
-                    configBtn.innerHTML = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.25"/><path d="M19.428 15.34a9.05 9.05 0 0 0 .05-6.68l-1.46-.84.51-1.77-2.12-2.12-1.77.51-.84-1.46a9.05 9.05 0 0 0-6.68 0l-.84 1.46-1.77-.51-2.12 2.12.51 1.77-1.46.84a9.05 9.05 0 0 0 0 6.68l1.46.84-.51 1.77 2.12 2.12 1.77-.51.84 1.46a9.05 9.05 0 0 0 6.68 0l.84-1.46 1.77.51 2.12-2.12-.51-1.77 1.46-.84z"/></svg>';
-                    imgContainer.appendChild(configBtn);
-                    */
-
+                    
                     const captionDiv = document.createElement('div');
                     captionDiv.className = 'gallery-caption';
-                    captionDiv.textContent = 'Konfiguruj półkę'; // Ten tekst jest na hover, może zostać
+                    captionDiv.textContent = 'Konfiguruj półkę';
                     tileDiv.appendChild(imgContainer);
                     tileDiv.appendChild(captionDiv);
 
-                    // ---- POCZĄTEK MODYFIKACJI: Nowe listenery ----
-                    // Listener na cały kafelek - POKAŻ/UKRYJ PASEK AKCJI
                     tileDiv.addEventListener('click', function(event) {
-                        // Jeśli kliknięto bezpośrednio na przycisk w pasku akcji, nie rób nic (obsłużą to listenery przycisków)
                         if (event.target.closest('.action-icon-btn')) {
                             return;
                         }
-
-                        // Ukryj wszystkie inne otwarte paski akcji
                         document.querySelectorAll('.gallery-tile.actions-visible').forEach(activeTile => {
                             if (activeTile !== tileDiv) {
                                 activeTile.classList.remove('actions-visible');
                             }
                         });
-                        // Pokaż/ukryj pasek akcji dla tego kafelka
                         tileDiv.classList.toggle('actions-visible');
                     });
 
-                    // Listenery dla przycisków w nowym pasku akcji
                     const currentZoomBtn = imgContainer.querySelector('.gallery-zoom-btn');
                     const currentConfigureBtn = imgContainer.querySelector('.gallery-configure-btn');
 
                     if (currentZoomBtn) {
                         currentZoomBtn.addEventListener('click', (e) => {
-                            e.stopPropagation(); // Zapobiegaj propagacji do tileDiv
+                            e.stopPropagation(); 
                             openLightbox(imgSrc);
                         });
                     }
 
                     if (currentConfigureBtn) {
                         currentConfigureBtn.addEventListener('click', (e) => {
-                            e.stopPropagation(); // Zapobiegaj propagacji do tileDiv
+                            e.stopPropagation();
                             const allTiles = galleryGridContainer.querySelectorAll('.gallery-tile');
                             allTiles.forEach(t => t.classList.remove('gallery-tile--active'));
                             tileDiv.classList.add('gallery-tile--active');
                             applyShelfConfigurationFromGallery(galleryIndex, i);
                             scrollToConfig();
-                            tileDiv.classList.remove('actions-visible'); // Opcjonalnie: ukryj pasek po kliknięciu konfiguruj
+                            tileDiv.classList.remove('actions-visible');
                         });
                     }
-                    // ---- KONIEC MODYFIKACJI: Nowe listenery ----
-
-                    // Usunięcie starych listenerów z configBtn, jeśli byłyby aktywne
-                    // configBtn.addEventListener('click', (e) => { e.stopPropagation(); handleTileClick(); });
-
                     fragment.appendChild(tileDiv);
                 });
                 galleryGridContainer.appendChild(fragment);
@@ -1263,7 +1798,7 @@ if (addDividersBottom && levels.length > 2) {
                     const allTilesInGrid = galleryGridContainer.querySelectorAll('.gallery-tile');
                     allTilesInGrid.forEach(item => {
                         item.classList.remove('gallery-tile--active');
-                        item.classList.remove('actions-visible'); // Ukryj paski akcji przy zmianie taba
+                        item.classList.remove('actions-visible'); 
                     });
                     displayImages(index);
                 });
@@ -1279,34 +1814,108 @@ if (addDividersBottom && levels.length > 2) {
         function initialize3dPanel() { show3dButton = document.getElementById('show3dButton'); collapse3dPanelButton = document.getElementById('collapse3dPanelButton'); if (show3dButton && collapse3dPanelButton && shelfContainer) { show3dButton.addEventListener('click', open3dPanel); console.log("Panel 3D zainicjalizowany."); } else { let missing = []; if (!show3dButton) missing.push("show3dButton"); if (!collapse3dPanelButton) missing.push("collapse3dPanelButton (lub jego odpowiednik)"); if (!shelfContainer) missing.push("shelfContainer"); console.warn(`Nie znaleziono elementów panelu 3D: ${missing.join(', ')}. Funkcjonalność może nie działać poprawnie.`); } }
 
         document.addEventListener('DOMContentLoaded', () => {
-            shelfContainer = document.getElementById('shelfContainer'); threeJsCanvasWrapper = document.getElementById('threeJsCanvasWrapper'); shelfTypeSelect = document.getElementById('shelfType'); widthSelect = document.getElementById('width'); heightSelect = document.getElementById('height'); depthSelect = document.getElementById('depth'); shelfCountSelect = document.getElementById('shelfCount'); customWidthInput = document.getElementById('customWidthInput'); customWidthDisplay = document.getElementById('customWidthDisplay'); customWidthFee = document.getElementById('customWidthFee'); shelfTypeOptionsDiv = document.getElementById('shelfTypeOptions'); widthSelectionArea = document.getElementById('widthSelectionArea'); dimensionSectionAnchor = document.getElementById('dimensionSectionAnchor'); colorSectionAnchor = document.getElementById('colorSectionAnchor'); shelfTypeSectionAnchor = document.getElementById('shelfTypeSectionAnchor'); heightLabel = document.getElementById('heightLabel'); depthLabel = document.getElementById('depthLabel'); sideColorSelect = document.getElementById('sideColor'); shelfColorSelect = document.getElementById('shelfColor'); mugShelfSpecificOptionsContainer = document.getElementById('mugShelfSpecificOptionsContainer'); mugShelfMountOptionsDiv = document.getElementById('mugShelfMountOptions'); mugShelfDividersOptionsDiv = document.getElementById('mugShelfDividersOptions'); dividersTopCheckbox = document.getElementById('dividersTop'); dividersMiddleCheckbox = document.getElementById('dividersMiddle'); dividersBottomCheckbox = document.getElementById('dividersBottom'); configuratorSection = document.getElementById('configuratorSection'); shelfCountSection = document.getElementById('shelfCountSection'); galleryTabsContainer = document.getElementById('galleryTabsContainer'); galleryGridContainer = document.getElementById('galleryGridContainer'); galleryImageArea = document.getElementById('galleryImageArea'); galleryPrevArrow = document.querySelector('.gallery-prev-arrow'); galleryNextArrow = document.querySelector('.gallery-next-arrow'); footerPriceTextElement = document.getElementById('footerPriceText'); selectionCompleteIndicator = document.getElementById('selectionCompleteIndicator');
+            // --- Pobieranie elementów ---
+            shelfContainer = document.getElementById('shelfContainer'); threeJsCanvasWrapper = document.getElementById('threeJsCanvasWrapper'); shelfTypeSelect = document.getElementById('shelfType'); widthSelect = document.getElementById('width'); heightSelect = document.getElementById('height'); depthSelect = document.getElementById('depth'); shelfCountSelect = document.getElementById('shelfCount'); customWidthInput = document.getElementById('customWidthInput'); customWidthDisplay = document.getElementById('customWidthDisplay'); customWidthFee = document.getElementById('customWidthFee'); shelfTypeOptionsDiv = document.getElementById('shelfTypeOptions'); widthSelectionArea = document.getElementById('widthSelectionArea'); dimensionSectionAnchor = document.getElementById('dimensionSectionAnchor'); colorSectionAnchor = document.getElementById('colorSectionAnchor'); shelfTypeSectionAnchor = document.getElementById('shelfTypeSectionAnchor'); heightLabel = document.getElementById('heightLabel'); depthLabel = document.getElementById('depthLabel'); sideColorSelect = document.getElementById('sideColor'); shelfColorSelect = document.getElementById('shelfColor'); mugShelfSpecificOptionsContainer = document.getElementById('mugShelfSpecificOptionsContainer'); mugShelfMountOptionsDiv = document.getElementById('mugShelfMountOptions'); mugShelfDividersOptionsDiv = document.getElementById('mugShelfDividersOptions'); dividersTopCheckbox = document.getElementById('dividersTop'); dividersMiddleCheckbox = document.getElementById('dividersMiddle'); dividersBottomCheckbox = document.getElementById('dividersBottom'); configuratorSection = document.getElementById('configuratorSection'); shelfCountSection = document.getElementById('shelfCountSection'); galleryTabsContainer = document.getElementById('galleryTabsContainer'); galleryGridContainer = document.getElementById('galleryGridContainer'); galleryImageArea = document.getElementById('galleryImageArea'); galleryPrevArrow = document.querySelector('.gallery-prev-arrow'); galleryNextArrow = document.querySelector('.gallery-next-arrow');
             mugShelfDividerIconsContainer = document.getElementById('mugShelfDividerIconsContainer'); addTopDividerBtn = document.getElementById('addTopDividerBtn'); addMiddleDividerBtn = document.getElementById('addMiddleDividerBtn'); addBottomDividerBtn = document.getElementById('addBottomDividerBtn'); mobileMugShelfMountStripsContainer = document.getElementById('mobileMugShelfMountStripsContainer'); mobileMountHangingStripBtn = document.getElementById('mobileMountHangingStripBtn'); mobileMountStandingStripBtn = document.getElementById('mobileMountStandingStripBtn');
             desktopDividerDimensionsInfo = document.getElementById('desktopDividerDimensionsInfo');
             viewOrderCodeInput = document.getElementById('viewOrderCodeInput'); orderDetailsModalOverlay = document.getElementById('orderDetailsModalOverlay'); orderDetailsModal = document.getElementById('orderDetailsModal'); modalCloseButton = orderDetailsModal ? orderDetailsModal.querySelector('.modal-close-button') : null; modalOrderCodeSpan = document.getElementById('modalOrderCode'); modalOrderSummaryP = document.getElementById('modalOrderSummary');
-            allegroOrderModalOverlay = document.getElementById('allegroOrderModalOverlay'); allegroModalOrderCodeEl = document.getElementById('allegroModalOrderCode'); allegroModalPriceEl = document.getElementById('allegroModalPrice'); allegroModalUnitsInstructionEl = document.getElementById('allegroModalInstructionUnits'); allegroModalGoButton = document.getElementById('allegroModalGoButton'); allegroModalCloseButtonTop = document.getElementById('allegroModalCloseButtonTop'); allegroModalCloseButtonBottom = document.getElementById('allegroModalCloseButtonBottom');
+            imageLightbox = document.getElementById('imageLightbox'); lightboxImage = document.getElementById('lightboxImage'); lightboxCloseBtn = document.getElementById('lightboxClose');
+            priceAndActionsContainer = document.getElementById('priceAndActionsContainer');
+            priceHint = document.getElementById('priceHint');
+            addToCartBtn = document.getElementById('addToCartBtn');
 
-            // NOWE: Inicjalizacja elementów Lightboxa
-            imageLightbox = document.getElementById('imageLightbox');
-            lightboxImage = document.getElementById('lightboxImage');
-            lightboxCloseBtn = document.getElementById('lightboxClose');
+            // --- Pobieranie elementów koszyka ---
+            desktopCartContainer = document.getElementById('desktopCartContainer');
+            cartPanel = document.getElementById('cartPanel');
+            cartPanelOverlay = document.getElementById('cartPanelOverlay');
+            cartPanelCloseBtn = document.getElementById('cartPanelCloseBtn');
+            cartItemsContainer = document.getElementById('cartItemsContainer');
+            cartEmptyMessage = document.getElementById('cartEmptyMessage');
+            cartTotalPrice = document.getElementById('cartTotalPrice');
+            cartCheckoutButton = document.getElementById('cartCheckoutButton');
+            cartBadges = document.querySelectorAll('.cart-badge');
+            mobileCartButton = document.getElementById('mobileCartButton');
+            cartDiscountReminder = document.getElementById('cartDiscountReminder');
+            cartSubtotalLine = document.getElementById('cartSubtotalLine');
+            cartSubtotalPrice = document.getElementById('cartSubtotalPrice');
+            cartDiscountLine = document.getElementById('cartDiscountLine');
+            cartDiscountAmount = document.getElementById('cartDiscountAmount');
 
 
-             if (!shelfContainer || !threeJsCanvasWrapper || !shelfTypeSelect || !widthSelect || !heightSelect || !depthSelect || !shelfCountSelect || !sideColorSelect || !shelfColorSelect || !mugShelfMountOptionsDiv || !dividersTopCheckbox || !dividersMiddleCheckbox || !dividersBottomCheckbox || !addTopDividerBtn || !addMiddleDividerBtn || !addBottomDividerBtn || !mobileMountHangingStripBtn || !mobileMountStandingStripBtn || !desktopDividerDimensionsInfo) { console.error("BŁĄD KRYTYCZNY: Nie znaleziono wszystkich wymaganych elementów DOM. Inicjalizacja przerwana."); return; }
+            // --- Pobieranie elementów nowego modala podsumowania koszyka ---
+            cartSummaryModalOverlay = document.getElementById('cartSummaryModalOverlay');
+            cartSummaryModal = document.getElementById('cartSummaryModal');
+            cartSummaryModalTitle = document.getElementById('cartSummaryModalTitle');
+            cartSummaryItemsContainer = document.getElementById('cartSummaryItemsContainer');
+            cartSummaryTotalPrice = document.getElementById('cartSummaryTotalPrice');
+            cartSummaryAllCodes = document.getElementById('cartSummaryAllCodes');
+            copyAllCodesBtn = document.getElementById('copyAllCodesBtn');
+            cartSummaryInstructionUnits = document.getElementById('cartSummaryInstructionUnits');
+            downloadCartSummaryBtn = document.getElementById('downloadCartSummaryBtn');
+            cartSummaryGoToAllegroBtn = document.getElementById('cartSummaryGoToAllegroBtn');
+            cartSummaryModalCloseBtnTop = document.getElementById('cartSummaryModalCloseBtnTop');
+            cartSummaryModalCloseBtnBottom = document.getElementById('cartSummaryModalCloseBtnBottom');
+            cartSummarySubtotalLine = document.getElementById('cartSummarySubtotalLine');
+            cartSummarySubtotalPrice = document.getElementById('cartSummarySubtotalPrice');
+            cartSummaryDiscountLine = document.getElementById('cartSummaryDiscountLine');
+            cartSummaryDiscountAmount = document.getElementById('cartSummaryDiscountAmount');
+
+
+             if (!shelfContainer || !threeJsCanvasWrapper) { console.error("BŁĄD KRYTYCZNY: Nie znaleziono wszystkich wymaganych elementów DOM. Inicjalizacja przerwana."); return; }
              if(widthSelect) originalWidthOptions = Array.from(widthSelect.options).map(opt => ({value: opt.value, text: opt.text})).filter(opt => opt.value !== ""); if(heightSelect) originalHeightOptions = Array.from(heightSelect.options).map(opt => ({value: opt.value, text: opt.text})).filter(opt => opt.value !== "");
 
             try {
-                 if (shelfTypeSelect) shelfTypeSelect.value = ""; if (widthSelect && Array.from(widthSelect.options).some(opt => opt.value === '44')) { widthSelect.value = "44"; if (typeof checkCustomWidth === 'function') checkCustomWidth(); } if (heightSelect && Array.from(heightSelect.options).some(opt => opt.value === '40')) heightSelect.value = "40"; if (typeof updateDepthOptions === 'function') updateDepthOptions(); if (depthSelect && Array.from(depthSelect.options).some(opt => opt.value === '10')) depthSelect.value = "10"; if (typeof updateShelfCountOptions === 'function') updateShelfCountOptions(); if (shelfCountSelect && Array.from(shelfCountSelect.options).some(opt => opt.value === '0')) shelfCountSelect.value = "0";
+                // Inicjalizacja modułów i stanu początkowego
                 if(typeof init3D === 'function') init3D(); else console.error("init3D is not defined");
                 if(typeof updateSwatchDisplay === 'function') { updateSwatchDisplay('sideColor', 'sideColorSwatchDisplay'); updateSwatchDisplay('shelfColor', 'shelfColorSwatchDisplay'); } else console.error("updateSwatchDisplay is not defined");
-                updatePreview();
-                updateOrderSummary();
-
                 if(typeof initializeTabbedGallery === 'function') initializeTabbedGallery(); else console.error("initializeTabbedGallery is not defined");
                 if(typeof initialize3dPanel === 'function') initialize3dPanel(); else console.error("initialize3dPanel is not defined");
                 if(typeof initializeReviews === 'function') initializeReviews(); else console.error("initializeReviews is not defined");
+                
+                // --- Inicjalizacja koszyka i podpięcie zdarzeń ---
+                if (desktopCartContainer) desktopCartContainer.addEventListener('click', openCart);
+                if (mobileCartButton) mobileCartButton.addEventListener('click', openCart);
+                if (cartPanelCloseBtn) cartPanelCloseBtn.addEventListener('click', closeCart);
+                if (cartPanelOverlay) cartPanelOverlay.addEventListener('click', closeCart);
+                if (cartCheckoutButton) cartCheckoutButton.addEventListener('click', handleCheckout);
+                updateCartDisplay(); 
+                
+                // --- Podpięcie zdarzeń dla NOWEGO MODALA PODSUMOWANIA ---
+                if (cartSummaryModalOverlay) {
+                    cartSummaryModalOverlay.addEventListener('click', (event) => { if (event.target === cartSummaryModalOverlay) closeCartSummaryModal(); });
+                    cartSummaryModalCloseBtnTop.addEventListener('click', closeCartSummaryModal);
+                    cartSummaryModalCloseBtnBottom.addEventListener('click', closeCartSummaryModal);
+                    downloadCartSummaryBtn.addEventListener('click', downloadFullCartSummary);
+                    
+                    copyAllCodesBtn.addEventListener('click', () => {
+                        cartSummaryAllCodes.select();
+                        navigator.clipboard.writeText(cartSummaryAllCodes.value);
+                        const originalText = copyAllCodesBtn.innerHTML;
+                        copyAllCodesBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>`;
+                        setTimeout(() => { copyAllCodesBtn.innerHTML = originalText; }, 2000);
+                    });
 
+                    cartSummaryGoToAllegroBtn.addEventListener('click', () => {
+                        navigator.clipboard.writeText(cartSummaryAllCodes.value).then(() => {
+                           window.open("https://allegro.pl/oferta/zaprojektuj-wlasna-polke-podaj-wymiar-i-wybierz-kolory-do-kuchni-pokoju-17253898746", "_blank");
+                           closeCartSummaryModal();
+                        }).catch(err => {
+                            alert('Nie udało się skopiować kodów. Spróbuj ręcznie, używając przycisku obok pola z kodami.');
+                        });
+                    });
+                } else {
+                     console.error("Nie znaleziono elementów nowego modala podsumowania koszyka.");
+                }
+
+                // --- Ustawienie domyślnej konfiguracji po załadowaniu ---
+                if (shelfTypeSelect) {
+                    shelfTypeSelect.value = 'standing';
+                    shelfTypeSelect.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+
+                // Stare listenery...
                 const setupDividerButton = (btn, checkbox) => {
-                    if (!btn || !checkbox) { console.error("setupDividerButton: Missing button or checkbox."); return; }
+                    if (!btn || !checkbox) { return; }
                     btn.addEventListener('click', () => {
                         checkbox.checked = !checkbox.checked;
                         updateDividerIconActiveStates(); updatePreview(); updateOrderSummary();
@@ -1320,7 +1929,7 @@ if (addDividersBottom && levels.length > 2) {
                 setupDividerButton(addBottomDividerBtn, dividersBottomCheckbox);
 
                 const setupMobileMountStrip = (stripBtn, mountValue) => {
-                     if (!stripBtn || !mugShelfMountOptionsDiv) { console.error("setupMobileMountStrip: Missing strip button or mount options div."); return; }
+                     if (!stripBtn || !mugShelfMountOptionsDiv) { return; }
                      stripBtn.addEventListener('click', () => {
                          const radioToSelect = mugShelfMountOptionsDiv.querySelector(`input[name="mugShelfMount"][value="${mountValue}"]`);
                          if (radioToSelect && !radioToSelect.checked) {
@@ -1340,29 +1949,13 @@ if (addDividersBottom && levels.length > 2) {
                 if (viewOrderCodeInput) { viewOrderCodeInput.addEventListener('paste', (event) => { const pastedText = (event.clipboardData || window.clipboardData).getData('text'); if (pastedText && pastedText.trim().length > 0) { setTimeout(() => { const details = parseOrderCode(viewOrderCodeInput.value); displayOrderDetailsInModal(details); viewOrderCodeInput.blur(); }, 50); } }); viewOrderCodeInput.addEventListener('input', (event) => { const code = event.target.value.trim(); if (code.length >= 15 && code.includes('-')) { const details = parseOrderCode(code); if (!details.error || (details.error && code.length > 5)) { displayOrderDetailsInModal(details); viewOrderCodeInput.blur(); } } }); viewOrderCodeInput.addEventListener('keydown', (event) => { if (event.key === 'Enter') { event.preventDefault(); const code = viewOrderCodeInput.value.trim(); if (code) { const details = parseOrderCode(code); displayOrderDetailsInModal(details); viewOrderCodeInput.blur(); } } }); } else { console.error("Nie znaleziono elementu #viewOrderCodeInput."); }
                 if (modalCloseButton) { modalCloseButton.addEventListener('click', closeOrderDetailsModal); } else { console.error("Nie znaleziono przycisku zamykania modala szczegółów zamówienia."); }
                 if (orderDetailsModalOverlay) { orderDetailsModalOverlay.addEventListener('click', (event) => { if (event.target === orderDetailsModalOverlay) { closeOrderDetailsModal(); } }); } else { console.error("Nie znaleziono elementu #orderDetailsModalOverlay."); }
-                if (allegroOrderModalOverlay && allegroModalGoButton && allegroModalCloseButtonTop && allegroModalCloseButtonBottom) { const closeAllegroModal = () => allegroOrderModalOverlay.classList.remove('visible'); allegroModalCloseButtonTop.addEventListener('click', closeAllegroModal); allegroModalCloseButtonBottom.addEventListener('click', closeAllegroModal); allegroModalGoButton.addEventListener('click', () => { window.open("https://allegro.pl/oferta/zaprojektuj-wlasna-polke-podaj-wymiar-i-wybierz-kolory-do-kuchni-pokoju-17253898746", "_blank"); closeAllegroModal(); }); allegroOrderModalOverlay.addEventListener('click', (event) => { if (event.target === allegroOrderModalOverlay) { closeAllegroModal(); } }); } else { console.error("Nie znaleziono wszystkich elementów nowego modala Allegro do przypisania event listenerów."); }
+                
                 if (window.innerWidth < 768) { const reviewBlock = document.getElementById('customerReview')?.parentElement; const summarySection = document.querySelector('.w-full.md\\:w-1\\/3.order-3'); if (reviewBlock && summarySection && reviewBlock.parentElement !== summarySection) { summarySection.appendChild(reviewBlock); } }
                 const mainConfigSection = document.getElementById('configuratorSection'); if (mainConfigSection) { mainConfigSection.addEventListener('change', function(event) { if (event.target.tagName === 'SELECT' && event.target.closest('.p-6.shadow.rounded-lg, .w-full.max-w-lg')) { const parentSection = event.target.closest('.section-highlight-persistent'); if (parentSection) { parentSection.classList.remove('section-highlight-persistent'); } } }); } else { console.error("Nie znaleziono głównego kontenera konfiguracji (#configuratorSection) do nasłuchiwania zmian."); }
 
-                // NOWE: Listenery dla Lightboxa
-                if (lightboxCloseBtn) {
-                    lightboxCloseBtn.addEventListener('click', closeLightbox);
-                }
-                if (imageLightbox) {
-                    imageLightbox.addEventListener('click', function(event) {
-                        // Zamknij lightbox tylko jeśli kliknięto bezpośrednio na tło (overlay)
-                        if (event.target === imageLightbox) {
-                            closeLightbox();
-                        }
-                    });
-                }
-                 // Zamykanie lightboxa klawiszem Escape
-                document.addEventListener('keydown', function(event) {
-                    if (event.key === 'Escape' && imageLightbox && !imageLightbox.classList.contains('hidden')) {
-                        closeLightbox();
-                    }
-                });
-
+                if (lightboxCloseBtn) { lightboxCloseBtn.addEventListener('click', closeLightbox); }
+                if (imageLightbox) { imageLightbox.addEventListener('click', function(event) { if (event.target === imageLightbox) { closeLightbox(); } }); }
+                document.addEventListener('keydown', function(event) { if (event.key === 'Escape' && imageLightbox && !imageLightbox.classList.contains('hidden')) { closeLightbox(); } });
 
                 console.log("Inicjalizacja zakończona pomyślnie.");
 
@@ -1384,7 +1977,14 @@ if (addDividersBottom && levels.length > 2) {
         <button onclick="scrollToElementAndHighlight('colorSectionAnchor', 'start', this)" title="Przewiń do kolorów"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42" /> </svg> <span>Kolory</span> </button>
         <button onclick="scrollToElementAndHighlight('shelfCountSection', 'center', this)" title="Przewiń do dodawania półek"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /> <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 9h16.5M3.75 15h16.5" /> </svg> <span>Półki</span> </button>
         <button id="show3dButton" title="Pokaż/ukryj podgląd 3D"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="animate-spin-slow"> <path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9.75l-9 5.25M12 21v-9.75" /> </svg> <span>Zobacz 3D</span> </button>
-         <div id="footerPriceDisplay" class="text-white px-1 flex items-center justify-center" onclick="scrollToBottom()" title="Przewiń na dół strony"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"> <path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z" /> <path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6z" /> </svg> <span id="footerPriceText" class="mx-1"></span> <span id="selectionCompleteIndicator" style="display: none;" title="Konfiguracja kompletna, gotowe do zakupu"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-white"> <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" /> </svg> </span> </div>
+        
+        <button id="mobileCartButton" class="relative" title="Pokaż koszyk">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mb-1">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+            </svg>
+            <span class="mobile-cart-price text-xs font-bold">Koszyk</span>
+            <span class="cart-badge" style="top: 0; right: 8px; width: 1rem; height: 1rem; font-size: 0.65rem; display: none;">0</span>
+        </button>
     </div>
 
     </body>
