@@ -17,102 +17,100 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
     <style>
-    /* ---- NOWE STYLE DLA WSKAZÓWKI (COACH MARK) - POPRAWIONE ---- */
-    @keyframes fadeInDown {
-        from {
-            opacity: 0;
-            transform: translate(-50%, -20px);
-        }
-        to {
-            opacity: 1;
-            transform: translate(-50%, 0);
-        }
+    /* ---- NOWE STYLE DLA SPEKTAKULARNEJ WSKAZÓWKI W GALERII ---- */
+    
+    /* Kontener planszy informacyjnej */
+    .gallery-intro-tile {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #f0fdf4; /* Jasnozielone tło */
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    z-index: 5;
+    opacity: 1;
+    transition: opacity 0.5s ease-in-out;
+    overflow: hidden; /* Ukrywa części animacji wychodzące poza ramkę */
+    /* USUNIĘTO LINIJKĘ: box-shadow: inset 0 0 0 2px rgba(5, 66, 45, 0.4); */
+}
+
+    /* Klasa dodawana, gdy cała plansza ma zniknąć */
+    .gallery-intro-tile.fade-out {
+        opacity: 0;
     }
 
-    @keyframes fadeOutUp {
-        from {
-            opacity: 1;
-            transform: translate(-50%, 0);
-        }
-        to {
-            opacity: 0;
-            transform: translate(-50%, -20px);
-            visibility: hidden;
-        }
-    }
-
-    .coach-mark {
-        display: none; /* Domyślnie ukryty - kluczowa poprawka */
-        position: absolute;
-        top: 130px; /* Precyzyjne umiejscowienie nad galerią */
-        left: 50%;
-        transform: translateX(-50%);
-        background-color: #f0fdf4; /* Jasny zielony bg-emerald-50 */
-        color: #065f46; /* Ciemny zielony text-emerald-800 */
-        padding: 1rem 1.5rem;
-        border-radius: 0.75rem;
-        border: 2px solid #16A34A; /* Główny zielony */
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15), 0 4px 10px rgba(0, 0, 0, 0.1);
-        z-index: 1010;
-        max-width: 320px;
+    /* Styl tekstu wewnątrz planszy */
+    .gallery-intro-tile p {
+        color: #065f46;
         text-align: center;
-        font-size: 0.95rem;
-        line-height: 1.5;
-        animation-fill-mode: forwards; /* Utrzyma stan końcowy animacji */
+        font-size: 1.05em;
+        line-height: 1.4;
+        margin: 0;
+        font-weight: 500;
+        opacity: 0; /* Domyślnie niewidoczny */
+        transform: translateY(10px); /* Lekko przesunięty w dół */
+        animation: fadeInText 0.8s ease-out 0.5s forwards; /* Animacja tekstu z opóźnieniem */
     }
 
-    .coach-mark.visible {
-        display: block; /* Uwidacznia element, gdy dodana jest klasa .visible */
-        animation: fadeInDown 0.5s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+    .gallery-intro-tile strong {
+        color: #05422d;
+        font-weight: 700;
     }
 
-    .coach-mark.hidden-animation {
-        animation: fadeOutUp 0.5s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
-    }
-
-    /* "Ogonek" dymka skierowany w dół */
-    .coach-mark::after {
+    /* Pseudoelementy tworzące animowany "wężyk" */
+    .gallery-intro-tile::before,
+    .gallery-intro-tile::after {
         content: '';
         position: absolute;
-        bottom: -12px; /* Pozycjonowanie ogonka */
-        left: 50%;
-        transform: translateX(-50%);
-        width: 0;
-        height: 0;
-        border-left: 12px solid transparent;
-        border-right: 12px solid transparent;
-        border-top: 12px solid #16A34A; /* Ten sam kolor co ramka */
-    }
-    
-    .coach-mark-close-btn {
-        position: absolute;
-        top: 6px;
-        right: 6px;
-        background-color: transparent;
-        border: none;
-        color: #047857; /* Ciemniejszy zielony */
-        cursor: pointer;
-        padding: 0.25rem;
-        border-radius: 9999px;
-        transition: background-color 0.2s ease, transform 0.1s ease;
-    }
-    .coach-mark-close-btn:hover {
-        background-color: rgba(22, 163, 74, 0.1);
-    }
-     .coach-mark-close-btn:active {
-        transform: scale(0.9);
+        background: linear-gradient(90deg, #16A34A, #34D399, #a7f3d0); /* Gradient "wężyka" */
     }
 
+    /* Definicja animacji dla wężyka */
+    .gallery-intro-tile.is-animating::before {
+        height: 2px; /* Grubość wężyka */
+        animation: snake-progress-top 3.5s linear forwards;
+    }
+    .gallery-intro-tile.is-animating::after {
+        width: 2px; /* Grubość wężyka */
+        animation: snake-progress-right 3.5s linear forwards;
+    }
 
-    /* Dostosowanie dla urządzeń mobilnych */
-    @media (max-width: 767px) {
-        .coach-mark {
-            top: 20px; /* Wyżej na mobilnych */
-            width: 90%;
-            max-width: 90%;
-            padding: 1rem;
+    /* Animacja tekstu (pojawianie się) */
+    @keyframes fadeInText {
+        to {
+            opacity: 1;
+            transform: translateY(0);
         }
     }
+
+    /* Animacja paska postępu - część górna i dolna */
+    @keyframes snake-progress-top {
+        0% { top: 0; left: 0; width: 0; }
+        25% { top: 0; left: 0; width: 100%; }
+        25.01% { top: 100%; left: 0; width: 100%; } /* Skok na dół */
+        50% { top: 100%; left: 0; width: 100%; }
+        50.01% { top: 100%; left: 100%; width: 0; } /* Zwijanie się na dole */
+        75% { top: 100%; left: 100%; width: 0; }
+        100% { top: 100%; left: 100%; width: 0; }
+    }
+
+    /* Animacja paska postępu - część prawa i lewa */
+    @keyframes snake-progress-right {
+        0% { top: 0; left: 0; height: 0; }
+        25% { top: 0; left: 0; height: 0; }
+        25.01% { top: 0; left: 100%; height: 0; } /* Start z prawego górnego rogu */
+        50% { top: 0; left: 100%; height: 100%; }
+        50.01% { top: 0; left: 0; height: 100%; } /* Skok w lewo */
+        75% { top: 100%; left: 0; height: 0; } /* Zwijanie się od dołu */
+        100% { top: 100%; left: 0; height: 0; }
+    }
+    
     /* ---- KONIEC NOWYCH STYLÓW ---- */
     
     /* Style niestandardowe */
@@ -607,16 +605,6 @@
 </head>
 <body class="flex flex-col justify-center items-center min-h-screen bg-stone-100 font-sans text-stone-800 pb-20 md:pb-0">
 
-    <div id="galleryCoachMark" class="coach-mark">
-        <button id="coachMarkCloseBtn" class="coach-mark-close-btn" aria-label="Zamknij wskazówkę">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-        </button>
-        <p>
-            <strong>Kliknij zdjęcie</strong>, by przerobić gotową półkę, lub <strong>zaprojektuj własną</strong> od nowa.
-        </p>
-    </div>
     <div id="cartPanelOverlay"></div>
     <div id="cartPanel">
 <div id="cartPanelHeader">
@@ -755,7 +743,6 @@
         </div>
     </div>
 </div>
-
 <div id="configuratorSection" class="p-4 md:p-8 bg-white shadow-lg rounded-xl flex flex-col md:flex-row md:space-x-8 w-full max-w-7xl mx-auto mb-6">
         <div class="w-full md:w-1/3 space-y-8 mb-8 md:mb-0 order-1 md:order-1">
              <div id="shelfTypeSectionAnchor" class="p-6 shadow rounded-lg bg-white border border-stone-200 transition-shadow duration-200 hover:shadow-md"> <h2 class="text-lg font-semibold mb-4 flex items-center text-stone-800"> <svg class="h-6 w-6 mr-2 text-green-600 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 0 1 0 1.905c-.007.379.137.75.431.99l1.005.828c.428.355.53 1.005.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.063-.374-.313-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 0 1 0-1.905c.007-.379-.137-.75-.43-.99l-1.004-.828a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281Z" /> <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /> </svg> Rodzaj półki </h2> <select id="shelfType" class="custom-select w-full" onchange="handleShelfTypeChange();"> <option value="">-- Wybierz --</option> <option value="standing">Stojąca na blacie</option> <option value="hanging">Wisząca</option> <option value="mug_shelf">Półka na kubki</option> </select> <div id="shelfTypeOptions" style="display:none; margin-top:1rem;" class="space-y-2"></div> <div id="mugShelfSpecificOptionsContainer" style="display:none;"> <div id="mugShelfMountOptions" class="mt-4 pt-4 border-t border-dashed border-stone-200"></div> <div id="mugShelfDividersOptions" class="mt-4 pt-4 border-t border-dashed border-stone-200"> <h3 class="text-md font-semibold mb-2 text-stone-700">Wstaw przegródki:</h3> <label class="flex items-center space-x-2"><input type="checkbox" id="dividersTop" class="rounded border-stone-300 text-green-600 shadow-sm focus:ring-green-500 focus:ring-offset-0 focus:ring-2" onchange="updatePreview(); updateOrderSummary();"><span>Na górze</span></label> <label class="flex items-center space-x-2 mt-1"><input type="checkbox" id="dividersMiddle" class="rounded border-stone-300 text-green-600 shadow-sm focus:ring-green-500 focus:ring-offset-0 focus:ring-2" onchange="updatePreview(); updateOrderSummary();"><span>Pośrodku</span></label> <label class="flex items-center space-x-2 mt-1"><input type="checkbox" id="dividersBottom" class="rounded border-stone-300 text-green-600 shadow-sm focus:ring-green-500 focus:ring-offset-0 focus:ring-2" onchange="updatePreview(); updateOrderSummary();"><span>Na dole</span></label> </div> </div> </div>
@@ -1934,6 +1921,29 @@
                     const imgContainer = document.createElement('div');
                     imgContainer.className = 'gallery-image-container';
 
+                    // =========================================================================
+                    // === POCZĄTEK MODYFIKACJI - Dodanie animowanej wskazówki do galerii    ===
+                    // =========================================================================
+                    if (galleryIndex === 0 && i === 0) {
+                        const introTileDiv = document.createElement('div');
+                        introTileDiv.className = 'gallery-intro-tile';
+                        introTileDiv.innerHTML = `<p><strong>Kliknij w zdjęcie</strong>, by przerobić gotową półkę, lub <strong>zaprojektuj własną</strong> od nowa.</p>`;
+                        imgContainer.appendChild(introTileDiv);
+
+                        // Uruchomienie animacji paska postępu
+                        setTimeout(() => {
+                            introTileDiv.classList.add('is-animating');
+                        }, 100); // Małe opóźnienie dla pewności renderowania
+
+                        // Zniknięcie całej planszy po zakończeniu animacji
+                        setTimeout(() => {
+                            introTileDiv.classList.add('fade-out');
+                        }, 3500); // Czas musi być zsynchronizowany z czasem animacji w CSS
+                    }
+                    // =======================================================================
+                    // === KONIEC MODYFIKACJI                                              ===
+                    // =======================================================================
+
                     const img = document.createElement('img');
                     img.src = imgSrc;
                     img.alt = `${galleryData[galleryIndex].title} - zdjęcie ${i + 1}`;
@@ -2018,7 +2028,7 @@
             galleryPrevArrow.addEventListener('click', () => { galleryImageArea.scrollBy({ left: -galleryImageArea.clientWidth * 0.8, behavior: 'smooth' }); });
             if (galleryData.length > 0) { displayImages(0); }
         }
-        function initializeReviews() { const reviews = [ '"Fantastyczna półeczka, przyszła od razu zmontowana i idealnie pasuje w wielu miejscach. Serdecznie polecam!"', '"Piękna, zgrabna półka. Solidnie wykonana, bez żadnych wad. Polecam!"', '"Bardzo ładna i funkcjonalna półka, świetnie zapakowana na czas transportu. Polecam!"', '"Super produkt – pięknie wykonany, idealnie pasuje do małych słoiczków z przyprawami w kuchni. Polecam!"', '"Ładna i solidna półka, starannie wykonana. Kolor świetnie wpasował się w meble. Polecam!"' ]; let currentReviewIndex = 0; const reviewDisplay = document.getElementById('customerReview'); function showNextReview() { if (!reviewDisplay) return; reviewDisplay.classList.remove('review-fade-enter-active'); setTimeout(() => { const reviewData = reviews[currentReviewIndex]; reviewDisplay.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-lime-500 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg> ${reviewData}`; reviewDisplay.classList.add('review-fade-enter-active'); currentReviewIndex = (currentReviewIndex + 1) % reviews.length; }, 700); } if (reviewDisplay) { showNextReview(); setInterval(showNextReview, 6000); } }
+function initializeReviews() { const reviews = [ '"Fantastyczna półeczka, przyszła od razu zmontowana i idealnie pasuje w wielu miejscach. Serdecznie polecam!"', '"Piękna, zgrabna półka. Solidnie wykonana, bez żadnych wad. Polecam!"', '"Bardzo ładna i funkcjonalna półka, świetnie zapakowana na czas transportu. Polecam!"', '"Super produkt – pięknie wykonany, idealnie pasuje do małych słoiczków z przyprawami w kuchni. Polecam!"', '"Ładna i solidna półka, starannie wykonana. Kolor świetnie wpasował się w meble. Polecam!"' ]; let currentReviewIndex = 0; const reviewDisplay = document.getElementById('customerReview'); function showNextReview() { if (!reviewDisplay) return; reviewDisplay.classList.remove('review-fade-enter-active'); setTimeout(() => { const reviewData = reviews[currentReviewIndex]; reviewDisplay.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-lime-500 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg> ${reviewData}`; reviewDisplay.classList.add('review-fade-enter-active'); currentReviewIndex = (currentReviewIndex + 1) % reviews.length; }, 700); } if (reviewDisplay) { showNextReview(); setInterval(showNextReview, 6000); } }
         function open3dPanel() { if (shelfContainer) { shelfContainer.classList.add('active'); setTimeout(onWindowResize, 50); updateDividerIconsVisibility(); updateMobileMountStripStates(); } else { console.error("Nie można otworzyć panelu 3D - brak elementu #shelfContainer"); } }
         function close3dPanel() { if (shelfContainer) { shelfContainer.classList.remove('active'); setActiveMobileIcon(null); updateDividerIconsVisibility(); } }
         function initialize3dPanel() { show3dButton = document.getElementById('show3dButton'); collapse3dPanelButton = document.getElementById('collapse3dPanelButton'); if (show3dButton && collapse3dPanelButton && shelfContainer) { show3dButton.addEventListener('click', open3dPanel); console.log("Panel 3D zainicjalizowany."); } else { let missing = []; if (!show3dButton) missing.push("show3dButton"); if (!collapse3dPanelButton) missing.push("collapse3dPanelButton (lub jego odpowiednik)"); if (!shelfContainer) missing.push("shelfContainer"); console.warn(`Nie znaleziono elementów panelu 3D: ${missing.join(', ')}. Funkcjonalność może nie działać poprawnie.`); } }
@@ -2085,46 +2095,7 @@
                 if (addToCartBtn) {
                     addToCartBtn.addEventListener('click', addToCart);
                 }
-
-                // --- NOWA LOGIKA DLA WSKAZÓWKI (COACH MARK) - POPRAWIONY JS ---
-                const galleryCoachMark = document.getElementById('galleryCoachMark');
-                const coachMarkCloseBtn = document.getElementById('coachMarkCloseBtn');
-                let coachMarkHideTimeout;
-
-                const hideCoachMark = () => {
-                    if (galleryCoachMark && !galleryCoachMark.classList.contains('hidden-animation')) {
-                        clearTimeout(coachMarkHideTimeout);
-                        galleryCoachMark.classList.add('hidden-animation');
-                        
-                        galleryCoachMark.addEventListener('animationend', () => {
-                            galleryCoachMark.style.display = 'none';
-                        }, { once: true });
-                    }
-                };
-
-                if (galleryCoachMark && coachMarkCloseBtn) {
-                    setTimeout(() => {
-                        galleryCoachMark.classList.add('visible');
-                        
-                        coachMarkHideTimeout = setTimeout(hideCoachMark, 6000);
-
-                    }, 1500);
-
-                    coachMarkCloseBtn.addEventListener('click', hideCoachMark);
-                    
-                    galleryCoachMark.addEventListener('mouseenter', () => {
-                        clearTimeout(coachMarkHideTimeout);
-                    });
-
-                    galleryCoachMark.addEventListener('mouseleave', () => {
-                        coachMarkHideTimeout = setTimeout(hideCoachMark, 2000);
-                    });
-                } else {
-                    console.warn("Nie znaleziono elementów wskazówki (coach mark).");
-                }
-                // --- KONIEC NOWEJ LOGIKI ---
-
-
+                
                 // --- Inicjalizacja koszyka i reszty zdarzeń ---
                 if (desktopCartContainer) desktopCartContainer.addEventListener('click', openCart);
                 if (mobileCartButton) mobileCartButton.addEventListener('click', openCart);
