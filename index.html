@@ -960,14 +960,23 @@
                     const itemElement = document.createElement('div');
                     itemElement.className = 'flex items-start justify-between p-3 border-b border-stone-200 last:border-b-0';
                     itemElement.innerHTML = `
-                        <div class="flex-grow pr-4">
-                            <p class="font-semibold text-stone-800">${item.name}</p>
+                        <div class="flex-shrink-0 w-16 h-16 bg-stone-200 rounded-md flex items-center justify-center overflow-hidden mr-3">
+                            ${item.snapshot ? `<img src="${item.snapshot}" alt="Miniatura półki" class="w-full h-full object-contain">` : ''}
+                        </div>
+
+                        <div class="flex-grow">
+                            <p class="font-semibold text-stone-800 leading-tight">${item.name}</p>
                             <p class="text-sm text-stone-600">${item.summary}</p>
-                            <p class="text-xs text-stone-500 mt-1">Boki: ${item.sideColor}, Półki: ${item.shelfColor}</p>
-                             <p class="text-xs text-stone-500 mt-1">Opcje: ${item.extras}</p>
+                            
+                            <div class="text-xs text-stone-500 mt-1 space-y-0.5">
+                                <p>Boki: <span class="font-medium text-stone-700">${item.sideColor}</span></p>
+                                <p>Półki: <span class="font-medium text-stone-700">${item.shelfColor}</span></p>
+                            </div>
+                            <p class="text-xs text-stone-500 mt-1">Opcje: ${item.extras}</p>
                             <p class="font-bold text-stone-800 mt-2">${item.price.toFixed(2)} zł</p>
                         </div>
-                        <div class="flex-shrink-0">
+
+                        <div class="flex-shrink-0 ml-2">
                             <button onclick="removeFromCart(${item.id})" class="text-stone-400 hover:text-red-500 transition-colors p-1" title="Usuń z koszyka">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                   <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -1026,33 +1035,43 @@
             cartSummaryItemsContainer.innerHTML = '';
             cart.forEach(item => {
                 const itemCard = document.createElement('div');
-                itemCard.className = 'p-3 bg-stone-50 rounded-lg border border-stone-200 flex items-center gap-4';
+                itemCard.className = 'p-3 bg-stone-50 rounded-lg border border-stone-200 flex items-start gap-4';
                 itemCard.innerHTML = `
-                    <div class="flex-grow">
-                        <p class="font-semibold text-stone-800">${item.name}</p>
-                        <p class="text-sm text-stone-600">${item.summary}</p>
-                        <ul class="text-xs text-stone-500 mt-2 space-y-0.5 pl-1">
-                            <li><strong>Kolory:</strong> ${item.sideColor} / ${item.shelfColor}</li>
-                            <li><strong>Opcje:</strong> ${item.extras}</li>
-                        </ul>
-                        <p class="font-bold text-lg text-stone-800 mt-2">${item.price.toFixed(2)} zł</p>
-                    </div>
                     <div class="summary-snapshot-container" id="snapshot-container-${item.id}">
-                        ${item.snapshot ? `<img src="${item.snapshot}" alt="Podgląd 3D półki: ${item.name}" />` : '<div class="text-xs text-stone-500">Brak podglądu</div>'}
+                        ${item.snapshot ? `<img src="${item.snapshot}" alt="Podgląd 3D półki: ${item.name}" class="w-full h-full object-contain" />` : '<div class="text-xs text-stone-500 p-2">Brak podglądu</div>'}
+                    </div>
+
+                    <div class="flex-grow">
+                        <div class="flex justify-between items-baseline gap-4">
+                            <p class="font-semibold text-stone-800 leading-tight">${item.name}</p>
+                            <p class="font-bold text-xl text-stone-800 flex-shrink-0">${item.price.toFixed(2)} zł</p>
+                        </div>
+
+                        <p class="text-sm text-stone-600 mt-1">${item.summary}</p>
+                        <div class="text-xs text-stone-500 mt-2 flex flex-wrap gap-x-3 gap-y-1">
+                            <span>Boki: <span class="font-medium text-stone-700">${item.sideColor}</span></span>
+                            <span>Półki: <span class="font-medium text-stone-700">${item.shelfColor}</span></span>
+                            <span>Opcje: <span class="font-medium text-stone-700">${item.extras}</span></span>
+                        </div>
                     </div>
                 `;
                 cartSummaryItemsContainer.appendChild(itemCard);
             });
             
+            // --- POCZĄTEK: POPRAWIONA LOGIKA WYŚWIETLANIA RABATU ---
+            // Ten blok kodu upewnia się, że linie z sumą częściową i rabatem
+            // zostaną pokazane, jeśli rabat został naliczony.
             if (totals.discount > 0) {
                 cartSummarySubtotalLine.style.display = 'flex';
                 cartSummaryDiscountLine.style.display = 'flex';
                 cartSummarySubtotalPrice.textContent = `${totals.subtotal.toFixed(2)} zł`;
-                cartDiscountAmount.textContent = `- ${totals.discount.toFixed(2)} zł`;
+                cartSummaryDiscountAmount.textContent = `- ${totals.discount.toFixed(2)} zł`;
             } else {
                 cartSummarySubtotalLine.style.display = 'none';
                 cartSummaryDiscountLine.style.display = 'none';
             }
+            // --- KONIEC: POPRAWIONA LOGIKA WYŚWIETLANIA RABATU ---
+
             cartSummaryTotalPrice.textContent = `${totals.total.toFixed(2)} zł`;
             cartSummaryAllCodes.value = allCodes;
             cartSummaryInstructionUnits.innerHTML = `Na stronie Allegro dodaj do koszyka tyle sztuk, ile wynosi łączna cena Twojego zamówienia (<strong>${Math.round(totals.total)} szt.</strong>).`;
