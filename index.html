@@ -17,6 +17,104 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
     <style>
+    /* ---- NOWE STYLE DLA WSKAZÓWKI (COACH MARK) - POPRAWIONE ---- */
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translate(-50%, -20px);
+        }
+        to {
+            opacity: 1;
+            transform: translate(-50%, 0);
+        }
+    }
+
+    @keyframes fadeOutUp {
+        from {
+            opacity: 1;
+            transform: translate(-50%, 0);
+        }
+        to {
+            opacity: 0;
+            transform: translate(-50%, -20px);
+            visibility: hidden;
+        }
+    }
+
+    .coach-mark {
+        display: none; /* Domyślnie ukryty - kluczowa poprawka */
+        position: absolute;
+        top: 130px; /* Precyzyjne umiejscowienie nad galerią */
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #f0fdf4; /* Jasny zielony bg-emerald-50 */
+        color: #065f46; /* Ciemny zielony text-emerald-800 */
+        padding: 1rem 1.5rem;
+        border-radius: 0.75rem;
+        border: 2px solid #16A34A; /* Główny zielony */
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15), 0 4px 10px rgba(0, 0, 0, 0.1);
+        z-index: 1010;
+        max-width: 320px;
+        text-align: center;
+        font-size: 0.95rem;
+        line-height: 1.5;
+        animation-fill-mode: forwards; /* Utrzyma stan końcowy animacji */
+    }
+
+    .coach-mark.visible {
+        display: block; /* Uwidacznia element, gdy dodana jest klasa .visible */
+        animation: fadeInDown 0.5s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+    }
+
+    .coach-mark.hidden-animation {
+        animation: fadeOutUp 0.5s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+    }
+
+    /* "Ogonek" dymka skierowany w dół */
+    .coach-mark::after {
+        content: '';
+        position: absolute;
+        bottom: -12px; /* Pozycjonowanie ogonka */
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 0;
+        border-left: 12px solid transparent;
+        border-right: 12px solid transparent;
+        border-top: 12px solid #16A34A; /* Ten sam kolor co ramka */
+    }
+    
+    .coach-mark-close-btn {
+        position: absolute;
+        top: 6px;
+        right: 6px;
+        background-color: transparent;
+        border: none;
+        color: #047857; /* Ciemniejszy zielony */
+        cursor: pointer;
+        padding: 0.25rem;
+        border-radius: 9999px;
+        transition: background-color 0.2s ease, transform 0.1s ease;
+    }
+    .coach-mark-close-btn:hover {
+        background-color: rgba(22, 163, 74, 0.1);
+    }
+     .coach-mark-close-btn:active {
+        transform: scale(0.9);
+    }
+
+
+    /* Dostosowanie dla urządzeń mobilnych */
+    @media (max-width: 767px) {
+        .coach-mark {
+            top: 20px; /* Wyżej na mobilnych */
+            width: 90%;
+            max-width: 90%;
+            padding: 1rem;
+        }
+    }
+    /* ---- KONIEC NOWYCH STYLÓW ---- */
+    
     /* Style niestandardowe */
     ul.list-none { list-style-type: none; padding-left: 0; }
 
@@ -509,9 +607,19 @@
 </head>
 <body class="flex flex-col justify-center items-center min-h-screen bg-stone-100 font-sans text-stone-800 pb-20 md:pb-0">
 
+    <div id="galleryCoachMark" class="coach-mark">
+        <button id="coachMarkCloseBtn" class="coach-mark-close-btn" aria-label="Zamknij wskazówkę">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+        <p>
+            <strong>Kliknij zdjęcie</strong>, by przerobić gotową półkę, lub <strong>zaprojektuj własną</strong> od nowa.
+        </p>
+    </div>
     <div id="cartPanelOverlay"></div>
     <div id="cartPanel">
-        <div id="cartPanelHeader">
+<div id="cartPanelHeader">
             <h2 id="cartPanelTitle">Twój koszyk</h2>
             <button id="cartPanelCloseBtn" aria-label="Zamknij koszyk">&times;</button>
         </div>
@@ -814,8 +922,8 @@
             { type: 'standing', sideColor: '#000000', shelfColor: '#8B5A2B', height: '40', width: '60', depth: '10', shelfCount: '2' },
             { type: 'standing', sideColor: '#FFFFFF', shelfColor: '#FFFFFF', height: '40', width: '60', depth: '10', shelfCount: '2' },
             { type: 'standing', sideColor: '#000000', shelfColor: '#000000', height: '40', width: '60', depth: '10', shelfCount: '2' },
-            { type: 'standing', sideColor: '#8B5A2B', shelfColor: '#8B5A2B', height: '40', width: '60', depth: '10', shelfCount: '2', noBottomShelf: true },
-            { type: 'standing', sideColor: '#8B5A2B', shelfColor: '#FFFFFF', height: '40', width: '60', depth: '10', shelfCount: '2', noBottomShelf: true },
+            { type: 'standing', sideColor: '#8B5A2B', shelfColor: '#8B5A2B', height: '40', width: '60', depth: '10', noBottomShelf: true },
+            { type: 'standing', sideColor: '#8B5A2B', shelfColor: '#FFFFFF', height: '40', width: '60', depth: '10', noBottomShelf: true },
             { type: 'standing', sideColor: '#8B5A2B', shelfColor: '#8B5A2B', height: '40', width: '60', depth: '15', shelfCount: '2', noBottomShelf: true, noTopShelf: true },
             { type: 'standing', sideColor: '#000000', shelfColor: '#8B5A2B', height: '40', width: '60', depth: '15', shelfCount: '2', noBottomShelf: true, noTopShelf: true },
             { type: 'standing', sideColor: '#8B5A2B', shelfColor: '#8B5A2B', height: '40', width: '60', depth: '10', shelfCount: '2', noBottomShelf: true, noTopShelf: true },
@@ -1974,10 +2082,48 @@
                 if(typeof initialize3dPanel === 'function') initialize3dPanel(); else console.error("initialize3dPanel is not defined");
                 if(typeof initializeReviews === 'function') initializeReviews(); else console.error("initializeReviews is not defined");
                 
-                // --- KLUCZOWA POPRAWKA: Nowoczesne podpięcie eventu do przycisku ---
                 if (addToCartBtn) {
                     addToCartBtn.addEventListener('click', addToCart);
                 }
+
+                // --- NOWA LOGIKA DLA WSKAZÓWKI (COACH MARK) - POPRAWIONY JS ---
+                const galleryCoachMark = document.getElementById('galleryCoachMark');
+                const coachMarkCloseBtn = document.getElementById('coachMarkCloseBtn');
+                let coachMarkHideTimeout;
+
+                const hideCoachMark = () => {
+                    if (galleryCoachMark && !galleryCoachMark.classList.contains('hidden-animation')) {
+                        clearTimeout(coachMarkHideTimeout);
+                        galleryCoachMark.classList.add('hidden-animation');
+                        
+                        galleryCoachMark.addEventListener('animationend', () => {
+                            galleryCoachMark.style.display = 'none';
+                        }, { once: true });
+                    }
+                };
+
+                if (galleryCoachMark && coachMarkCloseBtn) {
+                    setTimeout(() => {
+                        galleryCoachMark.classList.add('visible');
+                        
+                        coachMarkHideTimeout = setTimeout(hideCoachMark, 6000);
+
+                    }, 1500);
+
+                    coachMarkCloseBtn.addEventListener('click', hideCoachMark);
+                    
+                    galleryCoachMark.addEventListener('mouseenter', () => {
+                        clearTimeout(coachMarkHideTimeout);
+                    });
+
+                    galleryCoachMark.addEventListener('mouseleave', () => {
+                        coachMarkHideTimeout = setTimeout(hideCoachMark, 2000);
+                    });
+                } else {
+                    console.warn("Nie znaleziono elementów wskazówki (coach mark).");
+                }
+                // --- KONIEC NOWEJ LOGIKI ---
+
 
                 // --- Inicjalizacja koszyka i reszty zdarzeń ---
                 if (desktopCartContainer) desktopCartContainer.addEventListener('click', openCart);
