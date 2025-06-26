@@ -1511,9 +1511,9 @@
                 const snapshotScene = new THREE.Scene();
                 snapshotScene.background = new THREE.Color(0xf5f5f4);
                 
-                const snapshotCamera = new THREE.PerspectiveCamera(50, 1, 0.1, 1000);
-                snapshotCamera.position.set(4, 3, 6.5);
-                snapshotCamera.lookAt(0, -0.5, 0);
+                const snapshotCamera = new THREE.PerspectiveCamera(35, 1, 0.1, 1000); 
+                snapshotCamera.position.set(12, 6, 12); 
+                snapshotCamera.lookAt(0, 0, 0); 
 
                 snapshotScene.add(new THREE.HemisphereLight(0xffffff, 0x444444, 1.2));
                 const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
@@ -1521,18 +1521,16 @@
                 snapshotScene.add(dirLight);
 
                 const clonedGroup = modelToClone.clone(true);
-                clonedGroup.scale.set(1, 1, 1);
-                clonedGroup.position.set(0, 0, 0);
+                
+                // === OSTATECZNA KOREKTA KĄTA (IDEALNY BOK) ===
+                // Ustawiamy obrót na zero, aby uzyskać idealnie płaski widok z boku.
+                clonedGroup.rotation.set(0, 0, 0); 
 
+                clonedGroup.scale.set(1, 1, 1);
+                
                 const box = new THREE.Box3().setFromObject(clonedGroup);
-                const size = box.getSize(new THREE.Vector3());
                 const center = box.getCenter(new THREE.Vector3());
-                clonedGroup.position.sub(center);
-                const maxDim = Math.max(size.x, size.y, size.z);
-                const fov = snapshotCamera.fov * (Math.PI / 180);
-                const cameraDistance = Math.abs(maxDim / (2 * Math.tan(fov / 2)));
-                snapshotCamera.position.z = cameraDistance * 1.6;
-                snapshotCamera.lookAt(0,0,0);
+                clonedGroup.position.sub(center); 
 
                 snapshotScene.add(clonedGroup);
 
