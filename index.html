@@ -1955,10 +1955,7 @@
                     const imgContainer = document.createElement('div');
                     imgContainer.className = 'gallery-image-container';
 
-                    // --- POCZĄTEK KLUCZOWEJ ZMIANY ---
-                    // Zmieniono warunek z "if (galleryIndex === 0 && i === 0)" na "if (i === 0)"
-                    if (i === 0) { 
-                    // --- KONIEC KLUCZOWEJ ZMIANY ---
+                    if (galleryIndex === 0 && i === 0) {
                         const introTileDiv = document.createElement('div');
                         introTileDiv.className = 'gallery-intro-tile';
                         introTileDiv.innerHTML = `<p><strong>Kliknij w zdjęcie</strong>, by przerobić gotową półkę, lub <strong>zaprojektuj własną</strong> od nowa.</p>`;
