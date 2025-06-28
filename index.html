@@ -275,7 +275,7 @@
     #mugShelfDividersOptions { display: none; margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed #e5e7eb; }
 
     .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.6); display: none; align-items: center; justify-content: center; z-index: 1050; opacity: 0; transition: opacity 0.3s ease-in-out; }
-.modal-overlay.visible { display: flex; opacity: 1; }
+    .modal-overlay.visible { display: flex; opacity: 1; }
     .modal { position: relative; background-color: #ffffff; border-radius: 0.75rem; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); width: 90%; max-width: 520px; max-height: 90vh; overflow: hidden; display: flex; flex-direction: column; transform: translateY(20px) scale(0.95); opacity: 0; transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.3s ease-in-out; }
     .modal-overlay.visible .modal { transform: translateY(0) scale(1); opacity: 1; }
     .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; border-bottom: 1px solid #e5e7eb; background-color: #f9fafb; }
@@ -340,64 +340,90 @@
     .gallery-tab { padding: 0.5rem 1rem; font-size: 0.875rem; font-weight: 600; color: #57534e; background-color: #f5f5f4; border: 1px solid #e5e7eb; border-radius: 0.375rem; cursor: pointer; transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease; white-space: nowrap; }
     .gallery-tab:hover { background-color: #e7e5e4; color: #44403c; }
     .gallery-tab.active { background-color: #16A34A; color: #ffffff; border-color: #15803d; }
+    
+    /* ---- ZMIENIONE STYLE GALERII ---- */
     .gallery-content-wrapper { position: relative; width: 100%; overflow: hidden; min-height: 200px; }
-    .gallery-image-area { overflow-x: auto; scroll-behavior: smooth; scrollbar-width: none; padding: 12px 2px; position: relative; -webkit-overflow-scrolling: touch; }
-    .gallery-image-area::-webkit-scrollbar { display: none; }
-    .gallery-grid { display: flex; gap: 20px; width: max-content; }
-    .gallery-tile { display: flex; flex-direction: column; align-items: center; width: 260px; flex-shrink: 0; transition: transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.35s cubic-bezier(0.25, 0.8, 0.25, 1), border-color 0.3s ease-out, opacity 0.3s ease-out; border: 3px solid transparent; border-radius: 10px; padding: 6px; background-color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.05); cursor: pointer; }
-    @media (max-width: 768px) { .gallery-grid { gap: 10px; } .gallery-tile { width: 280px; padding: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); } .gallery-image-container { height: 200px; } }
-    @media (max-width: 480px) { .gallery-tile { width: 240px; padding: 3px; } .gallery-image-container { height: 180px; } }
-    .gallery-tile.gallery-tile--active { transform: translateY(-2px) scale(1.01); opacity: 1 !important; } 
-    .gallery-image-container { position: relative; width: 100%; height: 180px; border-radius: 6px; overflow: hidden; background: #fff; box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.08); transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); }
-    .gallery-image-container img { width: 100%; height: 100%; object-fit: contain; background: #fff; transition: transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1); }
+    .gallery-image-area { overflow: hidden; /* Ukrywamy standardowy pasek przewijania */ padding: 12px 2px; position: relative; margin: 0; }
+    .gallery-grid { display: flex; /* Pozostaje flex dla Swipera */ }
+    .gallery-tile { /* Teraz to .swiper-slide */
+        width: 260px;
+        flex-shrink: 0;
+        box-sizing: border-box;
+        transition: transform 0.3s, opacity 0.3s;
+    }
+     @media (max-width: 768px) { .gallery-tile { width: 280px; } }
+     @media (max-width: 480px) { .gallery-tile { width: 240px; } }
+
+    .gallery-tile.gallery-tile--active {
+        /* Ta klasa może być opcjonalna, Swiper ma swoje klasy 'active' */
+         transform: scale(1.02);
+    }
+    .gallery-image-container { 
+        position: relative; width: 100%; height: 180px; border-radius: 6px; overflow: hidden;
+        background: #fff; box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.08);
+        transition: transform 0.3s, box-shadow 0.3s;
+        cursor: grab;
+    }
+    .gallery-image-container:active { cursor: grabbing; }
+
+    .gallery-image-container img { width: 100%; height: 100%; object-fit: cover; background: #fff; transition: transform 0.35s; }
+    .gallery-tile:hover .gallery-image-container img { transform: scale(1.05); }
+
     .config-btn { display: none !important; }
 
     /* --- NOWE STYLE: Pasek informacyjny pod galerią (WERSJA SZARA POPRAWIONA) --- */
-.info-ticker-wrap {
-    position: absolute;
-    bottom: 12px;
-    left: 0;
-    width: 100%;
-    background-color: #ffffff; /* Czyste, białe tło */
-    /* Usunięte właściwości border-top i border-bottom */
-    overflow: hidden;
-    padding: 5px 0; /* Pozostawiamy zmniejszoną wysokość */
-    box-sizing: border-box;
-    display: flex;
-    align-items: center;
-    z-index: 5;
-    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.04); /* Subtelny cień oddzielający pasek od zdjęć */
-}
-.info-ticker-content {
-    display: inline-block;
-    white-space: nowrap;
-    animation: ticker-scroll 90s linear infinite; /* Wolniejsza prędkość */
-    padding-left: 100%;
-}
-.info-ticker-content span {
-    display: inline-block;
-    color: #374151;
-    font-weight: 400; /* Zmieniona wartość na 400 (normalna grubość) */
-    font-size: 14px;
-    padding: 0 2.5rem;
-    vertical-align: middle;
-}
-.info-ticker-wrap:hover .info-ticker-content {
-    animation-play-state: paused;
-}
-@keyframes ticker-scroll {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-100%); }
-}
-/* --- KONIEC STYLÓW DLA PASKA --- */
+    .info-ticker-wrap {
+        position: absolute;
+        bottom: 12px;
+        left: 0;
+        width: 100%;
+        background-color: #ffffff; /* Czyste, białe tło */
+        overflow: hidden;
+        padding: 5px 0; /* Pozostawiamy zmniejszoną wysokość */
+        box-sizing: border-box;
+        display: flex;
+        align-items: center;
+        z-index: 5;
+        box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.04); /* Subtelny cień oddzielający pasek od zdjęć */
+    }
+    .info-ticker-content {
+        display: inline-block;
+        white-space: nowrap;
+        animation: ticker-scroll 90s linear infinite; /* Wolniejsza prędkość */
+        padding-left: 100%;
+    }
+    .info-ticker-content span {
+        display: inline-block;
+        color: #374151;
+        font-weight: 400; /* Zmieniona wartość na 400 (normalna grubość) */
+        font-size: 14px;
+        padding: 0 2.5rem;
+        vertical-align: middle;
+    }
+    .info-ticker-wrap:hover .info-ticker-content {
+        animation-play-state: paused;
+    }
+    @keyframes ticker-scroll {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-100%); }
+    }
+    /* --- KONIEC STYLÓW DLA PASKA --- */
 
-    .gallery-caption { margin-top: 8px; font-size: .8em; font-weight: 500; color: #57534E; opacity: 0; transform: translateY(5px); transition: opacity 0.3s ease 0.1s, transform 0.3s ease 0.1s; text-align: center; width: 100%; }
-    .gallery-tile:hover .gallery-caption { opacity: 1; transform: translateY(0); } 
-    .gallery-arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 40px; height: 40px; font-size: 20px; background: #fff; border: 1px solid #e0e0e0; border-radius: 50%; box-shadow: 0 2px 6px rgb(0 0 0 / .12); display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; pointer-events: none; transition: background .2s, box-shadow .2s, opacity .3s, transform 0.2s ease-out; z-index: 10; color: #374151; }
+    .gallery-caption {
+        margin-top: 8px; font-size: .8em; font-weight: 500; color: #57534E;
+        text-align: center; width: 100%;
+        opacity: 0.7; transition: opacity 0.3s ease;
+    }
+    .gallery-tile:hover .gallery-caption { opacity: 1; }
+    
+    .gallery-arrow { position: absolute; top: 45%; transform: translateY(-50%); width: 40px; height: 40px; font-size: 20px; background: #fff; border: 1px solid #e0e0e0; border-radius: 50%; box-shadow: 0 2px 6px rgb(0 0 0 / .12); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background .2s, box-shadow .2s, opacity .3s, transform 0.2s ease-out; z-index: 10; color: #374151; }
     .gallery-content-wrapper:hover .gallery-arrow { opacity: 1; pointer-events: auto; }
     .gallery-arrow:hover { background: #f0f0f0; box-shadow: 0 3px 9px rgb(0 0 0 /.18); transform: translateY(-50%) scale(1.05); color: #16A34A; }
     .gallery-arrow:active { transform: translateY(-50%) scale(0.95); background: #e7e7e7;}
     .gallery-prev-arrow { left: 12px; } .gallery-next-arrow { right: 12px; }
+    .gallery-arrow.swiper-button-disabled { opacity: 0.2; cursor: not-allowed; pointer-events: none; }
+
+
     #stickyFooterBar { transform: translateY(0); transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out; padding: 0.5rem 0.25rem; height: 60px; z-index: 990; }
     #stickyFooterBar > * { background: none; border: none; padding: 0; margin: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; font-size: 0.75rem; line-height: 1rem; text-align: center; flex-grow: 1; flex-basis: 0; height: 100%; transition: background-color 0.15s ease-in-out; min-width: 0; cursor: pointer; }
     #stickyFooterBar > *:hover, #stickyFooterBar > *:focus { background-color: rgba(255, 255, 255, 0.1); outline: none; border-radius: 0.25rem; }
@@ -444,56 +470,53 @@
     #desktopDividerDimensionsInfo { margin-top: 0.25rem; font-size: 0.75rem; color: #57534E; }
 
     #imageLightbox.hidden { display: none; }
-
+    
+    /* ---- NOWE, ULEPSZONE STYLE IKON W GALERII ---- */
     .image-actions-bar {
         position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        padding: 6px;
-        background-color: rgba(0, 0, 0, 0.55);
-        display: flex;
-        justify-content: space-evenly;
-        align-items: center;
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.25s ease-in-out;
+        top: 8px; /* Odstęp od góry */
+        right: 8px; /* Odstęp od prawej */
         z-index: 10;
-        border-bottom-left-radius: 6px;
-        border-bottom-right-radius: 6px;
-    }
-
-    .gallery-tile.actions-visible .image-actions-bar {
-        opacity: 1;
-        pointer-events: auto;
+        display: flex;
+        gap: 6px; /* Odstęp między ikonami */
+        /* Usunięte tło i inne zbędne style */
     }
 
     .image-actions-bar .action-icon-btn {
-        background: transparent;
-        border: none;
+        background-color: rgba(255, 255, 255, 0.7); /* Lekko białawe tło dla kontrastu */
+        backdrop-filter: blur(4px); /* Efekt "oszronionego szkła" */
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 50%; /* Okrągły kształt */
         padding: 6px;
         cursor: pointer;
-        color: white;
+        color: #374151; /* Ciemny kolor ikony */
         line-height: 0;
-        transition: transform 0.15s ease, color 0.15s ease;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
     }
+
     .image-actions-bar .action-icon-btn:hover {
-        color: #a7f3d0; 
-        transform: scale(1.1);
+        color: #16a34a; /* Kolor zielony przy najechaniu */
+        background-color: rgba(255, 255, 255, 0.9);
+        transform: scale(1.1) translateY(-1px); /* Lekkie powiększenie i uniesienie */
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
     }
+    
+    .image-actions-bar .action-icon-btn:active {
+        transform: scale(1);
+        transition-duration: 0.1s;
+    }
+
     .image-actions-bar .action-icon-btn svg {
         width: 22px;
         height: 22px;
         display: block;
     }
 
-    .image-actions-bar .action-icon-btn.gallery-configure-btn svg {
-        animation-name: gallery-spin;
-        animation-duration: 2.5s;
-        animation-timing-function: linear;
-        animation-iteration-count: infinite;
-        animation-play-state: running;
+    .image-actions-bar .action-icon-btn.gallery-configure-btn:hover svg {
+         animation: gallery-spin 2.5s linear infinite;
     }
+
 
     /* ---- ZMIENIONE STYLE KOSZYKA I PODSUMOWANIA ---- */
     .order-summary-header {
@@ -764,7 +787,7 @@
     <li><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" /></svg> <span>W polu „Uwagi do zakupu” wklej **wszystkie** skopiowane kody.</span></li>
     <li><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" /></svg> <span>Opłać zamówienie – my zajmiemy się resztą! 😊</span></li>
 </ul> </div> </details> </div>
-<div id="tabbedGalleryContainer" class="w-full max-w-7xl mx-auto px-4 md:px-6"> <div class="gallery-tabs" id="galleryTabsContainer"></div> <div class="gallery-content-wrapper"> <button class="gallery-arrow gallery-prev-arrow" aria-label="Poprzednie zdjęcia">&#10094;</button> <div class="gallery-image-area" id="galleryImageArea"> <div class="gallery-grid" id="galleryGridContainer"></div> </div>
+<div id="tabbedGalleryContainer" class="w-full max-w-7xl mx-auto px-4 md:px-6"> <div class="gallery-tabs" id="galleryTabsContainer"></div> <div class="gallery-content-wrapper"> <button class="gallery-arrow gallery-prev-arrow" aria-label="Poprzednie zdjęcia">&#10094;</button> <div class="gallery-image-area swiper-container" id="galleryImageArea"> <div class="gallery-grid swiper-wrapper" id="galleryGridContainer"></div> </div>
 <div class="info-ticker-wrap">
     <div class="info-ticker-content">
         <span>✨ Półeczki wykonane z wysokiej jakości płyty laminowanej • odpornej na wilgoć i zabrudzenia</span>
@@ -891,7 +914,7 @@
 <script>
 // --- Zmienne globalne i elementy DOM ---
         let scene, camera, renderer, shelfGroup, controls;
-        let shelfContainer, threeJsCanvasWrapper, materialSwiperInstance;
+        let shelfContainer, threeJsCanvasWrapper, materialSwiperInstance, gallerySwiperInstance;
         let shelfTypeSelect, widthSelect, heightSelect, depthSelect, shelfCountSelect;
         let customWidthInput, customWidthDisplay, customWidthFee;
         let shelfTypeOptionsDiv, widthSelectionArea, dimensionSectionAnchor, colorSectionAnchor, shelfTypeSectionAnchor;
@@ -948,8 +971,7 @@
             { type: 'hanging', sideColor: '#000000', shelfColor: '#000000', height: '60', width: '44', depth: '10', shelfCount: '3', noTopShelf: true },
             { type: 'hanging', sideColor: '#FFFFFF', shelfColor: '#8B5A2B', height: '40', width: '44', depth: '10', shelfCount: '2', noTopShelf: true }
         ];
-
-        const stojace_configs = [
+const stojace_configs = [
             { type: 'standing', sideColor: '#8B5A2B', shelfColor: '#8B5A2B', height: '40', width: '60', depth: '10', shelfCount: '2' },
             { type: 'standing', sideColor: '#FFFFFF', shelfColor: '#8B5A2B', height: '40', width: '60', depth: '10', shelfCount: '2' },
             { type: 'standing', sideColor: '#000000', shelfColor: '#8B5A2B', height: '40', width: '60', depth: '10', shelfCount: '2' },
@@ -1944,13 +1966,19 @@
                 configuratorSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
             };
             const displayImages = (galleryIndex) => {
+                if (gallerySwiperInstance) {
+                    gallerySwiperInstance.destroy(true, true);
+                    gallerySwiperInstance = null;
+                }
                 galleryGridContainer.innerHTML = '';
+                
                 const images = galleryData[galleryIndex].imgs;
                 const fragment = document.createDocumentFragment();
+                
                 images.forEach((imgDataOrSrc, i) => {
                     const imgSrc = typeof imgDataOrSrc === 'string' ? imgDataOrSrc : imgDataOrSrc.src;
                     const tileDiv = document.createElement('div');
-                    tileDiv.className = 'gallery-tile';
+                    tileDiv.className = 'gallery-tile swiper-slide';
 
                     const imgContainer = document.createElement('div');
                     imgContainer.className = 'gallery-image-container';
@@ -1961,13 +1989,8 @@
                         introTileDiv.innerHTML = `<p><strong>Kliknij w zdjęcie</strong>, by przerobić gotową półkę, lub <strong>zaprojektuj własną</strong> od nowa.</p>`;
                         imgContainer.appendChild(introTileDiv);
 
-                        setTimeout(() => {
-                            introTileDiv.classList.add('is-animating');
-                        }, 100); 
-
-                        setTimeout(() => {
-                            introTileDiv.classList.add('fade-out');
-                        }, 3500); 
+                        setTimeout(() => { introTileDiv.classList.add('is-animating'); }, 100); 
+                        setTimeout(() => { introTileDiv.classList.add('fade-out'); }, 3500); 
                     }
 
                     const img = document.createElement('img');
@@ -1979,10 +2002,10 @@
                     const actionBarHTML = `
                         <div class="image-actions-bar">
                             <button class="action-icon-btn gallery-zoom-btn" title="Powiększ">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607zM10.5 7.5v6m3-3h-6" /></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607zM10.5 7.5v6m3-3h-6" /></svg>
                             </button>
                             <button class="action-icon-btn gallery-configure-btn" title="Konfiguruj">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 1.905c-.007.379.137.75.431.99l1.005.828c.428.355.53 1.005.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.063-.374-.313-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-1.905c.007-.379-.137-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 1.905c-.007.379.137.75.431.99l1.005.828c.428.355.53 1.005.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.063-.374-.313-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-1.905c.007-.379-.137-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
                             </button>
                         </div>
                     `;
@@ -1990,48 +2013,45 @@
                     
                     const captionDiv = document.createElement('div');
                     captionDiv.className = 'gallery-caption';
-                    captionDiv.textContent = 'Konfiguruj półkę';
+                    captionDiv.textContent = 'Kliknij w ikonę, aby skonfigurować';
                     tileDiv.appendChild(imgContainer);
                     tileDiv.appendChild(captionDiv);
 
-                    tileDiv.addEventListener('click', function(event) {
-                        if (event.target.closest('.action-icon-btn')) {
-                            return;
-                        }
-                        document.querySelectorAll('.gallery-tile.actions-visible').forEach(activeTile => {
-                            if (activeTile !== tileDiv) {
-                                activeTile.classList.remove('actions-visible');
-                            }
-                        });
-                        tileDiv.classList.toggle('actions-visible');
-                    });
-
-                    const currentZoomBtn = imgContainer.querySelector('.gallery-zoom-btn');
-                    const currentConfigureBtn = imgContainer.querySelector('.gallery-configure-btn');
+                    const currentZoomBtn = tileDiv.querySelector('.gallery-zoom-btn');
+                    const currentConfigureBtn = tileDiv.querySelector('.gallery-configure-btn');
 
                     if (currentZoomBtn) {
-                        currentZoomBtn.addEventListener('click', (e) => {
-                            e.stopPropagation(); 
-                            openLightbox(imgSrc);
-                        });
+                        currentZoomBtn.addEventListener('click', (e) => { e.stopPropagation(); openLightbox(imgSrc); });
                     }
-
                     if (currentConfigureBtn) {
                         currentConfigureBtn.addEventListener('click', (e) => {
                             e.stopPropagation();
-                            const allTiles = galleryGridContainer.querySelectorAll('.gallery-tile');
-                            allTiles.forEach(t => t.classList.remove('gallery-tile--active'));
+                            document.querySelectorAll('.gallery-tile').forEach(t => t.classList.remove('gallery-tile--active'));
                             tileDiv.classList.add('gallery-tile--active');
                             applyShelfConfigurationFromGallery(galleryIndex, i);
                             scrollToConfig();
-                            tileDiv.classList.remove('actions-visible');
                         });
                     }
                     fragment.appendChild(tileDiv);
                 });
+                
                 galleryGridContainer.appendChild(fragment);
-                galleryImageArea.scrollLeft = 0;
+
+                gallerySwiperInstance = new Swiper(galleryImageArea, {
+                    slidesPerView: 'auto',
+                    spaceBetween: 20,
+                    grabCursor: true,
+                    navigation: {
+                        nextEl: galleryNextArrow,
+                        prevEl: galleryPrevArrow,
+                    },
+                     breakpoints: {
+                        320: { slidesPerView: 'auto', spaceBetween: 10 },
+                        768: { slidesPerView: 'auto', spaceBetween: 20 },
+                    }
+                });
             };
+
             galleryData.forEach((gallery, index) => {
                 const tab = document.createElement('button');
                 tab.className = 'gallery-tab';
@@ -2041,17 +2061,11 @@
                 tab.addEventListener('click', () => {
                     galleryTabsContainer.querySelectorAll('.gallery-tab').forEach(t => t.classList.remove('active'));
                     tab.classList.add('active');
-                    const allTilesInGrid = galleryGridContainer.querySelectorAll('.gallery-tile');
-                    allTilesInGrid.forEach(item => {
-                        item.classList.remove('gallery-tile--active');
-                        item.classList.remove('actions-visible'); 
-                    });
                     displayImages(index);
                 });
                 galleryTabsContainer.appendChild(tab);
             });
-            galleryNextArrow.addEventListener('click', () => { galleryImageArea.scrollBy({ left: galleryImageArea.clientWidth * 0.8, behavior: 'smooth' }); });
-            galleryPrevArrow.addEventListener('click', () => { galleryImageArea.scrollBy({ left: -galleryImageArea.clientWidth * 0.8, behavior: 'smooth' }); });
+
             if (galleryData.length > 0) { displayImages(0); }
         }
 function initializeReviews() { const reviews = [ '"Fantastyczna półeczka, przyszła od razu zmontowana i idealnie pasuje w wielu miejscach. Serdecznie polecam!"', '"Piękna, zgrabna półka. Solidnie wykonana, bez żadnych wad. Polecam!"', '"Bardzo ładna i funkcjonalna półka, świetnie zapakowana na czas transportu. Polecam!"', '"Super produkt – pięknie wykonany, idealnie pasuje do małych słoiczków z przyprawami w kuchni. Polecam!"', '"Ładna i solidna półka, starannie wykonana. Kolor świetnie wpasował się w meble. Polecam!"' ]; let currentReviewIndex = 0; const reviewDisplay = document.getElementById('customerReview'); function showNextReview() { if (!reviewDisplay) return; reviewDisplay.classList.remove('review-fade-enter-active'); setTimeout(() => { const reviewData = reviews[currentReviewIndex]; reviewDisplay.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-lime-500 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg> ${reviewData}`; reviewDisplay.classList.add('review-fade-enter-active'); currentReviewIndex = (currentReviewIndex + 1) % reviews.length; }, 700); } if (reviewDisplay) { showNextReview(); setInterval(showNextReview, 6000); } }
@@ -2063,7 +2077,6 @@ function initializeReviews() { const reviews = [ '"Fantastyczna półeczka, przy
             // --- Inicjalizacja paska informacyjnego ---
             const tickerContent = document.querySelector('.info-ticker-content');
             if (tickerContent) {
-                // Duplikujemy zawartość, aby animacja była idealnie płynna
                 tickerContent.innerHTML += tickerContent.innerHTML;
             }
 
