@@ -182,6 +182,109 @@
         #mobilePanelIcons button span { font-size: 0.6rem; line-height: 0.75rem; font-weight: 600; text-align: center; display: block; transition: color 0.2s ease-in-out; }
         #mobilePanelIcons button.mobile-icon-active { background-color: rgba(220, 252, 231, 0.9); border-color: rgba(22, 163, 74, 0.4); color: #15803d; box-shadow: 0 4px 12px rgba(22, 163, 74, 0.15), 0 2px 4px rgba(0,0,0,0.08); }
         #mobilePanelIcons button.mobile-icon-active svg { color: #15803d; }
+        
+        /* ---- NOWE STYLE: Dodatkowe informacje na ikonach mobilnych ---- */
+        .mobile-icon-details {
+            display: block;
+            font-size: 0.6rem; /* Bardzo mała czcionka */
+            line-height: 0.75rem;
+            font-weight: 500;
+            color: #4b5563; /* Ciemnoszary, jak ikona */
+            margin-top: 2px;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+            padding: 0 2px;
+        }
+        
+        /* ---- NOWE STYLE: Zachęta do wyboru w ikonach mobilnych (CZERWONY TEKST) ---- */
+        .mobile-icon-prompt {
+            color: #ef4444; /* Czerwony */
+            font-weight: 600;
+            font-style: italic;
+        }
+
+        /* ---- NOWE STYLE: Ikony akcji (cena, koszyk) po prawej stronie panelu 3D (ZMNIEJSZONE) ---- */
+        #mobile3dActionsContainer {
+            display: none;
+            flex-direction: row;
+            align-items: center;
+            gap: 0.5rem;
+            position: absolute;
+            top: 0.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1002;
+        }
+
+        .mobile-3d-action-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 58px; /* Zmniejszono z 65px */
+            height: 58px; /* Zmniejszono z 65px */
+            padding: 0.4rem; /* Dopasowano padding */
+            background-color: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 0.75rem; /* Zmniejszono promień (12px) */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0,0,0,0.08);
+            transition: all 0.2s ease-in-out;
+            color: #374151;
+            overflow: hidden;
+        }
+        
+        .mobile-3d-action-btn:hover {
+            background-color: rgba(255, 255, 255, 0.95);
+            transform: translateY(-2px) translateX(-50%); /* Poprawka transformacji dla hover */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15), 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .mobile-3d-action-btn:active {
+            transform: translateY(0) scale(0.96) translateX(-50%); /* Poprawka transformacji dla active */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        #mobilePriceIcon {
+            cursor: default; /* Cena nie jest klikalna */
+        }
+
+        #mobilePriceIcon span {
+            font-size: 0.9rem; /* Zmniejszono z 1rem (14.4px) */
+            font-weight: 700;
+            color: #be185d; /* Wyróżniający kolor dla ceny */
+            line-height: 1.2;
+        }
+
+        #mobilePriceIcon small,
+        #mobileAddToCartBtn small {
+            font-size: 0.6rem; /* Pozostawiono bez zmian (9.6px) */
+            line-height: 0.75rem;
+            font-weight: 600;
+            color: #374151;
+            margin-top: 2px;
+        }
+
+        #mobileAddToCartBtn {
+            cursor: pointer;
+            background-color: rgba(220, 252, 231, 0.9); /* Zielonkawy */
+            border-color: rgba(22, 163, 74, 0.4);
+        }
+        
+        #mobileAddToCartBtn:hover {
+             border-color: rgba(22, 163, 74, 0.7);
+        }
+
+        #mobileAddToCartBtn svg {
+            width: 1.5rem; /* Zmniejszono z 1.75rem (24px) */
+            height: 1.5rem; /* Zmniejszono z 1.75rem (24px) */
+            color: #15803d; /* Ciemnozielony */
+            margin-bottom: 2px;
+        }
+
     }
     /* ---- Koniec stylów dla panelu 3D (Mobile) ---- */
 
@@ -196,6 +299,7 @@
          }
          #collapse3dPanelButton { display: none !important; }
          #mobilePanelIcons { display: none !important; }
+         #mobile3dActionsContainer { display: none !important; } /* <--- DODANA LINIA */
          #threeJsCanvasWrapper { width: 100%; height: 100%; min-height: initial; border-radius: inherit; background-color: transparent; cursor: inherit; flex-grow: initial; position: static; overflow: hidden; }
          #threeJsCanvasWrapper:active { cursor: grabbing; }
          #modalOverlay { display: none !important; }
@@ -211,7 +315,7 @@
     .review-fade-enter { opacity: 0; transition: opacity 700ms ease-in-out; }
     .review-fade-enter-active { opacity: 1; }
     details.color-samples-details { margin-top: 1rem; }
-    details.color-samples-details > summary { list-style: none; cursor: pointer; padding: 0.5rem 0; display: flex; justify-content: space-between; align-items: center; color: #57534E; font-size: 0.875rem; font-weight: 500; transition: color 0.2s ease; border-top: 1px dashed #E7E5E4; padding-top: 0.75rem; }
+details.color-samples-details > summary { list-style: none; cursor: pointer; padding: 0.5rem 0; display: flex; justify-content: space-between; align-items: center; color: #57534E; font-size: 0.875rem; font-weight: 500; transition: color 0.2s ease; border-top: 1px dashed #E7E5E4; padding-top: 0.75rem; }
     details.color-samples-details > summary::-webkit-details-marker { display: none; }
     details.color-samples-details > summary::marker { display: none; }
     details.color-samples-details > summary:hover { color: #16A34A; }
@@ -825,14 +929,47 @@
              <div id="colorSectionAnchor" class="p-6 shadow rounded-lg bg-white border border-stone-200 transition-shadow duration-200 hover:shadow-md space-y-4"> <h2 class="text-lg font-semibold mb-4 flex items-center text-stone-800"> <svg class="h-6 w-6 mr-2 text-green-600 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42" /> </svg> Wybierz kolor </h2> <div> <label for="sideColor" class="block font-medium text-sm mb-1 text-stone-700">Kolor boków:</label> <div class="flex items-center"> <select id="sideColor" class="custom-select flex-grow" onchange="updateOrderSummary(); updateSwatchDisplay('sideColor', 'sideColorSwatchDisplay');"> <option value="">-- Wybierz --</option> <option value="#8B5A2B" data-color="#8B5A2B">Dąb Craft Złoty</option> <option value="#FFFFFF" data-color="#FFFFFF">Biały matowy</option> <option value="#000000" data-color="#000000">Czarny matowy</option> </select> <span id="sideColorSwatchDisplay" class="color-swatch-display"></span> </div> </div> <div class="pt-2"> <label id="shelfColorLabel" for="shelfColor" class="block font-medium text-sm mb-1 text-stone-700">Kolor półek i podstaw:</label> <div class="flex items-center"> <select id="shelfColor" class="custom-select flex-grow" onchange="updateOrderSummary(); updateSwatchDisplay('shelfColor', 'shelfColorSwatchDisplay');"> <option value="">-- Wybierz --</option> <option value="#8B5A2B" data-color="#8B5A2B">Dąb Craft Złoty</option> <option value="#FFFFFF" data-color="#FFFFFF">Biały matowy</option> <option value="#000000" data-color="#000000">Czarny matowy</option> </select> <span id="shelfColorSwatchDisplay" class="color-swatch-display"></span> </div> </div> <details class="color-samples-details" id="materialSamplesDetails"> <summary> <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-2 text-stone-600" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5C7.305 4.5 3.135 7.515 1.5 12c1.635 4.485 5.805 7.5 10.5 7.5s8.865-3.015 10.5-7.5C20.865 7.515 16.695 4.5 12 4.5z" /><path stroke-linecap="round" stroke-linejoin="round" d="M12 9a3 3 0 100 6 3 3 0 000-6z" /></svg> <span>Zobacz próbki kolorów</span> <svg class="w-4 h-4 summary-chevron" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg> </summary> <div id="materialSwiper" class="swiper"> <div class="swiper-wrapper"> <div class="swiper-slide"> <img src="img/dabduze.jpg" alt="Dąb Craft Złoty"> <div class="material-name">Dąb Craft Złoty - struktura drewna</div> </div> <div class="swiper-slide"> <img src="img/bialyduze.jpg" alt="Biały matowy"> <div class="material-name">Biały matowy - gładki</div> </div> <div class="swiper-slide"> <img src="img/czarnyduze.jpg" alt="Czarny matowy"> <div class="material-name">Czarny matowy - gładki</div> </div> </div> <div class="material-swiper-button-prev swiper-button-prev"></div> <div class="material-swiper-button-next swiper-button-next"></div> </div> </details> </div>
         </div>
 <div class="w-full md:w-2/3 flex flex-col items-center mb-8 md:mb-0 order-2 md:order-2">
-             <div id="shelfContainer" class="mx-auto relative"> <button id="collapse3dPanelButton" onclick="close3dPanel()" title="Zwiń podgląd 3D" class="z-20"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /> </svg> <span class="sr-only">Zwiń podgląd 3D</span> </button>
-                  <div id="mobilePanelIcons" class="hidden md:hidden"> <button onclick="scrollToElementAndHighlight('shelfTypeSectionAnchor', 'start', this);" title="Przewiń do rodzaju półki"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 0 1 0 1.905c-.007.379.137.75.431.99l1.005.828c.428.355.53 1.005.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.063-.374-.313-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 0 1 0-1.905c.007-.379-.137-.75-.43-.99l-1.004-.828a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281Z" /> <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /> </svg> <span>Rodzaj</span> </button> <button onclick="scrollToElementAndHighlight('dimensionSectionAnchor', 'start', this);" title="Przewiń do wymiarów"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75" /> <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v16.5M20.25 3.75v16.5" /> </svg> <span>Wymiary</span> </button> <button onclick="scrollToElementAndHighlight('colorSectionAnchor', 'start', this);" title="Przewiń do kolorów"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42" /> </svg> <span>Kolory</span> </button> <button onclick="scrollToElementAndHighlight('shelfCountSection', 'start', this);" title="Przewiń do dodawania półek">
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 9h16.5M3.75 15h16.5" />
-    </svg>
-    <span>Półki</span>
-</button> </div>
+             <div id="shelfContainer" class="mx-auto relative">
+                <button id="collapse3dPanelButton" onclick="close3dPanel()" title="Zwiń podgląd 3D" class="z-20">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /> </svg> <span class="sr-only">Zwiń podgląd 3D</span>
+                </button>
+                
+                <div id="mobile3dActionsContainer">
+                     <div id="mobilePriceIcon" class="mobile-3d-action-btn">
+                         <span id="mobilePriceValue"></span>
+                         <small>Cena</small>
+                     </div>
+                     <button id="mobileAddToCartBtn" class="mobile-3d-action-btn">
+                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                         <small>Do koszyka</small>
+                     </button>
+                </div>
+
+                <div id="mobilePanelIcons" class="hidden md:hidden">
+                    <button onclick="scrollToElementAndHighlight('shelfTypeSectionAnchor', 'start', this);" title="Przewiń do rodzaju półki">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 0 1 0 1.905c-.007.379.137.75.431.99l1.005.828c.428.355.53 1.005.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.063-.374-.313-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 0 1 0-1.905c.007-.379-.137-.75-.43-.99l-1.004-.828a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281Z" /> <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /> </svg>
+                        <span>Rodzaj</span>
+                        <small id="mobileIconDetailsType" class="mobile-icon-details mobile-icon-prompt">wybierz</small>
+                    </button>
+                    <button onclick="scrollToElementAndHighlight('dimensionSectionAnchor', 'start', this);" title="Przewiń do wymiarów">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75" /> <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v16.5M20.25 3.75v16.5" /> </svg>
+                        <span>Wymiary</span>
+                        <small id="mobileIconDetailsDimensions" class="mobile-icon-details mobile-icon-prompt">wybierz</small>
+                    </button>
+                    <button onclick="scrollToElementAndHighlight('colorSectionAnchor', 'start', this);" title="Przewiń do kolorów">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42" /> </svg>
+                        <span>Kolory</span>
+                        <small id="mobileIconDetailsColors" class="mobile-icon-details mobile-icon-prompt">wybierz</small>
+                    </button>
+                    <button onclick="scrollToElementAndHighlight('shelfCountSection', 'start', this);" title="Przewiń do dodawania półek">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 9h16.5M3.75 15h16.5" />
+                        </svg>
+                        <span>Półki</span>
+                        <small id="mobileIconDetailsShelves" class="mobile-icon-details mobile-icon-prompt">wybierz</small>
+                    </button>
+                </div>
                   <div id="mugShelfDividerIconsContainer" class="z-10"> <p class="mug-shelf-controls-header">przegródki</p> <div id="dividerIconGroup"> <button id="addTopDividerBtn" data-divider-type="top" title="Dodaj/Usuń górną przegródkę" class="mobile-divider-icon-small"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M4 4h16v16H4V4zm0 6h16" /> </svg> </button> <button id="addMiddleDividerBtn" data-divider-type="middle" title="Dodaj/Usuń środkową przegródkę" class="mobile-divider-icon-small"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M4 4h16v16H4V4zm0 8h16" /> </svg> </button> <button id="addBottomDividerBtn" data-divider-type="bottom" title="Dodaj/Usuń dolną przegródkę" class="mobile-divider-icon-small"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M4 4h16v16H4V4zm0 10h16" /> </svg> </button> </div> <div id="mobileMugShelfMountStripsContainer"> <button id="mobileMountHangingStripBtn" class="mount-strip-button">wisząca</button> <button id="mobileMountStandingStripBtn" class="mount-strip-button">stojąca</button> </div> </div>
                   <div id="threeJsCanvasWrapper" class="flex-grow"> </div>
                   </div> <div class="text-sm text-stone-600 italic mt-2 text-center md:hidden"></div>
@@ -942,6 +1079,11 @@
         // Zmienne dla panelu mobilnego 3D
         let mugShelfDividerIconsContainer, addTopDividerBtn, addMiddleDividerBtn, addBottomDividerBtn;
         let mobileMugShelfMountStripsContainer, mobileMountHangingStripBtn, mobileMountStandingStripBtn;
+        
+        // NOWE ZMIENNE: dla dynamicznych ikon mobilnych
+        let mobileIconDetailsType, mobileIconDetailsDimensions, mobileIconDetailsColors, mobileIconDetailsShelves;
+        let mobile3dActionsContainer, mobilePriceValue, mobileAddToCartBtn;
+
 
         // Zmienne dla informacji o wymiarach przegródek (tylko desktop)
         let desktopDividerDimensionsInfo;
@@ -1907,6 +2049,55 @@ const stojace_configs = [
             }
             document.getElementById("extraOptionsSummary").textContent = o.length ? o.join(" / ") : "standardowa";
 
+            // --- NOWA LOGIKA: Aktualizacja informacji na ikonach mobilnych ---
+            if (mobileIconDetailsType) {
+                if (shelfTypeSelect.selectedIndex > 0) {
+                    mobileIconDetailsType.textContent = shelfTypeSelect.options[shelfTypeSelect.selectedIndex].text.split(' ')[0];
+                    mobileIconDetailsType.classList.remove('mobile-icon-prompt');
+                } else {
+                    mobileIconDetailsType.textContent = 'wybierz';
+                    mobileIconDetailsType.classList.add('mobile-icon-prompt');
+                }
+            }
+            if (mobileIconDetailsDimensions) {
+                if (!isNaN(widthValue) && heightValue && depthValue) {
+                    mobileIconDetailsDimensions.textContent = `${widthValue}x${heightValue}x${depthValue}`;
+                    mobileIconDetailsDimensions.classList.remove('mobile-icon-prompt');
+                } else {
+                    mobileIconDetailsDimensions.textContent = 'wybierz';
+                    mobileIconDetailsDimensions.classList.add('mobile-icon-prompt');
+                }
+            }
+            if (mobileIconDetailsColors) {
+                if (sideColorSelect.selectedIndex > 0 && shelfColorSelect.selectedIndex > 0) {
+                    const sideColorName = sideColorSelect.options[sideColorSelect.selectedIndex].text.split(' ')[0];
+                    const shelfColorName = shelfColorSelect.options[shelfColorSelect.selectedIndex].text.split(' ')[0];
+                    mobileIconDetailsColors.textContent = `B:${sideColorName} / P:${shelfColorName}`;
+                    mobileIconDetailsColors.classList.remove('mobile-icon-prompt');
+                } else {
+                    mobileIconDetailsColors.textContent = 'wybierz';
+                    mobileIconDetailsColors.classList.add('mobile-icon-prompt');
+                }
+            }
+            if (mobileIconDetailsShelves) {
+                if (shelfCountValue !== "" && shelfCountSelect.options[shelfCountSelect.selectedIndex]) {
+                    const selectedText = shelfCountSelect.options[shelfCountSelect.selectedIndex].text;
+                    mobileIconDetailsShelves.textContent = selectedText;
+
+                    // Sprawdź, czy wybrano "brak półek" i WTEDY nadaj/usuń czerwoną klasę
+                    if (shelfCountValue === '0') {
+                        mobileIconDetailsShelves.classList.add('mobile-icon-prompt');
+                    } else {
+                        mobileIconDetailsShelves.classList.remove('mobile-icon-prompt');
+                    }
+                } else {
+                    // Stan awaryjny, gdyby nic nie było wybrane
+                    mobileIconDetailsShelves.textContent = 'wybierz';
+                    mobileIconDetailsShelves.classList.add('mobile-icon-prompt');
+                }
+            }
+
+
             const orderCode = generateOrderCode();
             const isComplete = !!orderCode;
             
@@ -1922,15 +2113,21 @@ const stojace_configs = [
                        void desktopCartContainer.offsetWidth;
                        desktopCartContainer.classList.add('animate-pulse-bg');
                     }
+
+                    if (mobile3dActionsContainer) mobile3dActionsContainer.style.display = 'flex';
+                    if (mobilePriceValue) mobilePriceValue.textContent = pD.total + " zł";
+
                 } else {
                     priceAndActionsContainer.style.display = 'none';
                     priceHint.textContent = "Błąd obliczania ceny. Sprawdź opcje.";
                     priceHint.style.display = 'block';
+                    if (mobile3dActionsContainer) mobile3dActionsContainer.style.display = 'none';
                 }
             } else {
                 priceAndActionsContainer.style.display = 'none';
                 priceHint.textContent = "Wybierz wszystkie parametry, aby zobaczyć cenę.";
                 priceHint.style.display = 'block';
+                if (mobile3dActionsContainer) mobile3dActionsContainer.style.display = 'none';
             }
             updateDividerDimensionVisibility();
         }
@@ -2095,6 +2292,15 @@ function initializeReviews() { const reviews = [ '"Fantastyczna półeczka, przy
             priceAndActionsContainer = document.getElementById('priceAndActionsContainer');
             priceHint = document.getElementById('priceHint');
             addToCartBtn = document.getElementById('addToCartBtn');
+            
+            // --- NOWE: Pobieranie elementów mobilnych ---
+            mobileIconDetailsType = document.getElementById('mobileIconDetailsType');
+            mobileIconDetailsDimensions = document.getElementById('mobileIconDetailsDimensions');
+            mobileIconDetailsColors = document.getElementById('mobileIconDetailsColors');
+            mobileIconDetailsShelves = document.getElementById('mobileIconDetailsShelves');
+            mobile3dActionsContainer = document.getElementById('mobile3dActionsContainer');
+            mobilePriceValue = document.getElementById('mobilePriceValue');
+            mobileAddToCartBtn = document.getElementById('mobileAddToCartBtn');
 
             // --- Pobieranie elementów koszyka ---
             desktopCartContainer = document.getElementById('desktopCartContainer');
@@ -2146,6 +2352,11 @@ function initializeReviews() { const reviews = [ '"Fantastyczna półeczka, przy
                 
                 if (addToCartBtn) {
                     addToCartBtn.addEventListener('click', addToCart);
+                }
+                
+                // --- NOWE: Inicjalizacja przycisku dodania do koszyka w panelu mobilnym ---
+                if (mobileAddToCartBtn) {
+                    mobileAddToCartBtn.addEventListener('click', addToCart);
                 }
                 
                 // --- Inicjalizacja koszyka i reszty zdarzeń ---
