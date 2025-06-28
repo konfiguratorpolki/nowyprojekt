@@ -545,12 +545,19 @@ details.color-samples-details > summary { list-style: none; cursor: pointer; pad
     .section-highlight-persistent { background-color: rgba(22, 163, 74, 0.08) !important; transition: background-color 0.3s ease-out; border-radius: 0.5rem; }
 
     #mugShelfDividerIconsContainer {
-        display: none; flex-direction: column; align-items: stretch;
-        position: absolute !important; right: 0.5rem; top: 60%;
-        transform: translateY(-50%); z-index: 1001; gap: 0.4rem; padding: 0.6rem;
-        background-color: #ffffff; border-radius: 0.75rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        min-width: 80px;
-    }
+    display: none; flex-direction: column; align-items: stretch;
+    position: absolute !important; right: 0.5rem; top: 60%;
+    transform: translateY(-50%); z-index: 1001; gap: 0.4rem; padding: 0.6rem;
+    
+    /* ZMIENIONE WŁAŚCIWOŚCI PONIŻEJ */
+    background-color: rgba(255, 255, 255, 0.65); /* Półprzezroczyste białe tło */
+    backdrop-filter: blur(6px);                     /* Efekt "zmrożonego szkła" rozmywający tło */
+    border: 1px solid rgba(255, 255, 255, 0.2);  /* Opcjonalna, delikatna ramka dla lepszej widoczności */
+    
+    border-radius: 0.75rem; /* Pozostaje bez zmian */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);    /* Można lekko zmniejszyć intensywność cienia */
+    min-width: 80px;
+}
     #mugShelfDividerIconsContainer.visible { display: flex !important; }
     .mug-shelf-controls-header { font-size: 0.65rem; font-weight: 600; color: #4b5563; text-align: center; padding-bottom: 0.3rem; text-transform: lowercase; }
     #dividerIconGroup { display: flex; flex-direction: column; align-items: center; gap: 0.3rem; }
@@ -970,7 +977,7 @@ details.color-samples-details > summary { list-style: none; cursor: pointer; pad
                         <small id="mobileIconDetailsShelves" class="mobile-icon-details mobile-icon-prompt">wybierz</small>
                     </button>
                 </div>
-                  <div id="mugShelfDividerIconsContainer" class="z-10"> <p class="mug-shelf-controls-header">przegródki</p> <div id="dividerIconGroup"> <button id="addTopDividerBtn" data-divider-type="top" title="Dodaj/Usuń górną przegródkę" class="mobile-divider-icon-small"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M4 4h16v16H4V4zm0 6h16" /> </svg> </button> <button id="addMiddleDividerBtn" data-divider-type="middle" title="Dodaj/Usuń środkową przegródkę" class="mobile-divider-icon-small"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M4 4h16v16H4V4zm0 8h16" /> </svg> </button> <button id="addBottomDividerBtn" data-divider-type="bottom" title="Dodaj/Usuń dolną przegródkę" class="mobile-divider-icon-small"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M4 4h16v16H4V4zm0 10h16" /> </svg> </button> </div> <div id="mobileMugShelfMountStripsContainer"> <button id="mobileMountHangingStripBtn" class="mount-strip-button">wisząca</button> <button id="mobileMountStandingStripBtn" class="mount-strip-button">stojąca</button> </div> </div>
+                  <div id="mugShelfDividerIconsContainer" class="z-10"> <p class="mug-shelf-controls-header">wstaw<br>przegródki</p> <div id="dividerIconGroup"> <button id="addTopDividerBtn" data-divider-type="top" title="Dodaj/Usuń górną przegródkę" class="mobile-divider-icon-small"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M4 4h16v16H4V4zm0 6h16" /> </svg> </button> <button id="addMiddleDividerBtn" data-divider-type="middle" title="Dodaj/Usuń środkową przegródkę" class="mobile-divider-icon-small"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M4 4h16v16H4V4zm0 8h16" /> </svg> </button> <button id="addBottomDividerBtn" data-divider-type="bottom" title="Dodaj/Usuń dolną przegródkę" class="mobile-divider-icon-small"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M4 4h16v16H4V4zm0 10h16" /> </svg> </button> </div> <div id="mobileMugShelfMountStripsContainer"> <button id="mobileMountHangingStripBtn" class="mount-strip-button">wisząca</button> <button id="mobileMountStandingStripBtn" class="mount-strip-button">stojąca</button> </div> </div>
                   <div id="threeJsCanvasWrapper" class="flex-grow"> </div>
                   </div> <div class="text-sm text-stone-600 italic mt-2 text-center md:hidden"></div>
              <div class="text-sm text-stone-600 italic mt-2 text-center hidden md:block"> Obróć lub zbliż model (przeciągnij myszką) </div>
