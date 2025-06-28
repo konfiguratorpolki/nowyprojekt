@@ -37,7 +37,6 @@
     opacity: 1;
     transition: opacity 0.5s ease-in-out;
     overflow: hidden; /* Ukrywa części animacji wychodzące poza ramkę */
-    /* USUNIĘTO LINIJKĘ: box-shadow: inset 0 0 0 2px rgba(5, 66, 45, 0.4); */
 }
 
     /* Klasa dodawana, gdy cała plansza ma zniknąć */
@@ -353,6 +352,45 @@
     .gallery-image-container img { width: 100%; height: 100%; object-fit: contain; background: #fff; transition: transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1); }
     .config-btn { display: none !important; }
 
+    /* --- NOWE STYLE: Pasek informacyjny pod galerią (WERSJA SZARA POPRAWIONA) --- */
+.info-ticker-wrap {
+    position: absolute;
+    bottom: 12px;
+    left: 0;
+    width: 100%;
+    background-color: #ffffff; /* Czyste, białe tło */
+    /* Usunięte właściwości border-top i border-bottom */
+    overflow: hidden;
+    padding: 5px 0; /* Pozostawiamy zmniejszoną wysokość */
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    z-index: 5;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.04); /* Subtelny cień oddzielający pasek od zdjęć */
+}
+.info-ticker-content {
+    display: inline-block;
+    white-space: nowrap;
+    animation: ticker-scroll 90s linear infinite; /* Wolniejsza prędkość */
+    padding-left: 100%;
+}
+.info-ticker-content span {
+    display: inline-block;
+    color: #374151;
+    font-weight: 400; /* Zmieniona wartość na 400 (normalna grubość) */
+    font-size: 14px;
+    padding: 0 2.5rem;
+    vertical-align: middle;
+}
+.info-ticker-wrap:hover .info-ticker-content {
+    animation-play-state: paused;
+}
+@keyframes ticker-scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
+}
+/* --- KONIEC STYLÓW DLA PASKA --- */
+
     .gallery-caption { margin-top: 8px; font-size: .8em; font-weight: 500; color: #57534E; opacity: 0; transform: translateY(5px); transition: opacity 0.3s ease 0.1s, transform 0.3s ease 0.1s; text-align: center; width: 100%; }
     .gallery-tile:hover .gallery-caption { opacity: 1; transform: translateY(0); } 
     .gallery-arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 40px; height: 40px; font-size: 20px; background: #fff; border: 1px solid #e0e0e0; border-radius: 50%; box-shadow: 0 2px 6px rgb(0 0 0 / .12); display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; pointer-events: none; transition: background .2s, box-shadow .2s, opacity .3s, transform 0.2s ease-out; z-index: 10; color: #374151; }
@@ -467,7 +505,6 @@
 
     #desktopCartContainer {
         position: relative;
-        /* Usunięto domyślny padding, będzie on w elemencie wewnętrznym */
     }
 
     .cart-badge {
@@ -727,7 +764,16 @@
     <li><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" /></svg> <span>W polu „Uwagi do zakupu” wklej **wszystkie** skopiowane kody.</span></li>
     <li><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" /></svg> <span>Opłać zamówienie – my zajmiemy się resztą! 😊</span></li>
 </ul> </div> </details> </div>
-<div id="tabbedGalleryContainer" class="w-full max-w-7xl mx-auto px-4 md:px-6"> <div class="gallery-tabs" id="galleryTabsContainer"></div> <div class="gallery-content-wrapper"> <button class="gallery-arrow gallery-prev-arrow" aria-label="Poprzednie zdjęcia">&#10094;</button> <div class="gallery-image-area" id="galleryImageArea"> <div class="gallery-grid" id="galleryGridContainer"></div> </div> <button class="gallery-arrow gallery-next-arrow" aria-label="Następne zdjęcia">&#10095;</button> </div> </div>
+<div id="tabbedGalleryContainer" class="w-full max-w-7xl mx-auto px-4 md:px-6"> <div class="gallery-tabs" id="galleryTabsContainer"></div> <div class="gallery-content-wrapper"> <button class="gallery-arrow gallery-prev-arrow" aria-label="Poprzednie zdjęcia">&#10094;</button> <div class="gallery-image-area" id="galleryImageArea"> <div class="gallery-grid" id="galleryGridContainer"></div> </div>
+<div class="info-ticker-wrap">
+    <div class="info-ticker-content">
+        <span>✨ Półeczki wykonane z wysokiej jakości płyty laminowanej • odpornej na wilgoć i zabrudzenia</span>
+        <span>✨ Precyzyjne cięcie i klejenie na profesjonalnych maszynach • Brak odprysków i niedoskonałości</span>
+        <span>✨ Okleina ABS doskonale przylega do krawędzi • Grubość płyty: 1,8 cm</span>
+        <span>✨ Wysyłane gotowe, złożone</span>
+    </div>
+</div>
+<button class="gallery-arrow gallery-next-arrow" aria-label="Następne zdjęcia">&#10095;</button> </div> </div>
 
 <div class="w-full max-w-7xl mx-auto px-4 md:px-6 mb-6">
     <div class="bg-emerald-50 border-2 border-dashed border-emerald-300 rounded-xl p-4 md:p-5 flex items-center space-x-4 shadow-sm">
@@ -1158,9 +1204,6 @@
                 cartSummaryItemsContainer.appendChild(itemCard);
             });
             
-            // --- POCZĄTEK: POPRAWIONA LOGIKA WYŚWIETLANIA RABATU ---
-            // Ten blok kodu upewnia się, że linie z sumą częściową i rabatem
-            // zostaną pokazane, jeśli rabat został naliczony.
             if (totals.discount > 0) {
                 cartSummarySubtotalLine.style.display = 'flex';
                 cartSummaryDiscountLine.style.display = 'flex';
@@ -1170,7 +1213,6 @@
                 cartSummarySubtotalLine.style.display = 'none';
                 cartSummaryDiscountLine.style.display = 'none';
             }
-            // --- KONIEC: POPRAWIONA LOGIKA WYŚWIETLANIA RABATU ---
 
             cartSummaryTotalPrice.textContent = `${totals.total.toFixed(2)} zł`;
             cartSummaryAllCodes.value = allCodes;
@@ -1462,7 +1504,6 @@
         function onWindowResize() { const container = threeJsCanvasWrapper; if (!camera || !renderer || !container) return; const width = container.clientWidth; const height = container.clientHeight; if (width > 0 && height > 0) { camera.aspect = width / height; camera.updateProjectionMatrix(); renderer.setSize(width, height); } else { console.warn("Skipping resize for 3D canvas wrapper with zero dimensions."); } updateDividerIconsVisibility(); }
         function animate() { requestAnimationFrame(animate); if (autoRotateEnabled && shelfGroup) { shelfGroup.rotation.y += 0.005; } if(controls) controls.update(); if(renderer && scene && camera) renderer.render(scene, camera); }
         
-        // --- POPRAWIONA FUNKCJA buildShelfModel ---
         function buildShelfModel(config) {
             const group = new THREE.Group();
             const {
@@ -1476,7 +1517,6 @@
             const height = parseFloat(heightVal) / 10;
             const depth = parseFloat(depthVal) / 10;
             const shelfCount = parseInt(shelfCountVal);
-            // Zgodnie z prośbą, używamy tylko jednego, szarego materiału
             const defaultMaterial = new THREE.MeshStandardMaterial(originalPreviewMaterialParams);
 
             if (isNaN(width) || isNaN(height) || isNaN(depth) || width <= 0 || height <= 0 || depth <= 0) return group;
@@ -1542,8 +1582,7 @@
                     const innerWidthForDividers = width - 2 * thickness;
                     const dividerThicknessThreeJs = thickness;
                     let levels = [];
-                    // **POWRÓT DO ORYGINALNEGO, POPRAWNEGO SORTOWANIA**
-                    internalShelves.sort((a, b) => a.position.y - b.position.y); // Sortuj od dołu do góry
+                    internalShelves.sort((a, b) => a.position.y - b.position.y); 
 
                     if (heightVal === '60' && internalShelves.length === 3) {
                          levels = [
@@ -1584,7 +1623,6 @@
                         }
                     };
                     
-                    // --- POPRAWIONA, PROSTA LOGIKA RYSUJĄCA - BAZUJĄCA NA ORYGINALE ---
                     if (addDividersTop && levels[0]) drawDividersForLevel(levels[0]);
                     if (addDividersMiddle && levels[1]) drawDividersForLevel(levels[1]);
                     if (addDividersBottom && levels[2]) drawDividersForLevel(levels[2]);
@@ -1613,13 +1651,11 @@
             };
 
             shelfGroup = buildShelfModel(config);
-            // Zgodnie z prośbą, nie ma tu logiki kolorowania, model pozostaje szary
             shelfGroup.scale.set(1.2, 1.2, 1.2);
             shelfGroup.position.y = -1;
             scene.add(shelfGroup);
         }
         
-        // NOWA, UPROSZCZONA FUNKCJA GENERUJĄCA MINIATURĘ Z AKTUALNEGO MODELU
         function generate3dSnapshotFromCurrentModel() {
              return new Promise((resolve, reject) => {
                 if (!shelfGroup) {
@@ -1641,8 +1677,6 @@
 
                 const clonedGroup = modelToClone.clone(true);
                 
-                // === OSTATECZNA KOREKTA KĄTA (IDEALNY BOK) ===
-                // Ustawiamy obrót na zero, aby uzyskać idealnie płaski widok z boku.
                 clonedGroup.rotation.set(0, 0, 0); 
 
                 clonedGroup.scale.set(1, 1, 1);
@@ -1921,28 +1955,20 @@
                     const imgContainer = document.createElement('div');
                     imgContainer.className = 'gallery-image-container';
 
-                    // =========================================================================
-                    // === POCZĄTEK MODYFIKACJI - Dodanie animowanej wskazówki do galerii    ===
-                    // =========================================================================
                     if (galleryIndex === 0 && i === 0) {
                         const introTileDiv = document.createElement('div');
                         introTileDiv.className = 'gallery-intro-tile';
                         introTileDiv.innerHTML = `<p><strong>Kliknij w zdjęcie</strong>, by przerobić gotową półkę, lub <strong>zaprojektuj własną</strong> od nowa.</p>`;
                         imgContainer.appendChild(introTileDiv);
 
-                        // Uruchomienie animacji paska postępu
                         setTimeout(() => {
                             introTileDiv.classList.add('is-animating');
-                        }, 100); // Małe opóźnienie dla pewności renderowania
+                        }, 100); 
 
-                        // Zniknięcie całej planszy po zakończeniu animacji
                         setTimeout(() => {
                             introTileDiv.classList.add('fade-out');
-                        }, 3500); // Czas musi być zsynchronizowany z czasem animacji w CSS
+                        }, 3500); 
                     }
-                    // =======================================================================
-                    // === KONIEC MODYFIKACJI                                              ===
-                    // =======================================================================
 
                     const img = document.createElement('img');
                     img.src = imgSrc;
@@ -2034,6 +2060,13 @@ function initializeReviews() { const reviews = [ '"Fantastyczna półeczka, przy
         function initialize3dPanel() { show3dButton = document.getElementById('show3dButton'); collapse3dPanelButton = document.getElementById('collapse3dPanelButton'); if (show3dButton && collapse3dPanelButton && shelfContainer) { show3dButton.addEventListener('click', open3dPanel); console.log("Panel 3D zainicjalizowany."); } else { let missing = []; if (!show3dButton) missing.push("show3dButton"); if (!collapse3dPanelButton) missing.push("collapse3dPanelButton (lub jego odpowiednik)"); if (!shelfContainer) missing.push("shelfContainer"); console.warn(`Nie znaleziono elementów panelu 3D: ${missing.join(', ')}. Funkcjonalność może nie działać poprawnie.`); } }
 
         document.addEventListener('DOMContentLoaded', () => {
+            // --- Inicjalizacja paska informacyjnego ---
+            const tickerContent = document.querySelector('.info-ticker-content');
+            if (tickerContent) {
+                // Duplikujemy zawartość, aby animacja była idealnie płynna
+                tickerContent.innerHTML += tickerContent.innerHTML;
+            }
+
             // --- Pobieranie elementów ---
             shelfContainer = document.getElementById('shelfContainer'); threeJsCanvasWrapper = document.getElementById('threeJsCanvasWrapper'); shelfTypeSelect = document.getElementById('shelfType'); widthSelect = document.getElementById('width'); heightSelect = document.getElementById('height'); depthSelect = document.getElementById('depth'); shelfCountSelect = document.getElementById('shelfCount'); customWidthInput = document.getElementById('customWidthInput'); customWidthDisplay = document.getElementById('customWidthDisplay'); customWidthFee = document.getElementById('customWidthFee'); shelfTypeOptionsDiv = document.getElementById('shelfTypeOptions'); widthSelectionArea = document.getElementById('widthSelectionArea'); dimensionSectionAnchor = document.getElementById('dimensionSectionAnchor'); colorSectionAnchor = document.getElementById('colorSectionAnchor'); shelfTypeSectionAnchor = document.getElementById('shelfTypeSectionAnchor'); heightLabel = document.getElementById('heightLabel'); depthLabel = document.getElementById('depthLabel'); sideColorSelect = document.getElementById('sideColor'); shelfColorSelect = document.getElementById('shelfColor'); mugShelfSpecificOptionsContainer = document.getElementById('mugShelfSpecificOptionsContainer'); mugShelfMountOptionsDiv = document.getElementById('mugShelfMountOptions'); mugShelfDividersOptionsDiv = document.getElementById('mugShelfDividersOptions'); dividersTopCheckbox = document.getElementById('dividersTop'); dividersMiddleCheckbox = document.getElementById('dividersMiddle'); dividersBottomCheckbox = document.getElementById('dividersBottom'); configuratorSection = document.getElementById('configuratorSection'); shelfCountSection = document.getElementById('shelfCountSection'); galleryTabsContainer = document.getElementById('galleryTabsContainer'); galleryGridContainer = document.getElementById('galleryGridContainer'); galleryImageArea = document.getElementById('galleryImageArea'); galleryPrevArrow = document.querySelector('.gallery-prev-arrow'); galleryNextArrow = document.querySelector('.gallery-next-arrow');
             mugShelfDividerIconsContainer = document.getElementById('mugShelfDividerIconsContainer'); addTopDividerBtn = document.getElementById('addTopDividerBtn'); addMiddleDividerBtn = document.getElementById('addMiddleDividerBtn'); addBottomDividerBtn = document.getElementById('addBottomDividerBtn'); mobileMugShelfMountStripsContainer = document.getElementById('mobileMugShelfMountStripsContainer'); mobileMountHangingStripBtn = document.getElementById('mobileMountHangingStripBtn'); mobileMountStandingStripBtn = document.getElementById('mobileMountStandingStripBtn');
