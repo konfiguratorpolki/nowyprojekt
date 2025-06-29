@@ -183,30 +183,40 @@
         #mobilePanelIcons button.mobile-icon-active { background-color: rgba(220, 252, 231, 0.9); border-color: rgba(22, 163, 74, 0.4); color: #15803d; box-shadow: 0 4px 12px rgba(22, 163, 74, 0.15), 0 2px 4px rgba(0,0,0,0.08); }
         #mobilePanelIcons button.mobile-icon-active svg { color: #15803d; }
         
-        /* ---- NOWE STYLE: Dodatkowe informacje na ikonach mobilnych ---- */
         .mobile-icon-details {
-            display: block;
-            font-size: 0.6rem; /* Bardzo mała czcionka */
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.6rem;
             line-height: 0.75rem;
             font-weight: 500;
-            color: #4b5563; /* Ciemnoszary, jak ikona */
+            color: #4b5563;
             margin-top: 2px;
-            text-align: center;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
             max-width: 100%;
             padding: 0 2px;
+            height: 12px;
         }
         
-        /* ---- NOWE STYLE: Zachęta do wyboru w ikonach mobilnych (CZERWONY TEKST) ---- */
+        .mobile-color-swatch {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 3px;
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            flex-shrink: 0;
+        }
+
         .mobile-icon-prompt {
-            color: #ef4444; /* Czerwony */
+            color: #ef4444;
             font-weight: 600;
             font-style: italic;
         }
 
-        /* ---- NOWE STYLE: Ikony akcji (cena, koszyk) po prawej stronie panelu 3D (ZMNIEJSZONE) ---- */
+        /* Ikony akcji (cena, skrót do podsumowania) */
         #mobile3dActionsContainer {
             display: none;
             flex-direction: row;
@@ -221,74 +231,205 @@
 
         .mobile-3d-action-btn {
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            width: 58px; /* Zmniejszono z 65px */
-            height: 58px; /* Zmniejszono z 65px */
-            padding: 0.4rem; /* Dopasowano padding */
+            height: 42px;
+            padding: 0 0.75rem;
             background-color: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(6px);
+            backdrop-filter: blur(8px);
             border: 1px solid rgba(255, 255, 255, 0.4);
-            border-radius: 0.75rem; /* Zmniejszono promień (12px) */
+            border-radius: 9999px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0,0,0,0.08);
             transition: all 0.2s ease-in-out;
             color: #374151;
-            overflow: hidden;
-        }
-        
-        .mobile-3d-action-btn:hover {
-            background-color: rgba(255, 255, 255, 0.95);
-            transform: translateY(-2px) translateX(-50%); /* Poprawka transformacji dla hover */
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15), 0 2px 5px rgba(0,0,0,0.1);
-        }
-        
-        .mobile-3d-action-btn:active {
-            transform: translateY(0) scale(0.96) translateX(-50%); /* Poprawka transformacji dla active */
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-
-        #mobilePriceIcon {
-            cursor: default; /* Cena nie jest klikalna */
-        }
-
-        #mobilePriceIcon span {
-            font-size: 0.9rem; /* Zmniejszono z 1rem (14.4px) */
-            font-weight: 700;
-            color: #be185d; /* Wyróżniający kolor dla ceny */
-            line-height: 1.2;
-        }
-
-        #mobilePriceIcon small,
-        #mobileAddToCartBtn small {
-            font-size: 0.6rem; /* Pozostawiono bez zmian (9.6px) */
-            line-height: 0.75rem;
-            font-weight: 600;
-            color: #374151;
-            margin-top: 2px;
-        }
-
-        #mobileAddToCartBtn {
             cursor: pointer;
-            background-color: rgba(220, 252, 231, 0.9); /* Zielonkawy */
-            border-color: rgba(22, 163, 74, 0.4);
         }
         
-        #mobileAddToCartBtn:hover {
-             border-color: rgba(22, 163, 74, 0.7);
+        #mobilePriceIcon {
+            gap: 0.3rem;
+            cursor: default;
+        }
+        
+        #mobilePriceIcon svg {
+            width: 1.1rem;
+            height: 1.1rem;
+            color: #be185d;
+        }
+        
+        #mobilePriceValue {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #be185d;
+            line-height: 1;
         }
 
-        #mobileAddToCartBtn svg {
-            width: 1.5rem; /* Zmniejszono z 1.75rem (24px) */
-            height: 1.5rem; /* Zmniejszono z 1.75rem (24px) */
-            color: #15803d; /* Ciemnozielony */
-            margin-bottom: 2px;
+        /* Zmieniony przycisk koszyka na skrót do podsumowania */
+        #mobileGoToSummaryBtn {
+            padding: 0;
+            width: 42px;
         }
 
+        #mobileGoToSummaryBtn svg {
+            width: 1.5rem;
+            height: 1.5rem;
+            color: #374151;
+        }
+
+        /* NOWE STYLE DLA INFORMACJI O PÓŁKACH NA MOBILE */
+        #mobileShelfInfo {
+    position: absolute;
+    bottom: 0.75rem;
+    left: 50%; /* <-- ZMIANA: Przesuń lewą krawędź na środek */
+    transform: translateX(-50%); /* <-- ZMIANA: Cofnij o połowę szerokości elementu */
+    z-index: 1001;
+    font-size: 0.65rem;
+    color: #4b5563;
+    text-align: center; /* <-- ZMIANA: Wyśrodkuj tekst wewnątrz */
+    line-height: 1.3;
+    display: none;
+    pointer-events: none;
+}
+
+        #mobileShelfInfo p {
+            margin: 0;
+        }
     }
-    /* ---- Koniec stylów dla panelu 3D (Mobile) ---- */
+    
+    /* Panel przegródek i montażu (NOWA WERSJA) */
+    #mugShelfDividerIconsContainer {
+        display: none;
+        flex-direction: column;
+        align-items: stretch;
+        position: absolute !important;
+        right: 0.5rem;
+        top: 59%;
+        transform: translateY(-50%);
+        z-index: 1001;
+        gap: 0;
+        padding: 0.5rem;
+        background-color: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 0.75rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    #mugShelfDividerIconsContainer.visible { display: flex !important; }
 
-    /* Oryginalne style #shelfContainer dla desktopu */
+    #dividerIconGroup { 
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.4rem;
+    }
+    
+    .divider-control-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.15rem;
+    }
+
+    .divider-label {
+        font-size: 0.6rem;
+        font-weight: 600;
+        color: #4b5563;
+        pointer-events: none;
+        line-height: 1;
+    }
+
+    .mount-divider {
+        width: 80%;
+        height: 1px;
+        background-color: #d1d5db;
+        margin: 0.4rem auto;
+    }
+    
+    #mugShelfDividerIconsContainer .mobile-divider-icon-small {
+       display: flex; align-items: center; justify-content: center;
+       width: 36px; height: 36px;
+       padding: 0.2rem; background-color: rgba(243, 244, 246, 0.9);
+       border: 1px solid #d1d5db; border-radius: 0.375rem; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+       cursor: pointer; transition: all 0.15s ease-in-out; color: #4B5563;
+    }
+    #mugShelfDividerIconsContainer .mobile-divider-icon-small:hover { background-color: #e5e7eb; border-color: #9ca3af; color: #16A34A; transform: scale(1.05); }
+    #mugShelfDividerIconsContainer .mobile-divider-icon-small.active-divider-icon { background-color: #16A34A; border-color: #15803d; color: #ffffff; box-shadow: inset 0 1px 2px rgba(0,0,0,0.1); transform: scale(1.05); }
+    #mugShelfDividerIconsContainer .mobile-divider-icon-small svg { width: 1.25rem; height: 1.25rem; stroke-width: 1.75; }
+
+    /* Nowe style dla przycisków tekstowych montażu */
+    #mountIconGroup {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch; /* Przyciski rozciągną się na całą szerokość */
+        gap: 0.3rem;
+    }
+    .mount-text-button {
+        font-size: 0.75rem;
+        padding: 0.375rem 0.5rem;
+        border-radius: 0.375rem;
+        text-align: center;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.15s ease-in-out;
+        border: 1px solid #d1d5db;
+        line-height: 1.2;
+        background-color: rgba(243, 244, 246, 0.9);
+        color: #374151;
+    }
+    .mount-text-button:hover {
+        background-color: #e5e7eb;
+        border-color: #9ca3af;
+        color: #16A34A;
+    }
+    /* Aktywny stan przełączany przez JS */
+    .mount-text-button.active-mount-strip {
+        background-color: #16A34A;
+        color: #ffffff;
+        border-color: #15803d;
+        transform: scale(1.02);
+        box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+    }
+
+    /* Stary panel montażu jest teraz ukryty na stałe */
+    #mobileMugShelfMountPanel {
+        display: none !important;
+    }
+
+    /* Nowy styl dla znikającej chmurki z podpowiedzią */
+    #dividerTooltip {
+        position: absolute;
+        right: calc(100% + 10px); /* Na lewo od panelu przegródek */
+        top: 5%;
+        transform: translateY(-50%);
+        background-color: #374151;
+        color: white;
+        padding: 0.5rem 0.75rem;
+        border-radius: 0.375rem;
+        font-size: 0.75rem;
+        line-height: 1.3;
+        width: 150px;
+        text-align: center;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+        pointer-events: none;
+    }
+    #dividerTooltip.visible {
+        opacity: 1;
+        visibility: visible;
+    }
+    #dividerTooltip::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 100%;
+        transform: translateY(-50%);
+        border-width: 6px;
+        border-style: solid;
+        border-color: transparent transparent transparent #374151;
+    }
+
+    /* Oryginalne style desktopowe */
     @media (min-width: 768px) {
          #shelfContainer {
              position: static; bottom: auto; left: auto; right: auto; width: 100%;
@@ -299,13 +440,17 @@
          }
          #collapse3dPanelButton { display: none !important; }
          #mobilePanelIcons { display: none !important; }
-         #mobile3dActionsContainer { display: none !important; } /* <--- DODANA LINIA */
+         #mobile3dActionsContainer { display: none !important; }
+         
+         /* ---> DODAJ TĘ LINIJKĘ <--- */
+         #mobileShelfInfo { display: none !important; }
+
          #threeJsCanvasWrapper { width: 100%; height: 100%; min-height: initial; border-radius: inherit; background-color: transparent; cursor: inherit; flex-grow: initial; position: static; overflow: hidden; }
          #threeJsCanvasWrapper:active { cursor: grabbing; }
          #modalOverlay { display: none !important; }
     }
 
-    /* Reszta stylów podstawowych */
+    /* Reszta stylów podstawowych - bez zmian */
     input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 8px; background: #D6D3D1; border-radius: 5px; outline: none; opacity: 0.7; transition: opacity .2s; }
     input[type=range]:hover { opacity: 1; }
     input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; background: #16A34A; border-radius: 50%; cursor: pointer; transition: background-color 0.15s ease-in-out; }
@@ -315,7 +460,7 @@
     .review-fade-enter { opacity: 0; transition: opacity 700ms ease-in-out; }
     .review-fade-enter-active { opacity: 1; }
     details.color-samples-details { margin-top: 1rem; }
-details.color-samples-details > summary { list-style: none; cursor: pointer; padding: 0.5rem 0; display: flex; justify-content: space-between; align-items: center; color: #57534E; font-size: 0.875rem; font-weight: 500; transition: color 0.2s ease; border-top: 1px dashed #E7E5E4; padding-top: 0.75rem; }
+    details.color-samples-details > summary { list-style: none; cursor: pointer; padding: 0.5rem 0; display: flex; justify-content: space-between; align-items: center; color: #57534E; font-size: 0.875rem; font-weight: 500; transition: color 0.2s ease; border-top: 1px dashed #E7E5E4; padding-top: 0.75rem; }
     details.color-samples-details > summary::-webkit-details-marker { display: none; }
     details.color-samples-details > summary::marker { display: none; }
     details.color-samples-details > summary:hover { color: #16A34A; }
@@ -327,7 +472,7 @@ details.color-samples-details > summary { list-style: none; cursor: pointer; pad
     #materialSwiper .swiper-slide img { display: block; width: 100%; height: 100%; object-fit: cover; border-radius: 0.5rem;}
     #materialSwiper .material-name { position: absolute; bottom: 0; left: 0; width: 100%; background-color: rgba(0, 0, 0, 0.6); color: white; padding: 0.375rem 0.75rem; font-size: 0.875rem; text-align: center; }
     .material-swiper-button-prev, .material-swiper-button-next { position: absolute; top: 50%; transform: translateY(-50%); z-index: 10; cursor: pointer; background-color: rgba(255, 255, 255, 0.7); border-radius: 50%; width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; color: #44403C; transition: background-color 0.2s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-    .material-swiper-button-prev:hover, .material-swiper-button-next:hover { background-color: rgba(255, 255, 255, 0.9); color: #16A34A; }
+.material-swiper-button-prev:hover, .material-swiper-button-next:hover { background-color: rgba(255, 255, 255, 0.9); color: #16A34A; }
     .material-swiper-button-prev { left: 10px; } .material-swiper-button-next { right: 10px; }
     .material-swiper-button-prev::after, .material-swiper-button-next::after { font-family: 'swiper-icons'; font-size: 1rem; font-weight: bold; }
     .material-swiper-button-prev.swiper-button-disabled, .material-swiper-button-next.swiper-button-disabled { opacity: 0.35; cursor: auto; pointer-events: none; }
@@ -345,7 +490,7 @@ details.color-samples-details > summary { list-style: none; cursor: pointer; pad
     .color-swatch-display { display: inline-block; width: 1.25rem; height: 1.25rem; border-radius: 0.25rem; margin-left: 0.5rem; vertical-align: middle; background-color: #E5E7EB; border: 1px solid #D1D5DB; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05); transition: background-color 0.2s ease-in-out; flex-shrink: 0; }
     .color-swatch-display.swatch-white-display { border-color: #9CA3AF; }
     
-    /* Animacje */
+    /* Pozostałe animacje i style... */
     @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 40% {transform: translateY(-10px);} 60% {transform: translateY(-5px);} }
     .icon-bounce { animation: bounce 1s infinite; }
     @keyframes bg-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.85; } }
@@ -377,6 +522,48 @@ details.color-samples-details > summary { list-style: none; cursor: pointer; pad
     .mug-options-header { text-md font-semibold mb-2 text-stone-700; }
     #mugShelfMountOptions { display: none; margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed #e5e7eb; }
     #mugShelfDividersOptions { display: none; margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed #e5e7eb; }
+    #desktopDividerDimensionsInfo { margin-top: 0.25rem; font-size: 0.75rem; color: #57534E; }
+
+    #imageLightbox.hidden { display: none; }
+    
+    .image-actions-bar {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        z-index: 10;
+        display: flex;
+        gap: 6px;
+    }
+    .image-actions-bar .action-icon-btn {
+        background-color: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(4px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 50%; 
+        padding: 6px;
+        cursor: pointer;
+        color: #374151; 
+        line-height: 0;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .image-actions-bar .action-icon-btn:hover {
+        color: #16a34a;
+        background-color: rgba(255, 255, 255, 0.9);
+        transform: scale(1.1) translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+    .image-actions-bar .action-icon-btn:active {
+        transform: scale(1);
+        transition-duration: 0.1s;
+    }
+    .image-actions-bar .action-icon-btn svg {
+        width: 22px;
+        height: 22px;
+        display: block;
+    }
+    .image-actions-bar .action-icon-btn.gallery-configure-btn svg {
+        animation: gallery-spin 2.5s linear infinite;
+    }
 
     .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.6); display: none; align-items: center; justify-content: center; z-index: 1050; opacity: 0; transition: opacity 0.3s ease-in-out; }
     .modal-overlay.visible { display: flex; opacity: 1; }
@@ -405,13 +592,12 @@ details.color-samples-details > summary { list-style: none; cursor: pointer; pad
         padding-bottom: 1rem;
     }
     
-    /* --- NOWE STYLE DLA PODGLĄDU 3D W KOSZYKU --- */
     .summary-snapshot-container {
         flex-shrink: 0;
-        width: 96px; /* ok. 100px */
+        width: 96px;
         height: 96px;
-        background-color: #f5f5f4; /* tło takie jak w konfiguratorze */
-        border-radius: 0.375rem; /* 6px */
+        background-color: #f5f5f4;
+        border-radius: 0.375rem;
         border: 1px solid #e5e7eb;
         display: flex;
         align-items: center;
@@ -445,11 +631,10 @@ details.color-samples-details > summary { list-style: none; cursor: pointer; pad
     .gallery-tab:hover { background-color: #e7e5e4; color: #44403c; }
     .gallery-tab.active { background-color: #16A34A; color: #ffffff; border-color: #15803d; }
     
-    /* ---- ZMIENIONE STYLE GALERII ---- */
     .gallery-content-wrapper { position: relative; width: 100%; overflow: hidden; min-height: 200px; }
-    .gallery-image-area { overflow: hidden; /* Ukrywamy standardowy pasek przewijania */ padding: 12px 2px; position: relative; margin: 0; }
-    .gallery-grid { display: flex; /* Pozostaje flex dla Swipera */ }
-    .gallery-tile { /* Teraz to .swiper-slide */
+    .gallery-image-area { overflow: hidden; padding: 12px 2px; position: relative; margin: 0; }
+    .gallery-grid { display: flex; }
+    .gallery-tile {
         width: 260px;
         flex-shrink: 0;
         box-sizing: border-box;
@@ -459,7 +644,6 @@ details.color-samples-details > summary { list-style: none; cursor: pointer; pad
      @media (max-width: 480px) { .gallery-tile { width: 240px; } }
 
     .gallery-tile.gallery-tile--active {
-        /* Ta klasa może być opcjonalna, Swiper ma swoje klasy 'active' */
          transform: scale(1.02);
     }
     .gallery-image-container { 
@@ -471,43 +655,42 @@ details.color-samples-details > summary { list-style: none; cursor: pointer; pad
     .gallery-image-container:active { cursor: grabbing; }
 
     .gallery-image-container img { 
-    width: 100%; 
-    height: 100%; 
-    object-fit: contain; /* <--- POPRAWIONA WARTOŚĆ */
-    background: #fff; 
-    transition: transform 0.35s; 
-}
+        width: 100%; 
+        height: 100%; 
+        object-fit: contain;
+        background: #fff; 
+        transition: transform 0.35s; 
+    }
     .gallery-tile:hover .gallery-image-container img { transform: scale(1.05); }
 
     .config-btn { display: none !important; }
 
-    /* --- NOWE STYLE: Pasek informacyjny pod galerią (WERSJA SZARA POPRAWIONA) --- */
     .info-ticker-wrap {
         position: absolute;
         bottom: 12px;
         left: 0;
         width: 100%;
-        background-color: #ffffff; /* Czyste, białe tło */
+        background-color: #ffffff;
         overflow: hidden;
-        padding: 5px 0; /* Pozostawiamy zmniejszoną wysokość */
+        padding: 5px 0;
         box-sizing: border-box;
         display: flex;
         align-items: center;
         z-index: 5;
-        box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.04); /* Subtelny cień oddzielający pasek od zdjęć */
+        box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.04);
     }
     .info-ticker-content {
         display: inline-block;
         white-space: nowrap;
-        animation: ticker-scroll 90s linear infinite; /* Wolniejsza prędkość */
+        animation: ticker-scroll 90s linear infinite;
         padding-left: 100%;
     }
     .info-ticker-content span {
         display: inline-block;
         color: #374151;
-        font-weight: 400; /* Zmieniona wartość na 400 (normalna grubość) */
+        font-weight: 400;
         font-size: 14px;
-        padding: 0 2.5rem;
+        padding: 0 1.5rem;
         vertical-align: middle;
     }
     .info-ticker-wrap:hover .info-ticker-content {
@@ -517,7 +700,6 @@ details.color-samples-details > summary { list-style: none; cursor: pointer; pad
         0% { transform: translateX(0); }
         100% { transform: translateX(-100%); }
     }
-    /* --- KONIEC STYLÓW DLA PASKA --- */
 
     .gallery-caption {
         margin-top: 8px; font-size: .8em; font-weight: 500; color: #57534E;
@@ -544,98 +726,6 @@ details.color-samples-details > summary { list-style: none; cursor: pointer; pad
     .section-highlight-flash { animation: section-highlight-anim 0.75s ease-in-out; }
     .section-highlight-persistent { background-color: rgba(22, 163, 74, 0.08) !important; transition: background-color 0.3s ease-out; border-radius: 0.5rem; }
 
-    #mugShelfDividerIconsContainer {
-    display: none; flex-direction: column; align-items: stretch;
-    position: absolute !important; right: 0.5rem; top: 60%;
-    transform: translateY(-50%); z-index: 1001; gap: 0.4rem; padding: 0.6rem;
-    
-    /* ZMIENIONE WŁAŚCIWOŚCI PONIŻEJ */
-    background-color: rgba(255, 255, 255, 0.65); /* Półprzezroczyste białe tło */
-    backdrop-filter: blur(6px);                     /* Efekt "zmrożonego szkła" rozmywający tło */
-    border: 1px solid rgba(255, 255, 255, 0.2);  /* Opcjonalna, delikatna ramka dla lepszej widoczności */
-    
-    border-radius: 0.75rem; /* Pozostaje bez zmian */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);    /* Można lekko zmniejszyć intensywność cienia */
-    min-width: 80px;
-}
-    #mugShelfDividerIconsContainer.visible { display: flex !important; }
-    .mug-shelf-controls-header { font-size: 0.65rem; font-weight: 600; color: #4b5563; text-align: center; padding-bottom: 0.3rem; text-transform: lowercase; }
-    #dividerIconGroup { display: flex; flex-direction: column; align-items: center; gap: 0.3rem; }
-    #mugShelfDividerIconsContainer .mobile-divider-icon-small {
-       display: flex; align-items: center; justify-content: center;
-       width: 32px; height: 32px; padding: 0.2rem; background-color: rgba(243, 244, 246, 0.9);
-       border: 1px solid #d1d5db; border-radius: 0.375rem; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-       cursor: pointer; transition: all 0.15s ease-in-out; color: #4B5563;
-    }
-    #mugShelfDividerIconsContainer .mobile-divider-icon-small:hover { background-color: #e5e7eb; border-color: #9ca3af; color: #16A34A; }
-    #mugShelfDividerIconsContainer .mobile-divider-icon-small.active-divider-icon { background-color: #16A34A; border-color: #15803d; color: #ffffff; box-shadow: inset 0 1px 2px rgba(0,0,0,0.1); }
-    #mugShelfDividerIconsContainer .mobile-divider-icon-small svg { width: 1.1rem; height: 1.1rem; stroke-width: 1.75; }
-
-    #mobileMugShelfMountStripsContainer {
-        display: flex; flex-direction: column; align-items: stretch; gap: 0.3rem;
-        margin-top: 0.4rem; padding-top: 0.4rem; border-top: 1px solid #e5e7eb;
-    }
-    .mount-strip-button {
-        font-size: 0.65rem; padding: 0.25rem 0.4rem; border-radius: 0.25rem;
-        text-align: center; font-weight: 500; cursor: pointer;
-        transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out, border-color 0.15s ease-in-out;
-        border: 1px solid transparent; line-height: 1.2;
-    }
-    .mount-strip-button.active-mount-strip { background-color: #16A34A; color: #ffffff; border-color: #15803d; }
-    .mount-strip-button:not(.active-mount-strip) { background-color: #f3f4f6; color: #374151; border-color: #d1d5db; }
-    .mount-strip-button:not(.active-mount-strip):hover { background-color: #e5e7eb; border-color: #9ca3af; }
-    #desktopDividerDimensionsInfo { margin-top: 0.25rem; font-size: 0.75rem; color: #57534E; }
-
-    #imageLightbox.hidden { display: none; }
-    
-    /* ---- NOWE, ULEPSZONE STYLE IKON W GALERII ---- */
-    .image-actions-bar {
-        position: absolute;
-        top: 8px; /* Odstęp od góry */
-        right: 8px; /* Odstęp od prawej */
-        z-index: 10;
-        display: flex;
-        gap: 6px; /* Odstęp między ikonami */
-        /* Usunięte tło i inne zbędne style */
-    }
-
-    .image-actions-bar .action-icon-btn {
-    background-color: rgba(255, 255, 255, 0.1); /* Minimalna widoczność tła */
-    backdrop-filter: blur(4px);
-    border: 1px solid rgba(255, 255, 255, 0.15); /* Również lekko zmniejszyłem widoczność ramki */
-    border-radius: 50%; 
-    padding: 6px;
-    cursor: pointer;
-    color: #374151; 
-    line-height: 0;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
-}
-
-    .image-actions-bar .action-icon-btn:hover {
-        color: #16a34a; /* Kolor zielony przy najechaniu */
-        background-color: rgba(255, 255, 255, 0.9);
-        transform: scale(1.1) translateY(-1px); /* Lekkie powiększenie i uniesienie */
-        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-    }
-    
-    .image-actions-bar .action-icon-btn:active {
-        transform: scale(1);
-        transition-duration: 0.1s;
-    }
-
-    .image-actions-bar .action-icon-btn svg {
-        width: 22px;
-        height: 22px;
-        display: block;
-    }
-
-    .image-actions-bar .action-icon-btn.gallery-configure-btn svg {
-    animation: gallery-spin 2.5s linear infinite;
-}
-
-
-    /* ---- ZMIENIONE STYLE KOSZYKA I PODSUMOWANIA ---- */
     .order-summary-header {
         display: flex;
         justify-content: space-between;
@@ -896,7 +986,7 @@ details.color-samples-details > summary { list-style: none; cursor: pointer; pad
     </div>
 <div class="w-full max-w-7xl mx-auto px-4 md:px-6 my-6">
         <details class="p-4 bg-emerald-50 border border-emerald-200 rounded-lg md:hidden group"> <summary class="flex justify-between items-center cursor-pointer list-none"> <h2 class="text-lg font-semibold text-emerald-800">Jak zamówić półkę?</h2> <span class="marker transform transition-transform duration-200 rotate-0 group-open:rotate-180"> <svg class="w-5 h-5 text-emerald-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /> </svg> </span> </summary> <div class="mt-4 pt-4 border-t border-emerald-200"> <ul class="list-none instruction-list text-stone-700 space-y-3 text-sm"> <li><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 0 1 0 1.905c-.007.379.137.75.431.99l1.005.828c.428.355.53 1.005.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.063-.374-.313-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 0 1 0-1.905c.007-.379-.137-.75-.43-.99l-1.004-.828a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg> <span>Wybierz rodzaj półki, wymiary, kolory i liczbę półek.</span></li>
-    <li><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" /></svg> <span>Dodaj skonfigurowaną półkę do koszyka. Możesz dodać wiele różnych półek.</span></li>
+<li><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" /></svg> <span>Dodaj skonfigurowaną półkę do koszyka. Możesz dodać wiele różnych półek.</span></li>
     <li><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" /></svg> <span>Gdy wszystko gotowe, kliknij w ikonę koszyka, aby zobaczyć podsumowanie.</span></li>
     <li><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 4.25-3-3m0 0-3 3m3-3v12.75" /></svg> <span>W podsumowaniu strona poda łączną cenę i wszystkie kody zamówień.</span></li>
     <li><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" /></svg> <span>Kliknij zielony przycisk, aby skopiować kody i przejść na Allegro.</span></li>
@@ -914,11 +1004,10 @@ details.color-samples-details > summary { list-style: none; cursor: pointer; pad
     </div>
 </div>
 <button class="gallery-arrow gallery-next-arrow" aria-label="Następne zdjęcia">&#10095;</button> </div> </div>
-
 <div class="w-full max-w-7xl mx-auto px-4 md:px-6 mb-6">
     <div class="bg-emerald-50 border-2 border-dashed border-emerald-300 rounded-xl p-4 md:p-5 flex items-center space-x-4 shadow-sm">
         <div class="flex-shrink-0">
-             <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 md:h-12 md:w-12 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+             <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 md:h-12 md:w-12 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                 <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
              </svg>
@@ -931,24 +1020,32 @@ details.color-samples-details > summary { list-style: none; cursor: pointer; pad
 </div>
 <div id="configuratorSection" class="p-4 md:p-8 bg-white shadow-lg rounded-xl flex flex-col md:flex-row md:space-x-8 w-full max-w-7xl mx-auto mb-6">
         <div class="w-full md:w-1/3 space-y-8 mb-8 md:mb-0 order-1 md:order-1">
-             <div id="shelfTypeSectionAnchor" class="p-6 shadow rounded-lg bg-white border border-stone-200 transition-shadow duration-200 hover:shadow-md"> <h2 class="text-lg font-semibold mb-4 flex items-center text-stone-800"> <svg class="h-6 w-6 mr-2 text-green-600 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 0 1 0 1.905c-.007.379.137.75.431.99l1.005.828c.428.355.53 1.005.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.063-.374-.313-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 0 1 0-1.905c.007-.379-.137-.75-.43-.99l-1.004-.828a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281Z" /> <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /> </svg> Rodzaj półki </h2> <select id="shelfType" class="custom-select w-full" onchange="handleShelfTypeChange();"> <option value="">-- Wybierz --</option> <option value="standing">Stojąca na blacie</option> <option value="hanging">Wisząca</option> <option value="mug_shelf">Półka na kubki</option> </select> <div id="shelfTypeOptions" style="display:none; margin-top:1rem;" class="space-y-2"></div> <div id="mugShelfSpecificOptionsContainer" style="display:none;"> <div id="mugShelfMountOptions" class="mt-4 pt-4 border-t border-dashed border-stone-200"></div> <div id="mugShelfDividersOptions" class="mt-4 pt-4 border-t border-dashed border-stone-200"> <h3 class="text-md font-semibold mb-2 text-stone-700">Wstaw przegródki:</h3> <label class="flex items-center space-x-2"><input type="checkbox" id="dividersTop" class="rounded border-stone-300 text-green-600 shadow-sm focus:ring-green-500 focus:ring-offset-0 focus:ring-2" onchange="updatePreview(); updateOrderSummary();"><span>Na górze</span></label> <label class="flex items-center space-x-2 mt-1"><input type="checkbox" id="dividersMiddle" class="rounded border-stone-300 text-green-600 shadow-sm focus:ring-green-500 focus:ring-offset-0 focus:ring-2" onchange="updatePreview(); updateOrderSummary();"><span>Pośrodku</span></label> <label class="flex items-center space-x-2 mt-1"><input type="checkbox" id="dividersBottom" class="rounded border-stone-300 text-green-600 shadow-sm focus:ring-green-500 focus:ring-offset-0 focus:ring-2" onchange="updatePreview(); updateOrderSummary();"><span>Na dole</span></label> </div> </div> </div>
+             <div id="shelfTypeSectionAnchor" class="p-6 shadow rounded-lg bg-white border border-stone-200 transition-shadow duration-200 hover:shadow-md"> <h2 class="text-lg font-semibold mb-4 flex items-center text-stone-800"> <svg class="h-6 w-6 mr-2 text-green-600 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 0 1 0 1.905c-.007.379.137.75.431.99l1.005.828c.428.355.53 1.005.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.063-.374-.313-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 0 1 0-1.905c.007-.379-.137-.75-.43-.99l-1.004-.828a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg> Rodzaj półki </h2> <select id="shelfType" class="custom-select w-full" onchange="handleShelfTypeChange();"> <option value="">-- Wybierz --</option> <option value="standing">Stojąca na blacie</option> <option value="hanging">Wisząca</option> <option value="mug_shelf">Półka na kubki</option> </select> <div id="shelfTypeOptions" style="display:none; margin-top:1rem;" class="space-y-2"></div> <div id="mugShelfSpecificOptionsContainer" style="display:none;"> <div id="mugShelfMountOptions" class="mt-4 pt-4 border-t border-dashed border-stone-200"></div> <div id="mugShelfDividersOptions" class="mt-4 pt-4 border-t border-dashed border-stone-200"> <h3 class="text-md font-semibold mb-2 text-stone-700">Wstaw przegródki:</h3> <label class="flex items-center space-x-2"><input type="checkbox" id="dividersTop" class="rounded border-stone-300 text-green-600 shadow-sm focus:ring-green-500 focus:ring-offset-0 focus:ring-2" onchange="updatePreview(); updateOrderSummary();"><span>Na górze</span></label> <label class="flex items-center space-x-2 mt-1"><input type="checkbox" id="dividersMiddle" class="rounded border-stone-300 text-green-600 shadow-sm focus:ring-green-500 focus:ring-offset-0 focus:ring-2" onchange="updatePreview(); updateOrderSummary();"><span>Pośrodku</span></label> <label class="flex items-center space-x-2 mt-1"><input type="checkbox" id="dividersBottom" class="rounded border-stone-300 text-green-600 shadow-sm focus:ring-green-500 focus:ring-offset-0 focus:ring-2" onchange="updatePreview(); updateOrderSummary();"><span>Na dole</span></label> </div> </div> </div>
 <div id="dimensionSectionAnchor" class="p-6 shadow rounded-lg bg-white border border-stone-200 transition-shadow duration-200 hover:shadow-md"> <h2 class="text-lg font-semibold mb-4 flex items-center text-stone-800"> <svg class="h-6 w-6 mr-2 text-green-600 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75" /> <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v16.5M20.25 3.75v16.5" /> </svg> Wybierz wymiary </h2> <label class="block font-medium text-sm mb-1 text-stone-700">Szerokość:</label> <div id="widthSelectionArea"> <select id="width" class="custom-select w-full" onchange="checkCustomWidth();"> <option value="">-- Wybierz --</option> <option value="34">34 cm</option> <option value="44">44 cm</option> <option value="50">50 cm</option> <option value="60">60 cm</option> <option value="custom">Niestandardowa (35-59 cm)</option> </select> <div class="mt-2"> <input type="range" id="customWidthInput" min="35" max="59" step="1" value="35" style="display:none;" class="mt-2 cursor-pointer" oninput="let val = this.value; if (val === '50') { val = '49'; this.value = val; } document.getElementById('customWidthDisplay').textContent=val+' cm'; handleDimensionChange();"> <div class="flex justify-between items-center mt-1"> <span id="customWidthDisplay" style="display:none; font-weight:bold;" class="text-stone-700"></span> <small id="customWidthFee" style="display:none; font-size:.8rem; color:red;">dopłata +50 zł</small> </div> </div> </div> <label id="heightLabel" class="block font-medium text-sm mt-4 mb-1 text-stone-700">Wysokość:</label> <select id="height" class="custom-select w-full" onchange="handleDimensionChange();"> <option value="">-- Wybierz --</option> <option value="40">40 cm</option> <option value="60">60 cm</option> <option value="80">80 cm</option> </select> <label id="depthLabel" class="block font-medium text-sm mt-4 mb-1 text-stone-700">Głębokość:</label> <select id="depth" class="custom-select w-full" onchange="updatePreview(); updateOrderSummary();"> <option value="">-- Wybierz --</option> </select> </div>
              <div id="colorSectionAnchor" class="p-6 shadow rounded-lg bg-white border border-stone-200 transition-shadow duration-200 hover:shadow-md space-y-4"> <h2 class="text-lg font-semibold mb-4 flex items-center text-stone-800"> <svg class="h-6 w-6 mr-2 text-green-600 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42" /> </svg> Wybierz kolor </h2> <div> <label for="sideColor" class="block font-medium text-sm mb-1 text-stone-700">Kolor boków:</label> <div class="flex items-center"> <select id="sideColor" class="custom-select flex-grow" onchange="updateOrderSummary(); updateSwatchDisplay('sideColor', 'sideColorSwatchDisplay');"> <option value="">-- Wybierz --</option> <option value="#8B5A2B" data-color="#8B5A2B">Dąb Craft Złoty</option> <option value="#FFFFFF" data-color="#FFFFFF">Biały matowy</option> <option value="#000000" data-color="#000000">Czarny matowy</option> </select> <span id="sideColorSwatchDisplay" class="color-swatch-display"></span> </div> </div> <div class="pt-2"> <label id="shelfColorLabel" for="shelfColor" class="block font-medium text-sm mb-1 text-stone-700">Kolor półek i podstaw:</label> <div class="flex items-center"> <select id="shelfColor" class="custom-select flex-grow" onchange="updateOrderSummary(); updateSwatchDisplay('shelfColor', 'shelfColorSwatchDisplay');"> <option value="">-- Wybierz --</option> <option value="#8B5A2B" data-color="#8B5A2B">Dąb Craft Złoty</option> <option value="#FFFFFF" data-color="#FFFFFF">Biały matowy</option> <option value="#000000" data-color="#000000">Czarny matowy</option> </select> <span id="shelfColorSwatchDisplay" class="color-swatch-display"></span> </div> </div> <details class="color-samples-details" id="materialSamplesDetails"> <summary> <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-2 text-stone-600" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5C7.305 4.5 3.135 7.515 1.5 12c1.635 4.485 5.805 7.5 10.5 7.5s8.865-3.015 10.5-7.5C20.865 7.515 16.695 4.5 12 4.5z" /><path stroke-linecap="round" stroke-linejoin="round" d="M12 9a3 3 0 100 6 3 3 0 000-6z" /></svg> <span>Zobacz próbki kolorów</span> <svg class="w-4 h-4 summary-chevron" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg> </summary> <div id="materialSwiper" class="swiper"> <div class="swiper-wrapper"> <div class="swiper-slide"> <img src="img/dabduze.jpg" alt="Dąb Craft Złoty"> <div class="material-name">Dąb Craft Złoty - struktura drewna</div> </div> <div class="swiper-slide"> <img src="img/bialyduze.jpg" alt="Biały matowy"> <div class="material-name">Biały matowy - gładki</div> </div> <div class="swiper-slide"> <img src="img/czarnyduze.jpg" alt="Czarny matowy"> <div class="material-name">Czarny matowy - gładki</div> </div> </div> <div class="material-swiper-button-prev swiper-button-prev"></div> <div class="material-swiper-button-next swiper-button-next"></div> </div> </details> </div>
         </div>
 <div class="w-full md:w-2/3 flex flex-col items-center mb-8 md:mb-0 order-2 md:order-2">
              <div id="shelfContainer" class="mx-auto relative">
+                <div id="mobileShelfInfo">
+                    <p id="mobileInfoGap"></p>
+                    <p id="mobileInfoDividers"></p>
+                </div>
                 <button id="collapse3dPanelButton" onclick="close3dPanel()" title="Zwiń podgląd 3D" class="z-20">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /> </svg> <span class="sr-only">Zwiń podgląd 3D</span>
                 </button>
                 
                 <div id="mobile3dActionsContainer">
                      <div id="mobilePriceIcon" class="mobile-3d-action-btn">
-                         <span id="mobilePriceValue"></span>
-                         <small>Cena</small>
+                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6z" />
+                         </svg>
+                         <span id="mobilePriceValue" class="price-value"></span>
                      </div>
-                     <button id="mobileAddToCartBtn" class="mobile-3d-action-btn">
-                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                         <small>Do koszyka</small>
+                     <button id="mobileGoToSummaryBtn" class="mobile-3d-action-btn" title="Przewiń do podsumowania">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
                      </button>
                 </div>
 
@@ -977,11 +1074,66 @@ details.color-samples-details > summary { list-style: none; cursor: pointer; pad
                         <small id="mobileIconDetailsShelves" class="mobile-icon-details mobile-icon-prompt">wybierz</small>
                     </button>
                 </div>
-                  <div id="mugShelfDividerIconsContainer" class="z-10"> <p class="mug-shelf-controls-header">wstaw<br>przegródki</p> <div id="dividerIconGroup"> <button id="addTopDividerBtn" data-divider-type="top" title="Dodaj/Usuń górną przegródkę" class="mobile-divider-icon-small"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M4 4h16v16H4V4zm0 6h16" /> </svg> </button> <button id="addMiddleDividerBtn" data-divider-type="middle" title="Dodaj/Usuń środkową przegródkę" class="mobile-divider-icon-small"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M4 4h16v16H4V4zm0 8h16" /> </svg> </button> <button id="addBottomDividerBtn" data-divider-type="bottom" title="Dodaj/Usuń dolną przegródkę" class="mobile-divider-icon-small"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M4 4h16v16H4V4zm0 10h16" /> </svg> </button> </div> <div id="mobileMugShelfMountStripsContainer"> <button id="mobileMountHangingStripBtn" class="mount-strip-button">wisząca</button> <button id="mobileMountStandingStripBtn" class="mount-strip-button">stojąca</button> </div> </div>
-                  <div id="threeJsCanvasWrapper" class="flex-grow"> </div>
-                  </div> <div class="text-sm text-stone-600 italic mt-2 text-center md:hidden"></div>
+                  
+                <div id="threeJsCanvasWrapper" class="flex-grow"> 
+                    </div>
+                <div id="mugShelfDividerIconsContainer" class="z-10">
+                    <div id="dividerIconGroup"> 
+                        <div class="divider-control-item">
+                            <button id="addTopDividerBtn" data-divider-type="top" title="Dodaj/Usuń górną przegródkę" class="mobile-divider-icon-small"> 
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M4 4h16v16H4V4zm0 6h16" /> </svg> 
+                            </button>
+                            <span class="divider-label">góra</span>
+                        </div>
+                        <div class="divider-control-item">
+                            <button id="addMiddleDividerBtn" data-divider-type="middle" title="Dodaj/Usuń środkową przegródkę" class="mobile-divider-icon-small"> 
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M4 4h16v16H4V4zm0 8h16" /> </svg> 
+                            </button>
+                            <span class="divider-label">środek</span>
+                        </div>
+                        <div class="divider-control-item">
+                             <button id="addBottomDividerBtn" data-divider-type="bottom" title="Dodaj/Usuń dolną przegródkę" class="mobile-divider-icon-small"> 
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M4 4h16v16H4V4zm0 10h16" /> </svg> 
+                            </button>
+                            <span class="divider-label">dół</span>
+                        </div>
+                    </div>
+                    <div class="mount-divider"></div>
+                    <div id="mountIconGroup">
+                        <button id="mobileMountHangingStripBtn" title="Wybierz montaż wiszący" class="mount-text-button">
+                           wisząca
+                        </button>
+                        <button id="mobileMountStandingStripBtn" title="Wybierz montaż stojący" class="mount-text-button">
+                           stojąca
+                        </button>
+                    </div>
+                    <div id="dividerTooltip">Kliknij ikonę, by dodać/usunąć przegródki</div>
+                </div>
+                <div id="mobileMugShelfMountPanel"></div>
+             </div> 
+            <div class="text-sm text-stone-600 italic mt-2 text-center md:hidden"></div>
              <div class="text-sm text-stone-600 italic mt-2 text-center hidden md:block"> Obróć lub zbliż model (przeciągnij myszką) </div>
-             <div id="shelfCountSection" class="p-6 shadow rounded-lg bg-white border border-stone-200 transition-shadow duration-200 hover:shadow-md mt-0,1 md:mt-8 w-full max-w-lg"> <h2 class="text-lg font-semibold mb-4 flex items-center text-stone-800"> <svg class="h-6 w-6 mr-2 text-green-600 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /> <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 9h16.5M3.75 15h16.5" /> </svg> Dodaj półki wewnętrzne </h2> <select id="shelfCount" class="custom-select w-full" onchange="updatePreview(); updateOrderSummary();"> <option value="">-- Wybierz --</option> </select> <p id="gapDisplay" class="mt-3 text-sm text-stone-700 font-medium">Odległość między półkami: <span id="gapSummaryDisplay" class="font-bold text-stone-900"></span></p> <div id="desktopDividerDimensionsInfo" style="display: none;"> Wymiar przegródki: szer. 12,5cm, wys. 10,9cm </div> </div>
+             <div id="shelfCountSection" class="p-6 shadow rounded-lg bg-white border border-stone-200 transition-shadow duration-200 hover:shadow-md mt-0,1 md:mt-8 w-full max-w-lg">
+                 <h2 class="text-lg font-semibold mb-4 flex items-center text-stone-800">
+                     <svg class="h-6 w-6 mr-2 text-green-600 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                         <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 9h16.5M3.75 15h16.5" />
+                     </svg>
+                     Dodaj półki wewnętrzne
+                 </h2>
+                 <select id="shelfCount" class="custom-select w-full" onchange="updatePreview(); updateOrderSummary();">
+                     <option value="">-- Wybierz --</option>
+                 </select>
+                 
+                 <div class="mt-4 pt-3 border-t border-dashed border-stone-200 space-y-1">
+                     <p id="gapDisplay" class="text-xs text-stone-500">
+                         Odległość między półkami: <span id="gapSummaryDisplay" class="font-semibold text-stone-600"></span>
+                     </p>
+                     <div id="desktopDividerDimensionsInfo" style="display: none;" class="text-xs text-stone-500">
+                         Wymiar przegródki: szer. 12,5cm, wys. 10,9cm
+                     </div>
+                 </div>
+             </div>
              <details class="bg-emerald-50 border border-emerald-200 rounded-lg mt-8 w-full max-w-lg hidden md:block transition-shadow duration-200 hover:shadow-md overflow-hidden group"> <summary class="p-6 flex justify-between items-center cursor-pointer list-none hover:bg-emerald-100 transition-colors duration-150"> <h2 class="text-xl font-semibold text-emerald-800">Jak zamówić półkę?</h2> <span class="marker transform transition-transform duration-200 rotate-0 group-open:rotate-180"> <svg class="w-5 h-5 text-emerald-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /> </svg> </span> </summary> <div class="p-6 pt-2 border-t border-emerald-200">
                 <ul class="list-none instruction-list text-stone-700 space-y-3 text-sm md:text-base">
                     <li><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 0 1 0 1.905c-.007.379.137.75.431.99l1.005.828c.428.355.53 1.005.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.063-.374-.313-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 0 1 0-1.905c.007-.379-.137-.75-.43-.99l-1.004-.828a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg> <span>Wybierz rodzaj półki, wymiary, kolory i liczbę półek.</span></li>
@@ -1084,12 +1236,11 @@ details.color-samples-details > summary { list-style: none; cursor: pointer; pad
 
 
         // Zmienne dla panelu mobilnego 3D
-        let mugShelfDividerIconsContainer, addTopDividerBtn, addMiddleDividerBtn, addBottomDividerBtn;
-        let mobileMugShelfMountStripsContainer, mobileMountHangingStripBtn, mobileMountStandingStripBtn;
+        let mugShelfDividerIconsContainer, addTopDividerBtn, addMiddleDividerBtn, addBottomDividerBtn, dividerTooltip;
+        let mobileMugShelfMountPanel, mobileMountHangingStripBtn, mobileMountStandingStripBtn;
         
-        // NOWE ZMIENNE: dla dynamicznych ikon mobilnych
         let mobileIconDetailsType, mobileIconDetailsDimensions, mobileIconDetailsColors, mobileIconDetailsShelves;
-        let mobile3dActionsContainer, mobilePriceValue, mobileAddToCartBtn;
+        let mobile3dActionsContainer, mobilePriceValue, mobileGoToSummaryBtn;
 
 
         // Zmienne dla informacji o wymiarach przegródek (tylko desktop)
@@ -1100,11 +1251,9 @@ details.color-samples-details > summary { list-style: none; cursor: pointer; pad
         let cartSummaryModalOverlay, cartSummaryModal, cartSummaryModalTitle, cartSummaryItemsContainer, cartSummaryTotalPrice, cartSummaryAllCodes, copyAllCodesBtn, cartSummaryInstructionUnits, downloadCartSummaryBtn, cartSummaryGoToAllegroBtn, cartSummaryModalCloseBtnTop, cartSummaryModalCloseBtnBottom;
         let cartSummarySubtotalLine, cartSummarySubtotalPrice, cartSummaryDiscountLine, cartSummaryDiscountAmount;
         
-        // Zmienne dla poprawionej logiki widoczności
         let priceAndActionsContainer, priceHint, addToCartBtn;
 
 
-        // NOWE ZMIENNE DLA LIGHTBOXA
         let imageLightbox, lightboxImage, lightboxCloseBtn;
 
 
@@ -1167,20 +1316,23 @@ const stojace_configs = [
             "60": { "40": 179, "60": 219 },
             "84": { "40": 299 }
         };
+        
+        // POPRAWIONE ŚCIEŻKI DO ZDJĘĆ W GALERII
         const galleryData = [
-    {
-        title: 'Półki wiszące',
-        imgs: ['img/1.jpg', 'img/2.jpg', 'img/3.jpg', 'img/4.jpg', 'img/5.jpg', 'img/6.jpg', 'img/7.jpg', 'img/8.jpg', 'img/9.jpg', 'img/10.jpg', 'img/11.jpg', 'img/12.jpg', 'img/13.jpg', 'img/14.jpg', 'img/15.jpg']
-    },
-    {
-        title: 'Półki stojące',
-        imgs: ['img/1a.jpg', 'img/2a.jpg', 'img/3a.jpg', 'img/4a.jpg', 'img/5a.jpg', 'img/6a.jpg', 'img/7a.jpg', 'img/8a.jpg', 'img/9a.jpg', 'img/10a.jpg', 'img/11a.jpg']
-    },
-    {
-        title: 'Półki na kubki',
-        imgs: ['img/1b.jpg', 'img/2b.jpg', 'img/3b.jpg', 'img/4b.jpg', 'img/5b.jpg', 'img/6b.jpg', 'img/7b.jpg', 'img/8b.jpg', 'img/9b.jpg', 'img/10b.jpg', 'img/11b.jpg', 'img/12b.jpg', 'img/13b.jpg', 'img/14b.jpg', 'img/15b.jpg']
-    }
-];
+            {
+                title: 'Półki wiszące',
+                imgs: Array.from({length: 15}, (_, i) => `https://via.placeholder.com/260x180.png/f5f5f4/44403c?text=Półka+Wisząca+${i+1}`)
+            },
+            {
+                title: 'Półki stojące',
+                imgs: Array.from({length: 11}, (_, i) => `https://via.placeholder.com/260x180.png/e7e5e4/44403c?text=Półka+Stojąca+${i+1}`)
+            },
+            {
+                title: 'Półki na kubki',
+                imgs: Array.from({length: 15}, (_, i) => `https://via.placeholder.com/260x180.png/dcfce7/05422d?text=Półka+na+Kubki+${i+1}`)
+            }
+        ];
+        
         const codeToValue = { type: { s: 'standing', h: 'hanging', m: 'mug_shelf' }, color: { '0': '#8B5A2B', '1': '#FFFFFF', '2': '#000000' }, mugMount: { h: 'hanging', s: 'standing' } };
         const valueToCode = { type: { standing: 's', hanging: 'h', mug_shelf: 'm' }, color: { '#8B5A2B': '0', '#FFFFFF': '1', '#000000': '2' } };
 
@@ -1225,10 +1377,10 @@ const stojace_configs = [
                 return;
             }
 
-            const addToCartButton = document.getElementById('addToCartBtn');
-            const originalButtonContent = addToCartButton.innerHTML;
-            addToCartButton.innerHTML = `<svg class="animate-spin h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> <span>Generuję...</span>`;
-            addToCartButton.disabled = true;
+            const activeAddToCartButton = document.getElementById('addToCartBtn');
+            const originalButtonContent = activeAddToCartButton.innerHTML;
+            activeAddToCartButton.innerHTML = `<svg class="animate-spin h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> <span>Generuję...</span>`;
+            activeAddToCartButton.disabled = true;
 
             try {
                 const snapshotDataUrl = await generate3dSnapshotFromCurrentModel();
@@ -1238,7 +1390,7 @@ const stojace_configs = [
                     name: shelfTypeSelect.options[shelfTypeSelect.selectedIndex].text,
                     summary: `${document.getElementById("widthSummary").textContent} x ${document.getElementById("heightSummary").textContent} x ${document.getElementById("depthSummary").textContent}`,
                     shelfCountText: document.getElementById("shelfCountSummary").textContent,
-                    gapInfo: document.getElementById("gapSummary").textContent, // <-- Dodana linia
+                    gapInfo: document.getElementById("gapSummary").textContent,
                     sideColor: document.getElementById("sideColorSummary").textContent,
                     shelfColor: document.getElementById("shelfColorSummary").textContent,
                     extras: document.getElementById("extraOptionsSummary").textContent,
@@ -1255,8 +1407,8 @@ const stojace_configs = [
                 console.error("Nie udało się wygenerować miniatury przy dodawaniu do koszyka:", e);
                 alert("Wystąpił błąd podczas generowania podglądu. Spróbuj ponownie.");
             } finally {
-                 addToCartButton.innerHTML = originalButtonContent;
-                 addToCartButton.disabled = false;
+                 activeAddToCartButton.innerHTML = originalButtonContent;
+                 activeAddToCartButton.disabled = false;
             }
         }
 
@@ -1271,8 +1423,8 @@ const stojace_configs = [
             cartItemsContainer.innerHTML = '';
             
             if (cart.length === 0) {
-                if(cartEmptyMessage) cartItemsContainer.appendChild(cartEmptyMessage);
                 if(cartEmptyMessage) cartEmptyMessage.style.display = 'block';
+                cartItemsContainer.appendChild(cartEmptyMessage);
             } else {
                 if(cartEmptyMessage) cartEmptyMessage.style.display = 'none';
                 cart.forEach(item => {
@@ -1525,16 +1677,29 @@ const stojace_configs = [
         }
 
         function updateDividerIconsVisibility() {
-            if (!mugShelfDividerIconsContainer || !shelfTypeSelect || !shelfContainer) return;
+            if (!shelfContainer || !shelfTypeSelect || !mugShelfDividerIconsContainer || !mobileMugShelfMountPanel || !dividerTooltip) return;
+
             const isMobile = window.innerWidth < 768;
             const isMugShelf = shelfTypeSelect.value === 'mug_shelf';
             const is3dPanelActive = shelfContainer.classList.contains('active');
 
             if (isMobile && isMugShelf && is3dPanelActive) {
                 mugShelfDividerIconsContainer.classList.add('visible');
+                mobileMugShelfMountPanel.classList.add('visible');
+
+                if (!dividerTooltip.dataset.shown) {
+                    dividerTooltip.classList.add('visible');
+                    dividerTooltip.dataset.shown = 'true';
+                    
+                    setTimeout(() => {
+                        dividerTooltip.classList.remove('visible');
+                    }, 5000); // Czas widoczności: 5 sekund
+                }
+                
                 if (typeof updateMobileMountStripStates === "function") updateMobileMountStripStates();
             } else {
                 mugShelfDividerIconsContainer.classList.remove('visible');
+                mobileMugShelfMountPanel.classList.remove('visible');
             }
         }
         function updateDividerIconActiveStates() {
@@ -1576,6 +1741,38 @@ const stojace_configs = [
                  if(desktopDividerDimensionsInfo) desktopDividerDimensionsInfo.style.display = 'none';
             }
         }
+        
+        function updateMobileShelfInfo() {
+            const mobileInfoGap = document.getElementById('mobileInfoGap');
+            const mobileInfoDividers = document.getElementById('mobileInfoDividers');
+            const mobileInfoContainer = document.getElementById('mobileShelfInfo');
+
+            if (!mobileInfoGap || !mobileInfoDividers || !mobileInfoContainer) return;
+
+            const shelfType = shelfTypeSelect.value;
+            let showContainer = false;
+
+            // Logika dla odległości między półkami
+            const gapText = document.getElementById('gapSummaryDisplay').textContent;
+            if (shelfType !== 'mug_shelf' && gapText && gapText.includes('cm')) {
+                mobileInfoGap.innerHTML = `Odległość pomiędzy półkami: <strong class="font-semibold text-stone-600">${gapText}</strong>`;
+                mobileInfoGap.style.display = 'block';
+                showContainer = true;
+            } else {
+                mobileInfoGap.style.display = 'none';
+            }
+
+            // Logika dla wymiarów przegródek
+            if (shelfType === 'mug_shelf') {
+        mobileInfoDividers.innerHTML = `Przegródki: <strong class="font-semibold text-stone-600">12,5cm szer. x 10,9cm wys.</strong>`;
+        mobileInfoDividers.style.display = 'block';
+        showContainer = true;
+    } else {
+                mobileInfoDividers.style.display = 'none';
+            }
+
+            mobileInfoContainer.style.display = showContainer ? 'block' : 'none';
+        }
 
         function getCurrentWidth() { const widthOption = widthSelect.value; if (widthOption === 'custom') { if (customWidthInput) { return parseInt(customWidthInput.value) || 35; } else { return 35; } } else if (widthOption && widthOption !== "") { return parseInt(widthOption); } return NaN; }
         function updateDepthOptions() { const width = getCurrentWidth(); const height = heightSelect.value; const currentDepth = depthSelect.value; let availableDepths = ['10']; const widthValue = widthSelect.value; let allow15 = false; if (isNaN(width) || !height || height === "") { depthSelect.innerHTML = '<option value="">-- Wybierz --</option>'; depthSelect.value = ""; return; } if (widthValue === "custom") { const customWidth = width; const standardWidthKey = customWidth < 39 ? "34" : customWidth < 47 ? "44" : customWidth < 54 ? "50" : "60"; if (pricing[standardWidthKey]?.[height]?.['15'] && Object.keys(pricing[standardWidthKey]?.[height]?.['15']).length > 0) { allow15 = true; } } else { const standardWidthKey = String(width); if (pricing[standardWidthKey]?.[height]?.['15'] && Object.keys(pricing[standardWidthKey]?.[height]?.['15']).length > 0) { allow15 = true; } } if (allow15) availableDepths.push('15'); depthSelect.innerHTML = '<option value="">-- Wybierz --</option>'; availableDepths.forEach(depth => { const option = document.createElement('option'); option.value = depth; option.textContent = `${depth} cm`; depthSelect.appendChild(option); }); if (availableDepths.includes(currentDepth)) { depthSelect.value = currentDepth; } else { depthSelect.value = ""; } }
@@ -1595,7 +1792,11 @@ const stojace_configs = [
              heightSelect.removeEventListener('change', handleMugShelfHeightChange); widthSelect.removeEventListener('change', handleMugShelfWidthChange);
              heightSelect.removeEventListener('change', handleDimensionChange);
              heightSelect.addEventListener('change', handleDimensionChange);
-
+             
+             if (dividerTooltip) {
+                 delete dividerTooltip.dataset.shown;
+                 dividerTooltip.classList.remove('visible');
+             }
 
              if (shelfType === 'standing' || shelfType === 'hanging') {
                  autoRotateEnabled = true; depthSelect.disabled = false; shelfCountSelect.disabled = false;
@@ -2056,7 +2257,6 @@ const stojace_configs = [
             }
             document.getElementById("extraOptionsSummary").textContent = o.length ? o.join(" / ") : "standardowa";
 
-            // --- NOWA LOGIKA: Aktualizacja informacji na ikonach mobilnych ---
             if (mobileIconDetailsType) {
                 if (shelfTypeSelect.selectedIndex > 0) {
                     mobileIconDetailsType.textContent = shelfTypeSelect.options[shelfTypeSelect.selectedIndex].text.split(' ')[0];
@@ -2075,30 +2275,42 @@ const stojace_configs = [
                     mobileIconDetailsDimensions.classList.add('mobile-icon-prompt');
                 }
             }
+            
             if (mobileIconDetailsColors) {
-                if (sideColorSelect.selectedIndex > 0 && shelfColorSelect.selectedIndex > 0) {
-                    const sideColorName = sideColorSelect.options[sideColorSelect.selectedIndex].text.split(' ')[0];
-                    const shelfColorName = shelfColorSelect.options[shelfColorSelect.selectedIndex].text.split(' ')[0];
-                    mobileIconDetailsColors.textContent = `B:${sideColorName} / P:${shelfColorName}`;
+                mobileIconDetailsColors.innerHTML = '';
+                const sideColorOption = sideColorSelect.options[sideColorSelect.selectedIndex];
+                const shelfColorOption = shelfColorSelect.options[shelfColorSelect.selectedIndex];
+
+                if (sideColorOption && sideColorOption.value && shelfColorOption && shelfColorOption.value) {
+                    const sideSwatch = document.createElement('span');
+                    sideSwatch.className = 'mobile-color-swatch';
+                    sideSwatch.style.backgroundColor = sideColorOption.dataset.color || '#ccc';
+
+                    const shelfSwatch = document.createElement('span');
+                    shelfSwatch.className = 'mobile-color-swatch';
+                    shelfSwatch.style.backgroundColor = shelfColorOption.dataset.color || '#ccc';
+                    
+                    mobileIconDetailsColors.appendChild(sideSwatch);
+                    mobileIconDetailsColors.appendChild(shelfSwatch);
                     mobileIconDetailsColors.classList.remove('mobile-icon-prompt');
+
                 } else {
                     mobileIconDetailsColors.textContent = 'wybierz';
                     mobileIconDetailsColors.classList.add('mobile-icon-prompt');
                 }
             }
+
             if (mobileIconDetailsShelves) {
                 if (shelfCountValue !== "" && shelfCountSelect.options[shelfCountSelect.selectedIndex]) {
                     const selectedText = shelfCountSelect.options[shelfCountSelect.selectedIndex].text;
                     mobileIconDetailsShelves.textContent = selectedText;
 
-                    // Sprawdź, czy wybrano "brak półek" i WTEDY nadaj/usuń czerwoną klasę
                     if (shelfCountValue === '0') {
                         mobileIconDetailsShelves.classList.add('mobile-icon-prompt');
                     } else {
                         mobileIconDetailsShelves.classList.remove('mobile-icon-prompt');
                     }
                 } else {
-                    // Stan awaryjny, gdyby nic nie było wybrane
                     mobileIconDetailsShelves.textContent = 'wybierz';
                     mobileIconDetailsShelves.classList.add('mobile-icon-prompt');
                 }
@@ -2137,6 +2349,7 @@ const stojace_configs = [
                 if (mobile3dActionsContainer) mobile3dActionsContainer.style.display = 'none';
             }
             updateDividerDimensionVisibility();
+            updateMobileShelfInfo();
         }
 
         function generateOrderCode() { const shelfTypeVal = shelfTypeSelect.value; const widthNum = getCurrentWidth(); const heightVal = heightSelect.value; const depthVal = depthSelect.value; const shelfCountVal = shelfCountSelect.value; const sideColorVal = sideColorSelect.value || ''; const shelfColorVal = shelfColorSelect.value || ''; const isMugShelf = shelfTypeVal === 'mug_shelf'; if (!shelfTypeVal || isNaN(widthNum) || !heightVal || !depthVal || shelfCountVal === "" || !sideColorVal || !shelfColorVal) { return null; } const shelfCountNum = parseInt(shelfCountVal); if (isNaN(shelfCountNum) || shelfCountNum < 0) { return null; } if (!isMugShelf && shelfCountNum === 0) { return null; } let mugMountVal = null; if (isMugShelf) { mugMountVal = document.querySelector('input[name="mugShelfMount"]:checked')?.value; if (!mugMountVal) { return null; } } const typeCode = valueToCode.type[shelfTypeVal]; const sideColorCode = valueToCode.color[sideColorVal]; const shelfColorCode = valueToCode.color[shelfColorVal]; if (!typeCode || !sideColorCode || !shelfColorCode) { return null; } let optionsCode = ''; if (isMugShelf) { const mountCode = mugMountVal === 'hanging' ? 'h' : 's'; let dividerCode = ''; if (dividersTopCheckbox && dividersMiddleCheckbox && dividersBottomCheckbox) { if (dividersTopCheckbox.checked) dividerCode += 'g'; if (dividersMiddleCheckbox.checked) dividerCode += 'm'; if (dividersBottomCheckbox.checked) dividerCode += 'd'; } else { return null; } if (dividerCode === '') dividerCode = 'n'; optionsCode = `${mountCode}${dividerCode}`; } else { const noTop = document.getElementById("noTopShelf")?.checked; const noBottomCheck = document.getElementById("noBottomShelf"); const noBottom = (shelfTypeVal === "standing" && noBottomCheck?.checked); if (noTop && noBottom) optionsCode = 'tb'; else if (noTop) optionsCode = 't'; else if (noBottom) optionsCode = 'b'; else optionsCode = 's'; } const codeParts = [ typeCode, String(widthNum), heightVal, depthVal, String(shelfCountNum), sideColorCode, shelfColorCode, optionsCode ]; return codeParts.join('-'); }
@@ -2284,32 +2497,26 @@ function initializeReviews() { const reviews = [ '"Fantastyczna półeczka, przy
         function initialize3dPanel() { show3dButton = document.getElementById('show3dButton'); collapse3dPanelButton = document.getElementById('collapse3dPanelButton'); if (show3dButton && collapse3dPanelButton && shelfContainer) { show3dButton.addEventListener('click', open3dPanel); console.log("Panel 3D zainicjalizowany."); } else { let missing = []; if (!show3dButton) missing.push("show3dButton"); if (!collapse3dPanelButton) missing.push("collapse3dPanelButton (lub jego odpowiednik)"); if (!shelfContainer) missing.push("shelfContainer"); console.warn(`Nie znaleziono elementów panelu 3D: ${missing.join(', ')}. Funkcjonalność może nie działać poprawnie.`); } }
 
         document.addEventListener('DOMContentLoaded', () => {
-            // --- Inicjalizacja paska informacyjnego ---
             const tickerContent = document.querySelector('.info-ticker-content');
             if (tickerContent) {
                 tickerContent.innerHTML += tickerContent.innerHTML;
             }
 
-            // --- Pobieranie elementów ---
             shelfContainer = document.getElementById('shelfContainer'); threeJsCanvasWrapper = document.getElementById('threeJsCanvasWrapper'); shelfTypeSelect = document.getElementById('shelfType'); widthSelect = document.getElementById('width'); heightSelect = document.getElementById('height'); depthSelect = document.getElementById('depth'); shelfCountSelect = document.getElementById('shelfCount'); customWidthInput = document.getElementById('customWidthInput'); customWidthDisplay = document.getElementById('customWidthDisplay'); customWidthFee = document.getElementById('customWidthFee'); shelfTypeOptionsDiv = document.getElementById('shelfTypeOptions'); widthSelectionArea = document.getElementById('widthSelectionArea'); dimensionSectionAnchor = document.getElementById('dimensionSectionAnchor'); colorSectionAnchor = document.getElementById('colorSectionAnchor'); shelfTypeSectionAnchor = document.getElementById('shelfTypeSectionAnchor'); heightLabel = document.getElementById('heightLabel'); depthLabel = document.getElementById('depthLabel'); sideColorSelect = document.getElementById('sideColor'); shelfColorSelect = document.getElementById('shelfColor'); mugShelfSpecificOptionsContainer = document.getElementById('mugShelfSpecificOptionsContainer'); mugShelfMountOptionsDiv = document.getElementById('mugShelfMountOptions'); mugShelfDividersOptionsDiv = document.getElementById('mugShelfDividersOptions'); dividersTopCheckbox = document.getElementById('dividersTop'); dividersMiddleCheckbox = document.getElementById('dividersMiddle'); dividersBottomCheckbox = document.getElementById('dividersBottom'); configuratorSection = document.getElementById('configuratorSection'); shelfCountSection = document.getElementById('shelfCountSection'); galleryTabsContainer = document.getElementById('galleryTabsContainer'); galleryGridContainer = document.getElementById('galleryGridContainer'); galleryImageArea = document.getElementById('galleryImageArea'); galleryPrevArrow = document.querySelector('.gallery-prev-arrow'); galleryNextArrow = document.querySelector('.gallery-next-arrow');
-            mugShelfDividerIconsContainer = document.getElementById('mugShelfDividerIconsContainer'); addTopDividerBtn = document.getElementById('addTopDividerBtn'); addMiddleDividerBtn = document.getElementById('addMiddleDividerBtn'); addBottomDividerBtn = document.getElementById('addBottomDividerBtn'); mobileMugShelfMountStripsContainer = document.getElementById('mobileMugShelfMountStripsContainer'); mobileMountHangingStripBtn = document.getElementById('mobileMountHangingStripBtn'); mobileMountStandingStripBtn = document.getElementById('mobileMountStandingStripBtn');
+            mugShelfDividerIconsContainer = document.getElementById('mugShelfDividerIconsContainer'); dividerTooltip = document.getElementById('dividerTooltip'); addTopDividerBtn = document.getElementById('addTopDividerBtn'); addMiddleDividerBtn = document.getElementById('addMiddleDividerBtn'); addBottomDividerBtn = document.getElementById('addBottomDividerBtn'); mobileMugShelfMountPanel = document.getElementById('mobileMugShelfMountPanel'); mobileMountHangingStripBtn = document.getElementById('mobileMountHangingStripBtn'); mobileMountStandingStripBtn = document.getElementById('mobileMountStandingStripBtn');
             desktopDividerDimensionsInfo = document.getElementById('desktopDividerDimensionsInfo');
             viewOrderCodeInput = document.getElementById('viewOrderCodeInput'); orderDetailsModalOverlay = document.getElementById('orderDetailsModalOverlay'); orderDetailsModal = document.getElementById('orderDetailsModal'); modalCloseButton = orderDetailsModal ? orderDetailsModal.querySelector('.modal-close-button') : null; modalOrderCodeSpan = document.getElementById('modalOrderCode'); modalOrderSummaryP = document.getElementById('modalOrderSummary');
             imageLightbox = document.getElementById('imageLightbox'); lightboxImage = document.getElementById('lightboxImage'); lightboxCloseBtn = document.getElementById('lightboxClose');
             priceAndActionsContainer = document.getElementById('priceAndActionsContainer');
             priceHint = document.getElementById('priceHint');
             addToCartBtn = document.getElementById('addToCartBtn');
-            
-            // --- NOWE: Pobieranie elementów mobilnych ---
             mobileIconDetailsType = document.getElementById('mobileIconDetailsType');
             mobileIconDetailsDimensions = document.getElementById('mobileIconDetailsDimensions');
             mobileIconDetailsColors = document.getElementById('mobileIconDetailsColors');
             mobileIconDetailsShelves = document.getElementById('mobileIconDetailsShelves');
             mobile3dActionsContainer = document.getElementById('mobile3dActionsContainer');
             mobilePriceValue = document.getElementById('mobilePriceValue');
-            mobileAddToCartBtn = document.getElementById('mobileAddToCartBtn');
-
-            // --- Pobieranie elementów koszyka ---
+            mobileGoToSummaryBtn = document.getElementById('mobileGoToSummaryBtn');
             desktopCartContainer = document.getElementById('desktopCartContainer');
             cartPanel = document.getElementById('cartPanel');
             cartPanelOverlay = document.getElementById('cartPanelOverlay');
@@ -2325,9 +2532,6 @@ function initializeReviews() { const reviews = [ '"Fantastyczna półeczka, przy
             cartSubtotalPrice = document.getElementById('cartSubtotalPrice');
             cartDiscountLine = document.getElementById('cartDiscountLine');
             cartDiscountAmount = document.getElementById('cartDiscountAmount');
-
-
-            // --- Pobieranie elementów nowego modala podsumowania koszyka ---
             cartSummaryModalOverlay = document.getElementById('cartSummaryModalOverlay');
             cartSummaryModal = document.getElementById('cartSummaryModal');
             cartSummaryModalTitle = document.getElementById('cartSummaryModalTitle');
@@ -2345,28 +2549,19 @@ function initializeReviews() { const reviews = [ '"Fantastyczna półeczka, przy
             cartSummaryDiscountLine = document.getElementById('cartSummaryDiscountLine');
             cartSummaryDiscountAmount = document.getElementById('cartSummaryDiscountAmount');
 
-
              if (!shelfContainer || !threeJsCanvasWrapper) { console.error("BŁĄD KRYTYCZNY: Nie znaleziono wszystkich wymaganych elementów DOM. Inicjalizacja przerwana."); return; }
              if(widthSelect) originalWidthOptions = Array.from(widthSelect.options).map(opt => ({value: opt.value, text: opt.text})).filter(opt => opt.value !== ""); if(heightSelect) originalHeightOptions = Array.from(heightSelect.options).map(opt => ({value: opt.value, text: opt.text})).filter(opt => opt.value !== "");
 
             try {
-                // Inicjalizacja modułów i stanu początkowego
                 if(typeof init3D === 'function') init3D(); else console.error("init3D is not defined");
                 if(typeof updateSwatchDisplay === 'function') { updateSwatchDisplay('sideColor', 'sideColorSwatchDisplay'); updateSwatchDisplay('shelfColor', 'shelfColorSwatchDisplay'); } else console.error("updateSwatchDisplay is not defined");
                 if(typeof initializeTabbedGallery === 'function') initializeTabbedGallery(); else console.error("initializeTabbedGallery is not defined");
                 if(typeof initialize3dPanel === 'function') initialize3dPanel(); else console.error("initialize3dPanel is not defined");
                 if(typeof initializeReviews === 'function') initializeReviews(); else console.error("initializeReviews is not defined");
                 
-                if (addToCartBtn) {
-                    addToCartBtn.addEventListener('click', addToCart);
-                }
+                if (addToCartBtn) addToCartBtn.addEventListener('click', addToCart);
+                if (mobileGoToSummaryBtn) mobileGoToSummaryBtn.addEventListener('click', () => scrollToElementAndHighlight('priceAndActionsContainer', 'center'));
                 
-                // --- NOWE: Inicjalizacja przycisku dodania do koszyka w panelu mobilnym ---
-                if (mobileAddToCartBtn) {
-                    mobileAddToCartBtn.addEventListener('click', addToCart);
-                }
-                
-                // --- Inicjalizacja koszyka i reszty zdarzeń ---
                 if (desktopCartContainer) desktopCartContainer.addEventListener('click', openCart);
                 if (mobileCartButton) mobileCartButton.addEventListener('click', openCart);
                 if (cartPanelCloseBtn) cartPanelCloseBtn.addEventListener('click', closeCart);
