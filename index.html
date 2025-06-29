@@ -1755,7 +1755,7 @@ const stojace_configs = [
             // Logika dla odległości między półkami
             const gapText = document.getElementById('gapSummaryDisplay').textContent;
             if (shelfType !== 'mug_shelf' && gapText && gapText.includes('cm')) {
-                mobileInfoGap.innerHTML = `Odległość pomiędzy półkami: <strong class="font-semibold text-stone-600">${gapText}</strong>`;
+                mobileInfoGap.innerHTML = `Odległość między półkami: <strong class="font-semibold text-stone-600">${gapText}</strong>`;
                 mobileInfoGap.style.display = 'block';
                 showContainer = true;
             } else {
