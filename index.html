@@ -112,6 +112,55 @@
     
     /* ---- KONIEC NOWYCH STYLÓW ---- */
     
+    /* --- Animacja dodawania do koszyka --- */
+    .shelf-to-cart-animation {
+        position: fixed;
+        z-index: 2000;
+        transition: transform 1s cubic-bezier(0.4, 0, 0.8, 0.4), opacity 1s ease-in, width 1s ease-in-out, height 1s ease-in-out;
+        pointer-events: none;
+        border-radius: 0.5rem;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+    
+    /* --- Style dla przycisków +/- w koszyku --- */
+    .quantity-controls {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .quantity-btn {
+        background-color: #f3f4f6;
+        border: 1px solid #e5e7eb;
+        border-radius: 9999px;
+        width: 26px;
+        height: 26px;
+        font-weight: 600;
+        color: #4b5563;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
+    }
+    .quantity-btn:hover {
+        background-color: #e5e7eb;
+        color: #1f2937;
+    }
+    .quantity-btn:active {
+        transform: scale(0.9);
+    }
+    .quantity-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    .quantity-display {
+        font-weight: 600;
+        font-size: 1rem;
+        min-width: 28px;
+        text-align: center;
+        color: #1f2937;
+    }
+
     /* Style niestandardowe */
     ul.list-none { list-style-type: none; padding-left: 0; }
 
@@ -438,7 +487,7 @@
              transition: none; padding: 0; display: block; flex-direction: initial;
              overflow: hidden; margin-bottom: 0.5rem; cursor: grab;
          }
-         #collapse3dPanelButton { display: none !important; }
+#collapse3dPanelButton { display: none !important; }
          #mobilePanelIcons { display: none !important; }
          #mobile3dActionsContainer { display: none !important; }
          
@@ -1007,10 +1056,10 @@
 <div class="w-full max-w-7xl mx-auto px-4 md:px-6 mb-6">
     <div class="bg-emerald-50 border-2 border-dashed border-emerald-300 rounded-xl p-4 md:p-5 flex items-center space-x-4 shadow-sm">
         <div class="flex-shrink-0">
-             <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 md:h-12 md:w-12 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-             </svg>
+             <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 md:h-12 md:w-12 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+               <path stroke-linecap="round" stroke-linejoin="round" d="M9 14.25l6-6m-6 0l6 6" />
+               <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 9.75h.01M14.25 14.25h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
         </div>
         <div>
             <h3 class="font-bold text-emerald-800 text-base md:text-lg">Rabat na drugą półkę!</h3>
@@ -1229,11 +1278,10 @@
         let autoRotateEnabled = true;
         const initialCameraPosition = { x: 4, y: 5, z: 7 };
 
-        // --- ZMIENNE DLA KOSZYKA ---
-        let cart = [];
+        // --- ZMIENIONE ZMIENNE KOSZYKA ---
+        let cart = []; // Struktura: [{ code, quantity, price, ... }]
         let desktopCartContainer, cartPanel, cartPanelOverlay, cartPanelCloseBtn, cartItemsContainer, cartEmptyMessage, cartTotalPrice, cartCheckoutButton, cartBadges, mobileCartButton, cartDiscountReminder;
         let cartSubtotalLine, cartSubtotalPrice, cartDiscountLine, cartDiscountAmount;
-
 
         // Zmienne dla panelu mobilnego 3D
         let mugShelfDividerIconsContainer, addTopDividerBtn, addMiddleDividerBtn, addBottomDividerBtn, dividerTooltip;
@@ -1242,20 +1290,16 @@
         let mobileIconDetailsType, mobileIconDetailsDimensions, mobileIconDetailsColors, mobileIconDetailsShelves;
         let mobile3dActionsContainer, mobilePriceValue, mobileGoToSummaryBtn;
 
-
         // Zmienne dla informacji o wymiarach przegródek (tylko desktop)
         let desktopDividerDimensionsInfo;
 
         // Zmienne dla modali
         let viewOrderCodeInput, orderDetailsModalOverlay, orderDetailsModal, modalCloseButton, modalOrderCodeSpan, modalOrderSummaryP;
-        let cartSummaryModalOverlay, cartSummaryModal, cartSummaryModalTitle, cartSummaryItemsContainer, cartSummaryTotalPrice, cartSummaryAllCodes, copyAllCodesBtn, cartSummaryInstructionUnits, downloadCartSummaryBtn, cartSummaryGoToAllegroBtn, cartSummaryModalCloseBtnTop, cartSummaryModalCloseBtnBottom;
-        let cartSummarySubtotalLine, cartSummarySubtotalPrice, cartSummaryDiscountLine, cartSummaryDiscountAmount;
+        
         
         let priceAndActionsContainer, priceHint, addToCartBtn;
 
-
         let imageLightbox, lightboxImage, lightboxCloseBtn;
-
 
         // --- Predefined Shelf Configurations ---
         const wiszace_configs = [
@@ -1336,15 +1380,44 @@ const stojace_configs = [
         const codeToValue = { type: { s: 'standing', h: 'hanging', m: 'mug_shelf' }, color: { '0': '#8B5A2B', '1': '#FFFFFF', '2': '#000000' }, mugMount: { h: 'hanging', s: 'standing' } };
         const valueToCode = { type: { standing: 's', hanging: 'h', mug_shelf: 'm' }, color: { '#8B5A2B': '0', '#FFFFFF': '1', '#000000': '2' } };
 
-        // --- FUNKCJE KOSZYKA I RABATU ---
+        // --- NOWE FUNKCJE KOSZYKA I RABATU ---
 
+        function increaseQuantity(itemCode) {
+            const item = cart.find(i => i.code === itemCode);
+            if (item) {
+                item.quantity++;
+            }
+            updateCartDisplay();
+        }
+
+        function decreaseQuantity(itemCode) {
+            const item = cart.find(i => i.code === itemCode);
+            if (item && item.quantity > 1) {
+                item.quantity--;
+            } else {
+                 cart = cart.filter(i => i.code !== itemCode);
+            }
+            updateCartDisplay();
+        }
+        
+        function removeFromCart(itemCode) {
+            cart = cart.filter(item => item.code !== itemCode);
+            updateCartDisplay();
+        }
+        
         function calculateCartTotal() {
-            const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
             let discount = 0;
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
 
-            if (cart.length >= 2) {
-                const prices = cart.map(item => item.price);
-                const minPrice = Math.min(...prices);
+            if (totalItems >= 2) {
+                const allPrices = [];
+                cart.forEach(item => {
+                    for (let i = 0; i < item.quantity; i++) {
+                        allPrices.push(item.price);
+                    }
+                });
+                const minPrice = Math.min(...allPrices);
                 discount = minPrice * 0.25;
             }
 
@@ -1376,6 +1449,19 @@ const stojace_configs = [
                 alert("Proszę, dokończ konfigurację półki przed dodaniem jej do koszyka.");
                 return;
             }
+            
+            const existingItem = cart.find(item => item.code === orderCode);
+            if (existingItem) {
+                increaseQuantity(existingItem.code);
+                openCart();
+                const itemElement = cartItemsContainer.querySelector(`[data-code="${existingItem.code}"]`);
+                if(itemElement) {
+                    itemElement.classList.remove('section-highlight-flash');
+                    void itemElement.offsetWidth;
+                    itemElement.classList.add('section-highlight-flash');
+                }
+                return;
+            }
 
             const activeAddToCartButton = document.getElementById('addToCartBtn');
             const originalButtonContent = activeAddToCartButton.innerHTML;
@@ -1385,8 +1471,7 @@ const stojace_configs = [
             try {
                 const snapshotDataUrl = await generate3dSnapshotFromCurrentModel();
                 
-                const item = {
-                    id: Date.now(),
+                const newItem = {
                     name: shelfTypeSelect.options[shelfTypeSelect.selectedIndex].text,
                     summary: `${document.getElementById("widthSummary").textContent} x ${document.getElementById("heightSummary").textContent} x ${document.getElementById("depthSummary").textContent}`,
                     shelfCountText: document.getElementById("shelfCountSummary").textContent,
@@ -1396,12 +1481,41 @@ const stojace_configs = [
                     extras: document.getElementById("extraOptionsSummary").textContent,
                     price: priceDetails.total,
                     code: orderCode,
+                    quantity: 1,
                     snapshot: snapshotDataUrl
                 };
+
+                // ----> POCZĄTEK ZMIAN W ANIMACJI <----
+                const cartIcon = window.innerWidth >= 768 ? desktopCartContainer : document.getElementById('mobileCartButton');
+                // Animacja startuje teraz z przycisku "Dodaj do koszyka", co jest bardziej intuicyjne i widoczne.
+                const startRect = activeAddToCartButton.getBoundingClientRect(); 
+                const endRect = cartIcon.getBoundingClientRect();
                 
-                cart.push(item);
-                updateCartDisplay();
-                openCart(); 
+                const flyingShelf = document.createElement('img');
+                flyingShelf.src = snapshotDataUrl;
+                flyingShelf.className = 'shelf-to-cart-animation';
+                document.body.appendChild(flyingShelf);
+                
+                flyingShelf.style.left = `${startRect.left + startRect.width / 2 - 50}px`;
+                flyingShelf.style.top = `${startRect.top + startRect.height / 2 - 50}px`;
+                flyingShelf.style.width = `100px`;
+                flyingShelf.style.height = `100px`;
+                
+                // Wymuszenie odświeżenia DOM
+                flyingShelf.getBoundingClientRect();
+
+                // Usunięto efekt obrotu (rotate) z transformacji.
+                flyingShelf.style.transform = `translate(${endRect.left - startRect.left}px, ${endRect.top - startRect.top}px) scale(0.2)`;
+                flyingShelf.style.opacity = '0';
+                // ----> KONIEC ZMIAN W ANIMACJI <----
+
+                cart.push(newItem);
+
+                setTimeout(() => {
+                    if(document.body.contains(flyingShelf)) document.body.removeChild(flyingShelf);
+                    updateCartDisplay();
+                    openCart();
+                }, 1000);
 
             } catch (e) {
                 console.error("Nie udało się wygenerować miniatury przy dodawaniu do koszyka:", e);
@@ -1411,58 +1525,56 @@ const stojace_configs = [
                  activeAddToCartButton.disabled = false;
             }
         }
-
-        function removeFromCart(itemId) {
-            cart = cart.filter(item => item.id !== itemId);
-            updateCartDisplay();
-        }
-
+        
         function updateCartDisplay() {
             if (!cartItemsContainer || !cartBadges) return;
-
             cartItemsContainer.innerHTML = '';
             
             if (cart.length === 0) {
-                if(cartEmptyMessage) cartEmptyMessage.style.display = 'block';
-                cartItemsContainer.appendChild(cartEmptyMessage);
+                if(cartEmptyMessage) {
+                    cartEmptyMessage.style.display = 'block';
+                    cartItemsContainer.appendChild(cartEmptyMessage);
+                }
             } else {
                 if(cartEmptyMessage) cartEmptyMessage.style.display = 'none';
                 cart.forEach(item => {
                     const itemElement = document.createElement('div');
-                    itemElement.className = 'flex items-start justify-between p-3 border-b border-stone-200 last:border-b-0';
+                    itemElement.className = 'flex items-start p-2.5 border-b border-stone-200 last:border-b-0 gap-3';
+                    itemElement.dataset.code = item.code;
+                    
                     itemElement.innerHTML = `
-                        <div class="flex-shrink-0 w-16 h-16 bg-stone-200 rounded-md flex items-center justify-center overflow-hidden mr-3">
+                        <div class="flex-shrink-0 w-20 h-20 bg-stone-100 rounded-md flex items-center justify-center overflow-hidden border border-stone-200">
                             ${item.snapshot ? `<img src="${item.snapshot}" alt="Miniatura półki" class="w-full h-full object-contain">` : ''}
                         </div>
-
-                        <div class="flex-grow">
-                            <p class="font-semibold text-stone-800 leading-tight">${item.name}</p>
-                            <p class="text-sm text-stone-600">${item.summary}</p>
-                            
-                            <div class="text-xs text-stone-500 mt-1 space-y-0.5">
-                                <p>Boki: <span class="font-medium text-stone-700">${item.sideColor}</span></p>
-                                <p>Półki: <span class="font-medium text-stone-700">${item.shelfColor}</span></p>
-                                ${item.gapInfo && item.gapInfo.trim() !== 'n/d' ? `<p>wys. pomiędzy półkami: <span class="font-medium text-stone-700">${item.gapInfo}</span></p>` : ''}
-                                ${item.name === 'Półka na kubki' ? `<p>szer. przegródki: <span class="font-medium text-stone-700">12,5 cm</span></p>` : ''}
+                        <div class="flex-grow flex flex-col justify-between h-full min-h-[80px]">
+                            <div>
+                                <div class="flex justify-between items-start">
+                                    <p class="font-semibold text-stone-800 leading-tight pr-2">${item.name}</p>
+                                    <button onclick="removeFromCart('${item.code}')" class="text-stone-400 hover:text-red-500 transition-colors p-1 -mt-1 -mr-1" title="Usuń z koszyka">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
                                 </div>
-                            <p class="text-xs text-stone-500 mt-1">Opcje: ${item.extras}</p>
-                            <p class="font-bold text-stone-800 mt-2">${item.price.toFixed(2)} zł</p>
-                        </div>
-
-                        <div class="flex-shrink-0 ml-2">
-                            <button onclick="removeFromCart(${item.id})" class="text-stone-400 hover:text-red-500 transition-colors p-1" title="Usuń z koszyka">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                </svg>
-                            </button>
+                                <p class="text-xs text-stone-500">${item.summary} | Boki: ${item.sideColor} | Półki: ${item.shelfColor}</p>
+                            </div>
+                            <div class="flex justify-between items-center mt-2">
+                                <div class="quantity-controls">
+                                    <button class="quantity-btn" onclick="decreaseQuantity('${item.code}')">-</button>
+                                    <span class="quantity-display">${item.quantity}</span>
+                                    <button class="quantity-btn" onclick="increaseQuantity('${item.code}')">+</button>
+                                </div>
+                                <p class="font-bold text-stone-800 text-base">${(item.price * item.quantity).toFixed(2)} zł</p>
+                            </div>
                         </div>
                     `;
                     cartItemsContainer.appendChild(itemElement);
                 });
             }
 
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
             if (cartDiscountReminder) {
-                if (cart.length === 1) {
+                if (totalItems === 1) {
                     cartDiscountReminder.innerHTML = `✨ Świetny wybór! Dodaj jeszcze jedną półkę, aby otrzymać <b>-25% rabatu</b> na tańszą z nich.`;
                     cartDiscountReminder.style.display = 'block';
                 } else {
@@ -1471,7 +1583,6 @@ const stojace_configs = [
             }
             
             const totals = calculateCartTotal();
-
             if (totals.discount > 0) {
                 cartSubtotalLine.style.display = 'flex';
                 cartDiscountLine.style.display = 'flex';
@@ -1484,14 +1595,14 @@ const stojace_configs = [
             cartTotalPrice.textContent = `${totals.total.toFixed(2)} zł`;
 
             cartBadges.forEach(badge => {
-                badge.textContent = cart.length;
-                badge.style.display = cart.length > 0 ? 'flex' : 'none';
+                badge.textContent = totalItems;
+                badge.style.display = totalItems > 0 ? 'flex' : 'none';
             });
             
              if(mobileCartButton) {
                 const mobileCartPriceSpan = mobileCartButton.querySelector('.mobile-cart-price');
                 if(mobileCartPriceSpan) {
-                     mobileCartPriceSpan.textContent = cart.length > 0 ? `${totals.total.toFixed(2)} zł` : 'Koszyk';
+                     mobileCartPriceSpan.textContent = totalItems > 0 ? `${totals.total.toFixed(2)} zł` : 'Koszyk';
                 }
              }
             cartCheckoutButton.disabled = cart.length === 0;
@@ -1499,35 +1610,56 @@ const stojace_configs = [
         
         function handleCheckout() {
             if (cart.length === 0) return;
-
             closeCart();
 
             const totals = calculateCartTotal();
-            const allCodes = cart.map(item => item.code).join('\n');
+
+            // ----> TO JEST KLUCZOWA ZMIANA <----
+            // Ten kod zapewnia, że dla każdej sztuki generowany jest osobny kod, bez dopisku "(sztuk: ...)".
+            const allCodes = cart.flatMap(item => Array(item.quantity).fill(item.code)).join('\n');
 
             cartSummaryItemsContainer.innerHTML = '';
             cart.forEach(item => {
                 const itemCard = document.createElement('div');
-                itemCard.className = 'p-3 bg-stone-50 rounded-lg border border-stone-200 flex items-start gap-4';
+                // Ustawienie klas dla karty produktu w podsumowaniu - mniejsze paddingi i stały układ flex
+                itemCard.className = 'p-3 bg-stone-50 rounded-lg border border-stone-200 flex items-start gap-3';
+                
+                // Poprawiona struktura HTML - wyświetla wszystkie szczegóły bez obcinania tekstu
                 itemCard.innerHTML = `
-                    <div class="summary-snapshot-container" id="snapshot-container-${item.id}">
-                        ${item.snapshot ? `<img src="${item.snapshot}" alt="Podgląd 3D półki: ${item.name}" class="w-full h-full object-contain" />` : '<div class="text-xs text-stone-500 p-2">Brak podglądu</div>'}
+                    <div class="summary-snapshot-container flex-shrink-0 w-20 h-20">
+                        ${item.snapshot ? `<img src="${item.snapshot}" alt="Podgląd 3D półki: ${item.name}" class="w-full h-full object-contain" />` : '<div class="text-xs text-stone-500 p-2 flex items-center justify-center h-full">Brak podglądu</div>'}
                     </div>
-
-                    <div class="flex-grow">
-                        <div class="flex justify-between items-baseline gap-4">
-                            <p class="font-semibold text-stone-800 leading-tight">${item.name}</p>
-                            <p class="font-bold text-xl text-stone-800 flex-shrink-0">${item.price.toFixed(2)} zł</p>
+                    <div class="flex-grow min-w-0">
+                        <div class="flex justify-between items-start gap-2">
+                            <div>
+                                <p class="font-semibold text-sm text-stone-800 leading-tight">${item.name}</p>
+                                <p class="text-xs text-stone-500">Ilość: ${item.quantity}</p>
+                            </div>
+                            <p class="font-bold text-lg text-stone-800 flex-shrink-0">${(item.price * item.quantity).toFixed(2)} zł</p>
                         </div>
 
-                        <p class="text-sm text-stone-600 mt-1">${item.summary}</p>
-                        <div class="text-xs text-stone-500 mt-2 flex flex-wrap gap-x-3 gap-y-1">
-                            <span>Boki: <span class="font-medium text-stone-700">${item.sideColor}</span></span>
-                            <span>Półki: <span class="font-medium text-stone-700">${item.shelfColor}</span></span>
-                             ${item.gapInfo && item.gapInfo.trim() !== 'n/d' ? `<span>wys. pomiędzy półkami: <span class="font-medium text-stone-700">${item.gapInfo}</span></span>` : ''}
-                             ${item.name === 'Półka na kubki' ? `<span>szer. przegródki: <span class="font-medium text-stone-700">12,5 cm</span></span>` : ''}
-                            <span>Opcje: <span class="font-medium text-stone-700">${item.extras}</span></span>
-                        </div>
+                        <dl class="text-xs space-y-0.5 mt-2">
+                            <div class="flex justify-between gap-2">
+                                <dt class="text-stone-500">Wymiary:</dt>
+                                <dd class="font-semibold text-stone-700 text-right">${item.summary}</dd>
+                            </div>
+                            <div class="flex justify-between gap-2">
+                                <dt class="text-stone-500">Półki:</dt>
+                                <dd class="font-semibold text-stone-700 text-right">${item.shelfCountText}</dd>
+                            </div>
+                            <div class="flex justify-between gap-2">
+                                <dt class="text-stone-500">Kolor boków:</dt>
+                                <dd class="font-semibold text-stone-700 text-right">${item.sideColor}</dd>
+                            </div>
+                             <div class="flex justify-between gap-2">
+                                <dt class="text-stone-500">Kolor półek:</dt>
+                                <dd class="font-semibold text-stone-700 text-right">${item.shelfColor}</dd>
+                            </div>
+                            <div class="flex justify-between gap-2">
+                                <dt class="text-stone-500">Opcje:</dt>
+                                <dd class="font-semibold text-stone-700 text-right">${item.extras}</dd>
+                            </div>
+                        </dl>
                     </div>
                 `;
                 cartSummaryItemsContainer.appendChild(itemCard);
@@ -1563,7 +1695,7 @@ const stojace_configs = [
             }
 
             const totals = calculateCartTotal();
-            const allCodes = cart.map(item => item.code).join('\n');
+            const allCodes = cart.flatMap(item => Array(item.quantity).fill(item.code)).join('\n');
             const date = new Date().toLocaleString('pl-PL');
 
             let content = `PODSUMOWANIE ZAMÓWIENIA\n`;
@@ -1571,13 +1703,13 @@ const stojace_configs = [
             content += `========================================\n\n`;
             
             cart.forEach((item, index) => {
-                content += `PRODUKT ${index + 1}: ${item.name}\n`;
+                content += `PRODUKT ${index + 1}: ${item.name} (x${item.quantity})\n`;
                 content += `  Wymiary: ${item.summary}\n`;
                 content += `  Kolor boków: ${item.sideColor}\n`;
                 content += `  Kolor półek: ${item.shelfColor}\n`;
                 content += `  Ilość półek wewn.: ${item.shelfCountText}\n`;
                 content += `  Opcje: ${item.extras}\n`;
-                content += `  Cena: ${item.price.toFixed(2)} zł\n\n`;
+                content += `  Cena jedn.: ${item.price.toFixed(2)} zł\n\n`;
             });
 
             content += `========================================\n`;
@@ -1601,6 +1733,9 @@ const stojace_configs = [
             document.body.removeChild(link);
             URL.revokeObjectURL(url);
         }
+
+        // Pozostałe funkcje bez zmian w logice (poniżej)
+        // ... (reszta funkcji pozostaje taka sama, chyba że wymagały drobnych poprawek, które zostały już uwzględnione) ...
 
         function applyShelfConfigurationFromGallery(galleryIndex, imageIndex) {
             const config = predefinedShelfConfigurations[galleryIndex]?.[imageIndex];
