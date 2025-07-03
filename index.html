@@ -15,6 +15,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
     <style>
     /* --- Style dla animacji generowania kodów --- */
@@ -1373,6 +1374,8 @@
         let show3dButton, collapse3dPanelButton;
         let autoRotateEnabled = true;
         const initialCameraPosition = { x: 4, y: 5, z: 7 };
+        let currentAnimationTimeline = null;
+        let lastValidConfig = {};
 
         let cart = [];
         let desktopCartContainer, cartPanel, cartPanelOverlay, cartPanelCloseBtn, cartItemsContainer, cartEmptyMessage, cartTotalPrice, cartCheckoutButton, cartBadges, mobileCartButton, cartDiscountReminder;
@@ -1808,7 +1811,7 @@
                 updateDividerIconActiveStates();
                 if (typeof updateMobileMountStripStates === "function") updateMobileMountStripStates();
             }
-            updatePreview();
+            updatePreview(false); // No animation when loading from gallery
             updateOrderSummary();
         }
 
@@ -1924,7 +1927,7 @@
                  if (mugShelfSpecificOptionsContainer) mugShelfSpecificOptionsContainer.style.display = 'block';
                  if (mugShelfMountOptionsDiv) {
                      mugShelfMountOptionsDiv.style.display = 'block'; const defaultChecked = !isLoading ? 'checked' : '';
-                     mugShelfMountOptionsDiv.innerHTML = `<h3 class="text-md font-semibold mb-2 text-stone-700">Sposób montażu:</h3><label class="flex items-center space-x-2"><input type="radio" name="mugShelfMount" value="hanging" class="rounded-full border-stone-300 text-green-600 shadow-sm focus:ring-green-500 focus:ring-offset-0 focus:ring-2" onchange="updatePreview(); updateOrderSummary(); updateMobileMountStripStates();"> <span>Wisząca</span></label><label class="flex items-center space-x-2 mt-1"><input type="radio" name="mugShelfMount" value="standing" class="rounded-full border-stone-300 text-green-600 shadow-sm focus:ring-green-500 focus:ring-offset-0 focus:ring-2" onchange="updatePreview(); updateOrderSummary(); updateMobileMountStripStates();" ${defaultChecked}><span>Stojąca</span></label>`;
+                     mugShelfMountOptionsDiv.innerHTML = `<h3 class="text-md font-semibold mb-2 text-stone-700">Sposób montażu:</h3><label class="flex items-center space-x-2"><input type="radio" name="mugShelfMount" value="hanging" class="rounded-full border-stone-300 text-green-600 shadow-sm focus:ring-green-500 focus:ring-offset-0 focus:ring-2" onchange="updatePreview(false); updateOrderSummary(); updateMobileMountStripStates();"> <span>Wisząca</span></label><label class="flex items-center space-x-2 mt-1"><input type="radio" name="mugShelfMount" value="standing" class="rounded-full border-stone-300 text-green-600 shadow-sm focus:ring-green-500 focus:ring-offset-0 focus:ring-2" onchange="updatePreview(false); updateOrderSummary(); updateMobileMountStripStates();" ${defaultChecked}><span>Stojąca</span></label>`;
                  }
                  if (mugShelfDividersOptionsDiv) mugShelfDividersOptionsDiv.style.display = 'none';
              }
@@ -1964,15 +1967,172 @@
             if(dividersTopCheckbox) dividersTopCheckbox.checked = false;
             if(dividersMiddleCheckbox) dividersMiddleCheckbox.checked = false;
             if(dividersBottomCheckbox) dividersBottomCheckbox.checked = false;
-            updatePreview();
+            updatePreview(false);
             updateOrderSummary();
         }
         function restoreDimensionControls() { widthSelect.innerHTML = '<option value="">-- Wybierz --</option>'; originalWidthOptions.forEach(opt => widthSelect.add(new Option(opt.text, opt.value))); widthSelect.value = ""; widthSelect.removeEventListener('change', handleMugShelfWidthChange); widthSelect.removeEventListener('change', checkCustomWidth); widthSelect.addEventListener('change', checkCustomWidth); if(customWidthInput && customWidthDisplay && customWidthFee) { customWidthInput.style.display = 'none'; customWidthDisplay.style.display = 'none'; customWidthFee.style.display = 'none'; } heightSelect.innerHTML = '<option value="">-- Wybierz --</option>'; originalHeightOptions.forEach(opt => heightSelect.add(new Option(opt.text, opt.value))); heightSelect.value = ""; heightSelect.disabled = false; if(heightLabel) heightLabel.classList.remove('text-stone-400'); depthSelect.innerHTML = '<option value="">-- Wybierz --</option>'; depthSelect.value = ""; depthSelect.disabled = false; if(depthLabel) depthLabel.classList.remove('text-stone-400'); shelfCountSelect.innerHTML = '<option value="">-- Wybierz --</option>'; shelfCountSelect.value = ""; shelfCountSelect.disabled = false; heightSelect.removeEventListener('change', handleMugShelfHeightChange); heightSelect.removeEventListener('change', handleDimensionChange); heightSelect.addEventListener('change', handleDimensionChange); }
-        function init3D() { const container = threeJsCanvasWrapper; if (!container) { console.error("Three.js canvas wrapper (#threeJsCanvasWrapper) not found."); return; } scene = new THREE.Scene(); scene.background = new THREE.Color(0xf0f0f0); camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000); camera.position.set(initialCameraPosition.x, initialCameraPosition.y, initialCameraPosition.z); renderer = new THREE.WebGLRenderer({ antialias: true }); renderer.setSize(container.clientWidth, container.clientHeight); container.innerHTML = ''; container.appendChild(renderer.domElement); scene.add(new THREE.HemisphereLight(0xffffff, 0x444444, 1)); const directionalLight = new THREE.DirectionalLight(0xffffff, 0.6); directionalLight.position.set(4, 8, 3); scene.add(directionalLight); controls = new THREE.OrbitControls(camera, renderer.domElement); controls.enableDamping = true; controls.target.set(0, 0, 0); if (controls) { controls.addEventListener('start', () => { autoRotateEnabled = false; }); controls.addEventListener('end', () => { if (shelfTypeSelect && shelfTypeSelect.value !== 'mug_shelf') { autoRotateEnabled = true; } else { autoRotateEnabled = false; } }); } window.addEventListener('resize', onWindowResize, false); updatePreview(); animate(); }
+        function init3D() { const container = threeJsCanvasWrapper; if (!container) { console.error("Three.js canvas wrapper (#threeJsCanvasWrapper) not found."); return; } scene = new THREE.Scene(); scene.background = new THREE.Color(0xf0f0f0); camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000); camera.position.set(initialCameraPosition.x, initialCameraPosition.y, initialCameraPosition.z); renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true }); renderer.setSize(container.clientWidth, container.clientHeight); container.innerHTML = ''; container.appendChild(renderer.domElement); scene.add(new THREE.HemisphereLight(0xffffff, 0x444444, 1)); const directionalLight = new THREE.DirectionalLight(0xffffff, 0.6); directionalLight.position.set(4, 8, 3); scene.add(directionalLight); controls = new THREE.OrbitControls(camera, renderer.domElement); controls.enableDamping = true; controls.target.set(0, 0, 0); if (controls) { controls.addEventListener('start', () => { autoRotateEnabled = false; }); controls.addEventListener('end', () => { if (shelfTypeSelect && shelfTypeSelect.value !== 'mug_shelf') { autoRotateEnabled = true; } else { autoRotateEnabled = false; } }); } window.addEventListener('resize', onWindowResize, false); updatePreview(); animate(); }
         function onWindowResize() { const container = threeJsCanvasWrapper; if (!camera || !renderer || !container) return; const width = container.clientWidth; const height = container.clientHeight; if (width > 0 && height > 0) { camera.aspect = width / height; camera.updateProjectionMatrix(); renderer.setSize(width, height); } else { console.warn("Skipping resize for 3D canvas wrapper with zero dimensions."); } updateDividerIconsVisibility(); }
         function animate() { requestAnimationFrame(animate); if (autoRotateEnabled && shelfGroup) { shelfGroup.rotation.y += 0.005; } if(controls) controls.update(); if(renderer && scene && camera) renderer.render(scene, camera); }
-        function buildShelfModel(config) { const group = new THREE.Group(); const { width: widthNum, height: heightVal, depth: depthVal, shelfCount: shelfCountVal, shelfType, noTopShelf, noBottomShelf, addDividersTop, addDividersMiddle, addDividersBottom } = config; const thickness = 0.18; const width = widthNum / 10; const height = parseFloat(heightVal) / 10; const depth = parseFloat(depthVal) / 10; const shelfCount = parseInt(shelfCountVal); const defaultMaterial = new THREE.MeshStandardMaterial(originalPreviewMaterialParams); if (isNaN(width) || isNaN(height) || isNaN(depth) || width <= 0 || height <= 0 || depth <= 0) return group; let topPanel, bottomPanel; if (!noBottomShelf) { const bottomGeometry = new THREE.BoxGeometry(width, thickness, depth); bottomPanel = new THREE.Mesh(bottomGeometry, defaultMaterial); bottomPanel.position.set(0, -height / 2 + thickness / 2, 0); group.add(bottomPanel); } if (!noTopShelf) { const topGeometry = new THREE.BoxGeometry(width, thickness, depth); topPanel = new THREE.Mesh(topGeometry, defaultMaterial); topPanel.position.set(0, height / 2 - thickness / 2, 0); group.add(topPanel); } const sideGeometry = new THREE.BoxGeometry(thickness, height, depth); const leftSideMesh = new THREE.Mesh(sideGeometry, defaultMaterial); leftSideMesh.position.set(-width / 2 + thickness / 2, 0, 0); group.add(leftSideMesh); const rightSideMesh = new THREE.Mesh(sideGeometry, defaultMaterial); rightSideMesh.position.set(width / 2 - thickness / 2, 0, 0); group.add(rightSideMesh); const internalShelves = []; if (!isNaN(shelfCount) && shelfCount > 0) { if (shelfType === 'mug_shelf' && heightVal === '60' && shelfCount === 3 && topPanel) { const fixedGap = 1.09; const topPanelBottomY = topPanel.position.y - thickness / 2; let lastShelfY = topPanelBottomY; for (let i = 0; i < shelfCount; i++) { const shelfY = lastShelfY - fixedGap - thickness / 2; const shelfGeometry = new THREE.BoxGeometry(width - 2 * thickness, thickness, depth); const shelfMesh = new THREE.Mesh(shelfGeometry, defaultMaterial); shelfMesh.position.set(0, shelfY, 0); group.add(shelfMesh); internalShelves.push(shelfMesh); lastShelfY = shelfY - thickness / 2; } } else { const topExists = !!topPanel; const bottomExists = !!bottomPanel; const topThicknessActual = topExists ? thickness : 0; const bottomThicknessActual = bottomExists ? thickness : 0; const totalAvailableHeight = height - topThicknessActual - bottomThicknessActual; if (totalAvailableHeight >= shelfCount * thickness && (shelfCount + 1) > 0) { const gap = (totalAvailableHeight - shelfCount * thickness) / (shelfCount + 1); let startY = bottomExists ? (-height / 2 + bottomThicknessActual) : (-height / 2); for (let i = 1; i <= shelfCount; i++) { const shelfY = startY + i * gap + (i - 0.5) * thickness; const shelfGeometry = new THREE.BoxGeometry(width - 2 * thickness, thickness, depth); const shelfMesh = new THREE.Mesh(shelfGeometry, defaultMaterial); shelfMesh.position.set(0, shelfY, 0); group.add(shelfMesh); internalShelves.push(shelfMesh); } } } } if (shelfType === 'mug_shelf' && topPanel && bottomPanel && internalShelves.length > 0) { if (addDividersTop || addDividersMiddle || addDividersBottom) { const innerWidthForDividers = width - 2 * thickness; const dividerThicknessThreeJs = thickness; let levels = []; internalShelves.sort((a, b) => a.position.y - b.position.y); if (heightVal === '60' && internalShelves.length === 3) { levels = [ { top: topPanel.position.y - thickness / 2, bottom: internalShelves[2].position.y + thickness/2 }, { top: internalShelves[2].position.y - thickness/2, bottom: internalShelves[1].position.y + thickness/2 }, { top: internalShelves[1].position.y - thickness/2, bottom: internalShelves[0].position.y + thickness/2 }, { top: internalShelves[0].position.y - thickness/2, bottom: bottomPanel.position.y + thickness / 2 } ]; } else if (heightVal === '40' && internalShelves.length === 2) { levels = [ { top: topPanel.position.y - thickness / 2, bottom: internalShelves[1].position.y + thickness/2 }, { top: internalShelves[1].position.y - thickness/2, bottom: internalShelves[0].position.y + thickness/2 }, { top: internalShelves[0].position.y - thickness/2, bottom: bottomPanel.position.y + thickness / 2 } ]; } const drawDividersForLevel = (levelData) => { const levelH = Math.max(0.01, levelData.top - levelData.bottom); if (levelH <= 0.01) return; const yCenter = levelData.bottom + levelH / 2; const dividerGeometry = new THREE.BoxGeometry(dividerThicknessThreeJs, levelH, depth); if (widthNum == 84) { const numPhysicalDividers = 3; const singleCompartmentWidth = 1.25; let currentXPos = -innerWidthForDividers / 2; for (let i = 0; i < numPhysicalDividers; i++) { currentXPos += singleCompartmentWidth; const dividerXCenter = currentXPos + (dividerThicknessThreeJs / 2); const dividerMesh = new THREE.Mesh(dividerGeometry.clone(), defaultMaterial); dividerMesh.position.set(dividerXCenter, yCenter, 0); group.add(dividerMesh); currentXPos += dividerThicknessThreeJs; } } else { const numDividersOriginal = (widthNum == 60) ? 3 : ((widthNum == 44) ? 2 : 0); if (numDividersOriginal > 0) { const dividerSpacing = innerWidthForDividers / (numDividersOriginal + 1); for (let i = 1; i <= numDividersOriginal; i++) { const xPos = (-innerWidthForDividers / 2) + i * dividerSpacing; const dividerMesh = new THREE.Mesh(dividerGeometry.clone(), defaultMaterial); dividerMesh.position.set(xPos, yCenter, 0); group.add(dividerMesh); } } } }; if (addDividersTop && levels[0]) drawDividersForLevel(levels[0]); if (addDividersMiddle && levels[1]) drawDividersForLevel(levels[1]); if (addDividersBottom && levels[2]) drawDividersForLevel(levels[2]); } } return group; }
-        function updatePreview() { updateDividerIconActiveStates(); if (!scene) return; if (shelfGroup) scene.remove(shelfGroup); const shelfType = shelfTypeSelect.value; const config = { width: getCurrentWidth(), height: heightSelect.value, depth: depthSelect.value, shelfCount: shelfCountSelect.value, shelfType: shelfType, noTopShelf: document.getElementById("noTopShelf")?.checked, noBottomShelf: (shelfType === "standing" && document.getElementById("noBottomShelf")?.checked), addDividersTop: shelfType === 'mug_shelf' && dividersTopCheckbox?.checked, addDividersMiddle: shelfType === 'mug_shelf' && dividersMiddleCheckbox?.checked, addDividersBottom: shelfType === 'mug_shelf' && dividersBottomCheckbox?.checked }; shelfGroup = buildShelfModel(config); shelfGroup.scale.set(1.2, 1.2, 1.2); shelfGroup.position.y = -1; scene.add(shelfGroup); }
+        function buildShelfModel(config) { const group = new THREE.Group(); const { width: widthNum, height: heightVal, depth: depthVal, shelfCount: shelfCountVal, shelfType, noTopShelf, noBottomShelf, addDividersTop, addDividersMiddle, addDividersBottom } = config; const thickness = 0.18; const width = widthNum / 10; const height = parseFloat(heightVal) / 10; const depth = parseFloat(depthVal) / 10; const shelfCount = parseInt(shelfCountVal); const defaultMaterial = new THREE.MeshStandardMaterial(originalPreviewMaterialParams); if (isNaN(width) || isNaN(height) || isNaN(depth) || width <= 0 || height <= 0 || depth <= 0) return group; let topPanel, bottomPanel; if (!noBottomShelf) { const bottomGeometry = new THREE.BoxGeometry(width, thickness, depth); bottomPanel = new THREE.Mesh(bottomGeometry, defaultMaterial); bottomPanel.position.set(0, -height / 2 + thickness / 2, 0); bottomPanel.name = "bottomPanel"; group.add(bottomPanel); } if (!noTopShelf) { const topGeometry = new THREE.BoxGeometry(width, thickness, depth); topPanel = new THREE.Mesh(topGeometry, defaultMaterial); topPanel.position.set(0, height / 2 - thickness / 2, 0); topPanel.name = "topPanel"; group.add(topPanel); } const sideGeometry = new THREE.BoxGeometry(thickness, height, depth); const leftSideMesh = new THREE.Mesh(sideGeometry, defaultMaterial); leftSideMesh.position.set(-width / 2 + thickness / 2, 0, 0); leftSideMesh.name = "leftSide"; group.add(leftSideMesh); const rightSideMesh = new THREE.Mesh(sideGeometry, defaultMaterial); rightSideMesh.position.set(width / 2 - thickness / 2, 0, 0); rightSideMesh.name = "rightSide"; group.add(rightSideMesh); const internalShelves = []; if (!isNaN(shelfCount) && shelfCount > 0) { if (shelfType === 'mug_shelf' && heightVal === '60' && shelfCount === 3 && topPanel) { const fixedGap = 1.09; const topPanelBottomY = topPanel.position.y - thickness / 2; let lastShelfY = topPanelBottomY; for (let i = 0; i < shelfCount; i++) { const shelfY = lastShelfY - fixedGap - thickness / 2; const shelfGeometry = new THREE.BoxGeometry(width - 2 * thickness, thickness, depth); const shelfMesh = new THREE.Mesh(shelfGeometry, defaultMaterial); shelfMesh.position.set(0, shelfY, 0); shelfMesh.name = `internalShelf_${i}`; group.add(shelfMesh); internalShelves.push(shelfMesh); lastShelfY = shelfY - thickness / 2; } } else { const topExists = !!topPanel; const bottomExists = !!bottomPanel; const topThicknessActual = topExists ? thickness : 0; const bottomThicknessActual = bottomExists ? thickness : 0; const totalAvailableHeight = height - topThicknessActual - bottomThicknessActual; if (totalAvailableHeight >= shelfCount * thickness && (shelfCount + 1) > 0) { const gap = (totalAvailableHeight - shelfCount * thickness) / (shelfCount + 1); let startY = bottomExists ? (-height / 2 + bottomThicknessActual) : (-height / 2); for (let i = 1; i <= shelfCount; i++) { const shelfY = startY + i * gap + (i - 0.5) * thickness; const shelfGeometry = new THREE.BoxGeometry(width - 2 * thickness, thickness, depth); const shelfMesh = new THREE.Mesh(shelfGeometry, defaultMaterial); shelfMesh.position.set(0, shelfY, 0); shelfMesh.name = `internalShelf_${i-1}`; group.add(shelfMesh); internalShelves.push(shelfMesh); } } } } if (shelfType === 'mug_shelf' && topPanel && bottomPanel && internalShelves.length > 0) { if (addDividersTop || addDividersMiddle || addDividersBottom) { const innerWidthForDividers = width - 2 * thickness; const dividerThicknessThreeJs = thickness; let levels = []; internalShelves.sort((a, b) => a.position.y - b.position.y); if (heightVal === '60' && internalShelves.length === 3) { levels = [ { top: topPanel.position.y - thickness / 2, bottom: internalShelves[2].position.y + thickness/2 }, { top: internalShelves[2].position.y - thickness/2, bottom: internalShelves[1].position.y + thickness/2 }, { top: internalShelves[1].position.y - thickness/2, bottom: internalShelves[0].position.y + thickness/2 }, { top: internalShelves[0].position.y - thickness/2, bottom: bottomPanel.position.y + thickness / 2 } ]; } else if (heightVal === '40' && internalShelves.length === 2) { levels = [ { top: topPanel.position.y - thickness / 2, bottom: internalShelves[1].position.y + thickness/2 }, { top: internalShelves[1].position.y - thickness/2, bottom: internalShelves[0].position.y + thickness/2 }, { top: internalShelves[0].position.y - thickness/2, bottom: bottomPanel.position.y + thickness / 2 } ]; } const drawDividersForLevel = (levelData) => { const levelH = Math.max(0.01, levelData.top - levelData.bottom); if (levelH <= 0.01) return; const yCenter = levelData.bottom + levelH / 2; const dividerGeometry = new THREE.BoxGeometry(dividerThicknessThreeJs, levelH, depth); if (widthNum == 84) { const numPhysicalDividers = 3; const singleCompartmentWidth = 1.25; let currentXPos = -innerWidthForDividers / 2; for (let i = 0; i < numPhysicalDividers; i++) { currentXPos += singleCompartmentWidth; const dividerXCenter = currentXPos + (dividerThicknessThreeJs / 2); const dividerMesh = new THREE.Mesh(dividerGeometry.clone(), defaultMaterial); dividerMesh.position.set(dividerXCenter, yCenter, 0); group.add(dividerMesh); currentXPos += dividerThicknessThreeJs; } } else { const numDividersOriginal = (widthNum == 60) ? 3 : ((widthNum == 44) ? 2 : 0); if (numDividersOriginal > 0) { const dividerSpacing = innerWidthForDividers / (numDividersOriginal + 1); for (let i = 1; i <= numDividersOriginal; i++) { const xPos = (-innerWidthForDividers / 2) + i * dividerSpacing; const dividerMesh = new THREE.Mesh(dividerGeometry.clone(), defaultMaterial); dividerMesh.position.set(xPos, yCenter, 0); group.add(dividerMesh); } } } }; if (addDividersTop && levels[0]) drawDividersForLevel(levels[0]); if (addDividersMiddle && levels[1]) drawDividersForLevel(levels[1]); if (addDividersBottom && levels[2]) drawDividersForLevel(levels[2]); } } return group; }
+        
+        function updatePreview(animateChanges = true) {
+            updateDividerIconActiveStates();
+            if (!scene) return;
+
+            const config = {
+                width: getCurrentWidth(),
+                height: heightSelect.value,
+                depth: depthSelect.value,
+                shelfCount: shelfCountSelect.value,
+                shelfType: shelfTypeSelect.value,
+                noTopShelf: document.getElementById("noTopShelf")?.checked,
+                noBottomShelf: shelfTypeSelect.value === "standing" && document.getElementById("noBottomShelf")?.checked,
+                addDividersTop: shelfTypeSelect.value === 'mug_shelf' && dividersTopCheckbox?.checked,
+                addDividersMiddle: shelfTypeSelect.value === 'mug_shelf' && dividersMiddleCheckbox?.checked,
+                addDividersBottom: shelfTypeSelect.value === 'mug_shelf' && dividersBottomCheckbox?.checked
+            };
+            
+            const isConfigValid = config.width && config.height && config.depth && config.shelfCount && config.shelfType;
+
+            if (!isConfigValid) {
+                if (shelfGroup) {
+                    scene.remove(shelfGroup);
+                    shelfGroup = null;
+                }
+                lastValidConfig = {};
+                return;
+            }
+
+            const isMugShelf = config.shelfType === 'mug_shelf';
+            if (isMugShelf || !animateChanges) {
+                if (shelfGroup) scene.remove(shelfGroup);
+                shelfGroup = buildShelfModel(config);
+                shelfGroup.scale.set(1.2, 1.2, 1.2);
+                shelfGroup.position.y = -1;
+                scene.add(shelfGroup);
+                lastValidConfig = config;
+                return;
+            }
+            
+            if (currentAnimationTimeline) {
+                currentAnimationTimeline.kill();
+            }
+            
+            currentAnimationTimeline = gsap.timeline();
+
+            const animDuration = 0.5;
+            const thickness = 0.18;
+            const targetWidth = config.width / 10;
+            const targetHeight = parseFloat(config.height) / 10;
+            const targetDepth = config.depth / 10;
+            const targetShelfCount = parseInt(config.shelfCount);
+            
+            if (!shelfGroup) {
+                shelfGroup = new THREE.Group();
+                shelfGroup.scale.set(1.2, 1.2, 1.2);
+                shelfGroup.position.y = -1;
+                scene.add(shelfGroup);
+            }
+
+            // Create or update main frame
+            let leftSide = shelfGroup.getObjectByName("leftSide");
+            let rightSide = shelfGroup.getObjectByName("rightSide");
+            let topPanel = shelfGroup.getObjectByName("topPanel");
+            let bottomPanel = shelfGroup.getObjectByName("bottomPanel");
+
+            const defaultMaterial = new THREE.MeshStandardMaterial(originalPreviewMaterialParams);
+
+            if (!leftSide) {
+                leftSide = new THREE.Mesh(new THREE.BoxGeometry(thickness, targetHeight, targetDepth), defaultMaterial);
+                leftSide.name = "leftSide";
+                shelfGroup.add(leftSide);
+            }
+            if (!rightSide) {
+                rightSide = new THREE.Mesh(new THREE.BoxGeometry(thickness, targetHeight, targetDepth), defaultMaterial);
+                rightSide.name = "rightSide";
+                shelfGroup.add(rightSide);
+            }
+            
+            // --- Animate Height, Width, and Depth ---
+            currentAnimationTimeline.to(leftSide.scale, { y: targetHeight / leftSide.geometry.parameters.height, z: targetDepth / leftSide.geometry.parameters.depth, duration: animDuration }, 0);
+            currentAnimationTimeline.to(rightSide.scale, { y: targetHeight / rightSide.geometry.parameters.height, z: targetDepth / rightSide.geometry.parameters.depth, duration: animDuration }, 0);
+            currentAnimationTimeline.to(leftSide.position, { x: -targetWidth / 2 + thickness / 2, duration: animDuration }, 0);
+            currentAnimationTimeline.to(rightSide.position, { x: targetWidth / 2 - thickness / 2, duration: animDuration }, 0);
+
+            // Handle Top/Bottom panels
+            const topExists = !config.noTopShelf;
+            if (topExists) {
+                if (!topPanel) {
+                    topPanel = new THREE.Mesh(new THREE.BoxGeometry(targetWidth, thickness, targetDepth), defaultMaterial);
+                    topPanel.name = "topPanel";
+                    shelfGroup.add(topPanel);
+                }
+                currentAnimationTimeline.to(topPanel.scale, { x: targetWidth / topPanel.geometry.parameters.width, z: targetDepth / topPanel.geometry.parameters.depth, duration: animDuration }, 0);
+                currentAnimationTimeline.to(topPanel.position, { y: targetHeight / 2 - thickness / 2, duration: animDuration }, 0);
+            } else if (topPanel) {
+                shelfGroup.remove(topPanel);
+            }
+
+            const bottomExists = !config.noBottomShelf;
+            if (bottomExists) {
+                if (!bottomPanel) {
+                    bottomPanel = new THREE.Mesh(new THREE.BoxGeometry(targetWidth, thickness, targetDepth), defaultMaterial);
+                    bottomPanel.name = "bottomPanel";
+                    shelfGroup.add(bottomPanel);
+                }
+                currentAnimationTimeline.to(bottomPanel.scale, { x: targetWidth / bottomPanel.geometry.parameters.width, z: targetDepth / bottomPanel.geometry.parameters.depth, duration: animDuration }, 0);
+                currentAnimationTimeline.to(bottomPanel.position, { y: -targetHeight / 2 + thickness / 2, duration: animDuration }, 0);
+            } else if (bottomPanel) {
+                shelfGroup.remove(bottomPanel);
+            }
+            
+            // --- Animate Shelves ---
+            const topThicknessActual = topExists ? thickness : 0;
+            const bottomThicknessActual = bottomExists ? thickness : 0;
+            const totalAvailableHeight = targetHeight - topThicknessActual - bottomThicknessActual;
+            const gap = (totalAvailableHeight - targetShelfCount * thickness) / (targetShelfCount + 1);
+            let startY = bottomExists ? (-targetHeight / 2 + bottomThicknessActual) : (-targetHeight / 2);
+
+            const existingShelves = [];
+            shelfGroup.children.forEach(child => {
+                if (child.name.startsWith("internalShelf_")) {
+                    existingShelves.push(child);
+                }
+            });
+
+            // Remove extra shelves
+            if (existingShelves.length > targetShelfCount) {
+                for (let i = targetShelfCount; i < existingShelves.length; i++) {
+                    const shelfToRemove = shelfGroup.getObjectByName(`internalShelf_${i}`);
+                    if (shelfToRemove) {
+                         currentAnimationTimeline.to(shelfToRemove.scale, { x: 0.01, y: 0.01, z: 0.01, duration: animDuration / 2, onComplete: () => shelfGroup.remove(shelfToRemove) }, 0);
+                    }
+                }
+            }
+            
+            // Add or update shelves
+            for (let i = 0; i < targetShelfCount; i++) {
+                const shelfName = `internalShelf_${i}`;
+                let shelf = shelfGroup.getObjectByName(shelfName);
+                const targetY = startY + (i + 1) * gap + (i + 0.5) * thickness;
+
+                if (!shelf) { // Add new shelf with animation
+                    shelf = new THREE.Mesh(new THREE.BoxGeometry(targetWidth - 2 * thickness, thickness, targetDepth), defaultMaterial);
+                    shelf.name = shelfName;
+                    shelf.position.y = targetY;
+                    shelf.scale.set(0.01, 1, 1); // Start scaled down
+                    shelfGroup.add(shelf);
+                    currentAnimationTimeline.to(shelf.scale, { x: 1, duration: animDuration, delay: (i * 0.1) }, 0);
+                } else { // Update existing shelf
+                    currentAnimationTimeline.to(shelf.position, { y: targetY, duration: animDuration }, 0);
+                    currentAnimationTimeline.to(shelf.scale, { x: (targetWidth - 2 * thickness) / shelf.geometry.parameters.width, z: targetDepth / shelf.geometry.parameters.depth, duration: animDuration }, 0);
+                }
+            }
+
+            lastValidConfig = { ...config };
+        }
+
         function generate3dSnapshotFromCurrentModel() { return new Promise((resolve, reject) => { if (!shelfGroup) { return reject(new Error("Główny model 3D (shelfGroup) nie istnieje.")); } const modelToClone = shelfGroup; const snapshotScene = new THREE.Scene(); snapshotScene.background = new THREE.Color(0xf5f5f4); const snapshotCamera = new THREE.PerspectiveCamera(35, 1, 0.1, 1000); snapshotCamera.position.set(12, 6, 12); snapshotCamera.lookAt(0, 0, 0); snapshotScene.add(new THREE.HemisphereLight(0xffffff, 0x444444, 1.2)); const dirLight = new THREE.DirectionalLight(0xffffff, 0.8); dirLight.position.set(5, 10, 7.5); snapshotScene.add(dirLight); const clonedGroup = modelToClone.clone(true); clonedGroup.rotation.set(0, 0, 0); clonedGroup.scale.set(1, 1, 1); const box = new THREE.Box3().setFromObject(clonedGroup); const center = box.getCenter(new THREE.Vector3()); clonedGroup.position.sub(center); snapshotScene.add(clonedGroup); const snapshotRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true }); snapshotRenderer.setPixelRatio(window.devicePixelRatio); snapshotRenderer.setSize(128, 128); setTimeout(() => { try { snapshotRenderer.render(snapshotScene, snapshotCamera); const dataUrl = snapshotRenderer.domElement.toDataURL('image/png'); snapshotScene.traverse(object => { if (!object.isMesh) return; if (object.geometry) object.geometry.dispose(); if (object.material) { if (Array.isArray(object.material)) { object.material.forEach(material => material.dispose()); } else { object.material.dispose(); } } }); snapshotRenderer.dispose(); resolve(dataUrl); } catch (e) { snapshotRenderer.dispose(); reject(e); } }, 50); }); }
         function reset3DView() { if (controls && camera) { controls.reset(); camera.position.set(initialCameraPosition.x, initialCameraPosition.y, initialCameraPosition.z); controls.target.set(0, 0, 0); controls.update(); setActiveMobileIcon(null); if (shelfTypeSelect && shelfTypeSelect.value !== 'mug_shelf') { autoRotateEnabled = true; } } }
         function computePriceDetailed() { const shelfType = shelfTypeSelect.value; const widthVal = getCurrentWidth(); const heightVal = heightSelect.value; const depthVal = depthSelect.value; const shelfCountVal = shelfCountSelect.value; if (!shelfType || isNaN(widthVal) || !heightVal || !depthVal || !shelfCountVal || widthVal === "" || heightVal === "" || depthVal === "" || shelfCountVal === "" || (shelfType !== 'mug_shelf' && shelfCountVal === "0")) { return null; } let basePrice = null; let extraFee = 0; let deduction = 0; let dividerFee = 0; if (shelfType === 'mug_shelf') { const selectedMountRadio = document.querySelector('input[name="mugShelfMount"]:checked'); if (!selectedMountRadio) return null; if (mugShelfPricing[String(widthVal)]?.[heightVal] !== undefined) { basePrice = mugShelfPricing[String(widthVal)][heightVal]; } else { return null; } const dividersTopChecked = dividersTopCheckbox?.checked; const dividersMiddleChecked = dividersMiddleCheckbox?.checked; const dividersBottomChecked = dividersBottomCheckbox?.checked; if (widthVal == 84) { if (dividersTopChecked) dividerFee += 33; if (dividersMiddleChecked) dividerFee += 33; if (dividersBottomChecked) dividerFee += 33; } else { let feePerDividerRow = 0; if (widthVal == 44) feePerDividerRow = 27; else if (widthVal == 60) feePerDividerRow = 40; if (feePerDividerRow > 0) { if (dividersTopChecked) dividerFee += feePerDividerRow; if (dividersMiddleChecked) dividerFee += feePerDividerRow; if (dividersBottomChecked) dividerFee += feePerDividerRow; } } } else { let baseWidthKey; const isCustomWidth = widthSelect.value === 'custom'; if (isCustomWidth) { if (isNaN(widthVal) || widthVal < 35 || widthVal > 59) return null; baseWidthKey = widthVal < 39 ? "34" : widthVal < 47 ? "44" : widthVal < 54 ? "50" : "60"; extraFee = 50; } else { baseWidthKey = String(widthVal); } if (pricing[baseWidthKey]?.[heightVal]?.[depthVal]?.[shelfCountVal] !== undefined) { basePrice = pricing[baseWidthKey][heightVal][depthVal][shelfCountVal]; } else { return null; } if (document.getElementById('noTopShelf')?.checked) deduction += 10; if (shelfType === 'standing' && document.getElementById('noBottomShelf')?.checked) deduction += 10; } if (basePrice === null) return null; const totalPrice = basePrice + extraFee + dividerFee - deduction; return { base: basePrice, extra: extraFee, divider: dividerFee, deduction: deduction, total: Math.max(50, totalPrice) }; }
@@ -2066,11 +2226,10 @@
                 
                 if (cartSummaryModalOverlay) {
     cartSummaryModalOverlay.addEventListener('click', (event) => { if (event.target === cartSummaryModalOverlay) closeCartSummaryModal(); });
-    cartSummaryModalCloseBtnTop.addEventListener('click', closeCartSummaryModal);
-    // cartSummaryModalCloseBtnBottom.addEventListener('click', closeCartSummaryModal);
-    downloadCartSummaryBtn.addEventListener('click', downloadFullCartSummary);
+    if(cartSummaryModalCloseBtnTop) cartSummaryModalCloseBtnTop.addEventListener('click', closeCartSummaryModal);
+    if(downloadCartSummaryBtn) downloadCartSummaryBtn.addEventListener('click', downloadFullCartSummary);
     
-    copyAllCodesBtn.addEventListener('click', () => {
+    if(copyAllCodesBtn) copyAllCodesBtn.addEventListener('click', () => {
         cartSummaryAllCodes.select();
         navigator.clipboard.writeText(cartSummaryAllCodes.value);
         const originalText = copyAllCodesBtn.innerHTML;
@@ -2078,7 +2237,7 @@
         setTimeout(() => { copyAllCodesBtn.innerHTML = originalText; }, 2000);
     });
 
-    cartSummaryGoToAllegroBtn.addEventListener('click', () => {
+    if(cartSummaryGoToAllegroBtn) cartSummaryGoToAllegroBtn.addEventListener('click', () => {
         navigator.clipboard.writeText(cartSummaryAllCodes.value).then(() => {
            window.open("https://allegro.pl/oferta/zaprojektuj-wlasna-polke-podaj-wymiar-i-wybierz-kolory-do-kuchni-pokoju-17254488792", "_blank");
            closeCartSummaryModal();
@@ -2089,7 +2248,7 @@
 } else { console.error("Nie znaleziono elementów nowego modala podsumowania koszyka."); }
 
                 if (shelfTypeSelect) { shelfTypeSelect.value = 'standing'; shelfTypeSelect.dispatchEvent(new Event('change', { bubbles: true })); }
-                const setupDividerButton = (btn, checkbox) => { if (!btn || !checkbox) { return; } btn.addEventListener('click', () => { checkbox.checked = !checkbox.checked; updateDividerIconActiveStates(); updatePreview(); updateOrderSummary(); }); checkbox.addEventListener('change', () => { updateDividerIconActiveStates(); }); };
+                const setupDividerButton = (btn, checkbox) => { if (!btn || !checkbox) { return; } btn.addEventListener('click', () => { checkbox.checked = !checkbox.checked; checkbox.dispatchEvent(new Event('change', { bubbles: true })); }); checkbox.addEventListener('change', () => { updateDividerIconActiveStates(); }); };
                 setupDividerButton(addTopDividerBtn, dividersTopCheckbox);
                 setupDividerButton(addMiddleDividerBtn, dividersMiddleCheckbox);
                 setupDividerButton(addBottomDividerBtn, dividersBottomCheckbox);
