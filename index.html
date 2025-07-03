@@ -1732,8 +1732,23 @@
             }
             
             if (cartDiscountReminder) {
-                if (totalItems === 1) { cartDiscountReminder.innerHTML = `✨ Świetny wybór! Dodaj jeszcze jedną półkę, aby otrzymać <b>-25% rabatu</b> na tańszą z nich.`; cartDiscountReminder.style.display = 'block';
-                } else { cartDiscountReminder.style.display = 'none'; }
+                if (totalItems === 1) {
+                    // Stan 1: Zachęta (zielone tło)
+                    cartDiscountReminder.innerHTML = `✨ Świetny wybór! Dodaj jeszcze jedną półkę, aby otrzymać <b>-25% rabatu</b> na tańszą z nich.`;
+                    cartDiscountReminder.className = 'p-3 bg-emerald-50 border-b border-emerald-200 text-center text-sm text-emerald-800';
+                    cartDiscountReminder.style.display = 'block';
+                } else if (totalItems >= 2) {
+                    // Stan 2: Powiadomienie o rabacie (z krótszym tekstem)
+                    cartDiscountReminder.innerHTML = `Świetnie! 🎁 Rabat <b>25%</b> został naliczony.`;
+
+                    // ZMIANA: Powrót do zielonego tła, zgodnie z Twoją prośbą.
+                    cartDiscountReminder.className = 'p-3 bg-emerald-50 border-b border-emerald-200 text-center text-sm text-emerald-800 font-semibold';
+                    
+                    cartDiscountReminder.style.display = 'block';
+                } else {
+                    // Stan 0: Ukryj element, gdy koszyk jest pusty
+                    cartDiscountReminder.style.display = 'none';
+                }
             }
 
             const totals = calculateCartTotal();
