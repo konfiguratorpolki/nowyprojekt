@@ -1000,13 +1000,96 @@
         transform: scale(1);
     }
 
+    /* ---- POCZĄTEK STYLÓW ANIMACJI RABATU "PRICE SLASH" ---- */
+
+    /* Animacja "trzęsienia się" ceny */
+    @keyframes price-wobble {
+      0%, 100% { transform: translateX(0); }
+      15% { transform: translateX(-5px) rotate(-3deg); }
+      30% { transform: translateX(5px) rotate(3deg); }
+      45% { transform: translateX(-3px) rotate(-2deg); }
+      60% { transform: translateX(3px) rotate(2deg); }
+      75% { transform: translateX(0); }
+    }
+
+    /* Animacja pojawienia się linii rabatu */
+    @keyframes pop-in {
+      0% { opacity: 0; transform: scale(0.8); }
+      70% { opacity: 1; transform: scale(1.1); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    /* Animacja "błysku" finalnej ceny */
+    @keyframes final-price-glow {
+      0%, 100% { 
+        background-color: transparent;
+        color: #1f2937;
+        transform: scale(1);
+      }
+      50% { 
+        background-color: #ecfdf5; /* Jasnozielone tło */
+        color: #065f46; /* Ciemnozielony tekst */
+        transform: scale(1.05);
+        box-shadow: 0 0 15px rgba(22, 163, 74, 0.4);
+      }
+    }
+
+    /* Animacja przekreślenia */
+    @keyframes slash-reveal {
+      from {
+        width: 0%;
+      }
+      to {
+        width: 105%; /* Lekko wychodzi poza element dla lepszego efektu */
+      }
+    }
+
+    /* Klasy dodawane przez JS do uruchomienia animacji */
+    .discount-subtotal-wobble {
+      animation: price-wobble 0.8s ease-in-out;
+    }
+
+    .discount-line-pop {
+      animation: pop-in 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+      animation-delay: 0.3s; /* Pojawia się po chwili trzęsienia */
+      opacity: 0; /* Ukryty na początku */
+    }
+
+    .discount-total-glow > span { /* Celujemy w wewnętrzny span, by tło nie rozciągało się na całą szerokość */
+      display: inline-block; /* Konieczne do animacji tła i transformacji */
+      border-radius: 0.25rem;
+      padding: 2px 4px;
+      margin: -2px -4px;
+      animation: final-price-glow 1.2s ease-in-out forwards;
+      animation-delay: 0.6s; /* Uruchamia się pod koniec */
+    }
+
+    .discount-subtotal-slash {
+      position: relative;
+      color: #9ca3af; /* Stara cena staje się szara */
+    }
+
+    .discount-subtotal-slash::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: -2.5%;
+      height: 2px;
+      background-color: #ef4444; /* Czerwony kolor przekreślenia */
+      transform: translateY(-50%) rotate(-10deg);
+      animation: slash-reveal 0.4s ease-out forwards;
+      animation-delay: 0.2s;
+    }
+
+    /* ---- KONIEC STYLÓW ANIMACJI RABATU ---- */
+
 </style>
 </head>
 <body class="flex flex-col justify-center items-center min-h-screen bg-stone-100 font-sans text-stone-800 pb-20 md:pb-0">
 
     <div id="cartPanelOverlay"></div>
     <div id="cartPanel">
-<div id="cartPanelHeader">
+        <div id="cartPanelHeader">
             <h2 id="cartPanelTitle">Twój koszyk</h2>
             <button id="cartPanelCloseBtn" aria-label="Zamknij koszyk">&times;</button>
         </div>
@@ -1031,7 +1114,7 @@
                     <span>Rabat (-25%):</span>
                     <span id="cartDiscountAmount"></span>
                  </div>
-                 <div class="flex justify-between items-baseline font-bold text-base border-t border-stone-200 pt-1 mt-1">
+                 <div class="flex justify-between items-baseline font-bold text-base border-t border-stone-200 pt-1 mt-1" id="cartTotalPriceLine">
                      <span>Do zapłaty:</span>
                      <span id="cartTotalPrice">0,00 zł</span>
                  </div>
@@ -1358,6 +1441,20 @@
             </div>
         </div>
     </div>
+<div id="stickyFooterBar" class="fixed bottom-0 left-0 w-full bg-green-600 shadow-[0_-3px_6px_rgba(0,0,0,0.06)] flex justify-around items-stretch md:hidden z-50">
+        <button onclick="scrollToElementAndHighlight('dimensionSectionAnchor', 'start', this)" title="Przewiń do wymiarów"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75" /> <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v16.5M20.25 3.75v16.5" /> </svg> <span>Wymiary</span> </button>
+        <button onclick="scrollToElementAndHighlight('colorSectionAnchor', 'start', this)" title="Przewiń do kolorów"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42" /> </svg> <span>Kolory</span> </button>
+        <button onclick="scrollToElementAndHighlight('shelfCountSection', 'center', this)" title="Przewiń do dodawania półek"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /> <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 9h16.5M3.75 15h16.5" /> </svg> <span>Półki</span> </button>
+        <button id="show3dButton" title="Pokaż/ukryj podgląd 3D"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="animate-spin-slow"> <path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9.75l-9 5.25M12 21v-9.75" /> </svg> <span>Zobacz 3D</span> </button>
+        
+        <button id="mobileCartButton" class="relative" title="Pokaż koszyk">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mb-1">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+            </svg>
+            <span class="mobile-cart-price text-xs font-bold">Koszyk</span>
+            <span class="cart-badge" style="top: 0; right: 8px; width: 1rem; height: 1rem; font-size: 0.65rem; display: none;">0</span>
+        </button>
+    </div>
 <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
 <script>
 // --- Zmienne globalne i elementy DOM ---
@@ -1391,6 +1488,9 @@
         
         // Zmienna do zarządzania listenerem scrolla w modalu
         let modalScrollListener = null;
+
+        // Zmienna do śledzenia liczby przedmiotów w koszyku dla animacji rabatu
+        let previousCartItemCount = 0;
 
         // --- Predefined Shelf Configurations ---
         const wiszace_configs = [
@@ -1561,9 +1661,40 @@
                  activeAddToCartButton.disabled = false;
             }
         }
+
+        function triggerDiscountAnimation() {
+            const subtotalPriceEl = document.getElementById('cartSubtotalPrice');
+            const discountLineEl = document.getElementById('cartDiscountLine');
+            const totalPriceLineEl = document.getElementById('cartTotalPriceLine');
+
+            if (!subtotalPriceEl || !discountLineEl || !totalPriceLineEl) {
+                console.error("Elementy animacji rabatu nie zostały znalezione.");
+                return;
+            }
+
+            // 1. "Trzęsienie" i przekreślenie ceny częściowej
+            subtotalPriceEl.classList.add('discount-subtotal-wobble', 'discount-subtotal-slash');
+
+            // 2. Pojawienie się linii rabatu z efektem "pop"
+            discountLineEl.classList.add('discount-line-pop');
+
+            // 3. Podświetlenie ceny końcowej
+            totalPriceLineEl.classList.add('discount-total-glow');
+
+            // Usuń wszystkie klasy po zakończeniu animacji, aby mogła się powtórzyć
+            setTimeout(() => {
+                subtotalPriceEl.classList.remove('discount-subtotal-wobble', 'discount-subtotal-slash');
+                discountLineEl.classList.remove('discount-line-pop');
+                totalPriceLineEl.classList.remove('discount-total-glow');
+            }, 2000); // Czas nieco dłuższy niż najdłuższa animacja
+        }
         
         function updateCartDisplay() {
             if (!cartItemsContainer || !cartBadges) return;
+
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const justGotDiscount = totalItems >= 2 && previousCartItemCount < 2;
+            
             cartItemsContainer.innerHTML = '';
             if (cart.length === 0) { if(cartEmptyMessage) { cartEmptyMessage.style.display = 'block'; cartItemsContainer.appendChild(cartEmptyMessage); }
             } else {
@@ -1599,11 +1730,12 @@
                     cartItemsContainer.appendChild(itemElement);
                 });
             }
-            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            
             if (cartDiscountReminder) {
                 if (totalItems === 1) { cartDiscountReminder.innerHTML = `✨ Świetny wybór! Dodaj jeszcze jedną półkę, aby otrzymać <b>-25% rabatu</b> na tańszą z nich.`; cartDiscountReminder.style.display = 'block';
                 } else { cartDiscountReminder.style.display = 'none'; }
             }
+
             const totals = calculateCartTotal();
             if (totals.discount > 0) {
                 cartSubtotalLine.style.display = 'flex';
@@ -1614,10 +1746,17 @@
                 cartSubtotalLine.style.display = 'none';
                 cartDiscountLine.style.display = 'none';
             }
+            
+            if (justGotDiscount) {
+                triggerDiscountAnimation();
+            }
+
             cartTotalPrice.textContent = `${totals.total.toFixed(2)} zł`;
             cartBadges.forEach(badge => { badge.textContent = totalItems; badge.style.display = totalItems > 0 ? 'flex' : 'none'; });
             if(mobileCartButton) { const mobileCartPriceSpan = mobileCartButton.querySelector('.mobile-cart-price'); if(mobileCartPriceSpan) { mobileCartPriceSpan.textContent = totalItems > 0 ? `${totals.total.toFixed(2)} zł` : 'Koszyk'; } }
             cartCheckoutButton.disabled = cart.length === 0;
+
+            previousCartItemCount = totalItems;
         }
         
         function handleCheckout() {
@@ -1974,7 +2113,7 @@
         function init3D() { const container = threeJsCanvasWrapper; if (!container) { console.error("Three.js canvas wrapper (#threeJsCanvasWrapper) not found."); return; } scene = new THREE.Scene(); scene.background = new THREE.Color(0xf0f0f0); camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000); camera.position.set(initialCameraPosition.x, initialCameraPosition.y, initialCameraPosition.z); renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true }); renderer.setSize(container.clientWidth, container.clientHeight); container.innerHTML = ''; container.appendChild(renderer.domElement); scene.add(new THREE.HemisphereLight(0xffffff, 0x444444, 1)); const directionalLight = new THREE.DirectionalLight(0xffffff, 0.6); directionalLight.position.set(4, 8, 3); scene.add(directionalLight); controls = new THREE.OrbitControls(camera, renderer.domElement); controls.enableDamping = true; controls.target.set(0, 0, 0); if (controls) { controls.addEventListener('start', () => { autoRotateEnabled = false; }); controls.addEventListener('end', () => { if (shelfTypeSelect && shelfTypeSelect.value !== 'mug_shelf') { autoRotateEnabled = true; } else { autoRotateEnabled = false; } }); } window.addEventListener('resize', onWindowResize, false); updatePreview(); animate(); }
         function onWindowResize() { const container = threeJsCanvasWrapper; if (!camera || !renderer || !container) return; const width = container.clientWidth; const height = container.clientHeight; if (width > 0 && height > 0) { camera.aspect = width / height; camera.updateProjectionMatrix(); renderer.setSize(width, height); } else { console.warn("Skipping resize for 3D canvas wrapper with zero dimensions."); } updateDividerIconsVisibility(); }
         function animate() { requestAnimationFrame(animate); if (autoRotateEnabled && shelfGroup) { shelfGroup.rotation.y += 0.005; } if(controls) controls.update(); if(renderer && scene && camera) renderer.render(scene, camera); }
-        function buildShelfModel(config) { const group = new THREE.Group(); const { width: widthNum, height: heightVal, depth: depthVal, shelfCount: shelfCountVal, shelfType, noTopShelf, noBottomShelf, addDividersTop, addDividersMiddle, addDividersBottom } = config; const thickness = 0.18; const width = widthNum / 10; const height = parseFloat(heightVal) / 10; const depth = parseFloat(depthVal) / 10; const shelfCount = parseInt(shelfCountVal); const defaultMaterial = new THREE.MeshStandardMaterial(originalPreviewMaterialParams); if (isNaN(width) || isNaN(height) || isNaN(depth) || width <= 0 || height <= 0 || depth <= 0) return group; let topPanel, bottomPanel; if (!noBottomShelf) { const bottomGeometry = new THREE.BoxGeometry(width, thickness, depth); bottomPanel = new THREE.Mesh(bottomGeometry, defaultMaterial); bottomPanel.position.set(0, -height / 2 + thickness / 2, 0); bottomPanel.name = "bottomPanel"; group.add(bottomPanel); } if (!noTopShelf) { const topGeometry = new THREE.BoxGeometry(width, thickness, depth); topPanel = new THREE.Mesh(topGeometry, defaultMaterial); topPanel.position.set(0, height / 2 - thickness / 2, 0); topPanel.name = "topPanel"; group.add(topPanel); } const sideGeometry = new THREE.BoxGeometry(thickness, height, depth); const leftSideMesh = new THREE.Mesh(sideGeometry, defaultMaterial); leftSideMesh.position.set(-width / 2 + thickness / 2, 0, 0); leftSideMesh.name = "leftSide"; group.add(leftSideMesh); const rightSideMesh = new THREE.Mesh(sideGeometry, defaultMaterial); rightSideMesh.position.set(width / 2 - thickness / 2, 0, 0); rightSideMesh.name = "rightSide"; group.add(rightSideMesh); const internalShelves = []; if (!isNaN(shelfCount) && shelfCount > 0) { if (shelfType === 'mug_shelf' && heightVal === '60' && shelfCount === 3 && topPanel) { const fixedGap = 1.09; const topPanelBottomY = topPanel.position.y - thickness / 2; let lastShelfY = topPanelBottomY; for (let i = 0; i < shelfCount; i++) { const shelfY = lastShelfY - fixedGap - thickness / 2; const shelfGeometry = new THREE.BoxGeometry(width - 2 * thickness, thickness, depth); const shelfMesh = new THREE.Mesh(shelfGeometry, defaultMaterial); shelfMesh.position.set(0, shelfY, 0); shelfMesh.name = `internalShelf_${i}`; group.add(shelfMesh); internalShelves.push(shelfMesh); lastShelfY = shelfY - thickness / 2; } } else { const topExists = !!topPanel; const bottomExists = !!bottomPanel; const topThicknessActual = topExists ? thickness : 0; const bottomThicknessActual = bottomExists ? thickness : 0; const totalAvailableHeight = height - topThicknessActual - bottomThicknessActual; if (totalAvailableHeight >= shelfCount * thickness && (shelfCount + 1) > 0) { const gap = (totalAvailableHeight - shelfCount * thickness) / (shelfCount + 1); let startY = bottomExists ? (-height / 2 + bottomThicknessActual) : (-height / 2); for (let i = 1; i <= shelfCount; i++) { const shelfY = startY + i * gap + (i - 0.5) * thickness; const shelfGeometry = new THREE.BoxGeometry(width - 2 * thickness, thickness, depth); const shelfMesh = new THREE.Mesh(shelfGeometry, defaultMaterial); shelfMesh.position.set(0, shelfY, 0); shelfMesh.name = `internalShelf_${i-1}`; group.add(shelfMesh); internalShelves.push(shelfMesh); } } } } if (shelfType === 'mug_shelf' && topPanel && bottomPanel && internalShelves.length > 0) { if (addDividersTop || addDividersMiddle || addDividersBottom) { const innerWidthForDividers = width - 2 * thickness; const dividerThicknessThreeJs = thickness; let levels = []; internalShelves.sort((a, b) => a.position.y - b.position.y); if (heightVal === '60' && internalShelves.length === 3) { levels = [ { top: topPanel.position.y - thickness / 2, bottom: internalShelves[2].position.y + thickness/2 }, { top: internalShelves[2].position.y - thickness/2, bottom: internalShelves[1].position.y + thickness/2 }, { top: internalShelves[1].position.y - thickness/2, bottom: internalShelves[0].position.y + thickness/2 }, { top: internalShelves[0].position.y - thickness/2, bottom: bottomPanel.position.y + thickness / 2 } ]; } else if (heightVal === '40' && internalShelves.length === 2) { levels = [ { top: topPanel.position.y - thickness / 2, bottom: internalShelves[1].position.y + thickness/2 }, { top: internalShelves[1].position.y - thickness/2, bottom: internalShelves[0].position.y + thickness/2 }, { top: internalShelves[0].position.y - thickness/2, bottom: bottomPanel.position.y + thickness / 2 } ]; } const drawDividersForLevel = (levelData) => { const levelH = Math.max(0.01, levelData.top - levelData.bottom); if (levelH <= 0.01) return; const yCenter = levelData.bottom + levelH / 2; const dividerGeometry = new THREE.BoxGeometry(dividerThicknessThreeJs, levelH, depth); if (widthNum == 84) { const numPhysicalDividers = 3; const singleCompartmentWidth = 1.25; let currentXPos = -innerWidthForDividers / 2; for (let i = 0; i < numPhysicalDividers; i++) { currentXPos += singleCompartmentWidth; const dividerXCenter = currentXPos + (dividerThicknessThreeJs / 2); const dividerMesh = new THREE.Mesh(dividerGeometry.clone(), defaultMaterial); dividerMesh.position.set(dividerXCenter, yCenter, 0); group.add(dividerMesh); currentXPos += dividerThicknessThreeJs; } } else { const numDividersOriginal = (widthNum == 60) ? 3 : ((widthNum == 44) ? 2 : 0); if (numDividersOriginal > 0) { const dividerSpacing = innerWidthForDividers / (numDividersOriginal + 1); for (let i = 1; i <= numDividersOriginal; i++) { const xPos = (-innerWidthForDividers / 2) + i * dividerSpacing; const dividerMesh = new THREE.Mesh(dividerGeometry.clone(), defaultMaterial); dividerMesh.position.set(xPos, yCenter, 0); group.add(dividerMesh); } } } }; if (addDividersTop && levels[0]) drawDividersForLevel(levels[0]); if (addDividersMiddle && levels[1]) drawDividersForLevel(levels[1]); if (addDividersBottom && levels[2]) drawDividersForLevel(levels[2]); } } return group; }
+        function buildShelfModel(config) { const group = new THREE.Group(); const { width: widthNum, height: heightVal, depth: depthVal, shelfCount: shelfCountVal, shelfType, noTopShelf, noBottomShelf, addDividersTop, addDividersMiddle, addDividersBottom } = config; const thickness = 0.18; const width = widthNum / 10; const height = parseFloat(heightVal) / 10; const depth = parseFloat(depthVal) / 10; const shelfCount = parseInt(shelfCountVal); const defaultMaterial = new THREE.MeshStandardMaterial(originalPreviewMaterialParams); if (isNaN(width) || isNaN(height) || isNaN(depth) || width <= 0 || height <= 0 || depth <= 0) return group; let topPanel, bottomPanel; if (!noBottomShelf) { const bottomGeometry = new THREE.BoxGeometry(width, thickness, depth); bottomPanel = new THREE.Mesh(bottomGeometry, defaultMaterial); bottomPanel.position.set(0, -height / 2 + thickness / 2, 0); bottomPanel.name = "bottomPanel"; group.add(bottomPanel); } if (!noTopShelf) { const topGeometry = new THREE.BoxGeometry(width, thickness, depth); topPanel = new THREE.Mesh(topGeometry, defaultMaterial); topPanel.position.set(0, height / 2 - thickness / 2, 0); topPanel.name = "topPanel"; group.add(topPanel); } const sideGeometry = new THREE.BoxGeometry(thickness, height, depth); const leftSideMesh = new THREE.Mesh(sideGeometry, defaultMaterial); leftSideMesh.position.set(-width / 2 + thickness / 2, 0, 0); leftSideMesh.name = "leftSide"; group.add(leftSideMesh); const rightSideMesh = new THREE.Mesh(sideGeometry, defaultMaterial); rightSideMesh.position.set(width / 2 - thickness / 2, 0, 0); rightSideMesh.name = "rightSide"; group.add(rightSideMesh); const internalShelves = []; if (!isNaN(shelfCount) && shelfCount > 0) { if (shelfType === 'mug_shelf' && heightVal === '60' && shelfCount === 3 && topPanel) { const fixedGap = 1.09; const topPanelBottomY = topPanel.position.y - thickness / 2; let lastShelfY = topPanelBottomY; for (let i = 0; i < shelfCount; i++) { const shelfY = lastShelfY - fixedGap - thickness / 2; const shelfGeometry = new THREE.BoxGeometry(width - 2 * thickness, thickness, depth); const shelfMesh = new THREE.Mesh(shelfGeometry, defaultMaterial); shelfMesh.position.set(0, shelfY, 0); shelfMesh.name = `internalShelf_${i}`; group.add(shelfMesh); internalShelves.push(shelfMesh); lastShelfY = shelfY - thickness / 2; } } else { const topExists = !!topPanel; const bottomExists = !!bottomPanel; const topThicknessActual = topExists ? thickness : 0; const bottomThicknessActual = bottomExists ? thickness : 0; const totalAvailableHeight = height - topThicknessActual - bottomThicknessActual; if (totalAvailableHeight >= shelfCount * thickness && (shelfCount + 1) > 0) { const gap = (totalAvailableHeight - shelfCount * thickness) / (shelfCount + 1); let startY = bottomExists ? (-height / 2 + bottomThicknessActual) : (-height / 2); for (let i = 1; i <= shelfCount; i++) { const shelfY = startY + i * gap + (i - 0.5) * thickness; const shelfGeometry = new THREE.BoxGeometry(width - 2 * thickness, thickness, depth); const shelfMesh = new THREE.Mesh(shelfGeometry, defaultMaterial); shelfMesh.position.set(0, shelfY, 0); shelfMesh.name = `internalShelf_${i-1}`; group.add(shelfMesh); internalShelves.push(shelfMesh); } } } } if (shelfType === 'mug_shelf' && topPanel && bottomPanel && internalShelves.length > 0) { if (addDividersTop || addDividersMiddle || addDividersBottom) { const innerWidthForDividers = width - 2 * thickness; const dividerThicknessThreeJs = thickness; let levels = []; internalShelves.sort((a, b) => a.position.y - b.position.y); if (heightVal === '60' && internalShelves.length === 3) { levels = [ { top: topPanel.position.y - thickness / 2, bottom: internalShelves[2].position.y + thickness/2 }, { top: internalShelves[2].position.y - thickness/2, bottom: internalShelves[1].position.y + thickness/2 }, { top: internalShelves[1].position.y - thickness/2, bottom: internalShelves[0].position.y + thickness/2 }, { top: internalShelves[0].position.y - thickness/2, bottom: bottomPanel.position.y + thickness / 2 } ]; } else if (heightVal === '40' && internalShelves.length === 2) { levels = [ { top: topPanel.position.y - thickness / 2, bottom: internalShelves[1].position.y + thickness/2 }, { top: internalShelves[1].position.y - thickness/2, bottom: internalShelves[0].position.y + thickness/2 }, { top: internalShelves[0].position.y - thickness/2, bottom: bottomPanel.position.y + thickness / 2 } ]; } const drawDividersForLevel = (levelData) => { const levelH = Math.max(0.01, levelData.top - levelData.bottom); if (levelH <= 0.01) return; const yCenter = levelData.bottom + levelH / 2; const dividerGeometry = new THREE.BoxGeometry(dividerThicknessThreeJs, levelH, depth); if (widthNum == 84) { const numPhysicalDividers = 3; const singleCompartmentWidth = 1.25; let currentXPos = -innerWidthForDividers / 2; for (let i = 0; i < numPhysicalDividers; i++) { currentXPos += singleCompartmentWidth; const dividerXCenter = currentXPos + (dividerThicknessThreeJs / 2); const dividerMesh = new THREE.Mesh(dividerGeometry.clone(), defaultMaterial); dividerMesh.position.set(dividerXCenter, yCenter, 0); dividerMesh.name = `divider_h84_${i}`; group.add(dividerMesh); currentXPos += dividerThicknessThreeJs; } } else { const numDividersOriginal = (widthNum == 60) ? 3 : ((widthNum == 44) ? 2 : 0); if (numDividersOriginal > 0) { const dividerSpacing = innerWidthForDividers / (numDividersOriginal + 1); for (let i = 1; i <= numDividersOriginal; i++) { const xPos = (-innerWidthForDividers / 2) + i * dividerSpacing; const dividerMesh = new THREE.Mesh(dividerGeometry.clone(), defaultMaterial); dividerMesh.position.set(xPos, yCenter, 0); dividerMesh.name = `divider_${i}`; group.add(dividerMesh); } } } }; if (addDividersTop && levels[0]) drawDividersForLevel(levels[0]); if (addDividersMiddle && levels[1]) drawDividersForLevel(levels[1]); if (addDividersBottom && levels[2]) drawDividersForLevel(levels[2]); } } return group; }
         
         function updatePreview(animateChanges = true) {
             updateDividerIconActiveStates();
@@ -2005,7 +2144,11 @@
             }
 
             const isMugShelf = config.shelfType === 'mug_shelf';
-            if (isMugShelf || !animateChanges) {
+            const wasMugShelf = lastValidConfig.shelfType === 'mug_shelf';
+
+            // *** FIX: If switching to or from a mug shelf, or if no animation is requested,
+            // rebuild the model from scratch. This prevents persistent dividers. ***
+            if (isMugShelf || wasMugShelf || !animateChanges) {
                 if (shelfGroup) scene.remove(shelfGroup);
                 shelfGroup = buildShelfModel(config);
                 shelfGroup.scale.set(1.2, 1.2, 1.2);
@@ -2295,21 +2438,5 @@
              }
         });
     </script>
-
-    <div id="stickyFooterBar" class="fixed bottom-0 left-0 w-full bg-green-600 shadow-[0_-3px_6px_rgba(0,0,0,0.06)] flex justify-around items-stretch md:hidden z-50">
-        <button onclick="scrollToElementAndHighlight('dimensionSectionAnchor', 'start', this)" title="Przewiń do wymiarów"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75" /> <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v16.5M20.25 3.75v16.5" /> </svg> <span>Wymiary</span> </button>
-        <button onclick="scrollToElementAndHighlight('colorSectionAnchor', 'start', this)" title="Przewiń do kolorów"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42" /> </svg> <span>Kolory</span> </button>
-        <button onclick="scrollToElementAndHighlight('shelfCountSection', 'center', this)" title="Przewiń do dodawania półek"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /> <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 9h16.5M3.75 15h16.5" /> </svg> <span>Półki</span> </button>
-        <button id="show3dButton" title="Pokaż/ukryj podgląd 3D"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="animate-spin-slow"> <path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9.75l-9 5.25M12 21v-9.75" /> </svg> <span>Zobacz 3D</span> </button>
-        
-        <button id="mobileCartButton" class="relative" title="Pokaż koszyk">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mb-1">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
-            </svg>
-            <span class="mobile-cart-price text-xs font-bold">Koszyk</span>
-            <span class="cart-badge" style="top: 0; right: 8px; width: 1rem; height: 1rem; font-size: 0.65rem; display: none;">0</span>
-        </button>
-    </div>
-
     </body>
 </html>
