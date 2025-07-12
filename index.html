@@ -2137,70 +2137,153 @@
             }
         }
         
-     function rebuildAndAnimateIn(config) {
-    clearScene();
+    function rebuildAndAnimateIn(config) {
+    // Anuluj poprzednią animację, jeśli była w trakcie
+    if (currentAnimationTimeline) {
+        currentAnimationTimeline.kill();
+    }
+
     const shelfType = config.shelfType;
 
-    // Budowanie odpowiedniego modelu półki
-    if (shelfType === 'modular') {
-        shelfGroup = buildModularShelf(config);
-    } else {
-        shelfGroup = buildShelfModel(config);
+    // Globalna linia czasu dla całej sekwencji
+    const masterTimeline = gsap.timeline({
+        onComplete: () => {
+            controls.enabled = true; // Włącz interakcję po zakończeniu animacji
+            if (shelfType !== 'mug_shelf' && shelfType !== 'modular') {
+                autoRotateEnabled = true;
+            }
+            updateOrderSummary();
+            lastValidConfig = { ...config };
+            controls.update();
+        }
+    });
+
+    currentAnimationTimeline = masterTimeline;
+    controls.enabled = false;
+    autoRotateEnabled = false;
+
+    // --- FAZA 1: DEKONSTRUKCJA ---
+    if (shelfGroup && shelfGroup.children.length > 0) {
+        masterTimeline.to(shelfGroup.children.map(p => p.position), {
+            y: "-=15",
+            duration: 0.6,
+            ease: 'power2.in',
+            stagger: 0.03
+        }, 0);
+        
+        // OPTYMALIZACJA: Zbierz wszystkie materiały i animuj je w jednym kroku
+        const materialsToFade = [];
+        shelfGroup.traverse(child => {
+            if (child.isMesh && child.material) {
+                child.material.transparent = true;
+                materialsToFade.push(child.material);
+            }
+        });
+        if (materialsToFade.length > 0) {
+            masterTimeline.to(materialsToFade, { opacity: 0, duration: 0.5 }, "-=0.4");
+        }
+
+        masterTimeline.add(() => {
+            clearScene();
+        });
     }
 
-    if (shelfGroup) {
-        const box = new THREE.Box3().setFromObject(shelfGroup);
-        const center = box.getCenter(new THREE.Vector3());
-        shelfGroup.position.sub(center); // Najpierw centruj geometrię
+    // --- FAZA 2, 3 i 4: MONTAŻ ---
+    if (shelfType === 'modular') {
+        masterTimeline.add(() => {
+            shelfGroup = buildModularShelf(config);
+            if (!shelfGroup || shelfGroup.children.length === 0) { masterTimeline.progress(1); return; }
 
-        scene.add(shelfGroup);
+            const box = new THREE.Box3().setFromObject(shelfGroup);
+            const center = box.getCenter(new THREE.Vector3());
+            shelfGroup.children.forEach(child => child.position.sub(center));
 
-        // Zastosuj inne pozycjonowanie i skalowanie w zależności od typu półki
-        if (shelfType === 'modular') {
-            // --- Logika dla półki MODUŁOWEJ (pozostaje bez zmian) ---
-            const size = box.getSize(new THREE.Vector3());
-            const isMobile = window.innerWidth < 768;
-    
-            if (isMobile) {
-                shelfGroup.position.y -= size.y / 2;
-                shelfGroup.position.y += 4.5;
-                controls.target.set(0, 2.0, 0);
-            } else {
-                controls.target.set(0, 0, 0);
-            }
-            
-            const tl = gsap.timeline();
+            const finalPositions = new Map();
+            shelfGroup.traverse(child => { if (child.isMesh) { finalPositions.set(child, child.position.clone()); } });
+
             const leftModule = shelfGroup.getObjectByName("leftModule");
             const rightModule = shelfGroup.getObjectByName("rightModule");
-            const connectingShelves = shelfGroup.children.filter(child => child.name.startsWith("connecting_shelf_"));
+            const connectingShelves = shelfGroup.children.filter(c => c.name.startsWith("connecting_shelf_")).sort((a, b) => b.position.y - a.position.y);
+            const lm_left = leftModule.getObjectByName("leftSide");
+            const lm_right = leftModule.getObjectByName("rightSide");
+            const lm_top = leftModule.getObjectByName("topPanel");
+            const lm_bottom = leftModule.getObjectByName("bottomPanel");
+            const lm_shelves = leftModule.children.filter(c => c.name.startsWith("internalShelf_")).sort((a, b) => b.position.y - a.position.y);
+            const rm_left = rightModule.getObjectByName("leftSide");
+            const rm_right = rightModule.getObjectByName("rightSide");
+            const rm_top = rightModule.getObjectByName("topPanel");
+            const rm_bottom = rightModule.getObjectByName("bottomPanel");
+            const rm_shelves = rightModule.children.filter(c => c.name.startsWith("internalShelf_")).sort((a, b) => b.position.y - a.position.y);
 
-            if (leftModule && rightModule) {
-                const leftTargetX = leftModule.position.x;
-                const rightTargetX = rightModule.position.x;
+            const startY = 25;
+            shelfGroup.traverse(child => {
+                if (child.isMesh) {
+                    gsap.set(child.position, { y: child.position.y + startY });
+                }
+            });
+            gsap.set(lm_bottom.position, { x: lm_bottom.position.x - 15 });
+            gsap.set(rm_bottom.position, { x: rm_bottom.position.x + 15 });
 
-                gsap.set(leftModule.position, { x: -20 });
-                gsap.set(rightModule.position, { x: 20 });
-                gsap.set(connectingShelves.map(s => s.scale), { x: 0.01 });
-
-                tl.to(leftModule.position, { x: leftTargetX, duration: 0.6, ease: 'power2.out' }, 0);
-                tl.to(rightModule.position, { x: rightTargetX, duration: 0.6, ease: 'power2.out' }, 0);
-                tl.to(connectingShelves.map(s => s.scale), {
-                    x: 1,
-                    duration: 0.5,
-                    stagger: 0.08,
-                    ease: 'power2.out'
-                }, 0.3);
-            }
-        } else {
-            // --- Logika z 1.html dla półek STANDARDOWYCH (BEZ ANIMACJI) ---
             shelfGroup.position.y = -1;
             shelfGroup.scale.set(1.2, 1.2, 1.2);
-            controls.target.set(0, 0, 0);
-        }
-        
-        controls.update();
+            scene.add(shelfGroup);
+
+            const assemblyStartTime = ">+0.1"; // Skrócone opóźnienie
+            const dropDuration = 0.5;
+            const slideDuration = 0.4;
+
+            masterTimeline.to([lm_left.position, rm_right.position], { y: (i) => finalPositions.get(i === 0 ? lm_left : rm_right).y, duration: dropDuration, ease: 'power2.out' }, assemblyStartTime);
+            
+            // FIX: Animujemy pozycję Y i X jednocześnie dla wsuwanych podstaw
+            masterTimeline.to([lm_bottom.position, rm_bottom.position], { 
+                x: (i) => finalPositions.get(i === 0 ? lm_bottom : rm_bottom).x,
+                y: finalPositions.get(lm_bottom).y, // Y jest ten sam dla obu podstaw
+                duration: slideDuration, 
+                ease: 'power2.out' 
+            }, `${assemblyStartTime}+=0.1`);
+            
+            masterTimeline.to([lm_right.position, rm_left.position], { y: (i) => finalPositions.get(i === 0 ? lm_right : rm_left).y, duration: dropDuration, ease: 'power2.out' }, `${assemblyStartTime}+=0.2`);
+            
+            const allModuleShelves = [...lm_shelves, ...rm_shelves];
+            masterTimeline.to(allModuleShelves.map(s => s.position), { y: (i) => finalPositions.get(allModuleShelves[i]).y, duration: dropDuration * 0.8, ease: 'power1.out', stagger: 0.03 }, `${assemblyStartTime}+=0.3`);
+            
+            masterTimeline.to(connectingShelves.map(s => s.position), { y: (i) => finalPositions.get(connectingShelves[i]).y, duration: dropDuration * 0.8, ease: 'power1.out', stagger: 0.04 }, `${assemblyStartTime}+=0.5`);
+            
+            masterTimeline.to([lm_top.position, rm_top.position], { y: (i) => finalPositions.get(i === 0 ? lm_top : rm_top).y, duration: dropDuration, ease: 'bounce.out' }, `${assemblyStartTime}+=0.7`);
+
+            masterTimeline.to(shelfGroup.rotation, { y: `+=${Math.PI * 2}`, duration: 2.0, ease: 'power2.inOut' }, ">+0.5");
+        });
+    } else {
+        masterTimeline.add(() => {
+            shelfGroup = buildShelfModel(config);
+            if (!shelfGroup || shelfGroup.children.length === 0) { masterTimeline.progress(1); return; };
+            const box = new THREE.Box3().setFromObject(shelfGroup);
+            const center = box.getCenter(new THREE.Vector3());
+            shelfGroup.children.forEach(child => { child.position.sub(center); });
+            const finalPositions = new Map();
+            shelfGroup.children.forEach(child => finalPositions.set(child.name, child.position.clone()));
+            const leftSide = shelfGroup.getObjectByName("leftSide");
+            const rightSide = shelfGroup.getObjectByName("rightSide");
+            const topPanel = shelfGroup.getObjectByName("topPanel");
+            const bottomPanel = shelfGroup.getObjectByName("bottomPanel");
+            const internalShelves = shelfGroup.children.filter(c => c.name.startsWith("internalShelf_")).sort((a, b) => finalPositions.get(a.name).y - finalPositions.get(b.name).y);
+            const startY = 20;
+            shelfGroup.children.forEach((child, i) => {
+                const finalPos = finalPositions.get(child.name);
+                gsap.set(child.position, { x: finalPos.x, z: finalPos.z, y: startY + i * 0.1 });
+            });
+            shelfGroup.position.y = -1;
+            shelfGroup.scale.set(1.2, 1.2, 1.2);
+            scene.add(shelfGroup);
+            const assemblyStartTime = ">+0.1"; // Skrócone opóźnienie
+            const dropDuration = 0.6;
+            if (bottomPanel) { masterTimeline.to(bottomPanel.position, { y: finalPositions.get("bottomPanel").y, duration: dropDuration, ease: 'bounce.out' }, assemblyStartTime); }
+            if (leftSide && rightSide) { masterTimeline.to([leftSide.position, rightSide.position], { y: finalPositions.get("leftSide").y, duration: dropDuration, ease: 'power1.out' }, `${assemblyStartTime}+=0.1`); }
+            if (internalShelves.length > 0) { masterTimeline.to(internalShelves.map(s => s.position), { y: (i) => finalPositions.get(internalShelves[i].name).y, duration: dropDuration * 0.8, ease: 'power1.out', stagger: 0.05 }, `${assemblyStartTime}+=0.2`); }
+            if (topPanel) { masterTimeline.to(topPanel.position, { y: finalPositions.get("topPanel").y, duration: dropDuration, ease: 'bounce.out' }, `${assemblyStartTime}+=0.3`); }
+            masterTimeline.to(shelfGroup.rotation, { y: `+=${Math.PI * 2}`, duration: 2.0, ease: 'power2.inOut' }, ">+0.5");
+        });
     }
-    lastValidConfig = { ...config };
 }
 
 
