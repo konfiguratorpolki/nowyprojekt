@@ -2137,10 +2137,11 @@
             }
         }
         
-     function rebuildShelf(config, animate = true) {
+     function rebuildAndAnimateIn(config) {
     clearScene();
     const shelfType = config.shelfType;
 
+    // Budowanie odpowiedniego modelu półki
     if (shelfType === 'modular') {
         shelfGroup = buildModularShelf(config);
     } else {
@@ -2150,207 +2151,388 @@
     if (shelfGroup) {
         const box = new THREE.Box3().setFromObject(shelfGroup);
         const center = box.getCenter(new THREE.Vector3());
-        shelfGroup.position.sub(center);
+        shelfGroup.position.sub(center); // Najpierw centruj geometrię
+
         scene.add(shelfGroup);
 
-        const isMobile = window.innerWidth < 768;
-
+        // Zastosuj inne pozycjonowanie i skalowanie w zależności od typu półki
         if (shelfType === 'modular') {
-            shelfGroup.scale.set(0.8, 0.8, 0.8);
+            // --- Logika dla półki MODUŁOWEJ (pozostaje bez zmian) ---
+            const size = box.getSize(new THREE.Vector3());
+            const isMobile = window.innerWidth < 768;
+    
             if (isMobile) {
-                shelfGroup.position.y -= 1.0;
-                controls.target.set(0, 0, 0);
+                shelfGroup.position.y -= size.y / 2;
+                shelfGroup.position.y += 4.5;
+                controls.target.set(0, 2.0, 0);
             } else {
                 controls.target.set(0, 0, 0);
             }
+            
+            const tl = gsap.timeline();
+            const leftModule = shelfGroup.getObjectByName("leftModule");
+            const rightModule = shelfGroup.getObjectByName("rightModule");
+            const connectingShelves = shelfGroup.children.filter(child => child.name.startsWith("connecting_shelf_"));
 
-            if (animate) {
-                const tl = gsap.timeline();
-                const leftModule = shelfGroup.getObjectByName("leftModule");
-                const rightModule = shelfGroup.getObjectByName("rightModule");
-                const connectingShelves = shelfGroup.children.filter(child => child.name.startsWith("connecting_shelf_"));
-                if (leftModule && rightModule) {
-                    const leftTargetX = leftModule.position.x;
-                    const rightTargetX = rightModule.position.x;
-                    gsap.set(leftModule.position, { x: -20 });
-                    gsap.set(rightModule.position, { x: 20 });
-                    gsap.set(connectingShelves.map(s => s.scale), { x: 0.01 });
-                    tl.to(leftModule.position, { x: leftTargetX, duration: 0.6, ease: 'power2.out' }, 0);
-                    tl.to(rightModule.position, { x: rightTargetX, duration: 0.6, ease: 'power2.out' }, 0);
-                    tl.to(connectingShelves.map(s => s.scale), { x: 1, duration: 0.5, stagger: 0.08, ease: 'power2.out' }, 0.3);
-                }
+            if (leftModule && rightModule) {
+                const leftTargetX = leftModule.position.x;
+                const rightTargetX = rightModule.position.x;
+
+                gsap.set(leftModule.position, { x: -20 });
+                gsap.set(rightModule.position, { x: 20 });
+                gsap.set(connectingShelves.map(s => s.scale), { x: 0.01 });
+
+                tl.to(leftModule.position, { x: leftTargetX, duration: 0.6, ease: 'power2.out' }, 0);
+                tl.to(rightModule.position, { x: rightTargetX, duration: 0.6, ease: 'power2.out' }, 0);
+                tl.to(connectingShelves.map(s => s.scale), {
+                    x: 1,
+                    duration: 0.5,
+                    stagger: 0.08,
+                    ease: 'power2.out'
+                }, 0.3);
             }
         } else {
-            const isTallShelf = parseFloat(config.height) === 80;
-            if (isMobile && isTallShelf) {
-                shelfGroup.scale.set(1.0, 1.0, 1.0);
-                shelfGroup.position.y -= 0.8;
-                controls.target.set(0, 0, 0);
-            } else {
-                shelfGroup.scale.set(1.2, 1.2, 1.2);
-                controls.target.set(0, 0, 0);
-            }
+            // --- Logika z 1.html dla półek STANDARDOWYCH (BEZ ANIMACJI) ---
+            shelfGroup.position.y = -1;
+            shelfGroup.scale.set(1.2, 1.2, 1.2);
+            controls.target.set(0, 0, 0);
         }
+        
         controls.update();
     }
     lastValidConfig = { ...config };
 }
 
-function updatePreview(animateChanges = true) {
-    updateDividerIconActiveStates();
-    if (!scene) return;
 
-    const shelfType = shelfTypeSelect.value;
-    let config;
-    
-    if (shelfType === 'modular') {
-        config = { shelfType: 'modular', moduleWidth: moduleWidthSelect.value, moduleHeight: moduleHeightSelect.value, connectingShelfWidth: connectingShelfWidthSelect.value, depth: depthSelect.value };
-    } else {
-        config = { width: getCurrentWidth(), height: heightSelect.value, depth: depthSelect.value, shelfCount: shelfCountSelect.value, shelfType: shelfType, noTopShelf: document.getElementById("noTopShelf")?.checked, noBottomShelf: shelfType === "standing" && document.getElementById("noBottomShelf")?.checked, addDividersTop: shelfType === 'mug_shelf' && dividersTopCheckbox?.checked, addDividersMiddle: shelfType === 'mug_shelf' && dividersMiddleCheckbox?.checked, addDividersBottom: shelfType === 'mug_shelf' && dividersBottomCheckbox?.checked };
-    }
+        function updatePreview(animateChanges = true) {
+            updateDividerIconActiveStates();
+            if (!scene) return;
+             if (currentAnimationTimeline) {
+                currentAnimationTimeline.kill();
+            }
 
-    const isConfigValid = (shelfType === 'modular') 
-        ? (config.moduleWidth && config.moduleHeight && config.connectingShelfWidth && config.depth)
-        : (config.width && config.height && config.depth && config.shelfCount && config.shelfType);
+            const shelfType = shelfTypeSelect.value;
+            let config;
+            
+            if (shelfType === 'modular') {
+                config = { shelfType: 'modular', moduleWidth: moduleWidthSelect.value, moduleHeight: moduleHeightSelect.value, connectingShelfWidth: connectingShelfWidthSelect.value, depth: depthSelect.value };
+            } else {
+                config = { width: getCurrentWidth(), height: heightSelect.value, depth: depthSelect.value, shelfCount: shelfCountSelect.value, shelfType: shelfType, noTopShelf: document.getElementById("noTopShelf")?.checked, noBottomShelf: shelfType === "standing" && document.getElementById("noBottomShelf")?.checked, addDividersTop: shelfType === 'mug_shelf' && dividersTopCheckbox?.checked, addDividersMiddle: shelfType === 'mug_shelf' && dividersMiddleCheckbox?.checked, addDividersBottom: shelfType === 'mug_shelf' && dividersBottomCheckbox?.checked };
+            }
 
-    if (!isConfigValid) {
-        if (shelfGroup) {
-            scene.remove(shelfGroup);
-            shelfGroup = null;
+            const isConfigValid = (shelfType === 'modular') 
+                ? (config.moduleWidth && config.moduleHeight && config.connectingShelfWidth && config.depth)
+                : (config.width && config.height && config.depth && config.shelfCount && config.shelfType);
+
+            if (!isConfigValid) {
+                clearScene();
+                lastValidConfig = {};
+                return;
+            }
+            
+            if (shelfType !== lastValidConfig.shelfType || !animateChanges) {
+                rebuildAndAnimateIn(config);
+                lastValidConfig = { ...config };
+                return;
+            }
+
+            currentAnimationTimeline = gsap.timeline();
+            const animDuration = 0.5;
+            const thickness = 0.18;
+            
+            if (!shelfGroup) {
+                rebuildAndAnimateIn(config);
+                lastValidConfig = { ...config };
+                return;
+            }
+
+            if (shelfType === 'modular') {
+                const targetModuleW = parseFloat(config.moduleWidth) / 10;
+                const targetModuleH = parseFloat(config.moduleHeight) / 10;
+                const targetConnectW = parseFloat(config.connectingShelfWidth) / 10;
+                const targetDepth = parseFloat(config.depth) / 10;
+                const defaultMaterial = new THREE.MeshStandardMaterial(originalPreviewMaterialParams);
+            
+                const leftModule = shelfGroup.getObjectByName("leftModule");
+                const rightModule = shelfGroup.getObjectByName("rightModule");
+            
+                if (!leftModule || !rightModule) {
+                    rebuildAndAnimateIn(config); lastValidConfig = { ...config }; return;
+                }
+            
+                currentAnimationTimeline.to(leftModule.position, { x: -(targetConnectW / 2 + targetModuleW / 2), duration: animDuration, ease: 'power2.out' }, 0);
+                currentAnimationTimeline.to(rightModule.position, { x: (targetConnectW / 2 + targetModuleW / 2), duration: animDuration, ease: 'power2.out' }, 0);
+            
+                const animateModule = (module) => {
+                    const leftSide = module.getObjectByName("leftSide");
+                    const rightSide = module.getObjectByName("rightSide");
+                    const topPanel = module.getObjectByName("topPanel");
+                    const bottomPanel = module.getObjectByName("bottomPanel");
+            
+                    if(leftSide && rightSide && topPanel && bottomPanel) {
+                        currentAnimationTimeline.to(leftSide.scale, { y: targetModuleH / leftSide.geometry.parameters.height, duration: animDuration, ease: 'power2.out' }, 0);
+                        currentAnimationTimeline.to(rightSide.scale, { y: targetModuleH / rightSide.geometry.parameters.height, duration: animDuration, ease: 'power2.out' }, 0);
+                        currentAnimationTimeline.to(leftSide.position, { x: -targetModuleW / 2 + thickness / 2, duration: animDuration, ease: 'power2.out' }, 0);
+                        currentAnimationTimeline.to(rightSide.position, { x: targetModuleW / 2 - thickness / 2, duration: animDuration, ease: 'power2.out' }, 0);
+                        
+                        currentAnimationTimeline.to(topPanel.scale, { x: targetModuleW / topPanel.geometry.parameters.width, duration: animDuration, ease: 'power2.out' }, 0);
+                        currentAnimationTimeline.to(bottomPanel.scale, { x: targetModuleW / bottomPanel.geometry.parameters.width, duration: animDuration, ease: 'power2.out' }, 0);
+                        currentAnimationTimeline.to(topPanel.position, { y: targetModuleH / 2 - thickness / 2, duration: animDuration, ease: 'power2.out' }, 0);
+                        currentAnimationTimeline.to(bottomPanel.position, { y: -targetModuleH / 2 + thickness / 2, duration: animDuration, ease: 'power2.out' }, 0);
+                    }
+
+                    const existingShelves = module.children.filter(c => c.name.startsWith("internalShelf_"));
+                    if (existingShelves.length > 0) {
+                        currentAnimationTimeline.to(existingShelves.map(s => s.scale), { x: 0.01, duration: 0.2, onComplete: () => {
+                            existingShelves.forEach(s => module.remove(s));
+                        }}, 0);
+                    }
+            
+                    let newShelfCount = 3;
+                    if (config.moduleHeight == '40') newShelfCount = 2;
+                    if (config.moduleHeight == '80') newShelfCount = 5;
+            
+                    const availableHeight = targetModuleH - 2 * thickness;
+                    const gap = (availableHeight - newShelfCount * thickness) / (newShelfCount + 1);
+                    const newShelves = [];
+                    for (let i = 0; i < newShelfCount; i++) {
+                        const shelfGeo = new THREE.BoxGeometry(targetModuleW - 2 * thickness, thickness, targetDepth);
+                        const shelf = new THREE.Mesh(shelfGeo, defaultMaterial);
+                        shelf.name = `internalShelf_${i}`;
+                        shelf.position.y = (-targetModuleH / 2) + thickness + gap * (i + 1) + thickness * i;
+                        shelf.scale.x = 0.01;
+                        module.add(shelf);
+                        newShelves.push(shelf);
+                    }
+            
+                    if (newShelves.length > 0) {
+                        currentAnimationTimeline.to(newShelves.map(s => s.scale), { x: 1, duration: 0.4, stagger: 0.05, ease: 'power2.out' }, 0.2);
+                    }
+                };
+            
+                animateModule(leftModule);
+                animateModule(rightModule);
+            
+                const oldConnectingShelves = shelfGroup.children.filter(c => c.name.startsWith("connecting_shelf_"));
+                if (oldConnectingShelves.length > 0) {
+                     currentAnimationTimeline.to(oldConnectingShelves.map(s => s.scale), { x: 0.01, duration: 0.2, onComplete: () => {
+                        oldConnectingShelves.forEach(s => shelfGroup.remove(s));
+                    }}, 0);
+                }
+            
+                const newConnectingShelvesYPositions = [];
+                let finalModuleShelvesCount = 3;
+                if (config.moduleHeight == '40') finalModuleShelvesCount = 2;
+                if (config.moduleHeight == '80') finalModuleShelvesCount = 5;
+                const finalAvailableHeight = targetModuleH - 2 * thickness;
+                const finalGap = (finalAvailableHeight - finalModuleShelvesCount * thickness) / (finalModuleShelvesCount + 1);
+                
+                newConnectingShelvesYPositions.push(targetModuleH / 2 - thickness / 2);
+                for (let i = 0; i < finalModuleShelvesCount; i++) {
+                    newConnectingShelvesYPositions.push((-targetModuleH / 2) + thickness + finalGap * (i + 1) + thickness * i);
+                }
+                newConnectingShelvesYPositions.push(-targetModuleH / 2 + thickness / 2);
+
+                newConnectingShelvesYPositions.sort((a, b) => b - a);
+            
+                const newConnectingShelves = [];
+                for (let i = 0; i < newConnectingShelvesYPositions.length - 1; i++) {
+                    const middleOfGapY = (newConnectingShelvesYPositions[i] + newConnectingShelvesYPositions[i+1]) / 2;
+                    const shelfGeo = new THREE.BoxGeometry(targetConnectW, thickness, targetDepth);
+                    const shelf = new THREE.Mesh(shelfGeo, defaultMaterial);
+                    shelf.name = `connecting_shelf_${i}`;
+                    shelf.position.y = middleOfGapY;
+                    shelf.scale.x = 0.01;
+                    shelfGroup.add(shelf);
+                    newConnectingShelves.push(shelf);
+                }
+
+                if (newConnectingShelves.length > 0) {
+                     currentAnimationTimeline.to(newConnectingShelves.map(s => s.scale), { x: 1, duration: 0.4, stagger: 0.05, ease: 'power2.out' }, 0.2);
+                }
+            
+            } else {
+                const targetWidth = config.width / 10;
+                const targetHeight = parseFloat(config.height) / 10;
+                const targetDepth = config.depth / 10;
+                const targetShelfCount = parseInt(config.shelfCount);
+                
+                let leftSide = shelfGroup.getObjectByName("leftSide");
+                let rightSide = shelfGroup.getObjectByName("rightSide");
+                let topPanel = shelfGroup.getObjectByName("topPanel");
+                let bottomPanel = shelfGroup.getObjectByName("bottomPanel");
+                const defaultMaterial = new THREE.MeshStandardMaterial(originalPreviewMaterialParams);
+
+                if (!leftSide || !rightSide) { 
+                    rebuildAndAnimateIn(config);
+                    lastValidConfig = { ...config };
+                    return;
+                }
+                
+                currentAnimationTimeline.to(leftSide.scale, { y: targetHeight / leftSide.geometry.parameters.height, z: targetDepth / leftSide.geometry.parameters.depth, duration: animDuration }, 0);
+                currentAnimationTimeline.to(rightSide.scale, { y: targetHeight / rightSide.geometry.parameters.height, z: targetDepth / rightSide.geometry.parameters.depth, duration: animDuration }, 0);
+                currentAnimationTimeline.to(leftSide.position, { x: -targetWidth / 2 + thickness / 2, duration: animDuration }, 0);
+                currentAnimationTimeline.to(rightSide.position, { x: targetWidth / 2 - thickness / 2, duration: animDuration }, 0);
+
+                const topExists = !config.noTopShelf;
+                if (topExists) {
+                    if (!topPanel) {
+                        topPanel = new THREE.Mesh(new THREE.BoxGeometry(targetWidth, thickness, targetDepth), defaultMaterial);
+                        topPanel.name = "topPanel"; topPanel.scale.set(1,0.01,1); shelfGroup.add(topPanel);
+                    }
+                    currentAnimationTimeline.to(topPanel.scale, { x: targetWidth / topPanel.geometry.parameters.width, y: 1, z: targetDepth / topPanel.geometry.parameters.depth, duration: animDuration }, 0);
+                    currentAnimationTimeline.to(topPanel.position, { y: targetHeight / 2 - thickness / 2, duration: animDuration }, 0);
+                } else if (topPanel) {
+                     currentAnimationTimeline.to(topPanel.scale, { y: 0.01, duration: animDuration / 2, onComplete: () => shelfGroup.remove(topPanel) }, 0);
+                }
+
+                const bottomExists = !config.noBottomShelf;
+                if (bottomExists) {
+                    if (!bottomPanel) {
+                        bottomPanel = new THREE.Mesh(new THREE.BoxGeometry(targetWidth, thickness, targetDepth), defaultMaterial);
+                        bottomPanel.name = "bottomPanel"; bottomPanel.scale.set(1,0.01,1); shelfGroup.add(bottomPanel);
+                    }
+                    currentAnimationTimeline.to(bottomPanel.scale, { x: targetWidth / bottomPanel.geometry.parameters.width, y:1, z: targetDepth / bottomPanel.geometry.parameters.depth, duration: animDuration }, 0);
+                    currentAnimationTimeline.to(bottomPanel.position, { y: -targetHeight / 2 + thickness / 2, duration: animDuration }, 0);
+                } else if (bottomPanel) {
+                    currentAnimationTimeline.to(bottomPanel.scale, { y: 0.01, duration: animDuration / 2, onComplete: () => shelfGroup.remove(bottomPanel) }, 0);
+                }
+                
+                const existingShelves = shelfGroup.children.filter(child => child.name.startsWith("internalShelf_"));
+                const shelvesToRemove = existingShelves.slice(targetShelfCount);
+                if (shelvesToRemove.length > 0) {
+                     currentAnimationTimeline.to(shelvesToRemove.map(s => s.scale), { x: 0.01, duration: animDuration / 2, onComplete: () => {
+                         shelvesToRemove.forEach(s => shelfGroup.remove(s));
+                     }}, 0);
+                }
+
+                if (shelfType === 'mug_shelf' && config.height === '60' && targetShelfCount === 3) {
+                    const fixedGap = 1.09;
+                    const topPanelTargetY = targetHeight / 2 - thickness / 2;
+                    let lastShelfY = topPanelTargetY;
+                    
+                    for (let i = 0; i < targetShelfCount; i++) {
+                        const shelfName = `internalShelf_${i}`;
+                        let shelf = shelfGroup.getObjectByName(shelfName);
+                        const targetY = lastShelfY - fixedGap - thickness / 2;
+                        
+                        if (!shelf) {
+                             shelf = new THREE.Mesh(new THREE.BoxGeometry(targetWidth - 2 * thickness, thickness, targetDepth), defaultMaterial);
+                             shelf.name = shelfName; shelf.position.y = targetY; shelf.scale.set(0.01, 1, 1); shelfGroup.add(shelf);
+                             currentAnimationTimeline.to(shelf.scale, { x: 1, duration: animDuration, delay: (i * 0.1) }, 0);
+                        } else {
+                             currentAnimationTimeline.to(shelf.position, { y: targetY, duration: animDuration }, 0);
+                             currentAnimationTimeline.to(shelf.scale, { x: (targetWidth - 2 * thickness) / shelf.geometry.parameters.width, z: targetDepth / shelf.geometry.parameters.depth, duration: animDuration }, 0);
+                        }
+                        lastShelfY = targetY - thickness / 2;
+                    }
+                } else {
+                    const topThicknessActual = topExists ? thickness : 0;
+                    const bottomThicknessActual = bottomExists ? thickness : 0;
+                    const totalAvailableHeight = targetHeight - topThicknessActual - bottomThicknessActual;
+                    const gap = (totalAvailableHeight - targetShelfCount * thickness) / (targetShelfCount + 1);
+                    let startY = bottomExists ? (-targetHeight / 2 + bottomThicknessActual) : (-targetHeight / 2);
+                    
+                    for (let i = 0; i < targetShelfCount; i++) {
+                        const shelfName = `internalShelf_${i}`;
+                        let shelf = shelfGroup.getObjectByName(shelfName);
+                        const targetY = startY + (i + 1) * gap + (i + 0.5) * thickness;
+
+                        if (!shelf) {
+                            shelf = new THREE.Mesh(new THREE.BoxGeometry(targetWidth - 2 * thickness, thickness, targetDepth), defaultMaterial);
+                            shelf.name = shelfName; shelf.position.y = targetY; shelf.scale.set(0.01, 1, 1); shelfGroup.add(shelf);
+                            currentAnimationTimeline.to(shelf.scale, { x: 1, duration: animDuration, delay: (i * 0.1) }, 0);
+                        } else {
+                            currentAnimationTimeline.to(shelf.position, { y: targetY, duration: animDuration }, 0);
+                            currentAnimationTimeline.to(shelf.scale, { x: (targetWidth - 2 * thickness) / shelf.geometry.parameters.width, z: targetDepth / shelf.geometry.parameters.depth, duration: animDuration }, 0);
+                        }
+                    }
+                }
+            }
+
+            if (shelfType === 'mug_shelf') {
+                const { width: widthNum, height: heightVal, depth: depthVal, addDividersTop, addDividersMiddle, addDividersBottom } = config;
+                const width = widthNum / 10; const depth = parseFloat(depthVal) / 10;
+                const defaultMaterial = new THREE.MeshStandardMaterial(originalPreviewMaterialParams);
+                const dividersToRemove = shelfGroup.children.filter(child => child.name.startsWith("divider_"));
+                
+                if (dividersToRemove.length > 0) {
+                    currentAnimationTimeline.to(dividersToRemove.map(d => d.scale), { y: 0.01, duration: animDuration / 2, stagger: 0.03, onComplete: () => {
+                        dividersToRemove.forEach(d => shelfGroup.remove(d));
+                    }}, ">-0.2");
+                }
+                
+                const topPanel = shelfGroup.getObjectByName("topPanel");
+                const bottomPanel = shelfGroup.getObjectByName("bottomPanel");
+                const internalShelves = shelfGroup.children.filter(child => child.name.startsWith("internalShelf_"));
+
+                if (topPanel && bottomPanel && internalShelves.length > 0) {
+                    const innerWidthForDividers = width - 2 * thickness; const dividerThicknessThreeJs = thickness; let levels = [];
+                    internalShelves.sort((a, b) => b.position.y - a.position.y);
+                    
+                    if (heightVal === '60' && internalShelves.length === 3) {
+                        levels = [
+                           { top: topPanel.position.y, bottom: internalShelves[0].position.y },
+                           { top: internalShelves[0].position.y, bottom: internalShelves[1].position.y },
+                           { top: internalShelves[1].position.y, bottom: internalShelves[2].position.y },
+                           { top: internalShelves[2].position.y, bottom: bottomPanel.position.y }
+                       ].map(level => ({ top: level.top - thickness/2, bottom: level.bottom + thickness/2 }));
+                    } else if (heightVal === '40' && internalShelves.length === 2) {
+                        levels = [
+                           { top: topPanel.position.y, bottom: internalShelves[0].position.y },
+                           { top: internalShelves[0].position.y, bottom: internalShelves[1].position.y },
+                           { top: internalShelves[1].position.y, bottom: bottomPanel.position.y }
+                       ].map(level => ({ top: level.top - thickness/2, bottom: level.bottom + thickness/2 }));
+                    }
+                    
+                    const dividersToAdd = [];
+                    const createDividersForLevel = (levelData, levelName) => {
+                        const levelH = Math.max(0.01, levelData.top - levelData.bottom); if (levelH <= 0.01) return;
+                        const yCenter = levelData.bottom + levelH / 2; const dividerGeometry = new THREE.BoxGeometry(dividerThicknessThreeJs, levelH, depth);
+                        
+                        if (widthNum == 84) {
+                            const numPhysicalDividers = 3;
+                            const singleCompartmentWidth = 1.25;
+                            let currentXPos = -innerWidthForDividers / 2;
+                            for (let i = 0; i < numPhysicalDividers; i++) {
+                                currentXPos += singleCompartmentWidth;
+                                const dividerXCenter = currentXPos + (dividerThicknessThreeJs / 2);
+                                const dividerMesh = new THREE.Mesh(dividerGeometry.clone(), defaultMaterial);
+                                dividerMesh.position.set(dividerXCenter, yCenter, 0);
+                                dividerMesh.name = `divider_${levelName}_${i}`;
+                                dividerMesh.scale.set(1, 0.01, 1);
+                                dividersToAdd.push(dividerMesh);
+                                currentXPos += dividerThicknessThreeJs;
+                            }
+                        } else {
+                            const numDividersOriginal = (widthNum == 60) ? 3 : ((widthNum == 44) ? 2 : 0);
+                            if (numDividersOriginal > 0) {
+                                const dividerSpacing = innerWidthForDividers / (numDividersOriginal + 1);
+                                for (let i = 1; i <= numDividersOriginal; i++) {
+                                    const xPos = (-innerWidthForDividers / 2) + i * dividerSpacing;
+                                    const dividerMesh = new THREE.Mesh(dividerGeometry.clone(), defaultMaterial);
+                                    dividerMesh.position.set(xPos, yCenter, 0);
+                                    dividerMesh.name = `divider_${levelName}_${i}`;
+                                    dividerMesh.scale.set(1, 0.01, 1);
+                                    dividersToAdd.push(dividerMesh);
+                                }
+                            }
+                        }
+                    };
+
+                    if (addDividersTop && levels[0]) createDividersForLevel(levels[0], 'top');
+                    if (addDividersMiddle && levels[1]) createDividersForLevel(levels[1], 'middle');
+                    if (addDividersBottom && levels[2]) createDividersForLevel(levels[2], 'bottom');
+
+                    if (dividersToAdd.length > 0) {
+                        dividersToAdd.forEach(d => shelfGroup.add(d));
+                        currentAnimationTimeline.to(dividersToAdd.map(d => d.scale), { y: 1, duration: animDuration, stagger: 0.1, ease: 'power2.out' }, dividersToRemove.length > 0 ? ">-0.1" : "+=0.2");
+                    }
+                }
+            }
+            
+            lastValidConfig = { ...config };
         }
-        lastValidConfig = {};
-        return;
-    }
-
-    const isMugShelf = config.shelfType === 'mug_shelf';
-    const wasMugShelf = lastValidConfig.shelfType === 'mug_shelf';
-    const isModularShelf = config.shelfType === 'modular';
-    const wasModularShelf = lastValidConfig.shelfType === 'modular';
-
-    // Warunek dla typów półek, które wymagają pełnego, animowanego przebudowania
-    if (isModularShelf || wasModularShelf) {
-        rebuildShelf(config, animateChanges);
-        return;
-    }
-
-    // Warunek dla typów półek, które wymagają przebudowania bez animacji
-    if (isMugShelf || wasMugShelf || !animateChanges) {
-        rebuildShelf(config, false); // Przebuduj bez animacji
-        return;
-    }
-    
-    // Poniższy kod wykona się tylko dla półek standardowych (wiszących/stojących)
-    if (currentAnimationTimeline) {
-        currentAnimationTimeline.kill();
-    }
-    
-    currentAnimationTimeline = gsap.timeline();
-
-    const animDuration = 0.5;
-    const thickness = 0.18;
-    const targetWidth = config.width / 10;
-    const targetHeight = parseFloat(config.height) / 10;
-    const targetDepth = config.depth / 10;
-    const targetShelfCount = parseInt(config.shelfCount);
-    
-    if (!shelfGroup) {
-        shelfGroup = new THREE.Group();
-        scene.add(shelfGroup);
-    }
-
-    let leftSide = shelfGroup.getObjectByName("leftSide");
-    let rightSide = shelfGroup.getObjectByName("rightSide");
-    let topPanel = shelfGroup.getObjectByName("topPanel");
-    let bottomPanel = shelfGroup.getObjectByName("bottomPanel");
-
-    const defaultMaterial = new THREE.MeshStandardMaterial(originalPreviewMaterialParams);
-
-    if (!leftSide) {
-        leftSide = new THREE.Mesh(new THREE.BoxGeometry(thickness, targetHeight, targetDepth), defaultMaterial);
-        leftSide.name = "leftSide";
-        shelfGroup.add(leftSide);
-    }
-    if (!rightSide) {
-        rightSide = new THREE.Mesh(new THREE.BoxGeometry(thickness, targetHeight, targetDepth), defaultMaterial);
-        rightSide.name = "rightSide";
-        shelfGroup.add(rightSide);
-    }
-    
-    currentAnimationTimeline.to(leftSide.scale, { y: targetHeight / leftSide.geometry.parameters.height, z: targetDepth / leftSide.geometry.parameters.depth, duration: animDuration }, 0);
-    currentAnimationTimeline.to(rightSide.scale, { y: targetHeight / rightSide.geometry.parameters.height, z: targetDepth / rightSide.geometry.parameters.depth, duration: animDuration }, 0);
-    currentAnimationTimeline.to(leftSide.position, { x: -targetWidth / 2 + thickness / 2, y: 0, duration: animDuration }, 0);
-    currentAnimationTimeline.to(rightSide.position, { x: targetWidth / 2 - thickness / 2, y: 0, duration: animDuration }, 0);
-
-    const topExists = !config.noTopShelf;
-    if (topExists) {
-        if (!topPanel) {
-            topPanel = new THREE.Mesh(new THREE.BoxGeometry(targetWidth, thickness, targetDepth), defaultMaterial);
-            topPanel.name = "topPanel";
-            topPanel.scale.set(1,0.01,1);
-            shelfGroup.add(topPanel);
-        }
-        currentAnimationTimeline.to(topPanel.scale, { x: targetWidth / topPanel.geometry.parameters.width, y: 1, z: targetDepth / topPanel.geometry.parameters.depth, duration: animDuration }, 0);
-        currentAnimationTimeline.to(topPanel.position, { y: targetHeight / 2 - thickness / 2, duration: animDuration }, 0);
-    } else if (topPanel) {
-         currentAnimationTimeline.to(topPanel.scale, { y: 0.01, duration: animDuration / 2, onComplete: () => shelfGroup.remove(topPanel) }, 0);
-    }
-
-    const bottomExists = !config.noBottomShelf;
-    if (bottomExists) {
-        if (!bottomPanel) {
-            bottomPanel = new THREE.Mesh(new THREE.BoxGeometry(targetWidth, thickness, targetDepth), defaultMaterial);
-            bottomPanel.name = "bottomPanel";
-            bottomPanel.scale.set(1,0.01,1);
-            shelfGroup.add(bottomPanel);
-        }
-        currentAnimationTimeline.to(bottomPanel.scale, { x: targetWidth / bottomPanel.geometry.parameters.width, y:1, z: targetDepth / bottomPanel.geometry.parameters.depth, duration: animDuration }, 0);
-        currentAnimationTimeline.to(bottomPanel.position, { y: -targetHeight / 2 + thickness / 2, duration: animDuration }, 0);
-    } else if (bottomPanel) {
-        currentAnimationTimeline.to(bottomPanel.scale, { y: 0.01, duration: animDuration / 2, onComplete: () => shelfGroup.remove(bottomPanel) }, 0);
-    }
-    
-    const topThicknessActual = topExists ? thickness : 0;
-    const bottomThicknessActual = bottomExists ? thickness : 0;
-    const totalAvailableHeight = targetHeight - topThicknessActual - bottomThicknessActual;
-    const gap = (totalAvailableHeight - targetShelfCount * thickness) / (targetShelfCount + 1);
-    let startY = bottomExists ? (-targetHeight / 2 + bottomThicknessActual) : (-targetHeight / 2);
-
-    const existingShelves = shelfGroup.children.filter(child => child.name.startsWith("internalShelf_"));
-
-    for (let i = targetShelfCount; i < existingShelves.length; i++) {
-        const shelfToRemove = existingShelves[i];
-        if (shelfToRemove) {
-             currentAnimationTimeline.to(shelfToRemove.scale, { x: 0.01, duration: animDuration / 2, onComplete: () => shelfGroup.remove(shelfToRemove) }, 0);
-        }
-    }
-    
-    for (let i = 0; i < targetShelfCount; i++) {
-        const shelfName = `internalShelf_${i}`;
-        let shelf = shelfGroup.getObjectByName(shelfName);
-        const targetY = startY + (i + 1) * gap + (i - 0.5) * thickness;
-
-        if (!shelf) {
-            shelf = new THREE.Mesh(new THREE.BoxGeometry(targetWidth - 2 * thickness, thickness, targetDepth), defaultMaterial);
-            shelf.name = shelfName;
-            shelf.position.y = targetY;
-            shelf.scale.set(0.01, 1, 1);
-            shelfGroup.add(shelf);
-            currentAnimationTimeline.to(shelf.scale, { x: 1, duration: animDuration, delay: (i * 0.1) }, 0);
-        } else {
-            currentAnimationTimeline.to(shelf.position, { y: targetY, duration: animDuration }, 0);
-            currentAnimationTimeline.to(shelf.scale, { x: (targetWidth - 2 * thickness) / shelf.geometry.parameters.width, z: targetDepth / shelf.geometry.parameters.depth, duration: animDuration }, 0);
-        }
-    }
-
-    currentAnimationTimeline.add(() => {
-        const box = new THREE.Box3().setFromObject(shelfGroup);
-        const center = box.getCenter(new THREE.Vector3());
-        const groupPositionCorrection = shelfGroup.position.clone().sub(center);
-        gsap.to(shelfGroup.position, { x: groupPositionCorrection.x, y: groupPositionCorrection.y, z: groupPositionCorrection.z, duration: 0.1 });
-    });
-
-    lastValidConfig = { ...config };
-}
         
         function createSingleModule(config, material) { const { width, height, depth, shelfCount, thickness } = config; const moduleGroup = new THREE.Group(); const bottomGeo = new THREE.BoxGeometry(width, thickness, depth); const bottomPanel = new THREE.Mesh(bottomGeo, material); bottomPanel.position.y = -height / 2 + thickness / 2; bottomPanel.name = "bottomPanel"; moduleGroup.add(bottomPanel); const topGeo = new THREE.BoxGeometry(width, thickness, depth); const topPanel = new THREE.Mesh(topGeo, material); topPanel.position.y = height / 2 - thickness / 2; topPanel.name = "topPanel"; moduleGroup.add(topPanel); const sideGeo = new THREE.BoxGeometry(thickness, height, depth); const leftSide = new THREE.Mesh(sideGeo, material); leftSide.position.x = -width / 2 + thickness / 2; leftSide.name = "leftSide"; moduleGroup.add(leftSide); const rightSide = new THREE.Mesh(sideGeo, material); rightSide.position.x = width / 2 - thickness / 2; rightSide.name = "rightSide"; moduleGroup.add(rightSide); const innerWidth = width - 2 * thickness; const innerShelfGeo = new THREE.BoxGeometry(innerWidth, thickness, depth); const availableHeight = height - 2 * thickness; if (shelfCount > 0) { const gap = (availableHeight - shelfCount * thickness) / (shelfCount + 1); for(let i = 0; i < shelfCount; i++) { const shelf = new THREE.Mesh(innerShelfGeo.clone(), material); const yPos = (-height / 2) + thickness + gap * (i + 1) + thickness * i; shelf.position.y = yPos; shelf.name = `internalShelf_${i}`; moduleGroup.add(shelf); } } return moduleGroup; }
         function buildModularShelf(config) { 
