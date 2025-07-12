@@ -1957,7 +1957,42 @@
         function updateDividerIconActiveStates() { if (addTopDividerBtn && dividersTopCheckbox) addTopDividerBtn.classList.toggle('active-divider-icon', dividersTopCheckbox.checked); if (addMiddleDividerBtn && dividersMiddleCheckbox) addMiddleDividerBtn.classList.toggle('active-divider-icon', dividersMiddleCheckbox.checked); if (addBottomDividerBtn && dividersBottomCheckbox) addBottomDividerBtn.classList.toggle('active-divider-icon', dividersBottomCheckbox.checked); }
         function updateMobileMountStripStates() { if (!mobileMountHangingStripBtn || !mobileMountStandingStripBtn || !mugShelfMountOptionsDiv) return; const currentMountValue = mugShelfMountOptionsDiv.querySelector('input[name="mugShelfMount"]:checked')?.value; mobileMountHangingStripBtn.classList.toggle('active-mount-strip', currentMountValue === 'hanging'); mobileMountStandingStripBtn.classList.toggle('active-mount-strip', currentMountValue === 'standing'); }
         function updateDividerDimensionVisibility() { if (!desktopDividerDimensionsInfo || !shelfTypeSelect || !heightSelect || !dividersTopCheckbox || !dividersMiddleCheckbox || !dividersBottomCheckbox) { if(desktopDividerDimensionsInfo) desktopDividerDimensionsInfo.style.display = 'none'; return; } const isMugShelfType = shelfTypeSelect.value === 'mug_shelf'; const areDividersSelectedForMugShelf = (dividersTopCheckbox?.checked || dividersMiddleCheckbox?.checked || dividersBottomCheckbox?.checked); const shouldShow = isMugShelfType && areDividersSelectedForMugShelf; try { if (shouldShow) { const heightVal = heightSelect.value; let dimensionsText = "wymiar przegródek szer. 12,5cm wys. 10,9cm"; if (heightVal === '60') { dimensionsText += " wnęka od podstawy wys. 18cm"; } desktopDividerDimensionsInfo.textContent = dimensionsText; } desktopDividerDimensionsInfo.style.display = shouldShow ? 'block' : 'none'; } catch (e) { console.error("Błąd podczas ustawiania wyświetlania dla desktopDividerDimensionsInfo:", e); if(desktopDividerDimensionsInfo) desktopDividerDimensionsInfo.style.display = 'none'; } }
-        function updateMobileShelfInfo() { const mobileInfoContainer = document.getElementById('mobileShelfInfo'); if (!mobileInfoContainer) return; const shelfType = shelfTypeSelect.value; let showContainer = false; let infoHtml = ''; if (shelfType === 'modular') { const moduleW = parseInt(moduleWidthSelect.value); const moduleH = parseInt(moduleHeightSelect.value); const connectW = parseInt(connectingShelfWidthSelect.value); const thickness = 1.8; let shelfNum = 3; if (moduleH === 40) shelfNum = 2; if (moduleH === 80) shelfNum = 5; const totalWidth = moduleW * 2 + connectW; const availableHeight = moduleH - 2 * thickness; const gap = (availableHeight - shelfNum * thickness) / (shelfNum + 1); infoHtml = `<p>Szer: ${totalWidth}cm &bull; Odstęp: ${gap.toFixed(1)}cm</p>`; showContainer = true; } else { const mobileInfoGap = document.getElementById('mobileInfoGap'); const mobileInfoDividers = document.getElementById('mobileInfoDividers'); if (mobileInfoGap && mobileInfoDividers) { const gapText = document.getElementById('gapSummaryDisplay').textContent; if (shelfType !== 'mug_shelf' && gapText && gapText.includes('cm')) { mobileInfoGap.innerHTML = `Odległość między półkami: <strong class="font-semibold text-stone-600">${gapText}</strong>`; mobileInfoGap.style.display = 'block'; showContainer = true; } else { mobileInfoGap.style.display = 'none'; } if (shelfType === 'mug_shelf') { mobileInfoDividers.innerHTML = `Przegródki: <strong class="font-semibold text-stone-600">12,5cm szer. x 10,9cm wys.</strong>`; mobileInfoDividers.style.display = 'block'; showContainer = true; } else { mobileInfoDividers.style.display = 'none'; } infoHtml = mobileInfoGap.outerHTML + mobileInfoDividers.outerHTML; } } mobileInfoContainer.innerHTML = infoHtml; mobileInfoContainer.style.display = showContainer ? 'block' : 'none'; }
+        function updateMobileShelfInfo() {
+            const mobileInfoContainer = document.getElementById('mobileShelfInfo');
+            if (!mobileInfoContainer) return;
+
+            const shelfType = shelfTypeSelect.value;
+            let infoHtml = '';
+            let showContainer = false;
+
+            if (shelfType === 'modular') {
+                const moduleW = parseInt(moduleWidthSelect.value);
+                const moduleH = parseInt(moduleHeightSelect.value);
+                const connectW = parseInt(connectingShelfWidthSelect.value);
+                const depth = parseInt(depthSelect.value);
+                const thickness = 1.8;
+                let shelfNum = 3;
+                if (moduleH === 40) shelfNum = 2;
+                if (moduleH === 80) shelfNum = 5;
+                const totalWidth = moduleW * 2 + connectW;
+                const availableHeight = moduleH - 2 * thickness;
+                const gap = (availableHeight - shelfNum * thickness) / (shelfNum + 1);
+                infoHtml = `<p>Szer: ${totalWidth}cm &bull; Wys: ${moduleH}cm &bull; Gł: ${depth}cm &bull; Odstęp: ${gap.toFixed(1)}cm</p>`;
+                showContainer = true;
+            } else if (shelfType === 'mug_shelf') {
+                infoHtml = `<p>Wymiar przegródek: <strong class="font-semibold text-stone-600">12,5cm szer. x 10,9cm wys.</strong></p>`;
+                showContainer = true;
+            } else {
+                const gapText = document.getElementById('gapSummaryDisplay').textContent;
+                if (gapText && gapText.includes('cm')) {
+                    infoHtml = `<p>Odległość między półkami: <strong class="font-semibold text-stone-600">${gapText}</strong></p>`;
+                    showContainer = true;
+                }
+            }
+
+            mobileInfoContainer.innerHTML = infoHtml;
+            mobileInfoContainer.style.display = showContainer ? 'block' : 'none';
+        }
         
         function updateModularInfoText() {
             const mobileInfoContainer = document.getElementById('mobileShelfInfo');
