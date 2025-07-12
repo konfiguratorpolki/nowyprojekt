@@ -583,7 +583,7 @@
     /* Reszta stylów podstawowych - bez zmian */
     input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 8px; background: #D6D3D1; border-radius: 5px; outline: none; opacity: 0.7; transition: opacity .2s; }
     input[type=range]:hover { opacity: 1; }
-    input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; background: #16A34A; border-radius: 50%; cursor: pointer; transition: background-color 0.15s ease-in-out; }
+    input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; background: #16A34A; border-radius: 50%; cursor: pointer; transition: background-color: 0.15s ease-in-out; }
     input[type=range]::-webkit-slider-thumb:active { background: #15803d; }
     input[type=range]::-moz-range-thumb { width: 20px; height: 20px; background: #16A34A; border-radius: 50%; cursor: pointer; border: none; transition: background-color 0.15s ease-in-out; }
     input[type=range]::-moz-range-thumb:active { background: #15803d; }
@@ -707,7 +707,7 @@
     .modal-body { padding: 1.25rem 1.5rem; overflow-y: auto; flex-grow: 1; color: #4b5563; }
     .modal-body p, .modal-body li { line-height: 1.6; margin-bottom: 0.75rem; }
     .modal-body strong { color: #374151; }
-    .modal-footer { padding: 1rem 1.5rem; background-color: #f9fafb; border-top: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; gap: 0.75rem; }
+    .modal-footer { padding: 1rem 1.5rem; background-color: #f9fafb; border-top: 1px solid #e5e7eb; display: flex; justify-content: flex-end; align-items: center; gap: 0.75rem; }
     #orderDetailsModal .modal-body h4 { font-weight: 600; margin-top: 1rem; margin-bottom: 0.5rem; color: #111827; }
     
     #cartSummaryModal .modal-body ol { padding-left: 1.25rem; }
@@ -741,6 +741,32 @@
         object-fit: contain;
     }
 
+    #visualDetailsModal .modal-body dl {
+        display: flex;
+        flex-direction: column;
+    }
+
+    #visualDetailsModal .modal-body .spec-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.375rem 0;
+        border-bottom: 1px solid #f3f4f6;
+    }
+    #visualDetailsModal .modal-body .spec-row:last-child {
+        border-bottom: none;
+    }
+
+     #visualDetailsModal .modal-body .spec-row dt {
+        color: #6b7280;
+        padding-right: 1rem;
+     }
+     #visualDetailsModal .modal-body .spec-row dd {
+        font-weight: 600;
+        color: #1f2937;
+        text-align: right;
+     }
+
+
     @media (max-width: 640px) {
         .modal { width: 95%; border-radius: 0.5rem; max-width: 95%;}
         .modal-header { padding: 0.75rem 1rem; }
@@ -764,23 +790,19 @@
     .gallery-tab.active { background-color: #16A34A; color: #ffffff; border-color: #15803d; }
     
     .gallery-content-wrapper {
-    position: relative;
-    width: 100%;
-    overflow: hidden;
-    min-height: 200px;
-    padding-bottom: 30px;
-}
+        position: relative;
+        width: 100%;
+        overflow: hidden;
+        min-height: 200px;
+    }
     .gallery-image-area { overflow: hidden; padding: 12px 2px; position: relative; margin: 0; }
     .gallery-grid { display: flex; }
     .gallery-tile {
-    width: 260px;
-    flex-shrink: 0;
-    box-sizing: border-box;
-    transition: transform 0.3s, opacity 0.3s;
-    display: flex;
-    flex-direction: column;
-    height: auto; 
-}
+        width: 260px;
+        flex-shrink: 0;
+        box-sizing: border-box;
+        transition: transform 0.3s, opacity 0.3s;
+    }
      @media (max-width: 768px) { .gallery-tile { width: 280px; } }
      @media (max-width: 480px) { .gallery-tile { width: 240px; } }
 
@@ -1092,11 +1114,134 @@
 
     /* ---- KONIEC STYLÓW ANIMACJI RABATU ---- */
 
+    /* ---- NOWE STYLE DLA PROFESJONALNEGO WYDRUKU ---- */
+    @media print {
+        body > * {
+            display: none !important;
+        }
+        #print-container {
+            display: block !important;
+            margin: 0;
+            padding: 0;
+        }
+        .print-header {
+            text-align: center;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .print-header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin: 0;
+        }
+        .print-header p {
+            font-size: 1rem;
+            color: #4b5563;
+            margin: 0.25rem 0 0;
+            font-family: monospace;
+        }
+        .print-body {
+            display: flex;
+            gap: 2rem;
+            align-items: flex-start;
+        }
+        .print-visuals {
+            flex: 1 1 50%;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            background-color: #f9fafb;
+        }
+        .print-visuals h2 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #374151;
+            margin-top: 0;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        .print-visuals img {
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+            border-radius: 0.25rem;
+        }
+        .print-specs {
+            flex: 1 1 50%;
+        }
+        .print-specs h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #111827;
+            margin-top: 0;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #f3f4f6;
+            padding-bottom: 0.5rem;
+        }
+        .spec-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #f3f4f6;
+            font-size: 1rem;
+        }
+        .spec-item:last-child {
+            border-bottom: none;
+        }
+        .spec-item dt {
+            color: #6b7280;
+            padding-right: 1rem;
+        }
+        .spec-item dd {
+            font-weight: 600;
+            color: #1f2937;
+            text-align: right;
+        }
+        .spec-item.price-spec dd {
+            color: #be185d; /* Użyjemy koloru z podsumowania ceny */
+            font-size: 1.25rem; /* Powiększymy czcionkę ceny */
+            font-weight: 700;
+        }
+        .print-footer {
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e5e7eb;
+            text-align: center;
+            font-size: 0.875rem;
+            color: #9ca3af;
+        }
+        /* Zapobieganie łamaniu stron w nieodpowiednich miejscach */
+        .print-body, .spec-item {
+            page-break-inside: avoid;
+        }
+    }
 </style>
 </head>
 <body class="flex flex-col justify-center items-center min-h-screen bg-stone-100 font-sans text-stone-800 pb-20 md:pb-0">
 
-    <div id="cartPanelOverlay"></div>
+    <div id="print-container" style="display: none;">
+        <div class="print-header">
+            <h1 id="print-title">Podsumowanie Projektu Półki</h1>
+            <p id="print-order-code"></p>
+        </div>
+        <div class="print-body">
+            <div class="print-visuals">
+                <h2>Wizualizacja 3D</h2>
+                <img id="print-snapshot-img" src="" alt="Wizualizacja 3D projektu">
+            </div>
+            <div class="print-specs">
+                <h2>Specyfikacja</h2>
+                <dl id="print-specs-list" class="spec-list"></dl>
+            </div>
+        </div>
+        <div class="print-footer">
+            <p>Wydruk wygenerowany z konfiguratora na stronie [nazwa-twojej-strony.pl]</p>
+        </div>
+    </div>
+
+<div id="cartPanelOverlay"></div>
     <div id="cartPanel">
         <div id="cartPanelHeader">
             <h2 id="cartPanelTitle">Twój koszyk</h2>
@@ -1148,15 +1293,58 @@
             </button>
         </div>
     </div>
-    <div id="orderDetailsModalOverlay" class="modal-overlay"> <div id="orderDetailsModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"> <div class="modal-header"> <h3 id="modalTitle" class="modal-title">Szczegóły Zamówienia</h3> <button class="modal-close-button" aria-label="Zamknij">&times;</button> </div> <div class="modal-body"> <h4>Kod Zamówienia:</h4> <p><strong id="modalOrderCode">Ładowanie...</strong></p> <h4>Podsumowanie:</h4> <p id="modalOrderSummary">Tutaj pojawią się szczegóły zamówienia po implementacji logiki...</p> </div> </div> </div>
     
+    <div id="visualDetailsModalOverlay" class="modal-overlay">
+        <div id="visualDetailsModal" class="modal !max-w-2xl" role="dialog" aria-modal="true" aria-labelledby="visualDetailsModalTitle">
+            <div class="modal-header">
+                <h3 id="visualDetailsModalTitle" class="modal-title">Podgląd Projektu</h3>
+                <button id="visualDetailsModalCloseBtn" class="modal-close-button" aria-label="Zamknij">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="visualDetailsLoader" class="text-center p-8 hidden">
+                    <svg class="animate-spin h-8 w-8 text-green-600 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <p class="mt-2 text-stone-600">Wczytuję projekt...</p>
+                </div>
+                <div id="visualDetailsContent" class="hidden">
+                    <p class="font-mono text-sm text-center text-stone-500 mb-4" id="visualDetailsOrderCode"></p>
+                    <div class="flex flex-col md:flex-row gap-6 items-start">
+                        <div class="w-full md:w-1/2">
+                            <h4 class="text-lg font-semibold text-stone-700 mb-2 text-center">Wizualizacja</h4>
+                            <div class="bg-stone-100 border border-stone-200 rounded-lg p-2">
+                                <img id="visualDetailsSnapshot" src="" alt="Wizualizacja 3D projektu" class="w-full h-auto object-contain rounded-md">
+                            </div>
+                        </div>
+                        <div class="w-full md:w-1/2">
+                            <h4 class="text-lg font-semibold text-stone-700 mb-2">Specyfikacja</h4>
+                            <dl id="visualDetailsSpecsList" class="text-sm"></dl>
+                        </div>
+                    </div>
+                </div>
+                 <div id="visualDetailsError" class="text-center p-8 hidden">
+                    <p class="text-red-600 font-semibold"></p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="printVisualDetailsBtn" class="px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-md flex items-center gap-2 transition-colors disabled:bg-stone-400 disabled:cursor-not-allowed" disabled>
+                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm7-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                    </svg>
+                    <span>Drukuj projekt</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <div id="cartSummaryModalOverlay" class="modal-overlay">
         <div id="cartSummaryModal" class="modal !max-w-2xl" role="dialog" aria-modal="true" aria-labelledby="cartSummaryModalTitle">
             <div class="modal-header">
                 <h3 id="cartSummaryModalTitle" class="modal-title">Podsumowanie Twojego zamówienia</h3>
                 <button id="cartSummaryModalCloseBtnTop" class="modal-close-button" aria-label="Zamknij">&times;</button>
             </div>
-            <div class="modal-body">
+<div class="modal-body">
                 <div id="cartSummaryItemsContainer" class="space-y-4">
                     </div>
                 <div class="mt-4 pt-4">
@@ -1233,22 +1421,16 @@
     <li><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" /></svg> <span>W polu „Uwagi do zakupu” wklej **wszystkie** skopiowane kody.</span></li>
     <li><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" /></svg> <span>Opłać zamówienie – my zajmiemy się resztą! 😊</span></li>
 </ul> </div> </details> </div>
-<div id="tabbedGalleryContainer" class="w-full max-w-7xl mx-auto px-4 md:px-6"> <div class="gallery-tabs" id="galleryTabsContainer"></div> <div class="gallery-content-wrapper">
-    <button class="gallery-arrow gallery-prev-arrow" aria-label="Poprzednie zdjęcia">&#10094;</button>
-    <div class="gallery-image-area swiper-container" id="galleryImageArea">
-        <div class="gallery-grid swiper-wrapper" id="galleryGridContainer"></div>
-        
-        <div class="info-ticker-wrap">
-            <div class="info-ticker-content">
-                <span>✨ Półeczki wykonane z wysokiej jakości płyty laminowanej • odpornej na wilgoć i zabrudzenia</span>
-                <span>✨ Precyzyjne cięcie i klejenie na profesjonalnych maszynach • Brak odprysków i niedoskonałości</span>
-                <span>✨ Okleina ABS doskonale przylega do krawędzi • Grubość płyty: 1,8 cm</span>
-                <span>✨ Wysyłane gotowe, złożone</span>
-            </div>
-        </div>
+<div id="tabbedGalleryContainer" class="w-full max-w-7xl mx-auto px-4 md:px-6"> <div class="gallery-tabs" id="galleryTabsContainer"></div> <div class="gallery-content-wrapper"> <button class="gallery-arrow gallery-prev-arrow" aria-label="Poprzednie zdjęcia">&#10094;</button> <div class="gallery-image-area swiper-container" id="galleryImageArea"> <div class="gallery-grid swiper-wrapper" id="galleryGridContainer"></div> </div>
+<div class="info-ticker-wrap">
+    <div class="info-ticker-content">
+        <span>✨ Półeczki wykonane z wysokiej jakości płyty laminowanej • odpornej na wilgoć i zabrudzenia</span>
+        <span>✨ Precyzyjne cięcie i klejenie na profesjonalnych maszynach • Brak odprysków i niedoskonałości</span>
+        <span>✨ Okleina ABS doskonale przylega do krawędzi • Grubość płyty: 1,8 cm</span>
+        <span>✨ Wysyłane gotowe, złożone</span>
     </div>
-    <button class="gallery-arrow gallery-next-arrow" aria-label="Następne zdjęcia">&#10095;</button>
-</div> </div>
+</div>
+<button class="gallery-arrow gallery-next-arrow" aria-label="Następne zdjęcia">&#10095;</button> </div> </div>
 <div class="w-full max-w-7xl mx-auto px-4 md:px-6 mb-6">
     <div class="bg-emerald-50 border-2 border-dashed border-emerald-300 rounded-xl p-4 md:p-5 flex items-center space-x-4 shadow-sm">
     <div class="flex-shrink-0">
@@ -1492,7 +1674,6 @@
         <div class="text-sm text-stone-600 italic mt-2 text-center md:hidden"></div>
          <div id="viewerInfoText" class="text-sm text-stone-600 italic mt-2 text-center hidden md:block"> Obróć lub zbliż model (przeciągnij myszką) </div>
          <div id="modularInfoText" class="text-sm text-stone-600 mt-2 text-center hidden" style="display: none;"></div>
-         <div id="modularInfoText" class="text-sm text-stone-600 mt-2 text-center hidden" style="display: none;"></div>
          <div id="shelfCountSection" class="p-6 shadow rounded-lg bg-white border border-stone-200 transition-shadow duration-200 hover:shadow-md mt-0,1 md:mt-8 w-full max-w-lg">
              <h2 class="text-lg font-semibold mb-4 flex items-center text-stone-800">
                  <svg class="h-6 w-6 mr-2 text-green-600 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -1584,7 +1765,7 @@
                  
                 <div id="viewOrderSection" class="mt-6 pt-4 border-t border-dashed border-stone-300">
                      <label for="viewOrderCodeInput">Masz kod zamówienia?</label>
-                     <input type="text" id="viewOrderCodeInput" class="text-base" placeholder="Wklej kod tutaj, aby zobaczyć szczegóły...">
+                     <input type="text" id="viewOrderCodeInput" class="text-base" placeholder="Wklej kod tutaj, aby zobaczyć projekt...">
                 </div>
             </div>
         </div>
@@ -1636,6 +1817,10 @@
         let priceAndActionsContainer, priceHint, addToCartBtn;
         let imageLightbox, lightboxImage, lightboxCloseBtn;
         
+        // NOWE ZMIENNE
+        let visualDetailsModalOverlay, visualDetailsModal, visualDetailsModalCloseBtn, visualDetailsLoader, visualDetailsContent, visualDetailsError, visualDetailsOrderCode, visualDetailsSnapshot, visualDetailsSpecsList, printVisualDetailsBtn;
+        let currentDetailsForVisualModal = null;
+
         let modalScrollListener = null;
         let previousCartItemCount = 0;
 
@@ -1669,9 +1854,7 @@
 
         const newItem = {
             name: shelfTypeSelect.options[shelfTypeSelect.selectedIndex].text,
-            width: document.getElementById("widthSummary").textContent,
-            height: document.getElementById("heightSummary").textContent,
-            depth: document.getElementById("depthSummary").textContent,
+            summary: `${document.getElementById("widthSummary").textContent} x ${document.getElementById("heightSummary").textContent} x ${document.getElementById("depthSummary").textContent}`,
             shelfCountText: document.getElementById("shelfCountSummary").textContent,
             gapInfo: document.getElementById("gapSummary").textContent,
             sideColor: document.getElementById("sideColorSummary").textContent,
@@ -1681,50 +1864,20 @@
             code: orderCode,
             quantity: 1,
             snapshot: snapshotDataUrl,
-            isModular: isModular
         }; 
         
         const cartIcon = window.innerWidth >= 768 ? desktopCartContainer : document.getElementById('mobileCartButton'); const startRect = activeAddToCartButton.getBoundingClientRect(); const endRect = cartIcon.getBoundingClientRect(); const flyingShelf = document.createElement('img'); flyingShelf.src = snapshotDataUrl; flyingShelf.className = 'shelf-to-cart-animation'; document.body.appendChild(flyingShelf); flyingShelf.style.left = `${startRect.left + startRect.width / 2 - 50}px`; flyingShelf.style.top = `${startRect.top + startRect.height / 2 - 50}px`; flyingShelf.style.width = `100px`; flyingShelf.style.height = `100px`; flyingShelf.getBoundingClientRect(); flyingShelf.style.transform = `translate(${endRect.left - startRect.left}px, ${endRect.top - startRect.top}px) scale(0.2)`; flyingShelf.style.opacity = '0'; cart.push(newItem); setTimeout(() => { if(document.body.contains(flyingShelf)) document.body.removeChild(flyingShelf); updateCartDisplay(); openCart(); }, 1000); } catch (e) { console.error("Nie udało się wygenerować miniatury przy dodawaniu do koszyka:", e); alert("Wystąpił błąd podczas generowania podglądu. Spróbuj ponownie."); } finally { activeAddToCartButton.innerHTML = originalButtonContent; activeAddToCartButton.disabled = false; } }
         function triggerDiscountAnimation() { const subtotalPriceEl = document.getElementById('cartSubtotalPrice'); const discountLineEl10 = document.getElementById('cartDiscountLine10'); const discountLineEl25 = document.getElementById('cartDiscountLine25'); const totalPriceLineEl = document.getElementById('cartTotalPriceLine'); if (!subtotalPriceEl || !totalPriceLineEl || !discountLineEl10 || !discountLineEl25) { return; } subtotalPriceEl.classList.add('discount-subtotal-wobble', 'discount-subtotal-slash'); if(discountLineEl10.style.display === 'flex') discountLineEl10.classList.add('discount-line-pop'); if(discountLineEl25.style.display === 'flex') discountLineEl25.classList.add('discount-line-pop'); totalPriceLineEl.classList.add('discount-total-glow'); setTimeout(() => { subtotalPriceEl.classList.remove('discount-subtotal-wobble'); if(discountLineEl10) discountLineEl10.classList.remove('discount-line-pop'); if(discountLineEl25) discountLineEl25.classList.remove('discount-line-pop'); totalPriceLineEl.classList.remove('discount-total-glow'); }, 2000); }
         function updateCartDisplay() { if (!cartItemsContainer || !cartBadges) return; const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0); const justGotDiscount = (totalItems === 1 && previousCartItemCount === 0) || (totalItems >= 2 && previousCartItemCount < 2); cartItemsContainer.innerHTML = ''; if (cart.length === 0) { if(cartEmptyMessage) { cartEmptyMessage.style.display = 'block'; cartItemsContainer.appendChild(cartEmptyMessage); } } else { if(cartEmptyMessage) cartEmptyMessage.style.display = 'none'; cart.forEach(item => { const itemElement = document.createElement('div'); itemElement.className = 'flex items-start p-2.5 border-b border-stone-200 last:border-b-0 gap-3'; itemElement.dataset.code = item.code; 
-        let dimsText = item.isModular
-            ? `Szer.: ${item.width} | Wys.: ${item.height} | Gł.: ${item.depth}`
-            : `${item.width} x ${item.height} x ${item.depth}`;
-        itemElement.innerHTML = ` <div class="flex-shrink-0 w-20 h-20 bg-stone-100 rounded-md flex items-center justify-center overflow-hidden border border-stone-200"> ${item.snapshot ? `<img src="${item.snapshot}" alt="Miniatura półki" class="w-full h-full object-contain">` : ''} </div> <div class="flex-grow flex flex-col justify-between h-full min-h-[80px]"> <div> <div class="flex justify-between items-start"> <p class="font-semibold text-stone-800 leading-tight pr-2">${item.name}</p> <button onclick="removeFromCart('${item.code}')" class="text-stone-400 hover:text-red-500 transition-colors p-1 -mt-1 -mr-1" title="Usuń z koszyka"> <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg> </button> </div> <p class="text-xs text-stone-500">${dimsText} | Boki: ${item.sideColor} | Półki: ${item.shelfColor}</p> </div> <div class="flex justify-between items-center mt-2"> <div class="quantity-controls"> <button class="quantity-btn" onclick="decreaseQuantity('${item.code}')">-</button> <span class="quantity-display">${item.quantity}</span> <button class="quantity-btn" onclick="increaseQuantity('${item.code}')">+</button> </div> <p class="font-bold text-stone-800 text-base">${(item.price * item.quantity).toFixed(2)} zł</p> </div> </div> `; cartItemsContainer.appendChild(itemElement); }); } if (cartDiscountReminder) { if (totalItems === 1) { cartDiscountReminder.innerHTML = `✨ <b>Otrzymujesz 10% rabatu!</b> Dodaj jeszcze jedną półkę, a na tańszą z nich dostaniesz aż <b>25% zniżki.</b>`; cartDiscountReminder.className = 'p-3 bg-emerald-50 border-b border-emerald-200 text-center text-sm text-emerald-800'; cartDiscountReminder.style.display = 'block'; } else if (totalItems >= 2) { cartDiscountReminder.innerHTML = `🎁 <b>Świetnie!</b> Otrzymujesz <b>10% rabatu</b> na najdroższą półkę i <b>25%</b> na najtańszą!`; cartDiscountReminder.className = 'p-3 bg-emerald-50 border-b border-emerald-200 text-center text-sm text-emerald-800'; cartDiscountReminder.style.display = 'block'; } else { cartDiscountReminder.style.display = 'none'; } } const totals = calculateCartTotal(); if (totals.totalDiscount > 0) { cartSubtotalLine.style.display = 'flex'; cartSubtotalPrice.textContent = `${totals.subtotal.toFixed(2)} zł`; cartDiscountLine10.style.display = totals.discount10 > 0 ? 'flex' : 'none'; cartDiscountAmount10.textContent = `- ${totals.discount10.toFixed(2)} zł`; cartDiscountLine25.style.display = totals.discount25 > 0 ? 'flex' : 'none'; cartDiscountAmount25.textContent = `- ${totals.discount25.toFixed(2)} zł`; } else { cartSubtotalLine.style.display = 'none'; cartDiscountLine10.style.display = 'none'; cartDiscountLine25.style.display = 'none'; } if (totals.totalDiscount === 0) { cartSubtotalPrice.classList.remove('discount-subtotal-slash'); } if (justGotDiscount) { triggerDiscountAnimation(); } cartTotalPrice.textContent = `${totals.total.toFixed(2)} zł`; cartBadges.forEach(badge => { badge.textContent = totalItems; badge.style.display = totalItems > 0 ? 'flex' : 'none'; }); if(mobileCartButton) { const mobileCartPriceSpan = mobileCartButton.querySelector('.mobile-cart-price'); if(mobileCartPriceSpan) { mobileCartPriceSpan.textContent = totalItems > 0 ? `${totals.total.toFixed(2)} zł` : 'Koszyk'; } } cartCheckoutButton.disabled = cart.length === 0; previousCartItemCount = totalItems; }
-       function handleCheckout() { if (cart.length === 0) return; const scrollToCodesBtn = document.getElementById('scrollToCodesBtn'); if (scrollToCodesBtn) { scrollToCodesBtn.classList.remove('visible', 'pulse-glow-animation'); } closeCart(); const totals = calculateCartTotal(); const allCodes = cart.flatMap(item => Array(item.quantity).fill(item.code)).join('\n'); const cartSummaryItemsContainer = document.getElementById('cartSummaryItemsContainer'); const cartSummarySubtotalLine = document.getElementById('cartSummarySubtotalLine'); const cartSummarySubtotalPrice = document.getElementById('cartSummarySubtotalPrice'); const cartSummaryCombinedDiscountLine = document.getElementById('cartSummaryCombinedDiscountLine'); const cartSummaryCombinedDiscountAmount = document.getElementById('cartSummaryCombinedDiscountAmount'); const cartSummaryTotalPrice = document.getElementById('cartSummaryTotalPrice'); const cartSummaryInstructionUnits = document.getElementById('cartSummaryInstructionUnits'); const cartSummaryModalOverlay = document.getElementById('cartSummaryModalOverlay'); cartSummaryItemsContainer.innerHTML = ''; cart.forEach(item => { 
+        
+        itemElement.innerHTML = ` <div class="flex-shrink-0 w-20 h-20 bg-stone-100 rounded-md flex items-center justify-center overflow-hidden border border-stone-200"> ${item.snapshot ? `<img src="${item.snapshot}" alt="Miniatura półki" class="w-full h-full object-contain">` : ''} </div> <div class="flex-grow flex flex-col justify-between h-full min-h-[80px]"> <div> <div class="flex justify-between items-start"> <p class="font-semibold text-stone-800 leading-tight pr-2">${item.name}</p> <button onclick="removeFromCart('${item.code}')" class="text-stone-400 hover:text-red-500 transition-colors p-1 -mt-1 -mr-1" title="Usuń z koszyka"> <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg> </button> </div> <p class="text-xs text-stone-500">${item.summary} | Boki: ${item.sideColor} | Półki: ${item.shelfColor}</p> </div> <div class="flex justify-between items-center mt-2"> <div class="quantity-controls"> <button class="quantity-btn" onclick="decreaseQuantity('${item.code}')">-</button> <span class="quantity-display">${item.quantity}</span> <button class="quantity-btn" onclick="increaseQuantity('${item.code}')">+</button> </div> <p class="font-bold text-stone-800 text-base">${(item.price * item.quantity).toFixed(2)} zł</p> </div> </div> `; cartItemsContainer.appendChild(itemElement); }); } if (cartDiscountReminder) { if (totalItems === 1) { cartDiscountReminder.innerHTML = `✨ <b>Otrzymujesz 10% rabatu!</b> Dodaj jeszcze jedną półkę, a na tańszą z nich dostaniesz aż <b>25% zniżki.</b>`; cartDiscountReminder.className = 'p-3 bg-emerald-50 border-b border-emerald-200 text-center text-sm text-emerald-800'; cartDiscountReminder.style.display = 'block'; } else if (totalItems >= 2) { cartDiscountReminder.innerHTML = `🎁 <b>Świetnie!</b> Otrzymujesz <b>10% rabatu</b> na najdroższą półkę i <b>25%</b> na najtańszą!`; cartDiscountReminder.className = 'p-3 bg-emerald-50 border-b border-emerald-200 text-center text-sm text-emerald-800'; cartDiscountReminder.style.display = 'block'; } else { cartDiscountReminder.style.display = 'none'; } } const totals = calculateCartTotal(); if (totals.totalDiscount > 0) { cartSubtotalLine.style.display = 'flex'; cartSubtotalPrice.textContent = `${totals.subtotal.toFixed(2)} zł`; cartDiscountLine10.style.display = totals.discount10 > 0 ? 'flex' : 'none'; cartDiscountAmount10.textContent = `- ${totals.discount10.toFixed(2)} zł`; cartDiscountLine25.style.display = totals.discount25 > 0 ? 'flex' : 'none'; cartDiscountAmount25.textContent = `- ${totals.discount25.toFixed(2)} zł`; } else { cartSubtotalLine.style.display = 'none'; cartDiscountLine10.style.display = 'none'; cartDiscountLine25.style.display = 'none'; } if (totals.totalDiscount === 0) { cartSubtotalPrice.classList.remove('discount-subtotal-slash'); } if (justGotDiscount) { triggerDiscountAnimation(); } cartTotalPrice.textContent = `${totals.total.toFixed(2)} zł`; cartBadges.forEach(badge => { badge.textContent = totalItems; badge.style.display = totalItems > 0 ? 'flex' : 'none'; }); if(mobileCartButton) { const mobileCartPriceSpan = mobileCartButton.querySelector('.mobile-cart-price'); if(mobileCartPriceSpan) { mobileCartPriceSpan.textContent = totalItems > 0 ? `${totals.total.toFixed(2)} zł` : 'Koszyk'; } } cartCheckoutButton.disabled = cart.length === 0; previousCartItemCount = totalItems; }
+        function handleCheckout() { if (cart.length === 0) return; const scrollToCodesBtn = document.getElementById('scrollToCodesBtn'); if (scrollToCodesBtn) { scrollToCodesBtn.classList.remove('visible', 'pulse-glow-animation'); } closeCart(); const totals = calculateCartTotal(); const allCodes = cart.flatMap(item => Array(item.quantity).fill(item.code)).join('\n'); const cartSummaryItemsContainer = document.getElementById('cartSummaryItemsContainer'); const cartSummarySubtotalLine = document.getElementById('cartSummarySubtotalLine'); const cartSummarySubtotalPrice = document.getElementById('cartSummarySubtotalPrice'); const cartSummaryCombinedDiscountLine = document.getElementById('cartSummaryCombinedDiscountLine'); const cartSummaryCombinedDiscountAmount = document.getElementById('cartSummaryCombinedDiscountAmount'); const cartSummaryTotalPrice = document.getElementById('cartSummaryTotalPrice'); const cartSummaryInstructionUnits = document.getElementById('cartSummaryInstructionUnits'); const cartSummaryModalOverlay = document.getElementById('cartSummaryModalOverlay'); cartSummaryItemsContainer.innerHTML = ''; cart.forEach(item => { 
         const itemCard = document.createElement('div'); 
         itemCard.className = 'p-3 bg-stone-50 rounded-lg border border-stone-200 flex items-start gap-3'; 
-        
-        let dimensionsText;
-        if (item.isModular) {
-            dimensionsText = `Szer.: ${item.width} | Wys.: ${item.height} | Gł.: ${item.depth}`;
-        } else {
-            dimensionsText = `${item.width} x ${item.height} x ${item.depth}`;
-        }
 
-        let gapHtml = '';
-        if (item.isModular) {
-            gapHtml = `<div class="flex justify-between gap-2"> <dt class="text-stone-500">Odstęp między półkami:</dt> <dd class="font-semibold text-stone-700 text-right">${item.gapInfo}</dd> </div>`;
-        }
-
-        itemCard.innerHTML = ` <div class="summary-snapshot-container flex-shrink-0 w-20 h-20"> ${item.snapshot ? `<img src="${item.snapshot}" alt="Podgląd 3D półki: ${item.name}" class="w-full h-full object-contain" />` : '<div class="text-xs text-stone-500 p-2 flex items-center justify-center h-full">Brak podglądu</div>'} </div> <div class="flex-grow min-w-0"> <div class="flex justify-between items-start gap-2"> <div> <p class="font-semibold text-sm text-stone-800 leading-tight">${item.name}</p> <p class="text-xs text-stone-500">Ilość: ${item.quantity}</p> </div> <p class="font-bold text-lg text-stone-800 flex-shrink-0">${(item.price * item.quantity).toFixed(2)} zł</p> </div> <dl class="text-xs space-y-0.5 mt-2"> <div class="flex justify-between gap-2"> <dt class="text-stone-500">Wymiary:</dt> <dd class="font-semibold text-stone-700 text-right">${dimensionsText}</dd> </div> <div class="flex justify-between gap-2"> <dt class="text-stone-500">Półki:</dt> <dd class="font-semibold text-stone-700 text-right">${item.shelfCountText}</dd> </div> ${gapHtml} <div class="flex justify-between gap-2"> <dt class="text-stone-500">Kolor boków:</dt> <dd class="font-semibold text-stone-700 text-right">${item.sideColor}</dd> </div> <div class="flex justify-between gap-2"> <dt class="text-stone-500">Kolor półek:</dt> <dd class="font-semibold text-stone-700 text-right">${item.shelfColor}</dd> </div> <div class="flex justify-between gap-2"> <dt class="text-stone-500">Opcje:</dt> <dd class="font-semibold text-stone-700 text-right">${item.extras}</dd> </div> </dl> </div> `; cartSummaryItemsContainer.appendChild(itemCard); }); if (totals.totalDiscount > 0) { cartSummarySubtotalLine.style.display = 'flex'; cartSummarySubtotalPrice.textContent = `${totals.subtotal.toFixed(2)} zł`; cartSummaryCombinedDiscountLine.style.display = 'flex'; cartSummaryCombinedDiscountAmount.textContent = `- ${totals.totalDiscount.toFixed(2)} zł`; cartSummarySubtotalPrice.classList.add('discount-subtotal-slash'); } else { cartSummarySubtotalLine.style.display = 'none'; cartSummaryCombinedDiscountLine.style.display = 'none'; cartSummarySubtotalPrice.classList.remove('discount-subtotal-slash'); } cartSummaryTotalPrice.textContent = `${totals.total.toFixed(2)} zł`; cartSummaryInstructionUnits.innerHTML = `Na stronie Allegro dodaj do koszyka tyle sztuk, ile wynosi łączna cena Twojego zamówienia (<strong>${Math.round(totals.total)} szt.</strong>).`; const codesSection = document.getElementById('codesSection'); const codesTextarea = document.getElementById('cartSummaryAllCodes'); const typingCursor = document.getElementById('typingCursor'); codesTextarea.value = ''; codesSection.classList.remove('visible'); if (typingCursor) typingCursor.style.display = 'none'; cartSummaryModalOverlay.classList.add('visible'); const modalBody = document.querySelector('#cartSummaryModal .modal-body'); if (modalScrollListener) { modalBody.removeEventListener('scroll', modalScrollListener); } modalScrollListener = () => checkCodesVisibility(); modalBody.addEventListener('scroll', modalScrollListener); setTimeout(() => { codesSection.classList.add('visible'); animateCodeTyping(allCodes); checkCodesVisibility(); }, 300); }
+        itemCard.innerHTML = ` <div class="summary-snapshot-container flex-shrink-0 w-20 h-20"> ${item.snapshot ? `<img src="${item.snapshot}" alt="Podgląd 3D półki: ${item.name}" class="w-full h-full object-contain" />` : '<div class="text-xs text-stone-500 p-2 flex items-center justify-center h-full">Brak podglądu</div>'} </div> <div class="flex-grow min-w-0"> <div class="flex justify-between items-start gap-2"> <div> <p class="font-semibold text-sm text-stone-800 leading-tight">${item.name}</p> <p class="text-xs text-stone-500">Ilość: ${item.quantity}</p> </div> <p class="font-bold text-lg text-stone-800 flex-shrink-0">${(item.price * item.quantity).toFixed(2)} zł</p> </div> <dl class="text-xs space-y-0.5 mt-2"> <div class="flex justify-between gap-2"> <dt class="text-stone-500">Wymiary:</dt> <dd class="font-semibold text-stone-700 text-right">${item.summary}</dd> </div> <div class="flex justify-between gap-2"> <dt class="text-stone-500">Półki:</dt> <dd class="font-semibold text-stone-700 text-right">${item.shelfCountText}</dd> </div> <div class="flex justify-between gap-2"> <dt class="text-stone-500">Kolor boków:</dt> <dd class="font-semibold text-stone-700 text-right">${item.sideColor}</dd> </div> <div class="flex justify-between gap-2"> <dt class="text-stone-500">Kolor półek:</dt> <dd class="font-semibold text-stone-700 text-right">${item.shelfColor}</dd> </div> <div class="flex justify-between gap-2"> <dt class="text-stone-500">Opcje:</dt> <dd class="font-semibold text-stone-700 text-right">${item.extras}</dd> </div> </dl> </div> `; cartSummaryItemsContainer.appendChild(itemCard); }); if (totals.totalDiscount > 0) { cartSummarySubtotalLine.style.display = 'flex'; cartSummarySubtotalPrice.textContent = `${totals.subtotal.toFixed(2)} zł`; cartSummaryCombinedDiscountLine.style.display = 'flex'; cartSummaryCombinedDiscountAmount.textContent = `- ${totals.totalDiscount.toFixed(2)} zł`; cartSummarySubtotalPrice.classList.add('discount-subtotal-slash'); } else { cartSummarySubtotalLine.style.display = 'none'; cartSummaryCombinedDiscountLine.style.display = 'none'; cartSummarySubtotalPrice.classList.remove('discount-subtotal-slash'); } cartSummaryTotalPrice.textContent = `${totals.total.toFixed(2)} zł`; cartSummaryInstructionUnits.innerHTML = `Na stronie Allegro dodaj do koszyka tyle sztuk, ile wynosi łączna cena Twojego zamówienia (<strong>${Math.round(totals.total)} szt.</strong>).`; const codesSection = document.getElementById('codesSection'); const codesTextarea = document.getElementById('cartSummaryAllCodes'); const typingCursor = document.getElementById('typingCursor'); codesTextarea.value = ''; codesSection.classList.remove('visible'); if (typingCursor) typingCursor.style.display = 'none'; cartSummaryModalOverlay.classList.add('visible'); const modalBody = document.querySelector('#cartSummaryModal .modal-body'); if (modalScrollListener) { modalBody.removeEventListener('scroll', modalScrollListener); } modalScrollListener = () => checkCodesVisibility(); modalBody.addEventListener('scroll', modalScrollListener); setTimeout(() => { codesSection.classList.add('visible'); animateCodeTyping(allCodes); checkCodesVisibility(); }, 300); }
         function closeCartSummaryModal() { if (cartSummaryModalOverlay) { cartSummaryModalOverlay.classList.remove('visible'); const modalBody = document.querySelector('#cartSummaryModal .modal-body'); if (modalBody && modalScrollListener) { modalBody.removeEventListener('scroll', modalScrollListener); modalScrollListener = null; } } }
-        function downloadFullCartSummary() { if (cart.length === 0) { alert("Koszyk jest pusty."); return; } const totals = calculateCartTotal(); const allCodes = cart.flatMap(item => Array(item.quantity).fill(item.code)).join('\n'); const date = new Date().toLocaleString('pl-PL'); let content = `PODSUMOWANIE ZAMÓWIENIA\n`; content += `Data wygenerowania: ${date}\n`; content += `========================================\n\n`; cart.forEach((item, index) => { content += `PRODUKT ${index + 1}: ${item.name} (x${item.quantity})\n`; 
-    if (item.isModular) {
-        content += `  Szerokość całkowita: ${item.width}\n`;
-        content += `  Wysokość: ${item.height}\n`;
-        content += `  Głębokość: ${item.depth}\n`;
-    } else {
-        content += `  Wymiary: ${item.width} x ${item.height} x ${item.depth}\n`;
-    }
-    content += `  Ilość półek: ${item.shelfCountText}\n`;
-    if (item.isModular) {
-        content += `  Odstęp między półkami: ${item.gapInfo}\n`;
-    }
-    content += `  Kolor boków: ${item.sideColor}\n`; 
-    content += `  Kolor półek: ${item.shelfColor}\n`; 
-    content += `  Opcje: ${item.extras}\n`; 
-    content += `  Cena jedn.: ${item.price.toFixed(2)} zł\n\n`; }); content += `========================================\n`; if (totals.totalDiscount > 0) { content += `SUMA CZĘŚCIOWA: ${totals.subtotal.toFixed(2)} zł\n`; if(totals.discount10 > 0) content += `Rabat na 1. półkę (-10%): -${totals.discount10.toFixed(2)} zł\n`; if(totals.discount25 > 0) content += `Rabat na 2. półkę (-25%): -${totals.discount25.toFixed(2)} zł\n`; } content += `ŁĄCZNIE DO ZAPŁATY: ${totals.total.toFixed(2)} zł\n\n`; content += `KODY ZAMÓWIEŃ DO WKLEJENIA NA ALLEGRO:\n`; content += `${allCodes}\n`; content += `========================================\n`; const blob = new Blob([content], { type: "text/plain;charset=utf-8" }); const url = URL.createObjectURL(blob); const link = document.createElement("a"); link.href = url; const filenameDate = new Date().toISOString().slice(0, 10); link.download = `zamowienie-polki-${filenameDate}.txt`; document.body.appendChild(link); link.click(); document.body.removeChild(link); URL.revokeObjectURL(url); }
+        function downloadFullCartSummary() { if (cart.length === 0) { alert("Koszyk jest pusty."); return; } const totals = calculateCartTotal(); const allCodes = cart.flatMap(item => Array(item.quantity).fill(item.code)).join('\n'); const date = new Date().toLocaleString('pl-PL'); let content = `PODSUMOWANIE ZAMÓWIENIA\n`; content += `Data wygenerowania: ${date}\n`; content += `========================================\n\n`; cart.forEach((item, index) => { content += `PRODUKT ${index + 1}: ${item.name} (x${item.quantity})\n`; content += `  Wymiary: ${item.summary}\n`; content += `  Kolor boków: ${item.sideColor}\n`; content += `  Kolor półek: ${item.shelfColor}\n`; content += `  Ilość półek wewn.: ${item.shelfCountText}\n`; content += `  Opcje: ${item.extras}\n`; content += `  Cena jedn.: ${item.price.toFixed(2)} zł\n\n`; }); content += `========================================\n`; if (totals.totalDiscount > 0) { content += `SUMA CZĘŚCIOWA: ${totals.subtotal.toFixed(2)} zł\n`; if(totals.discount10 > 0) content += `Rabat na 1. półkę (-10%): -${totals.discount10.toFixed(2)} zł\n`; if(totals.discount25 > 0) content += `Rabat na 2. półkę (-25%): -${totals.discount25.toFixed(2)} zł\n`; } content += `ŁĄCZNIE DO ZAPŁATY: ${totals.total.toFixed(2)} zł\n\n`; content += `KODY ZAMÓWIEŃ DO WKLEJENIA NA ALLEGRO:\n`; content += `${allCodes}\n`; content += `========================================\n`; const blob = new Blob([content], { type: "text/plain;charset=utf-8" }); const url = URL.createObjectURL(blob); const link = document.createElement("a"); link.href = url; const filenameDate = new Date().toISOString().slice(0, 10); link.download = `zamowienie-polki-${filenameDate}.txt`; document.body.appendChild(link); link.click(); document.body.removeChild(link); URL.revokeObjectURL(url); }
         
         function applyShelfConfigurationFromGallery(galleryIndex, imageIndex) {
             if (galleryIndex === 3) {
@@ -1804,7 +1957,7 @@
         function updateDividerIconActiveStates() { if (addTopDividerBtn && dividersTopCheckbox) addTopDividerBtn.classList.toggle('active-divider-icon', dividersTopCheckbox.checked); if (addMiddleDividerBtn && dividersMiddleCheckbox) addMiddleDividerBtn.classList.toggle('active-divider-icon', dividersMiddleCheckbox.checked); if (addBottomDividerBtn && dividersBottomCheckbox) addBottomDividerBtn.classList.toggle('active-divider-icon', dividersBottomCheckbox.checked); }
         function updateMobileMountStripStates() { if (!mobileMountHangingStripBtn || !mobileMountStandingStripBtn || !mugShelfMountOptionsDiv) return; const currentMountValue = mugShelfMountOptionsDiv.querySelector('input[name="mugShelfMount"]:checked')?.value; mobileMountHangingStripBtn.classList.toggle('active-mount-strip', currentMountValue === 'hanging'); mobileMountStandingStripBtn.classList.toggle('active-mount-strip', currentMountValue === 'standing'); }
         function updateDividerDimensionVisibility() { if (!desktopDividerDimensionsInfo || !shelfTypeSelect || !heightSelect || !dividersTopCheckbox || !dividersMiddleCheckbox || !dividersBottomCheckbox) { if(desktopDividerDimensionsInfo) desktopDividerDimensionsInfo.style.display = 'none'; return; } const isMugShelfType = shelfTypeSelect.value === 'mug_shelf'; const areDividersSelectedForMugShelf = (dividersTopCheckbox?.checked || dividersMiddleCheckbox?.checked || dividersBottomCheckbox?.checked); const shouldShow = isMugShelfType && areDividersSelectedForMugShelf; try { if (shouldShow) { const heightVal = heightSelect.value; let dimensionsText = "wymiar przegródek szer. 12,5cm wys. 10,9cm"; if (heightVal === '60') { dimensionsText += " wnęka od podstawy wys. 18cm"; } desktopDividerDimensionsInfo.textContent = dimensionsText; } desktopDividerDimensionsInfo.style.display = shouldShow ? 'block' : 'none'; } catch (e) { console.error("Błąd podczas ustawiania wyświetlania dla desktopDividerDimensionsInfo:", e); if(desktopDividerDimensionsInfo) desktopDividerDimensionsInfo.style.display = 'none'; } }
-        function updateMobileShelfInfo() { const mobileInfoGap = document.getElementById('mobileInfoGap'); const mobileInfoDividers = document.getElementById('mobileInfoDividers'); const mobileInfoContainer = document.getElementById('mobileShelfInfo'); if (!mobileInfoGap || !mobileInfoDividers || !mobileInfoContainer) return; const shelfType = shelfTypeSelect.value; let showContainer = false; const gapText = document.getElementById('gapSummaryDisplay').textContent; if (shelfType !== 'mug_shelf' && shelfType !== 'modular' && gapText && gapText.includes('cm')) { mobileInfoGap.innerHTML = `Odległość między półkami: <strong class="font-semibold text-stone-600">${gapText}</strong>`; mobileInfoGap.style.display = 'block'; showContainer = true; } else { mobileInfoGap.style.display = 'none'; } if (shelfType === 'mug_shelf') { mobileInfoDividers.innerHTML = `Przegródki: <strong class="font-semibold text-stone-600">12,5cm szer. x 10,9cm wys.</strong>`; mobileInfoDividers.style.display = 'block'; showContainer = true; } else { mobileInfoDividers.style.display = 'none'; } mobileInfoContainer.style.display = showContainer ? 'block' : 'none'; }
+        function updateMobileShelfInfo() { const mobileInfoContainer = document.getElementById('mobileShelfInfo'); if (!mobileInfoContainer) return; const shelfType = shelfTypeSelect.value; let showContainer = false; let infoHtml = ''; if (shelfType === 'modular') { const moduleW = parseInt(moduleWidthSelect.value); const moduleH = parseInt(moduleHeightSelect.value); const connectW = parseInt(connectingShelfWidthSelect.value); const thickness = 1.8; let shelfNum = 3; if (moduleH === 40) shelfNum = 2; if (moduleH === 80) shelfNum = 5; const totalWidth = moduleW * 2 + connectW; const availableHeight = moduleH - 2 * thickness; const gap = (availableHeight - shelfNum * thickness) / (shelfNum + 1); infoHtml = `<p>Szer: ${totalWidth}cm &bull; Odstęp: ${gap.toFixed(1)}cm</p>`; showContainer = true; } else { const mobileInfoGap = document.getElementById('mobileInfoGap'); const mobileInfoDividers = document.getElementById('mobileInfoDividers'); if (mobileInfoGap && mobileInfoDividers) { const gapText = document.getElementById('gapSummaryDisplay').textContent; if (shelfType !== 'mug_shelf' && gapText && gapText.includes('cm')) { mobileInfoGap.innerHTML = `Odległość między półkami: <strong class="font-semibold text-stone-600">${gapText}</strong>`; mobileInfoGap.style.display = 'block'; showContainer = true; } else { mobileInfoGap.style.display = 'none'; } if (shelfType === 'mug_shelf') { mobileInfoDividers.innerHTML = `Przegródki: <strong class="font-semibold text-stone-600">12,5cm szer. x 10,9cm wys.</strong>`; mobileInfoDividers.style.display = 'block'; showContainer = true; } else { mobileInfoDividers.style.display = 'none'; } infoHtml = mobileInfoGap.outerHTML + mobileInfoDividers.outerHTML; } } mobileInfoContainer.innerHTML = infoHtml; mobileInfoContainer.style.display = showContainer ? 'block' : 'none'; }
         
         function updateModularInfoText() {
             const mobileInfoContainer = document.getElementById('mobileShelfInfo');
@@ -1855,16 +2008,15 @@
         function handleMugShelfHeightChange() { const height = heightSelect.value; if (shelfCountSelect && mugShelfDividersOptionsDiv) { if (height === '60') { shelfCountSelect.innerHTML = '<option value="3">3 półki (stałe)</option>'; shelfCountSelect.value = '3'; mugShelfDividersOptionsDiv.style.display = 'block'; } else if (height === '40') { shelfCountSelect.innerHTML = '<option value="2">2 półki (stałe)</option>'; shelfCountSelect.value = '2'; mugShelfDividersOptionsDiv.style.display = 'block'; } else { shelfCountSelect.innerHTML = '<option value="">-- Wybierz --</option>'; shelfCountSelect.value = ''; mugShelfDividersOptionsDiv.style.display = 'none'; } if(dividersTopCheckbox) dividersTopCheckbox.checked = false; if(dividersMiddleCheckbox) dividersMiddleCheckbox.checked = false; if(dividersBottomCheckbox) dividersBottomCheckbox.checked = false; } updatePreview(); updateOrderSummary(); }
         
         function handleShelfTypeChange(isLoading = false) {
-             const isMobile = window.innerWidth < 768;
              const shelfType = shelfTypeSelect.value;
              
-             clearScene();
-
              shelfTypeOptionsDiv.style.display = 'none';
              mugShelfSpecificOptionsContainer.style.display = 'none';
              modularShelfOptionsContainer.style.display = 'none';
              standardDimensionsContainer.style.display = 'block';
              shelfCountSection.style.display = 'block';
+             if(viewerInfoText) viewerInfoText.style.display = 'block';
+             if(modularInfoText) modularInfoText.style.display = 'none';
              
              restoreDimensionControls();
              autoRotateEnabled = true;
@@ -1906,23 +2058,23 @@
                  }
                  handleMugShelfHeightChange();
              } else if (shelfType === 'modular') {
-    autoRotateEnabled = false;
-    standardDimensionsContainer.style.display = 'none';
-    shelfCountSection.style.display = 'none';
-    modularShelfOptionsContainer.style.display = 'block';
-    if (!isLoading) {
-        moduleWidthSelect.value = '34'; 
-        moduleHeightSelect.value = '60'; 
-        connectingShelfWidthSelect.value = '30'; // <-- POPRAWKA: Ustawiono nową wartość domyślną
-    }
-    depthSelect.innerHTML = '<option value="10">10 cm (stała)</option>'; 
-    depthSelect.value = '10'; 
-    depthSelect.disabled = true;
-}
+                autoRotateEnabled = false;
+                standardDimensionsContainer.style.display = 'none';
+                shelfCountSection.style.display = 'none';
+                modularShelfOptionsContainer.style.display = 'block';
+                if (!isLoading) {
+                    moduleWidthSelect.value = '34'; 
+                    moduleHeightSelect.value = '60'; 
+                    connectingShelfWidthSelect.value = '30';
+                }
+                depthSelect.innerHTML = '<option value="10">10 cm (stała)</option>'; 
+                depthSelect.value = '10'; 
+                depthSelect.disabled = true;
+            }
              
              updateDividerIconsVisibility();
              if (!isLoading) {
-                updatePreview(true);
+                updatePreview(false);
                 updateOrderSummary();
              }
         }
@@ -1933,8 +2085,6 @@
         function onWindowResize() { const container = threeJsCanvasWrapper; if (!camera || !renderer || !container) return; const width = container.clientWidth; const height = container.clientHeight; if (width > 0 && height > 0) { camera.aspect = width / height; camera.updateProjectionMatrix(); renderer.setSize(width, height); } else { console.warn("Skipping resize for 3D canvas wrapper with zero dimensions."); } updateDividerIconsVisibility(); }
         function animate() { requestAnimationFrame(animate); if (autoRotateEnabled && shelfGroup) { shelfGroup.rotation.y += 0.005; } if(controls) controls.update(); if(renderer && scene && camera) renderer.render(scene, camera); }
         
-        // --- REBUILT 3D LOGIC ---
-
         function clearScene() {
             if (shelfGroup) {
                 shelfGroup.traverse(child => {
@@ -1952,11 +2102,10 @@
             }
         }
         
-     function rebuildAndAnimateIn(config) {
+     function rebuildShelf(config, animate = true) {
     clearScene();
     const shelfType = config.shelfType;
 
-    // Budowanie odpowiedniego modelu półki
     if (shelfType === 'modular') {
         shelfGroup = buildModularShelf(config);
     } else {
@@ -1966,388 +2115,200 @@
     if (shelfGroup) {
         const box = new THREE.Box3().setFromObject(shelfGroup);
         const center = box.getCenter(new THREE.Vector3());
-        shelfGroup.position.sub(center); // Najpierw centruj geometrię
-
+        shelfGroup.position.sub(center);
         scene.add(shelfGroup);
 
-        // Zastosuj inne pozycjonowanie i skalowanie w zależności od typu półki
         if (shelfType === 'modular') {
-            // --- Logika dla półki MODUŁOWEJ (pozostaje bez zmian) ---
+            shelfGroup.scale.set(0.8, 0.8, 0.8);
             const size = box.getSize(new THREE.Vector3());
             const isMobile = window.innerWidth < 768;
-    
             if (isMobile) {
-                shelfGroup.position.y -= size.y / 2;
                 shelfGroup.position.y += 4.5;
                 controls.target.set(0, 2.0, 0);
             } else {
                 controls.target.set(0, 0, 0);
             }
-            
-            const tl = gsap.timeline();
-            const leftModule = shelfGroup.getObjectByName("leftModule");
-            const rightModule = shelfGroup.getObjectByName("rightModule");
-            const connectingShelves = shelfGroup.children.filter(child => child.name.startsWith("connecting_shelf_"));
 
-            if (leftModule && rightModule) {
-                const leftTargetX = leftModule.position.x;
-                const rightTargetX = rightModule.position.x;
-
-                gsap.set(leftModule.position, { x: -20 });
-                gsap.set(rightModule.position, { x: 20 });
-                gsap.set(connectingShelves.map(s => s.scale), { x: 0.01 });
-
-                tl.to(leftModule.position, { x: leftTargetX, duration: 0.6, ease: 'power2.out' }, 0);
-                tl.to(rightModule.position, { x: rightTargetX, duration: 0.6, ease: 'power2.out' }, 0);
-                tl.to(connectingShelves.map(s => s.scale), {
-                    x: 1,
-                    duration: 0.5,
-                    stagger: 0.08,
-                    ease: 'power2.out'
-                }, 0.3);
+            if (animate) {
+                const tl = gsap.timeline();
+                const leftModule = shelfGroup.getObjectByName("leftModule");
+                const rightModule = shelfGroup.getObjectByName("rightModule");
+                const connectingShelves = shelfGroup.children.filter(child => child.name.startsWith("connecting_shelf_"));
+                if (leftModule && rightModule) {
+                    const leftTargetX = leftModule.position.x;
+                    const rightTargetX = rightModule.position.x;
+                    gsap.set(leftModule.position, { x: -20 });
+                    gsap.set(rightModule.position, { x: 20 });
+                    gsap.set(connectingShelves.map(s => s.scale), { x: 0.01 });
+                    tl.to(leftModule.position, { x: leftTargetX, duration: 0.6, ease: 'power2.out' }, 0);
+                    tl.to(rightModule.position, { x: rightTargetX, duration: 0.6, ease: 'power2.out' }, 0);
+                    tl.to(connectingShelves.map(s => s.scale), { x: 1, duration: 0.5, stagger: 0.08, ease: 'power2.out' }, 0.3);
+                }
             }
         } else {
-            // --- Logika z 1.html dla półek STANDARDOWYCH (BEZ ANIMACJI) ---
-            shelfGroup.position.y = -1;
             shelfGroup.scale.set(1.2, 1.2, 1.2);
             controls.target.set(0, 0, 0);
         }
-        
         controls.update();
     }
     lastValidConfig = { ...config };
 }
 
+function updatePreview(animateChanges = true) {
+    updateDividerIconActiveStates();
+    if (!scene) return;
 
-        function updatePreview(animateChanges = true) {
-            updateDividerIconActiveStates();
-            if (!scene) return;
-             if (currentAnimationTimeline) {
-                currentAnimationTimeline.kill();
-            }
+    const shelfType = shelfTypeSelect.value;
+    let config;
+    
+    if (shelfType === 'modular') {
+        config = { shelfType: 'modular', moduleWidth: moduleWidthSelect.value, moduleHeight: moduleHeightSelect.value, connectingShelfWidth: connectingShelfWidthSelect.value, depth: depthSelect.value };
+    } else {
+        config = { width: getCurrentWidth(), height: heightSelect.value, depth: depthSelect.value, shelfCount: shelfCountSelect.value, shelfType: shelfType, noTopShelf: document.getElementById("noTopShelf")?.checked, noBottomShelf: shelfType === "standing" && document.getElementById("noBottomShelf")?.checked, addDividersTop: shelfType === 'mug_shelf' && dividersTopCheckbox?.checked, addDividersMiddle: shelfType === 'mug_shelf' && dividersMiddleCheckbox?.checked, addDividersBottom: shelfType === 'mug_shelf' && dividersBottomCheckbox?.checked };
+    }
 
-            const shelfType = shelfTypeSelect.value;
-            let config;
-            
-            if (shelfType === 'modular') {
-                config = { shelfType: 'modular', moduleWidth: moduleWidthSelect.value, moduleHeight: moduleHeightSelect.value, connectingShelfWidth: connectingShelfWidthSelect.value, depth: depthSelect.value };
-            } else {
-                config = { width: getCurrentWidth(), height: heightSelect.value, depth: depthSelect.value, shelfCount: shelfCountSelect.value, shelfType: shelfType, noTopShelf: document.getElementById("noTopShelf")?.checked, noBottomShelf: shelfType === "standing" && document.getElementById("noBottomShelf")?.checked, addDividersTop: shelfType === 'mug_shelf' && dividersTopCheckbox?.checked, addDividersMiddle: shelfType === 'mug_shelf' && dividersMiddleCheckbox?.checked, addDividersBottom: shelfType === 'mug_shelf' && dividersBottomCheckbox?.checked };
-            }
+    const isConfigValid = (shelfType === 'modular') 
+        ? (config.moduleWidth && config.moduleHeight && config.connectingShelfWidth && config.depth)
+        : (config.width && config.height && config.depth && config.shelfCount && config.shelfType);
 
-            const isConfigValid = (shelfType === 'modular') 
-                ? (config.moduleWidth && config.moduleHeight && config.connectingShelfWidth && config.depth)
-                : (config.width && config.height && config.depth && config.shelfCount && config.shelfType);
-
-            if (!isConfigValid) {
-                clearScene();
-                lastValidConfig = {};
-                return;
-            }
-            
-            if (shelfType !== lastValidConfig.shelfType || !animateChanges) {
-                rebuildAndAnimateIn(config);
-                lastValidConfig = { ...config };
-                return;
-            }
-
-            currentAnimationTimeline = gsap.timeline();
-            const animDuration = 0.5;
-            const thickness = 0.18;
-            
-            if (!shelfGroup) {
-                rebuildAndAnimateIn(config);
-                lastValidConfig = { ...config };
-                return;
-            }
-
-            if (shelfType === 'modular') {
-                const targetModuleW = parseFloat(config.moduleWidth) / 10;
-                const targetModuleH = parseFloat(config.moduleHeight) / 10;
-                const targetConnectW = parseFloat(config.connectingShelfWidth) / 10;
-                const targetDepth = parseFloat(config.depth) / 10;
-                const defaultMaterial = new THREE.MeshStandardMaterial(originalPreviewMaterialParams);
-            
-                const leftModule = shelfGroup.getObjectByName("leftModule");
-                const rightModule = shelfGroup.getObjectByName("rightModule");
-            
-                if (!leftModule || !rightModule) {
-                    rebuildAndAnimateIn(config); lastValidConfig = { ...config }; return;
-                }
-            
-                currentAnimationTimeline.to(leftModule.position, { x: -(targetConnectW / 2 + targetModuleW / 2), duration: animDuration, ease: 'power2.out' }, 0);
-                currentAnimationTimeline.to(rightModule.position, { x: (targetConnectW / 2 + targetModuleW / 2), duration: animDuration, ease: 'power2.out' }, 0);
-            
-                const animateModule = (module) => {
-                    const leftSide = module.getObjectByName("leftSide");
-                    const rightSide = module.getObjectByName("rightSide");
-                    const topPanel = module.getObjectByName("topPanel");
-                    const bottomPanel = module.getObjectByName("bottomPanel");
-            
-                    if(leftSide && rightSide && topPanel && bottomPanel) {
-                        currentAnimationTimeline.to(leftSide.scale, { y: targetModuleH / leftSide.geometry.parameters.height, duration: animDuration, ease: 'power2.out' }, 0);
-                        currentAnimationTimeline.to(rightSide.scale, { y: targetModuleH / rightSide.geometry.parameters.height, duration: animDuration, ease: 'power2.out' }, 0);
-                        currentAnimationTimeline.to(leftSide.position, { x: -targetModuleW / 2 + thickness / 2, duration: animDuration, ease: 'power2.out' }, 0);
-                        currentAnimationTimeline.to(rightSide.position, { x: targetModuleW / 2 - thickness / 2, duration: animDuration, ease: 'power2.out' }, 0);
-                        
-                        currentAnimationTimeline.to(topPanel.scale, { x: targetModuleW / topPanel.geometry.parameters.width, duration: animDuration, ease: 'power2.out' }, 0);
-                        currentAnimationTimeline.to(bottomPanel.scale, { x: targetModuleW / bottomPanel.geometry.parameters.width, duration: animDuration, ease: 'power2.out' }, 0);
-                        currentAnimationTimeline.to(topPanel.position, { y: targetModuleH / 2 - thickness / 2, duration: animDuration, ease: 'power2.out' }, 0);
-                        currentAnimationTimeline.to(bottomPanel.position, { y: -targetModuleH / 2 + thickness / 2, duration: animDuration, ease: 'power2.out' }, 0);
-                    }
-
-                    const existingShelves = module.children.filter(c => c.name.startsWith("internalShelf_"));
-                    if (existingShelves.length > 0) {
-                        currentAnimationTimeline.to(existingShelves.map(s => s.scale), { x: 0.01, duration: 0.2, onComplete: () => {
-                            existingShelves.forEach(s => module.remove(s));
-                        }}, 0);
-                    }
-            
-                    let newShelfCount = 3;
-                    if (config.moduleHeight == '40') newShelfCount = 2;
-                    if (config.moduleHeight == '80') newShelfCount = 5;
-            
-                    const availableHeight = targetModuleH - 2 * thickness;
-                    const gap = (availableHeight - newShelfCount * thickness) / (newShelfCount + 1);
-                    const newShelves = [];
-                    for (let i = 0; i < newShelfCount; i++) {
-                        const shelfGeo = new THREE.BoxGeometry(targetModuleW - 2 * thickness, thickness, targetDepth);
-                        const shelf = new THREE.Mesh(shelfGeo, defaultMaterial);
-                        shelf.name = `internalShelf_${i}`;
-                        shelf.position.y = (-targetModuleH / 2) + thickness + gap * (i + 1) + thickness * i;
-                        shelf.scale.x = 0.01;
-                        module.add(shelf);
-                        newShelves.push(shelf);
-                    }
-            
-                    if (newShelves.length > 0) {
-                        currentAnimationTimeline.to(newShelves.map(s => s.scale), { x: 1, duration: 0.4, stagger: 0.05, ease: 'power2.out' }, 0.2);
-                    }
-                };
-            
-                animateModule(leftModule);
-                animateModule(rightModule);
-            
-                const oldConnectingShelves = shelfGroup.children.filter(c => c.name.startsWith("connecting_shelf_"));
-                if (oldConnectingShelves.length > 0) {
-                     currentAnimationTimeline.to(oldConnectingShelves.map(s => s.scale), { x: 0.01, duration: 0.2, onComplete: () => {
-                        oldConnectingShelves.forEach(s => shelfGroup.remove(s));
-                    }}, 0);
-                }
-            
-                const newConnectingShelvesYPositions = [];
-                let finalModuleShelvesCount = 3;
-                if (config.moduleHeight == '40') finalModuleShelvesCount = 2;
-                if (config.moduleHeight == '80') finalModuleShelvesCount = 5;
-                const finalAvailableHeight = targetModuleH - 2 * thickness;
-                const finalGap = (finalAvailableHeight - finalModuleShelvesCount * thickness) / (finalModuleShelvesCount + 1);
-                
-                newConnectingShelvesYPositions.push(targetModuleH / 2 - thickness / 2);
-                for (let i = 0; i < finalModuleShelvesCount; i++) {
-                    newConnectingShelvesYPositions.push((-targetModuleH / 2) + thickness + finalGap * (i + 1) + thickness * i);
-                }
-                newConnectingShelvesYPositions.push(-targetModuleH / 2 + thickness / 2);
-
-                newConnectingShelvesYPositions.sort((a, b) => b - a);
-            
-                const newConnectingShelves = [];
-                for (let i = 0; i < newConnectingShelvesYPositions.length - 1; i++) {
-                    const middleOfGapY = (newConnectingShelvesYPositions[i] + newConnectingShelvesYPositions[i+1]) / 2;
-                    const shelfGeo = new THREE.BoxGeometry(targetConnectW, thickness, targetDepth);
-                    const shelf = new THREE.Mesh(shelfGeo, defaultMaterial);
-                    shelf.name = `connecting_shelf_${i}`;
-                    shelf.position.y = middleOfGapY;
-                    shelf.scale.x = 0.01;
-                    shelfGroup.add(shelf);
-                    newConnectingShelves.push(shelf);
-                }
-
-                if (newConnectingShelves.length > 0) {
-                     currentAnimationTimeline.to(newConnectingShelves.map(s => s.scale), { x: 1, duration: 0.4, stagger: 0.05, ease: 'power2.out' }, 0.2);
-                }
-            
-            } else {
-                const targetWidth = config.width / 10;
-                const targetHeight = parseFloat(config.height) / 10;
-                const targetDepth = config.depth / 10;
-                const targetShelfCount = parseInt(config.shelfCount);
-                
-                let leftSide = shelfGroup.getObjectByName("leftSide");
-                let rightSide = shelfGroup.getObjectByName("rightSide");
-                let topPanel = shelfGroup.getObjectByName("topPanel");
-                let bottomPanel = shelfGroup.getObjectByName("bottomPanel");
-                const defaultMaterial = new THREE.MeshStandardMaterial(originalPreviewMaterialParams);
-
-                if (!leftSide || !rightSide) { 
-                    rebuildAndAnimateIn(config);
-                    lastValidConfig = { ...config };
-                    return;
-                }
-                
-                currentAnimationTimeline.to(leftSide.scale, { y: targetHeight / leftSide.geometry.parameters.height, z: targetDepth / leftSide.geometry.parameters.depth, duration: animDuration }, 0);
-                currentAnimationTimeline.to(rightSide.scale, { y: targetHeight / rightSide.geometry.parameters.height, z: targetDepth / rightSide.geometry.parameters.depth, duration: animDuration }, 0);
-                currentAnimationTimeline.to(leftSide.position, { x: -targetWidth / 2 + thickness / 2, duration: animDuration }, 0);
-                currentAnimationTimeline.to(rightSide.position, { x: targetWidth / 2 - thickness / 2, duration: animDuration }, 0);
-
-                const topExists = !config.noTopShelf;
-                if (topExists) {
-                    if (!topPanel) {
-                        topPanel = new THREE.Mesh(new THREE.BoxGeometry(targetWidth, thickness, targetDepth), defaultMaterial);
-                        topPanel.name = "topPanel"; topPanel.scale.set(1,0.01,1); shelfGroup.add(topPanel);
-                    }
-                    currentAnimationTimeline.to(topPanel.scale, { x: targetWidth / topPanel.geometry.parameters.width, y: 1, z: targetDepth / topPanel.geometry.parameters.depth, duration: animDuration }, 0);
-                    currentAnimationTimeline.to(topPanel.position, { y: targetHeight / 2 - thickness / 2, duration: animDuration }, 0);
-                } else if (topPanel) {
-                     currentAnimationTimeline.to(topPanel.scale, { y: 0.01, duration: animDuration / 2, onComplete: () => shelfGroup.remove(topPanel) }, 0);
-                }
-
-                const bottomExists = !config.noBottomShelf;
-                if (bottomExists) {
-                    if (!bottomPanel) {
-                        bottomPanel = new THREE.Mesh(new THREE.BoxGeometry(targetWidth, thickness, targetDepth), defaultMaterial);
-                        bottomPanel.name = "bottomPanel"; bottomPanel.scale.set(1,0.01,1); shelfGroup.add(bottomPanel);
-                    }
-                    currentAnimationTimeline.to(bottomPanel.scale, { x: targetWidth / bottomPanel.geometry.parameters.width, y:1, z: targetDepth / bottomPanel.geometry.parameters.depth, duration: animDuration }, 0);
-                    currentAnimationTimeline.to(bottomPanel.position, { y: -targetHeight / 2 + thickness / 2, duration: animDuration }, 0);
-                } else if (bottomPanel) {
-                    currentAnimationTimeline.to(bottomPanel.scale, { y: 0.01, duration: animDuration / 2, onComplete: () => shelfGroup.remove(bottomPanel) }, 0);
-                }
-                
-                const existingShelves = shelfGroup.children.filter(child => child.name.startsWith("internalShelf_"));
-                const shelvesToRemove = existingShelves.slice(targetShelfCount);
-                if (shelvesToRemove.length > 0) {
-                     currentAnimationTimeline.to(shelvesToRemove.map(s => s.scale), { x: 0.01, duration: animDuration / 2, onComplete: () => {
-                         shelvesToRemove.forEach(s => shelfGroup.remove(s));
-                     }}, 0);
-                }
-
-                if (shelfType === 'mug_shelf' && config.height === '60' && targetShelfCount === 3) {
-                    const fixedGap = 1.09;
-                    const topPanelTargetY = targetHeight / 2 - thickness / 2;
-                    let lastShelfY = topPanelTargetY;
-                    
-                    for (let i = 0; i < targetShelfCount; i++) {
-                        const shelfName = `internalShelf_${i}`;
-                        let shelf = shelfGroup.getObjectByName(shelfName);
-                        const targetY = lastShelfY - fixedGap - thickness / 2;
-                        
-                        if (!shelf) {
-                             shelf = new THREE.Mesh(new THREE.BoxGeometry(targetWidth - 2 * thickness, thickness, targetDepth), defaultMaterial);
-                             shelf.name = shelfName; shelf.position.y = targetY; shelf.scale.set(0.01, 1, 1); shelfGroup.add(shelf);
-                             currentAnimationTimeline.to(shelf.scale, { x: 1, duration: animDuration, delay: (i * 0.1) }, 0);
-                        } else {
-                             currentAnimationTimeline.to(shelf.position, { y: targetY, duration: animDuration }, 0);
-                             currentAnimationTimeline.to(shelf.scale, { x: (targetWidth - 2 * thickness) / shelf.geometry.parameters.width, z: targetDepth / shelf.geometry.parameters.depth, duration: animDuration }, 0);
-                        }
-                        lastShelfY = targetY - thickness / 2;
-                    }
-                } else {
-                    const topThicknessActual = topExists ? thickness : 0;
-                    const bottomThicknessActual = bottomExists ? thickness : 0;
-                    const totalAvailableHeight = targetHeight - topThicknessActual - bottomThicknessActual;
-                    const gap = (totalAvailableHeight - targetShelfCount * thickness) / (targetShelfCount + 1);
-                    let startY = bottomExists ? (-targetHeight / 2 + bottomThicknessActual) : (-targetHeight / 2);
-                    
-                    for (let i = 0; i < targetShelfCount; i++) {
-                        const shelfName = `internalShelf_${i}`;
-                        let shelf = shelfGroup.getObjectByName(shelfName);
-                        const targetY = startY + (i + 1) * gap + (i + 0.5) * thickness;
-
-                        if (!shelf) {
-                            shelf = new THREE.Mesh(new THREE.BoxGeometry(targetWidth - 2 * thickness, thickness, targetDepth), defaultMaterial);
-                            shelf.name = shelfName; shelf.position.y = targetY; shelf.scale.set(0.01, 1, 1); shelfGroup.add(shelf);
-                            currentAnimationTimeline.to(shelf.scale, { x: 1, duration: animDuration, delay: (i * 0.1) }, 0);
-                        } else {
-                            currentAnimationTimeline.to(shelf.position, { y: targetY, duration: animDuration }, 0);
-                            currentAnimationTimeline.to(shelf.scale, { x: (targetWidth - 2 * thickness) / shelf.geometry.parameters.width, z: targetDepth / shelf.geometry.parameters.depth, duration: animDuration }, 0);
-                        }
-                    }
-                }
-            }
-
-            if (shelfType === 'mug_shelf') {
-                const { width: widthNum, height: heightVal, depth: depthVal, addDividersTop, addDividersMiddle, addDividersBottom } = config;
-                const width = widthNum / 10; const depth = parseFloat(depthVal) / 10;
-                const defaultMaterial = new THREE.MeshStandardMaterial(originalPreviewMaterialParams);
-                const dividersToRemove = shelfGroup.children.filter(child => child.name.startsWith("divider_"));
-                
-                if (dividersToRemove.length > 0) {
-                    currentAnimationTimeline.to(dividersToRemove.map(d => d.scale), { y: 0.01, duration: animDuration / 2, stagger: 0.03, onComplete: () => {
-                        dividersToRemove.forEach(d => shelfGroup.remove(d));
-                    }}, ">-0.2");
-                }
-                
-                const topPanel = shelfGroup.getObjectByName("topPanel");
-                const bottomPanel = shelfGroup.getObjectByName("bottomPanel");
-                const internalShelves = shelfGroup.children.filter(child => child.name.startsWith("internalShelf_"));
-
-                if (topPanel && bottomPanel && internalShelves.length > 0) {
-                    const innerWidthForDividers = width - 2 * thickness; const dividerThicknessThreeJs = thickness; let levels = [];
-                    internalShelves.sort((a, b) => b.position.y - a.position.y);
-                    
-                    if (heightVal === '60' && internalShelves.length === 3) {
-                        levels = [
-                           { top: topPanel.position.y, bottom: internalShelves[0].position.y },
-                           { top: internalShelves[0].position.y, bottom: internalShelves[1].position.y },
-                           { top: internalShelves[1].position.y, bottom: internalShelves[2].position.y },
-                           { top: internalShelves[2].position.y, bottom: bottomPanel.position.y }
-                       ].map(level => ({ top: level.top - thickness/2, bottom: level.bottom + thickness/2 }));
-                    } else if (heightVal === '40' && internalShelves.length === 2) {
-                        levels = [
-                           { top: topPanel.position.y, bottom: internalShelves[0].position.y },
-                           { top: internalShelves[0].position.y, bottom: internalShelves[1].position.y },
-                           { top: internalShelves[1].position.y, bottom: bottomPanel.position.y }
-                       ].map(level => ({ top: level.top - thickness/2, bottom: level.bottom + thickness/2 }));
-                    }
-                    
-                    const dividersToAdd = [];
-                    const createDividersForLevel = (levelData, levelName) => {
-                        const levelH = Math.max(0.01, levelData.top - levelData.bottom); if (levelH <= 0.01) return;
-                        const yCenter = levelData.bottom + levelH / 2; const dividerGeometry = new THREE.BoxGeometry(dividerThicknessThreeJs, levelH, depth);
-                        
-                        if (widthNum == 84) {
-                            const numPhysicalDividers = 3;
-                            const singleCompartmentWidth = 1.25;
-                            let currentXPos = -innerWidthForDividers / 2;
-                            for (let i = 0; i < numPhysicalDividers; i++) {
-                                currentXPos += singleCompartmentWidth;
-                                const dividerXCenter = currentXPos + (dividerThicknessThreeJs / 2);
-                                const dividerMesh = new THREE.Mesh(dividerGeometry.clone(), defaultMaterial);
-                                dividerMesh.position.set(dividerXCenter, yCenter, 0);
-                                dividerMesh.name = `divider_${levelName}_${i}`;
-                                dividerMesh.scale.set(1, 0.01, 1);
-                                dividersToAdd.push(dividerMesh);
-                                currentXPos += dividerThicknessThreeJs;
-                            }
-                        } else {
-                            const numDividersOriginal = (widthNum == 60) ? 3 : ((widthNum == 44) ? 2 : 0);
-                            if (numDividersOriginal > 0) {
-                                const dividerSpacing = innerWidthForDividers / (numDividersOriginal + 1);
-                                for (let i = 1; i <= numDividersOriginal; i++) {
-                                    const xPos = (-innerWidthForDividers / 2) + i * dividerSpacing;
-                                    const dividerMesh = new THREE.Mesh(dividerGeometry.clone(), defaultMaterial);
-                                    dividerMesh.position.set(xPos, yCenter, 0);
-                                    dividerMesh.name = `divider_${levelName}_${i}`;
-                                    dividerMesh.scale.set(1, 0.01, 1);
-                                    dividersToAdd.push(dividerMesh);
-                                }
-                            }
-                        }
-                    };
-
-                    if (addDividersTop && levels[0]) createDividersForLevel(levels[0], 'top');
-                    if (addDividersMiddle && levels[1]) createDividersForLevel(levels[1], 'middle');
-                    if (addDividersBottom && levels[2]) createDividersForLevel(levels[2], 'bottom');
-
-                    if (dividersToAdd.length > 0) {
-                        dividersToAdd.forEach(d => shelfGroup.add(d));
-                        currentAnimationTimeline.to(dividersToAdd.map(d => d.scale), { y: 1, duration: animDuration, stagger: 0.1, ease: 'power2.out' }, dividersToRemove.length > 0 ? ">-0.1" : "+=0.2");
-                    }
-                }
-            }
-            
-            lastValidConfig = { ...config };
+    if (!isConfigValid) {
+        if (shelfGroup) {
+            scene.remove(shelfGroup);
+            shelfGroup = null;
         }
+        lastValidConfig = {};
+        return;
+    }
+
+    const isMugShelf = config.shelfType === 'mug_shelf';
+    const wasMugShelf = lastValidConfig.shelfType === 'mug_shelf';
+    const isModularShelf = config.shelfType === 'modular';
+    const wasModularShelf = lastValidConfig.shelfType === 'modular';
+
+    // Warunek dla typów półek, które wymagają pełnego, animowanego przebudowania
+    if (isModularShelf || wasModularShelf) {
+        rebuildShelf(config, animateChanges);
+        return;
+    }
+
+    // Warunek dla typów półek, które wymagają przebudowania bez animacji
+    if (isMugShelf || wasMugShelf || !animateChanges) {
+        rebuildShelf(config, false); // Przebuduj bez animacji
+        return;
+    }
+    
+    // Poniższy kod wykona się tylko dla półek standardowych (wiszących/stojących)
+    if (currentAnimationTimeline) {
+        currentAnimationTimeline.kill();
+    }
+    
+    currentAnimationTimeline = gsap.timeline();
+
+    const animDuration = 0.5;
+    const thickness = 0.18;
+    const targetWidth = config.width / 10;
+    const targetHeight = parseFloat(config.height) / 10;
+    const targetDepth = config.depth / 10;
+    const targetShelfCount = parseInt(config.shelfCount);
+    
+    if (!shelfGroup) {
+        shelfGroup = new THREE.Group();
+        scene.add(shelfGroup);
+    }
+
+    let leftSide = shelfGroup.getObjectByName("leftSide");
+    let rightSide = shelfGroup.getObjectByName("rightSide");
+    let topPanel = shelfGroup.getObjectByName("topPanel");
+    let bottomPanel = shelfGroup.getObjectByName("bottomPanel");
+
+    const defaultMaterial = new THREE.MeshStandardMaterial(originalPreviewMaterialParams);
+
+    if (!leftSide) {
+        leftSide = new THREE.Mesh(new THREE.BoxGeometry(thickness, targetHeight, targetDepth), defaultMaterial);
+        leftSide.name = "leftSide";
+        shelfGroup.add(leftSide);
+    }
+    if (!rightSide) {
+        rightSide = new THREE.Mesh(new THREE.BoxGeometry(thickness, targetHeight, targetDepth), defaultMaterial);
+        rightSide.name = "rightSide";
+        shelfGroup.add(rightSide);
+    }
+    
+    currentAnimationTimeline.to(leftSide.scale, { y: targetHeight / leftSide.geometry.parameters.height, z: targetDepth / leftSide.geometry.parameters.depth, duration: animDuration }, 0);
+    currentAnimationTimeline.to(rightSide.scale, { y: targetHeight / rightSide.geometry.parameters.height, z: targetDepth / rightSide.geometry.parameters.depth, duration: animDuration }, 0);
+    currentAnimationTimeline.to(leftSide.position, { x: -targetWidth / 2 + thickness / 2, y: 0, duration: animDuration }, 0);
+    currentAnimationTimeline.to(rightSide.position, { x: targetWidth / 2 - thickness / 2, y: 0, duration: animDuration }, 0);
+
+    const topExists = !config.noTopShelf;
+    if (topExists) {
+        if (!topPanel) {
+            topPanel = new THREE.Mesh(new THREE.BoxGeometry(targetWidth, thickness, targetDepth), defaultMaterial);
+            topPanel.name = "topPanel";
+            topPanel.scale.set(1,0.01,1);
+            shelfGroup.add(topPanel);
+        }
+        currentAnimationTimeline.to(topPanel.scale, { x: targetWidth / topPanel.geometry.parameters.width, y: 1, z: targetDepth / topPanel.geometry.parameters.depth, duration: animDuration }, 0);
+        currentAnimationTimeline.to(topPanel.position, { y: targetHeight / 2 - thickness / 2, duration: animDuration }, 0);
+    } else if (topPanel) {
+         currentAnimationTimeline.to(topPanel.scale, { y: 0.01, duration: animDuration / 2, onComplete: () => shelfGroup.remove(topPanel) }, 0);
+    }
+
+    const bottomExists = !config.noBottomShelf;
+    if (bottomExists) {
+        if (!bottomPanel) {
+            bottomPanel = new THREE.Mesh(new THREE.BoxGeometry(targetWidth, thickness, targetDepth), defaultMaterial);
+            bottomPanel.name = "bottomPanel";
+            bottomPanel.scale.set(1,0.01,1);
+            shelfGroup.add(bottomPanel);
+        }
+        currentAnimationTimeline.to(bottomPanel.scale, { x: targetWidth / bottomPanel.geometry.parameters.width, y:1, z: targetDepth / bottomPanel.geometry.parameters.depth, duration: animDuration }, 0);
+        currentAnimationTimeline.to(bottomPanel.position, { y: -targetHeight / 2 + thickness / 2, duration: animDuration }, 0);
+    } else if (bottomPanel) {
+        currentAnimationTimeline.to(bottomPanel.scale, { y: 0.01, duration: animDuration / 2, onComplete: () => shelfGroup.remove(bottomPanel) }, 0);
+    }
+    
+    const topThicknessActual = topExists ? thickness : 0;
+    const bottomThicknessActual = bottomExists ? thickness : 0;
+    const totalAvailableHeight = targetHeight - topThicknessActual - bottomThicknessActual;
+    const gap = (totalAvailableHeight - targetShelfCount * thickness) / (targetShelfCount + 1);
+    let startY = bottomExists ? (-targetHeight / 2 + bottomThicknessActual) : (-targetHeight / 2);
+
+    const existingShelves = shelfGroup.children.filter(child => child.name.startsWith("internalShelf_"));
+
+    for (let i = targetShelfCount; i < existingShelves.length; i++) {
+        const shelfToRemove = existingShelves[i];
+        if (shelfToRemove) {
+             currentAnimationTimeline.to(shelfToRemove.scale, { x: 0.01, duration: animDuration / 2, onComplete: () => shelfGroup.remove(shelfToRemove) }, 0);
+        }
+    }
+    
+    for (let i = 0; i < targetShelfCount; i++) {
+        const shelfName = `internalShelf_${i}`;
+        let shelf = shelfGroup.getObjectByName(shelfName);
+        const targetY = startY + (i + 1) * gap + (i - 0.5) * thickness;
+
+        if (!shelf) {
+            shelf = new THREE.Mesh(new THREE.BoxGeometry(targetWidth - 2 * thickness, thickness, targetDepth), defaultMaterial);
+            shelf.name = shelfName;
+            shelf.position.y = targetY;
+            shelf.scale.set(0.01, 1, 1);
+            shelfGroup.add(shelf);
+            currentAnimationTimeline.to(shelf.scale, { x: 1, duration: animDuration, delay: (i * 0.1) }, 0);
+        } else {
+            currentAnimationTimeline.to(shelf.position, { y: targetY, duration: animDuration }, 0);
+            currentAnimationTimeline.to(shelf.scale, { x: (targetWidth - 2 * thickness) / shelf.geometry.parameters.width, z: targetDepth / shelf.geometry.parameters.depth, duration: animDuration }, 0);
+        }
+    }
+
+    currentAnimationTimeline.add(() => {
+        const box = new THREE.Box3().setFromObject(shelfGroup);
+        const center = box.getCenter(new THREE.Vector3());
+        const groupPositionCorrection = shelfGroup.position.clone().sub(center);
+        gsap.to(shelfGroup.position, { x: groupPositionCorrection.x, y: groupPositionCorrection.y, z: groupPositionCorrection.z, duration: 0.1 });
+    });
+
+    lastValidConfig = { ...config };
+}
         
         function createSingleModule(config, material) { const { width, height, depth, shelfCount, thickness } = config; const moduleGroup = new THREE.Group(); const bottomGeo = new THREE.BoxGeometry(width, thickness, depth); const bottomPanel = new THREE.Mesh(bottomGeo, material); bottomPanel.position.y = -height / 2 + thickness / 2; bottomPanel.name = "bottomPanel"; moduleGroup.add(bottomPanel); const topGeo = new THREE.BoxGeometry(width, thickness, depth); const topPanel = new THREE.Mesh(topGeo, material); topPanel.position.y = height / 2 - thickness / 2; topPanel.name = "topPanel"; moduleGroup.add(topPanel); const sideGeo = new THREE.BoxGeometry(thickness, height, depth); const leftSide = new THREE.Mesh(sideGeo, material); leftSide.position.x = -width / 2 + thickness / 2; leftSide.name = "leftSide"; moduleGroup.add(leftSide); const rightSide = new THREE.Mesh(sideGeo, material); rightSide.position.x = width / 2 - thickness / 2; rightSide.name = "rightSide"; moduleGroup.add(rightSide); const innerWidth = width - 2 * thickness; const innerShelfGeo = new THREE.BoxGeometry(innerWidth, thickness, depth); const availableHeight = height - 2 * thickness; if (shelfCount > 0) { const gap = (availableHeight - shelfCount * thickness) / (shelfCount + 1); for(let i = 0; i < shelfCount; i++) { const shelf = new THREE.Mesh(innerShelfGeo.clone(), material); const yPos = (-height / 2) + thickness + gap * (i + 1) + thickness * i; shelf.position.y = yPos; shelf.name = `internalShelf_${i}`; moduleGroup.add(shelf); } } return moduleGroup; }
         function buildModularShelf(config) { 
@@ -2375,13 +2336,14 @@
             const connectingShelfGeometry = new THREE.BoxGeometry(connectingShelfWidth, thickness, moduleConfig.depth);
             const sideYPositions = [ 
                 leftModule.getObjectByName("topPanel").position.y, 
-                ...Array.from(leftModule.children).filter(c => c.name.startsWith("internalShelf")).sort((a,b) => b.position.y - a.position.y).map(s => s.position.y), 
+                // POPRAWIONA LINIJKA - DODANO PODKREŚLNIK
+                ...Array.from(leftModule.children).filter(c => c.name.startsWith("internalShelf_")).sort((a,b) => b.position.y - a.position.y).map(s => s.position.y), 
                 leftModule.getObjectByName("bottomPanel").position.y 
             ];
             
             for (let i = 0; i < sideYPositions.length - 1; i++) {
                 const middleOfGapY = (sideYPositions[i] + sideYPositions[i + 1]) / 2;
-                const shelf = new THREE.Mesh(connectingShelfGeometry, defaultMaterial);
+                const shelf = new THREE.Mesh(connectingShelfGeometry.clone(), defaultMaterial); // Dodano .clone() dla bezpieczeństwa
                 shelf.position.y = middleOfGapY;
                 shelf.name = `connecting_shelf_${i}`;
                 shelf.scale.x = 1;
@@ -2462,7 +2424,7 @@
         const dividersMiddleChecked = dividersMiddleCheckbox?.checked; 
         const dividersBottomChecked = dividersBottomCheckbox?.checked; 
         if (!dividersTopChecked && !dividersMiddleChecked && !dividersBottomChecked) {
-            return null; // Zwróć null, jeśli nie wybrano przegródek
+            return null;
         }
         if (widthVal == 84) { if (dividersTopChecked) dividerFee += 33; if (dividersMiddleChecked) dividerFee += 33; if (dividersBottomChecked) dividerFee += 33; } else { let feePerDividerRow = 0; if (widthVal == 44) feePerDividerRow = 27; else if (widthVal == 60) feePerDividerRow = 40; if (feePerDividerRow > 0) { if (dividersTopChecked) dividerFee += feePerDividerRow; if (dividersMiddleChecked) dividerFee += feePerDividerRow; if (dividersBottomChecked) dividerFee += feePerDividerRow; } } 
     } else { let baseWidthKey; const isCustomWidth = widthSelect.value === 'custom'; if (isCustomWidth) { if (isNaN(widthVal) || widthVal < 35 || widthVal > 59) return null; baseWidthKey = widthVal < 39 ? "34" : widthVal < 47 ? "44" : widthVal < 54 ? "50" : "60"; extraFee = 50; } else { baseWidthKey = String(widthVal); } if (pricing[baseWidthKey]?.[heightVal]?.[depthVal]?.[shelfCountVal] !== undefined) { basePrice = pricing[baseWidthKey][heightVal][depthVal][shelfCountVal]; } else { return null; } if (document.getElementById('noTopShelf')?.checked) deduction += 10; if (shelfType === 'standing' && document.getElementById('noBottomShelf')?.checked) deduction += 10; } if (basePrice === null) return null; const totalPrice = basePrice + extraFee + dividerFee - deduction; return { base: basePrice, extra: extraFee, divider: dividerFee, deduction: deduction, total: Math.max(50, totalPrice) }; }
@@ -2476,7 +2438,7 @@
                 let totalShelves = null;
                 
                 if (!isNaN(moduleW) && !isNaN(moduleH) && !isNaN(connectW)) {
-                    let shelfNum = 3; // dla wysokości 60 cm
+                    let shelfNum = 3;
                     if (moduleH === 40) shelfNum = 2;
                     if (moduleH === 80) shelfNum = 5;
                     
@@ -2514,158 +2476,413 @@
                 document.getElementById("shelfCountSummary").textContent = shelfCountSelect.value !== "" ? (shelfCountSelect.options[shelfCountSelect.selectedIndex]?.text || '--') : '-- Wybierz --';
                 if(viewerInfoText) viewerInfoText.style.display = 'block';
                 if(modularInfoText) modularInfoText.style.display = 'none';
-            } document.getElementById("depthSummary").textContent = depthSelect.value && depthSelect.value !== "" ? depthSelect.value + " cm" : "--"; document.getElementById("sideColorSummary").textContent = sideColorSelect.value && sideColorSelect.selectedIndex > 0 ? sideColorSelect.options[sideColorSelect.selectedIndex].text : "nie wybrano"; document.getElementById("shelfColorSummary").textContent = shelfColorSelect.value && shelfColorSelect.selectedIndex > 0 ? shelfColorSelect.options[shelfColorSelect.selectedIndex].text : "nie wybrano"; const h = parseFloat(heightSelect.value); const sc = parseInt(shelfCountSelect.value); const t = 1.8; let gT = "n/d"; if (currentShelfType === 'modular') { const moduleH = parseInt(moduleHeightSelect.value); if (!isNaN(moduleH)) { let shelfNum = 3; if (moduleH === 40) shelfNum = 2; if (moduleH === 80) shelfNum = 5; const availableHeight = moduleH - 2 * t; const gap = (availableHeight - shelfNum * t) / (shelfNum + 1); gT = `${gap.toFixed(1)} cm`; } } else if (!isNaN(h) && h > 0 && !isNaN(sc) && sc >= 0) { if (currentShelfType === 'mug_shelf') { const mugGapHeight = h - 2 * t; const mugGapFreeSpace = mugGapHeight - sc * t; const mugGapsCount = sc + 1; if (mugGapFreeSpace >= 0 && mugGapsCount > 0) { gT = `ok. ${(mugGapFreeSpace / mugGapsCount).toFixed(1)} cm`; } else { gT = "za mało miejsca"; } } else { const displayGapHeight = h - 2 * t; const totalShelvesThickness = sc * t; if (displayGapHeight >= totalShelvesThickness && (sc + 1) > 0) { const freeSpace = displayGapHeight - totalShelvesThickness; const gapsCount = sc + 1; const calculatedGap = freeSpace / gapsCount; gT = `${calculatedGap.toFixed(1)} cm`; } else { gT = "za mało miejsca"; } } } else { gT = "n/d"; } document.getElementById("gapSummary").textContent = gT; document.getElementById("gapSummaryDisplay").textContent = gT; const gapSummaryLi = document.getElementById("gapSummary")?.parentElement; const gapDisplayP = document.getElementById("gapDisplay"); if (currentShelfType === 'mug_shelf') { if (gapSummaryLi) gapSummaryLi.style.display = 'none'; if (gapDisplayP) gapDisplayP.style.display = 'none'; } else { if (gapSummaryLi) gapSummaryLi.style.display = 'flex'; if (gapDisplayP) gapDisplayP.style.display = 'block'; } const o = []; if (currentShelfType === 'mug_shelf') { const selectedMount = document.querySelector('input[name="mugShelfMount"]:checked'); if (selectedMount) o.push(selectedMount.value === 'hanging' ? 'Montaż wiszący' : 'Montaż stojący'); const dividersSelected = []; if (dividersTopCheckbox?.checked) dividersSelected.push("góra"); if (dividersMiddleCheckbox?.checked) dividersSelected.push("środek"); if (dividersBottomCheckbox?.checked) dividersSelected.push("dół"); if (dividersSelected.length > 0) o.push("Przegródki: " + dividersSelected.join(", ")); } else if (currentShelfType !== 'modular') { if (document.getElementById("noTopShelf")?.checked) o.push("bez górnej półki"); const isStandingType = (currentShelfType === "standing"); if (isStandingType && document.getElementById("noBottomShelf")?.checked) o.push("bez dolnej półki (podstawy)"); } document.getElementById("extraOptionsSummary").textContent = o.length ? o.join(" / ") : "standardowa"; if (mobileIconDetailsType) { if (shelfTypeSelect.selectedIndex > 0) { mobileIconDetailsType.textContent = shelfTypeSelect.options[shelfTypeSelect.selectedIndex].text.split(' ')[0]; mobileIconDetailsType.classList.remove('mobile-icon-prompt'); } else { mobileIconDetailsType.textContent = 'wybierz'; mobileIconDetailsType.classList.add('mobile-icon-prompt'); } } if (mobileIconDetailsDimensions) { if (!isNaN(getCurrentWidth()) && heightSelect.value && depthSelect.value) { mobileIconDetailsDimensions.textContent = `${getCurrentWidth()}x${heightSelect.value}x${depthSelect.value}`; mobileIconDetailsDimensions.classList.remove('mobile-icon-prompt'); } else { mobileIconDetailsDimensions.textContent = 'wybierz'; mobileIconDetailsDimensions.classList.add('mobile-icon-prompt'); } } if (mobileIconDetailsColors) { mobileIconDetailsColors.innerHTML = ''; const sideColorOption = sideColorSelect.options[sideColorSelect.selectedIndex]; const shelfColorOption = shelfColorSelect.options[shelfColorSelect.selectedIndex]; if (sideColorOption && sideColorOption.value && shelfColorOption && shelfColorOption.value) { const sideSwatch = document.createElement('span'); sideSwatch.className = 'mobile-color-swatch'; sideSwatch.style.backgroundColor = sideColorOption.dataset.color || '#ccc'; const shelfSwatch = document.createElement('span'); shelfSwatch.className = 'mobile-color-swatch'; shelfSwatch.style.backgroundColor = shelfColorOption.dataset.color || '#ccc'; mobileIconDetailsColors.appendChild(sideSwatch); mobileIconDetailsColors.appendChild(shelfSwatch); mobileIconDetailsColors.classList.remove('mobile-icon-prompt'); } else { mobileIconDetailsColors.textContent = 'wybierz'; mobileIconDetailsColors.classList.add('mobile-icon-prompt'); } } if (mobileIconDetailsShelves) { if (shelfCountSelect.value !== "" && shelfCountSelect.options[shelfCountSelect.selectedIndex]) { const selectedText = shelfCountSelect.options[shelfCountSelect.selectedIndex].text; mobileIconDetailsShelves.textContent = selectedText; if (shelfCountSelect.value === '0') { mobileIconDetailsShelves.classList.add('mobile-icon-prompt'); } else { mobileIconDetailsShelves.classList.remove('mobile-icon-prompt'); } } else { mobileIconDetailsShelves.textContent = 'wybierz'; mobileIconDetailsShelves.classList.add('mobile-icon-prompt'); } } const orderCode = generateOrderCode(); const isComplete = !!orderCode; if (isComplete) { const pD = computePriceDetailed(); if (pD !== null) { priceAndActionsContainer.style.display = 'block'; priceHint.style.display = 'none'; priceSummary.textContent = pD.total + " zł"; if (desktopCartContainer) { desktopCartContainer.classList.remove('animate-pulse-bg'); void desktopCartContainer.offsetWidth; desktopCartContainer.classList.add('animate-pulse-bg'); } if (mobile3dActionsContainer) mobile3dActionsContainer.style.display = 'flex'; if (mobilePriceValue) mobilePriceValue.textContent = pD.total + " zł"; } else { priceAndActionsContainer.style.display = 'none'; priceHint.textContent = "Błąd obliczania ceny. Sprawdź opcje."; priceHint.style.display = 'block'; if (mobile3dActionsContainer) mobile3dActionsContainer.style.display = 'none'; } } else { priceAndActionsContainer.style.display = 'none'; priceHint.textContent = "Wybierz wszystkie parametry, aby zobaczyć cenę."; priceHint.style.display = 'block'; if (mobile3dActionsContainer) mobile3dActionsContainer.style.display = 'none'; } updateDividerDimensionVisibility(); updateMobileShelfInfo(); }
+            } document.getElementById("depthSummary").textContent = depthSelect.value && depthSelect.value !== "" ? depthSelect.value + " cm" : "--"; document.getElementById("sideColorSummary").textContent = sideColorSelect.value && sideColorSelect.selectedIndex > 0 ? sideColorSelect.options[sideColorSelect.selectedIndex].text : "nie wybrano"; document.getElementById("shelfColorSummary").textContent = shelfColorSelect.value && shelfColorSelect.selectedIndex > 0 ? shelfColorSelect.options[shelfColorSelect.selectedIndex].text : "nie wybrano"; const h = parseFloat(heightSelect.value); const sc = parseInt(shelfCountSelect.value); const t = 1.8; let gT = "n/d"; if (currentShelfType === 'modular') { const moduleH = parseInt(moduleHeightSelect.value); if (!isNaN(moduleH)) { let shelfNum = 3; if (moduleH === 40) shelfNum = 2; if (moduleH === 80) shelfNum = 5; const availableHeight = moduleH - 2 * t; const gap = (availableHeight - shelfNum * t) / (shelfNum + 1); gT = `${gap.toFixed(1)} cm`; } } else if (!isNaN(h) && h > 0 && !isNaN(sc) && sc >= 0) { if (currentShelfType === 'mug_shelf') { const mugGapHeight = h - 2 * t; const mugGapFreeSpace = mugGapHeight - sc * t; const mugGapsCount = sc + 1; if (mugGapFreeSpace >= 0 && mugGapsCount > 0) { const calculatedGap = mugGapFreeSpace / mugGapsCount; gT = `ok. ${calculatedGap > 0 ? calculatedGap.toFixed(1) : '0.0'} cm`; } else { gT = "za mało miejsca"; } } else {
+        const isTopShelf = !document.getElementById('noTopShelf')?.checked;
+        const isBottomShelf = currentShelfType !== 'standing' || !document.getElementById('noBottomShelf')?.checked;
+        const availableHeight = h - 2 * t;
+        const totalShelvesThickness = sc * t;
+        if (availableHeight >= totalShelvesThickness && (sc + 1) > 0) {
+            const freeSpace = availableHeight - totalShelvesThickness;
+            const gapsCount = sc + 1;
+            const calculatedGap = freeSpace / gapsCount;
+            gT = `${calculatedGap.toFixed(1)} cm`;
+        } else {
+            gT = "za mało miejsca";
+        }
+    } } document.getElementById("gapSummary").textContent = gT; document.getElementById("gapSummaryDisplay").textContent = gT; const gapSummaryLi = document.getElementById("gapSummary")?.parentElement; const gapDisplayP = document.getElementById("gapDisplay"); if (currentShelfType === 'mug_shelf' || currentShelfType === 'modular') { if (gapSummaryLi) gapSummaryLi.style.display = 'none'; if (gapDisplayP) gapDisplayP.style.display = 'none'; } else { if (gapSummaryLi) gapSummaryLi.style.display = 'flex'; if (gapDisplayP) gapDisplayP.style.display = 'block'; } const o = []; if (currentShelfType === 'mug_shelf') { const selectedMount = document.querySelector('input[name="mugShelfMount"]:checked'); if (selectedMount) o.push(selectedMount.value === 'hanging' ? 'Montaż wiszący' : 'Montaż stojący'); const dividersSelected = []; if (dividersTopCheckbox?.checked) dividersSelected.push("góra"); if (dividersMiddleCheckbox?.checked) dividersSelected.push("środek"); if (dividersBottomCheckbox?.checked) dividersSelected.push("dół"); if (dividersSelected.length > 0) o.push("Przegródki: " + dividersSelected.join(", ")); } else if (currentShelfType !== 'modular') { if (document.getElementById("noTopShelf")?.checked) o.push("bez górnej półki"); const isStandingType = (currentShelfType === "standing"); if (isStandingType && document.getElementById("noBottomShelf")?.checked) o.push("bez dolnej półki (podstawy)"); } document.getElementById("extraOptionsSummary").textContent = o.length ? o.join(" / ") : "standardowa"; if (mobileIconDetailsType) { if (shelfTypeSelect.selectedIndex > 0) { mobileIconDetailsType.textContent = shelfTypeSelect.options[shelfTypeSelect.selectedIndex].text.split(' ')[0]; mobileIconDetailsType.classList.remove('mobile-icon-prompt'); } else { mobileIconDetailsType.textContent = 'wybierz'; mobileIconDetailsType.classList.add('mobile-icon-prompt'); } } if (mobileIconDetailsDimensions) { if (!isNaN(getCurrentWidth()) && heightSelect.value && depthSelect.value) { mobileIconDetailsDimensions.textContent = `${getCurrentWidth()}x${heightSelect.value}x${depthSelect.value}`; mobileIconDetailsDimensions.classList.remove('mobile-icon-prompt'); } else { mobileIconDetailsDimensions.textContent = 'wybierz'; mobileIconDetailsDimensions.classList.add('mobile-icon-prompt'); } } if (mobileIconDetailsColors) { mobileIconDetailsColors.innerHTML = ''; const sideColorOption = sideColorSelect.options[sideColorSelect.selectedIndex]; const shelfColorOption = shelfColorSelect.options[shelfColorSelect.selectedIndex]; if (sideColorOption && sideColorOption.value && shelfColorOption && shelfColorOption.value) { const sideSwatch = document.createElement('span'); sideSwatch.className = 'mobile-color-swatch'; sideSwatch.style.backgroundColor = sideColorOption.dataset.color || '#ccc'; const shelfSwatch = document.createElement('span'); shelfSwatch.className = 'mobile-color-swatch'; shelfSwatch.style.backgroundColor = shelfColorOption.dataset.color || '#ccc'; mobileIconDetailsColors.appendChild(sideSwatch); mobileIconDetailsColors.appendChild(shelfSwatch); mobileIconDetailsColors.classList.remove('mobile-icon-prompt'); } else { mobileIconDetailsColors.textContent = 'wybierz'; mobileIconDetailsColors.classList.add('mobile-icon-prompt'); } } if (mobileIconDetailsShelves) { if (shelfCountSelect.value !== "" && shelfCountSelect.options[shelfCountSelect.selectedIndex]) { const selectedText = shelfCountSelect.options[shelfCountSelect.selectedIndex].text; mobileIconDetailsShelves.textContent = selectedText; if (shelfCountSelect.value === '0') { mobileIconDetailsShelves.classList.add('mobile-icon-prompt'); } else { mobileIconDetailsShelves.classList.remove('mobile-icon-prompt'); } } else { mobileIconDetailsShelves.textContent = 'wybierz'; mobileIconDetailsShelves.classList.add('mobile-icon-prompt'); } } const orderCode = generateOrderCode(); const isComplete = !!orderCode; if (isComplete) { const pD = computePriceDetailed(); if (pD !== null) { priceAndActionsContainer.style.display = 'block'; priceHint.style.display = 'none'; priceSummary.textContent = pD.total + " zł"; if (desktopCartContainer) { desktopCartContainer.classList.remove('animate-pulse-bg'); void desktopCartContainer.offsetWidth; desktopCartContainer.classList.add('animate-pulse-bg'); } if (mobile3dActionsContainer) mobile3dActionsContainer.style.display = 'flex'; if (mobilePriceValue) mobilePriceValue.textContent = pD.total + " zł"; } else { priceAndActionsContainer.style.display = 'none'; priceHint.textContent = "Błąd obliczania ceny. Sprawdź opcje."; priceHint.style.display = 'block'; if (mobile3dActionsContainer) mobile3dActionsContainer.style.display = 'none'; } } else { priceAndActionsContainer.style.display = 'none'; priceHint.textContent = "Wybierz wszystkie parametry, aby zobaczyć cenę."; priceHint.style.display = 'block'; if (mobile3dActionsContainer) mobile3dActionsContainer.style.display = 'none'; } updateDividerDimensionVisibility(); updateMobileShelfInfo(); }
         function generateOrderCode() { const shelfTypeVal = shelfTypeSelect.value; const sideColorVal = sideColorSelect.value || ''; const shelfColorVal = shelfColorSelect.value || ''; if (!shelfTypeVal || !sideColorVal || !shelfColorVal) return null; const typeCode = valueToCode.type[shelfTypeVal]; const sideColorCode = valueToCode.color[sideColorVal]; const shelfColorCode = valueToCode.color[shelfColorVal]; if (!typeCode || sideColorCode === undefined || shelfColorCode === undefined) return null; if (shelfTypeVal === 'modular') { const moduleW = moduleWidthSelect.value; const moduleH = moduleHeightSelect.value; const connectW = connectingShelfWidthSelect.value; const depth = depthSelect.value; if (!moduleW || !moduleH || !connectW || !depth) return null; return `${typeCode}-W${moduleW}-H${moduleH}-C${connectW}-D${depth}-${sideColorCode}${shelfColorCode}`; } const widthNum = getCurrentWidth(); const heightVal = heightSelect.value; const depthVal = depthSelect.value; const shelfCountVal = shelfCountSelect.value; const isMugShelf = shelfTypeVal === 'mug_shelf'; if (isNaN(widthNum) || !heightVal || !depthVal || shelfCountVal === "") return null; const shelfCountNum = parseInt(shelfCountVal); if (isNaN(shelfCountNum) || shelfCountNum < 0 || (!isMugShelf && shelfCountNum === 0)) return null; let optionsCode = ''; if (isMugShelf) { const mountCode = document.querySelector('input[name="mugShelfMount"]:checked')?.value === 'hanging' ? 'h' : 's'; 
         let dividerCode = ''; 
         if (dividersTopCheckbox?.checked) dividerCode += 'g'; 
         if (dividersMiddleCheckbox?.checked) dividerCode += 'm'; 
         if (dividersBottomCheckbox?.checked) dividerCode += 'd'; 
         if (dividerCode === '') {
-            return null; // Zwróć null, jeśli nie wybrano przegródek
+            return null;
         }
         optionsCode = `${mountCode}${dividerCode}`; 
     } else { const noTop = document.getElementById("noTopShelf")?.checked; const noBottom = (shelfTypeVal === "standing" && document.getElementById("noBottomShelf")?.checked); if (noTop && noBottom) optionsCode = 'tb'; else if (noTop) optionsCode = 't'; else if (noBottom) optionsCode = 'b'; else optionsCode = 's'; } return [typeCode, String(widthNum), heightVal, depthVal, String(shelfCountNum), sideColorCode, shelfColorCode, optionsCode].join('-'); }
         
+        // NOWA, ZINTEGROWANA FUNKCJA PARSOWANIA KODU
         function parseOrderCode(code) {
-    if (!code) return { error: "Kod jest pusty." };
-    code = code.trim().toLowerCase();
-    const parts = code.split('-');
-    const typeCode = parts[0];
+            if (!code) return { error: "Kod jest pusty." };
+            code = code.trim().toLowerCase();
+            const parts = code.split('-');
 
-    if (typeCode === 'm' && parts.length === 6) { // Sprawdzanie dla półki modułowej
-        const [_, widthPart, heightPart, connectPart, depthPart, colorPart] = parts;
+            // Logika dla półki modułowej
+        if (parts[0] === 'm' && parts.length === 6) {
+            const [_, widthPart, heightPart, connectPart, depthPart, colorPart] = parts;
+            const moduleW = parseInt(widthPart.substring(1));
+            const moduleH = parseInt(heightPart.substring(1));
+            const connectW = parseInt(connectPart.substring(1));
+            const depth = parseInt(depthPart.substring(1));
+            const sideColorValue = codeToValue.color[colorPart[0]];
+            const shelfColorValue = codeToValue.color[colorPart[1]];
 
-        const moduleW = parseInt(widthPart.substring(1));
-        const moduleH = parseInt(heightPart.substring(1));
-        const connectW = parseInt(connectPart.substring(1));
-        const depth = depthPart.substring(1);
-        const sideColor = codeToValue.color[colorPart[0]];
-        const shelfColor = codeToValue.color[colorPart[1]];
-        
-        if(!moduleW || !moduleH || !connectW || !depth || !sideColor || !shelfColor) return { error: 'Nieprawidłowe wartości w kodzie półki modułowej.'};
+            if(!moduleW || !moduleH || !connectW || !depth || !sideColorValue || !shelfColorValue) return { error: 'Nieprawidłowe wartości w kodzie półki modułowej.'};
 
-        let totalWidth = null;
-        let totalShelves = null;
-        let gap = null;
-        const thickness = 1.8;
-        
-        let shelfNum = 3; 
-        if (moduleH === 40) shelfNum = 2;
-        if (moduleH === 80) shelfNum = 5;
-        
-        totalShelves = (2 * (shelfNum + 2)) + (shelfNum + 1);
-        totalWidth = (moduleW * 2) + connectW;
-        const availableHeight = moduleH - 2 * thickness;
-        gap = (availableHeight - shelfNum * thickness) / (shelfNum + 1);
-        
-        return {
-            code: code.toUpperCase(),
-            shelfType: 'Półka modułowa',
-            totalWidth: `${totalWidth} cm`,
-            moduleWidth: `${moduleW} cm`,
-            connectingWidth: `${connectW} cm`,
-            height: `${moduleH} cm`,
-            depth: `${depth} cm`,
-            sideColor,
-            shelfColor,
-            totalShelves: `${totalShelves} szt.`,
-            gap: `${gap.toFixed(1)} cm`,
-            isModular: true
-        };
-    }
-    
-    if (parts.length !== 8) {
-        return { error: `Nieprawidłowy format kodu (oczekiwano 8 części, znaleziono ${parts.length}).` };
-    }
-    const [typeCodeOld, widthStr, heightStr, depthStr, shelfCountStr, sideColorCode, shelfColorCode, optionsCode] = parts;
-    const shelfType = codeToValue.type[typeCodeOld];
-    const sideColor = codeToValue.color[sideColorCode];
-    const shelfColor = codeToValue.color[shelfColorCode];
-    const width = parseInt(widthStr);
-    const height = parseInt(heightStr);
-    const depth = parseInt(depthStr);
-    const shelfCount = parseInt(shelfCountStr);
-    if (!shelfType || !sideColor || !shelfColor || isNaN(width) || isNaN(height) || isNaN(depth) || isNaN(shelfCount)) { return { error: "Nieprawidłowe podstawowe wartości w kodzie (typ, wymiary, kolory lub liczba półek)." }; }
-    if (width < 34 || (width > 60 && width !== 84) || (width > 84) || height < 40 || height > 80 || depth < 10 || depth > 15 || shelfCount < 0 || shelfCount > 5) { return { error: "Wartości wymiarów lub liczby półek poza dozwolonym zakresem." }; }
-    
-    let gap = "n/d";
-    const thickness = 1.8;
-    if (shelfType === 'mug_shelf') { // POPRAWKA
-        const mugGapHeight = height - 2 * thickness;
-        const mugGapFreeSpace = mugGapHeight - shelfCount * thickness;
-        const mugGapsCount = shelfCount + 1;
-        if (mugGapFreeSpace >=0 && mugGapsCount > 0) {
-            gap = `ok. ${(mugGapFreeSpace / mugGapsCount).toFixed(1)} cm`;
+            // DODANE OBLICZENIA
+            const totalWidth = (moduleW * 2) + connectW;
+            let shelfNum = 3; 
+            if (moduleH === 40) shelfNum = 2;
+            if (moduleH === 80) shelfNum = 5;
+            const totalShelves = (2 * (shelfNum + 2)) + (shelfNum + 1);
+            const gap = ((moduleH - 2 * 1.8) - shelfNum * 1.8) / (shelfNum + 1);
+
+            return {
+                error: null,
+                code: code.toUpperCase(),
+                isModular: true,
+                shelfTypeValue: 'modular',
+                shelfType: 'Półka modułowa',
+                moduleWidth: moduleW,
+                moduleHeight: moduleH,
+                connectingWidth: connectW,
+                depth: depth,
+                // POPRAWIONE/DODANE POLA
+                height: moduleH,
+                totalWidth: `${totalWidth} cm`,
+                totalShelves: `${totalShelves} szt.`,
+                komponenty: `${moduleW}cm + ${connectW}cm + ${moduleW}cm`,
+                gap: `${gap.toFixed(1)} cm`,
+                sideColorValue,
+                sideColor: sideColorSelect.querySelector(`option[value="${sideColorValue}"]`)?.textContent || 'Nieznany',
+                shelfColorValue,
+                shelfColor: shelfColorSelect.querySelector(`option[value="${shelfColorValue}"]`)?.textContent || 'Nieznany'
+            };
         }
-    } else {
-        const hasTopShelf = optionsCode !== 't' && optionsCode !== 'tb';
-        const hasBottomShelf = shelfType !== 'standing' || (optionsCode !== 'b' && optionsCode !== 'tb');
-        const displayGapHeight = height - (hasTopShelf ? thickness : 0) - (hasBottomShelf ? thickness : 0);
-        const totalShelvesThickness = shelfCount * thickness;
-        if (displayGapHeight >= totalShelvesThickness && (shelfCount + 1) > 0) {
-            const freeSpace = displayGapHeight - totalShelvesThickness;
-            const gapsCount = shelfCount + 1;
-            gap = `${(freeSpace / gapsCount).toFixed(1)} cm`;
+
+            // Logika dla półek standardowych
+            if (parts.length !== 8) return { error: `Nieprawidłowy format kodu (oczekiwano 8 części, znaleziono ${parts.length}).` };
+            const [typeCode, widthStr, heightStr, depthStr, shelfCountStr, sideColorCode, shelfColorCode, optionsCode] = parts;
+
+            const shelfTypeValue = codeToValue.type[typeCode];
+            const sideColorValue = codeToValue.color[sideColorCode];
+            const shelfColorValue = codeToValue.color[shelfColorCode];
+
+            if (!shelfTypeValue || !sideColorValue || !shelfColorValue) return { error: "Nieprawidłowe podstawowe wartości w kodzie (typ lub kolory)." };
+            
+            const shelfType = shelfTypeSelect.querySelector(`option[value="${shelfTypeValue}"]`)?.textContent || 'Nieznany typ';
+            const sideColor = sideColorSelect.querySelector(`option[value="${sideColorValue}"]`)?.textContent || 'Nieznany kolor';
+            const shelfColor = shelfColorSelect.querySelector(`option[value="${shelfColorValue}"]`)?.textContent || 'Nieznany kolor';
+
+            const width = parseInt(widthStr);
+            const height = parseInt(heightStr);
+            const depth = parseInt(depthStr);
+            const shelfCount = parseInt(shelfCountStr);
+
+            if (isNaN(width) || isNaN(height) || isNaN(depth) || isNaN(shelfCount)) return { error: "Nieprawidłowe wartości liczbowe w kodzie (wymiary lub liczba półek)." };
+
+            let optionsText = [];
+            let gapInfo = 'n/d';
+            let rawOptions = {};
+
+            if (shelfTypeValue === 'mug_shelf') {
+                const mountCode = optionsCode.charAt(0);
+                const dividerCode = optionsCode.substring(1);
+                const mountType = codeToValue.mugMount[mountCode];
+                if (!mountType) return { error: `Nieprawidłowy kod montażu kubka: ${mountCode}.` };
+                
+                optionsText.push(`Montaż: ${mountType === 'hanging' ? 'Wisząca' : 'Stojąca'}`);
+                rawOptions.mount = mountType;
+                
+                const dividers = [];
+                if (dividerCode.includes('g')) { dividers.push("góra"); rawOptions.dividersTop = true; }
+                if (dividerCode.includes('m')) { dividers.push("środek"); rawOptions.dividersMiddle = true; }
+                if (dividerCode.includes('d')) { dividers.push("dół"); rawOptions.dividersBottom = true; }
+                if (dividerCode.length > 0 && dividers.length === 0 && dividerCode !== 'n') return { error: `Nieprawidłowy kod przegródek: ${dividerCode}.`};
+                if (dividers.length > 0) optionsText.push(`Przegródki: ${dividers.join(', ')}`);
+                
+                gapInfo = "ok. 10.9 cm";
+            } else {
+                if (optionsCode.includes('t')) { optionsText.push("Bez górnej półki"); rawOptions.noTopShelf = true; }
+                if (optionsCode.includes('b') && shelfTypeValue === 'standing') { optionsText.push("Bez dolnej półki (podstawy)"); rawOptions.noBottomShelf = true; }
+                
+                const t = 1.8;
+                const availableHeight = height - (rawOptions.noTopShelf ? 0 : t) - (rawOptions.noBottomShelf ? 0 : t);
+                const totalShelvesThickness = shelfCount * t;
+                const gaps = shelfCount + 1;
+                if (availableHeight >= totalShelvesThickness && gaps > 0) {
+                    gapInfo = `${((availableHeight - totalShelvesThickness) / gaps).toFixed(1)} cm`;
+                }
+            }
+            if (optionsText.length === 0) optionsText.push("Standardowa");
+
+            return {
+                error: null,
+                code: code.toUpperCase(),
+                shelfTypeValue,
+                shelfType,
+                width,
+                height,
+                depth,
+                sideColorValue,
+                sideColor,
+                shelfColorValue,
+                shelfColor,
+                shelfCount,
+                options: optionsText.join(' / '),
+                gapInfo,
+                raw: rawOptions
+            };
         }
-    }
 
-    let options = [];
-    let shelfTypeName = "Nieznany";
+        // NOWE FUNKCJE
+        async function reconfigureFromDetails(details) {
+            if (!details || details.error) return;
+            
+            shelfTypeSelect.value = details.shelfTypeValue;
+            handleShelfTypeChange(true); 
+            
+            await new Promise(resolve => setTimeout(resolve, 50));
 
-    if (shelfType === 'mug_shelf') { // POPRAWKA
-        shelfTypeName = "Półka na kubki";
-        const mountCode = optionsCode.charAt(0);
-        const dividerCode = optionsCode.substring(1);
-        const mountType = codeToValue.mugMount[mountCode];
-        if (!mountType) return { error: `Nieprawidłowy kod montażu kubka: ${mountCode}.` };
-        options.push(`Montaż: ${mountType === 'standing' ? 'Stojąca' : 'Wisząca'}`);
-        const dividers = [];
-        if (dividerCode.includes('g')) dividers.push("góra");
-        if (dividerCode.includes('m')) dividers.push("środek");
-        if (dividerCode.includes('d')) dividers.push("dół");
-        if (dividers.length > 0) {
-            options.push(`Przegródki: ${dividers.join(', ')}`);
-        } else if (dividerCode !== 'n') {
-            return { error: `Nieprawidłowy kod przegródek: ${dividerCode}.` };
+            if (details.isModular) {
+                 moduleWidthSelect.value = String(details.moduleWidth);
+                 moduleHeightSelect.value = String(details.moduleHeight);
+                 connectingShelfWidthSelect.value = String(details.connectingWidth);
+            } else if (details.shelfTypeValue === 'mug_shelf') {
+                widthSelect.value = String(details.width);
+                heightSelect.value = String(details.height);
+                handleMugShelfHeightChange();
+                
+                const mountRadio = document.querySelector(`input[name="mugShelfMount"][value="${details.raw.mount}"]`);
+                if (mountRadio) mountRadio.checked = true;
+
+                if (dividersTopCheckbox) dividersTopCheckbox.checked = !!details.raw.dividersTop;
+                if (dividersMiddleCheckbox) dividersMiddleCheckbox.checked = !!details.raw.dividersMiddle;
+                if (dividersBottomCheckbox) dividersBottomCheckbox.checked = !!details.raw.dividersBottom;
+                
+            } else {
+                const widthValueStr = String(details.width);
+                const isStandardWidth = Array.from(originalWidthOptions).some(opt => opt.value === widthValueStr && opt.value !== 'custom');
+                if (isStandardWidth) {
+                    widthSelect.value = widthValueStr;
+                } else {
+                    widthSelect.value = 'custom';
+                }
+                checkCustomWidth();
+                if (widthSelect.value === 'custom' && customWidthInput) {
+                    customWidthInput.value = details.width;
+                    if (customWidthDisplay) customWidthDisplay.textContent = details.width + ' cm';
+                }
+                
+                heightSelect.value = String(details.height);
+                handleDimensionChange(); 
+                
+                depthSelect.value = String(details.depth);
+                shelfCountSelect.value = String(details.shelfCount);
+
+                const noTopShelfCheckbox = document.getElementById('noTopShelf');
+                if (noTopShelfCheckbox) noTopShelfCheckbox.checked = !!details.raw.noTopShelf;
+
+                if (details.shelfTypeValue === 'standing') {
+                    const noBottomShelfCheckbox = document.getElementById('noBottomShelf');
+                    if (noBottomShelfCheckbox) noBottomShelfCheckbox.checked = !!details.raw.noBottomShelf;
+                }
+            }
+
+            sideColorSelect.value = details.sideColorValue;
+            shelfColorSelect.value = details.shelfColorValue;
+
+            await new Promise(resolve => setTimeout(resolve, 50)); 
+            
+            updatePreview(false); 
+            updateOrderSummary(); 
         }
-    } else {
-        if (shelfType === 'standing') shelfTypeName = 'Stojąca na blacie';
-        if (shelfType === 'hanging') shelfTypeName = 'Wisząca';
 
-        if (optionsCode === 't') options.push("Bez górnej półki");
-        else if (optionsCode === 'b' && shelfType === 'standing') options.push("Bez dolnej półki (podstawy)");
-        else if (optionsCode === 'tb') { options.push("Bez górnej półki"); if (shelfType === 'standing') options.push("Bez dolnej półki (podstawy)");
-        } else if (optionsCode !== 's') return { error: `Nieprawidłowy kod opcji: ${optionsCode}.` };
-    }
-    if (options.length === 0) {
-        options.push("Standardowa");
-    }
-    return { code: code.toUpperCase(), shelfType: shelfTypeName, width: `${width} cm`, height: `${height} cm`, depth: `${depth} cm`, sideColor, shelfColor, shelfCount: `${shelfCount} szt.`, options: options.join(' / '), gap };
-}
-        const colorHexToName = {
-    '#8B5A2B': 'Dąb Craft Złoty',
-    '#FFFFFF': 'Biały matowy',
-    '#000000': 'Czarny matowy'
-};
+        async function showVisualDetailsForCode(code) {
+            if (!code) return;
+            visualDetailsModalOverlay.classList.add('visible');
+            visualDetailsContent.style.display = 'none';
+            visualDetailsError.style.display = 'none';
+            visualDetailsLoader.style.display = 'block';
+            printVisualDetailsBtn.disabled = true;
 
-function displayOrderDetailsInModal(details) {
-    if (!orderDetailsModalOverlay || !orderDetailsModal || !modalOrderCodeSpan || !modalOrderSummaryP) return;
-    if (details.error) {
-        modalOrderCodeSpan.textContent = "BŁĄD";
-        modalOrderSummaryP.innerHTML = `<p class="text-red-600 font-semibold">${details.error}</p>`;
-    } else {
-        modalOrderCodeSpan.textContent = details.code;
-        let summaryHtml = '';
-        if (details.isModular) {
-            summaryHtml = ` <p><strong>Rodzaj półki:</strong> ${details.shelfType}</p> <p><strong>Szerokość całkowita:</strong> ${details.totalWidth}</p> <p><strong>Wysokość:</strong> ${details.height}</p> <p><strong>Głębokość:</strong> ${details.depth}</p> <p><strong>Kolor boków:</strong> ${colorHexToName[details.sideColor] || details.sideColor}</p> <p><strong>Kolor półek i podstaw:</strong> ${colorHexToName[details.shelfColor] || details.shelfColor}</p> <p><strong>Ilość półek (łącznie):</strong> ${details.totalShelves}</p> <p><strong>Odległość między półkami:</strong> ${details.gap}</p> <hr class="my-2"> <p><strong>Komponenty (Szer.):</strong> ${details.moduleWidth} + ${details.connectingWidth} + ${details.moduleWidth}</p> <p class="mt-4 text-xs text-stone-500 italic">Uwaga: Cena nie jest przechowywana w kodzie i nie jest tutaj wyświetlana.</p> `;
-        } else {
-            summaryHtml = ` <p><strong>Rodzaj półki:</strong> ${details.shelfType}</p> <p><strong>Szerokość:</strong> ${details.width}</p> <p><strong>Wysokość:</strong> ${details.height}</p> <p><strong>Głębokość:</strong> ${details.depth}</p> <p><strong>Kolor boków:</strong> ${colorHexToName[details.sideColor] || details.sideColor}</p> <p><strong>Kolor półek:</strong> ${colorHexToName[details.shelfColor] || details.shelfColor}</p> <p><strong>Ilość półek wewn.:</strong> ${details.shelfCount}</p> <p><strong>Odległość między półkami:</strong> ${details.gap}</p> <p><strong>Opcje:</strong> ${details.options}</p> <p class="mt-4 text-xs text-stone-500 italic">Uwaga: Cena nie jest przechowywana w kodzie i nie jest tutaj wyświetlana.</p> `;
+            const details = parseOrderCode(code);
+            
+            if (details.error) {
+                visualDetailsLoader.style.display = 'none';
+                visualDetailsError.style.display = 'block';
+                visualDetailsError.querySelector('p').textContent = details.error;
+                return;
+            }
+
+            currentDetailsForVisualModal = details;
+
+            try {
+                await reconfigureFromDetails(details);
+                
+                const [snapshotDataUrl, priceDetails] = await Promise.all([
+                    generate3dSnapshotFromCurrentModel(),
+                    computePriceDetailed()
+                ]);
+                
+                visualDetailsOrderCode.textContent = `Kod zamówienia: ${details.code}`;
+                visualDetailsSnapshot.src = snapshotDataUrl;
+                
+                const specsList = visualDetailsSpecsList;
+                specsList.innerHTML = '';
+                
+                const specsData = details.isModular ? {
+                    "Rodzaj półki": details.shelfType,
+                    "Wymiary (całkowite)": `${details.totalWidth} x ${details.height} cm x ${details.depth} cm`,
+                    "Komponenty (Szer.)": details.komponenty,
+                    "Kolor boków": details.sideColor,
+                    "Kolor półek": details.shelfColor,
+                    "Liczba półek (łącznie)": details.totalShelves,
+                    "Odstęp": details.gap,
+                } : {
+                    "Rodzaj półki": details.shelfType,
+                    "Wymiary": `${details.width} x ${details.height} x ${details.depth} cm`,
+                    "Kolor boków": details.sideColor,
+                    "Kolor półek": details.shelfColor,
+                    "Półki wewn.": `${details.shelfCount} szt.`,
+                    "Odstęp": details.gapInfo,
+                    "Opcje": details.options
+                };
+                
+                for(const [key, value] of Object.entries(specsData)) {
+                    if (value && value !== 'n/d' && value.trim() !== "") {
+                        const row = document.createElement('div');
+                        row.className = 'spec-row';
+                        const dt = document.createElement('dt');
+                        dt.textContent = key;
+                        const dd = document.createElement('dd');
+                        dd.textContent = value;
+                        row.appendChild(dt);
+                        row.appendChild(dd);
+                        specsList.appendChild(row);
+                    }
+                }
+
+                if (priceDetails) {
+                     const discountedPrice = priceDetails.total * 0.90;
+                     const row = document.createElement('div');
+                     row.className = 'spec-row border-t-2 border-stone-200 mt-2 pt-2';
+                     const dt = document.createElement('dt');
+                     dt.className = 'font-semibold text-stone-800 text-base';
+                     dt.textContent = 'Cena:';
+                     const dd = document.createElement('dd');
+                     dd.className = 'font-bold text-xl text-red-600 text-right';
+                     
+                     const priceSpan = document.createElement('span');
+                     priceSpan.textContent = `${discountedPrice.toFixed(2)} zł `;
+                     
+                     const discountLabel = document.createElement('small');
+                     discountLabel.className = 'text-sm font-normal text-green-600 block';
+                     discountLabel.textContent = '(z rabatem -10%)';
+
+                     dd.appendChild(priceSpan);
+                     dd.appendChild(discountLabel);
+                     row.appendChild(dt);
+                     row.appendChild(dd);
+                     specsList.appendChild(row);
+                }
+
+                visualDetailsLoader.style.display = 'none';
+                visualDetailsError.style.display = 'none';
+                visualDetailsContent.style.display = 'block';
+                printVisualDetailsBtn.disabled = false;
+
+            } catch (error) {
+                console.error("Błąd podczas wczytywania projektu z kodu:", error);
+                visualDetailsLoader.style.display = 'none';
+                visualDetailsError.style.display = 'block';
+                visualDetailsError.querySelector('p').textContent = "Wystąpił nieoczekiwany błąd podczas wczytywania projektu.";
+            }
         }
-        modalOrderSummaryP.innerHTML = summaryHtml;
-    }
-    orderDetailsModalOverlay.classList.add('visible');
-}
-        function closeOrderDetailsModal() { if (!orderDetailsModalOverlay) return; orderDetailsModalOverlay.classList.remove('visible'); if (viewOrderCodeInput) viewOrderCodeInput.value = ''; }
+
+        function closeVisualDetailsModal() {
+            if (!visualDetailsModalOverlay) return;
+            visualDetailsModalOverlay.classList.remove('visible');
+            if (viewOrderCodeInput) viewOrderCodeInput.value = '';
+            currentDetailsForVisualModal = null;
+        }
+
+        async function handlePrintProject(details) {
+            if (!details || details.error) {
+                alert("Brak danych do wydruku. Wczytaj poprawny kod.");
+                return;
+            }
+            
+            const printButton = document.getElementById('printVisualDetailsBtn');
+            if(printButton) {
+                printButton.disabled = true;
+                const span = printButton.querySelector('span');
+                if(span) span.textContent = 'Przygotowuję...';
+            }
+
+            try {
+                await reconfigureFromDetails(details);
+                await new Promise(resolve => setTimeout(resolve, 200));
+
+                const [snapshotDataUrl, priceDetails] = await Promise.all([
+                    generate3dSnapshotFromCurrentModel(),
+                    computePriceDetailed()
+                ]);
+                
+                document.getElementById('print-order-code').textContent = `Kod zamówienia: ${details.code}`;
+                document.getElementById('print-snapshot-img').src = snapshotDataUrl;
+                
+                const specsList = document.getElementById('print-specs-list');
+                specsList.innerHTML = '';
+                
+                const specs = details.isModular ? {
+                    "Rodzaj półki": details.shelfType,
+                    "Wymiary (całkowite)": `${details.totalWidth} x ${details.height} x ${details.depth}`,
+                    "Komponenty (Szer.)": details.komponenty,
+                    "Kolor boków": details.sideColor,
+                    "Kolor półek": details.shelfColor,
+                    "Liczba półek (łącznie)": details.totalShelves,
+                    "Odstęp między półkami": details.gap,
+                } : {
+                    "Rodzaj półki": details.shelfType,
+                    "Wymiary (szer. x wys. x gł.)": `${details.width} cm x ${details.height} cm x ${details.depth} cm`,
+                    "Kolor boków": details.sideColor,
+                    "Kolor półek": details.shelfColor,
+                    "Liczba półek wewn.": `${details.shelfCount} szt.`,
+                    "Odstęp między półkami": details.gapInfo,
+                    "Opcje dodatkowe": details.options
+                };;
+
+                for (const [key, value] of Object.entries(specs)) {
+                    if (value && value !== 'n/d' && value.trim() !== "") {
+                        const dt = document.createElement('dt');
+                        dt.textContent = key;
+                        const dd = document.createElement('dd');
+                        dd.textContent = value;
+                        const item = document.createElement('div');
+                        item.className = 'spec-item';
+                        item.appendChild(dt);
+                        item.appendChild(dd);
+                        specsList.appendChild(item);
+                    }
+                }
+
+                if (priceDetails) {
+                    const dt = document.createElement('dt');
+                    dt.textContent = 'Cena';
+                    const dd = document.createElement('dd');
+                    dd.textContent = `${priceDetails.total.toFixed(2)} zł`;
+                    const item = document.createElement('div');
+                    item.className = 'spec-item price-spec';
+                    item.appendChild(dt);
+                    item.appendChild(dd);
+                    specsList.appendChild(item);
+                }
+                
+                window.print();
+
+            } catch (error) {
+                console.error("Błąd podczas przygotowywania wydruku:", error);
+                alert("Wystąpił błąd podczas generowania podglądu do druku. Spróbuj ponownie.");
+            } finally {
+                if(printButton) {
+                    printButton.disabled = false;
+                    const span = printButton.querySelector('span');
+                    if(span) span.textContent = 'Drukuj projekt';
+                }
+            }
+        }
+
         function updateSwatchDisplay(selectElementId, swatchDisplayId) { const selectElement = document.getElementById(selectElementId); const swatchDisplay = document.getElementById(swatchDisplayId); if (!selectElement || !swatchDisplay) return; const selectedOption = selectElement.options[selectElement.selectedIndex]; const color = selectedOption ? selectedOption.dataset.color : null; if (color) { swatchDisplay.style.backgroundColor = color; swatchDisplay.style.display = 'inline-block'; if (color.toUpperCase() === '#FFFFFF') { swatchDisplay.classList.add('swatch-white-display'); } else { swatchDisplay.classList.remove('swatch-white-display'); } } else { swatchDisplay.style.backgroundColor = '#E5E7EB'; swatchDisplay.classList.remove('swatch-white-display'); } }
         function closeDetailsPanelIfNeeded() { const detailsPanel = document.getElementById('materialSamplesDetails'); if (detailsPanel && detailsPanel.open) { detailsPanel.open = false; } }
         function setActiveMobileIcon(clickedButton) { const mobileIconsContainer = document.getElementById('mobilePanelIcons'); if (!mobileIconsContainer) return; const buttons = mobileIconsContainer.querySelectorAll('button'); buttons.forEach(button => { button.classList.remove('mobile-icon-active'); }); if (clickedButton && buttons.length > 0) { clickedButton.classList.add('mobile-icon-active'); } }
@@ -2694,7 +2911,7 @@ function displayOrderDetailsInModal(details) {
             heightLabel = document.getElementById('heightLabel'); depthLabel = document.getElementById('depthLabel'); sideColorSelect = document.getElementById('sideColor'); shelfColorSelect = document.getElementById('shelfColor'); mugShelfSpecificOptionsContainer = document.getElementById('mugShelfSpecificOptionsContainer'); mugShelfMountOptionsDiv = document.getElementById('mugShelfMountOptions'); mugShelfDividersOptionsDiv = document.getElementById('mugShelfDividersOptions'); dividersTopCheckbox = document.getElementById('dividersTop'); dividersMiddleCheckbox = document.getElementById('dividersMiddle'); dividersBottomCheckbox = document.getElementById('dividersBottom'); configuratorSection = document.getElementById('configuratorSection'); shelfCountSection = document.getElementById('shelfCountSection'); galleryTabsContainer = document.getElementById('galleryTabsContainer'); galleryGridContainer = document.getElementById('galleryGridContainer'); galleryImageArea = document.getElementById('galleryImageArea'); galleryPrevArrow = document.querySelector('.gallery-prev-arrow'); galleryNextArrow = document.querySelector('.gallery-next-arrow');
             mugShelfDividerIconsContainer = document.getElementById('mugShelfDividerIconsContainer'); dividerTooltip = document.getElementById('dividerTooltip'); addTopDividerBtn = document.getElementById('addTopDividerBtn'); addMiddleDividerBtn = document.getElementById('addMiddleDividerBtn'); addBottomDividerBtn = document.getElementById('addBottomDividerBtn'); mobileMugShelfMountPanel = document.getElementById('mobileMugShelfMountPanel'); mobileMountHangingStripBtn = document.getElementById('mobileMountHangingStripBtn'); mobileMountStandingStripBtn = document.getElementById('mobileMountStandingStripBtn');
             desktopDividerDimensionsInfo = document.getElementById('desktopDividerDimensionsInfo');
-            viewOrderCodeInput = document.getElementById('viewOrderCodeInput'); orderDetailsModalOverlay = document.getElementById('orderDetailsModalOverlay'); orderDetailsModal = document.getElementById('orderDetailsModal'); modalCloseButton = orderDetailsModal ? orderDetailsModal.querySelector('.modal-close-button') : null; modalOrderCodeSpan = document.getElementById('modalOrderCode'); modalOrderSummaryP = document.getElementById('modalOrderSummary');
+            viewOrderCodeInput = document.getElementById('viewOrderCodeInput'); 
             imageLightbox = document.getElementById('imageLightbox'); lightboxImage = document.getElementById('lightboxImage'); lightboxCloseBtn = document.getElementById('lightboxClose');
             priceAndActionsContainer = document.getElementById('priceAndActionsContainer');
             priceHint = document.getElementById('priceHint');
@@ -2738,6 +2955,17 @@ function displayOrderDetailsInModal(details) {
             cartSummaryDiscountAmount10 = document.getElementById('cartSummaryDiscountAmount10');
             cartSummaryDiscountLine25 = document.getElementById('cartSummaryDiscountLine25');
             cartSummaryDiscountAmount25 = document.getElementById('cartSummaryDiscountAmount25');
+            // NOWE PRZYPISANIA
+            visualDetailsModalOverlay = document.getElementById('visualDetailsModalOverlay');
+            visualDetailsModal = document.getElementById('visualDetailsModal');
+            visualDetailsModalCloseBtn = document.getElementById('visualDetailsModalCloseBtn');
+            visualDetailsLoader = document.getElementById('visualDetailsLoader');
+            visualDetailsContent = document.getElementById('visualDetailsContent');
+            visualDetailsError = document.getElementById('visualDetailsError');
+            visualDetailsOrderCode = document.getElementById('visualDetailsOrderCode');
+            visualDetailsSnapshot = document.getElementById('visualDetailsSnapshot');
+            visualDetailsSpecsList = document.getElementById('visualDetailsSpecsList');
+            printVisualDetailsBtn = document.getElementById('printVisualDetailsBtn');
 
              if (!shelfContainer || !threeJsCanvasWrapper) { console.error("BŁĄD KRYTYCZNY: Nie znaleziono wszystkich wymaganych elementów DOM. Inicjalizacja przerwana."); return; }
              if(widthSelect) originalWidthOptions = Array.from(widthSelect.options).map(opt => ({value: opt.value, text: opt.text})).filter(opt => opt.value !== ""); if(heightSelect) originalHeightOptions = Array.from(heightSelect.options).map(opt => ({value: opt.value, text: opt.text})).filter(opt => opt.value !== "");
@@ -2793,9 +3021,19 @@ function displayOrderDetailsInModal(details) {
                 updateDividerIconsVisibility(); updateDividerIconActiveStates(); updateMobileMountStripStates(); updateDividerDimensionVisibility();
                 const detailsPanel = document.getElementById('materialSamplesDetails'); if (detailsPanel) { detailsPanel.addEventListener('toggle', function initMaterialSwiperOnToggle() { if (detailsPanel.open && !materialSwiperInstance) { if (typeof Swiper === 'undefined') { console.error("Swiper library not loaded!"); return; } try { materialSwiperInstance = new Swiper('#materialSwiper', { slidesPerView: 1, spaceBetween: 10, navigation: { nextEl: '.material-swiper-button-next', prevEl: '.material-swiper-button-prev' }, observer: true, observeParents: true }); } catch (swiperError) { console.error("Błąd inicjalizacji Swipera:", swiperError); } } else if (detailsPanel.open && materialSwiperInstance) { materialSwiperInstance.update(); } }); document.addEventListener('click', function(event) { if (detailsPanel.open && !detailsPanel.contains(event.target)) { detailsPanel.open = false; } }); } else { console.warn("Element panelu próbek (#materialSamplesDetails) nie znaleziony."); }
                 const formElementsToMonitor = document.querySelectorAll('#shelfType, #width, #customWidthInput, #height, #depth, #shelfCount, #sideColor, #shelfColor, #moduleWidth, #moduleHeight, #connectingShelfWidth'); formElementsToMonitor.forEach(element => { const eventType = (element.type === 'range') ? 'input' : 'change'; element.addEventListener(eventType, closeDetailsPanelIfNeeded); }); const configPanelContainer = document.querySelector('.w-full.md\\:w-1\\/3.space-y-8'); if (configPanelContainer) { configPanelContainer.addEventListener('change', function(event) { if (event.target.matches('#shelfTypeOptions input[type="checkbox"], #mugShelfSpecificOptionsContainer input[type="checkbox"], #mugShelfSpecificOptionsContainer input[type="radio"]')) { closeDetailsPanelIfNeeded(); } }); } else { document.body.addEventListener('change', function(event) { if (event.target.matches('#noTopShelf, #noBottomShelf, #dividersTop, #dividersMiddle, #dividersBottom, input[name="mugShelfMount"]')) { closeDetailsPanelIfNeeded(); } }); }
-                if (viewOrderCodeInput) { viewOrderCodeInput.addEventListener('paste', (event) => { const pastedText = (event.clipboardData || window.clipboardData).getData('text'); if (pastedText && pastedText.trim().length > 0) { setTimeout(() => { const details = parseOrderCode(viewOrderCodeInput.value); displayOrderDetailsInModal(details); viewOrderCodeInput.blur(); }, 50); } }); viewOrderCodeInput.addEventListener('input', (event) => { const code = event.target.value.trim(); if (code.length >= 15 && code.includes('-')) { const details = parseOrderCode(code); if (!details.error || (details.error && code.length > 5)) { displayOrderDetailsInModal(details); viewOrderCodeInput.blur(); } } }); viewOrderCodeInput.addEventListener('keydown', (event) => { if (event.key === 'Enter') { event.preventDefault(); const code = viewOrderCodeInput.value.trim(); if (code) { const details = parseOrderCode(code); displayOrderDetailsInModal(details); viewOrderCodeInput.blur(); } } }); } else { console.error("Nie znaleziono elementu #viewOrderCodeInput."); }
-                if (modalCloseButton) { modalCloseButton.addEventListener('click', closeOrderDetailsModal); } else { console.error("Nie znaleziono przycisku zamykania modala szczegółów zamówienia."); }
-                if (orderDetailsModalOverlay) { orderDetailsModalOverlay.addEventListener('click', (event) => { if (event.target === orderDetailsModalOverlay) { closeOrderDetailsModal(); } }); } else { console.error("Nie znaleziono elementu #orderDetailsModalOverlay."); }
+                
+                // NOWE LISTENERY
+                if (viewOrderCodeInput) { 
+                    const handleCodeInput = (code) => { if (code && code.trim().length > 0) { setTimeout(() => { showVisualDetailsForCode(code); viewOrderCodeInput.blur(); }, 50); } };
+                    viewOrderCodeInput.addEventListener('paste', (event) => { const pastedText = (event.clipboardData || window.clipboardData).getData('text'); handleCodeInput(pastedText); });
+                    viewOrderCodeInput.addEventListener('input', (event) => { const code = event.target.value.trim(); if (code.length >= 15 && code.includes('-')) { handleCodeInput(code); } });
+                    viewOrderCodeInput.addEventListener('keydown', (event) => { if (event.key === 'Enter') { event.preventDefault(); handleCodeInput(viewOrderCodeInput.value); } });
+                }
+
+                if(visualDetailsModalOverlay) visualDetailsModalOverlay.addEventListener('click', (e) => { if (e.target === visualDetailsModalOverlay) closeVisualDetailsModal(); });
+                if(visualDetailsModalCloseBtn) visualDetailsModalCloseBtn.addEventListener('click', closeVisualDetailsModal);
+                if(printVisualDetailsBtn) printVisualDetailsBtn.addEventListener('click', () => { if (currentDetailsForVisualModal) { handlePrintProject(currentDetailsForVisualModal); }});
+
                 if (window.innerWidth < 768) { const reviewBlock = document.getElementById('customerReview')?.parentElement; const summarySection = document.querySelector('.w-full.md\\:w-1\\/3.order-3'); if (reviewBlock && summarySection && reviewBlock.parentElement !== summarySection) { summarySection.appendChild(reviewBlock); } }
                 const mainConfigSection = document.getElementById('configuratorSection'); if (mainConfigSection) { mainConfigSection.addEventListener('change', function(event) { if (event.target.tagName === 'SELECT' && event.target.closest('.p-6.shadow.rounded-lg, .w-full.max-w-lg')) { const parentSection = event.target.closest('.section-highlight-persistent'); if (parentSection) { parentSection.classList.remove('section-highlight-persistent'); } } }); } else { console.error("Nie znaleziono głównego kontenera konfiguracji (#configuratorSection) do nasłuchiwania zmian."); }
                 if (lightboxCloseBtn) { lightboxCloseBtn.addEventListener('click', closeLightbox); }
