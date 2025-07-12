@@ -1879,7 +1879,7 @@
         function closeCartSummaryModal() { if (cartSummaryModalOverlay) { cartSummaryModalOverlay.classList.remove('visible'); const modalBody = document.querySelector('#cartSummaryModal .modal-body'); if (modalBody && modalScrollListener) { modalBody.removeEventListener('scroll', modalScrollListener); modalScrollListener = null; } } }
         function downloadFullCartSummary() { if (cart.length === 0) { alert("Koszyk jest pusty."); return; } const totals = calculateCartTotal(); const allCodes = cart.flatMap(item => Array(item.quantity).fill(item.code)).join('\n'); const date = new Date().toLocaleString('pl-PL'); let content = `PODSUMOWANIE ZAMÓWIENIA\n`; content += `Data wygenerowania: ${date}\n`; content += `========================================\n\n`; cart.forEach((item, index) => { content += `PRODUKT ${index + 1}: ${item.name} (x${item.quantity})\n`; content += `  Wymiary: ${item.summary}\n`; content += `  Kolor boków: ${item.sideColor}\n`; content += `  Kolor półek: ${item.shelfColor}\n`; content += `  Ilość półek wewn.: ${item.shelfCountText}\n`; content += `  Opcje: ${item.extras}\n`; content += `  Cena jedn.: ${item.price.toFixed(2)} zł\n\n`; }); content += `========================================\n`; if (totals.totalDiscount > 0) { content += `SUMA CZĘŚCIOWA: ${totals.subtotal.toFixed(2)} zł\n`; if(totals.discount10 > 0) content += `Rabat na 1. półkę (-10%): -${totals.discount10.toFixed(2)} zł\n`; if(totals.discount25 > 0) content += `Rabat na 2. półkę (-25%): -${totals.discount25.toFixed(2)} zł\n`; } content += `ŁĄCZNIE DO ZAPŁATY: ${totals.total.toFixed(2)} zł\n\n`; content += `KODY ZAMÓWIEŃ DO WKLEJENIA NA ALLEGRO:\n`; content += `${allCodes}\n`; content += `========================================\n`; const blob = new Blob([content], { type: "text/plain;charset=utf-8" }); const url = URL.createObjectURL(blob); const link = document.createElement("a"); link.href = url; const filenameDate = new Date().toISOString().slice(0, 10); link.download = `zamowienie-polki-${filenameDate}.txt`; document.body.appendChild(link); link.click(); document.body.removeChild(link); URL.revokeObjectURL(url); }
         
-        function applyShelfConfigurationFromGallery(galleryIndex, imageIndex) {
+      function applyShelfConfigurationFromGallery(galleryIndex, imageIndex) {
             if (galleryIndex === 3) {
                 shelfTypeSelect.value = 'modular';
                 handleShelfTypeChange(true);
@@ -1906,8 +1906,6 @@
             if (config.type === 'mug_shelf') {
                 if (Array.from(widthSelect.options).some(opt => opt.value === String(config.width))) { widthSelect.value = String(config.width); } else if (widthSelect.options.length > 0) { widthSelect.value = widthSelect.options[0].value; }
                 if (Array.from(heightSelect.options).some(opt => opt.value === String(config.height))) { heightSelect.value = String(config.height); } else if (heightSelect.options.length > 0) { heightSelect.value = heightSelect.options[0].value; }
-                handleMugShelfHeightChange();
-                handleMugShelfWidthChange();
             } else {
                 const widthValueString = String(config.width);
                 const widthOptionExists = Array.from(widthSelect.options).some(opt => opt.value === widthValueString);
@@ -2040,7 +2038,7 @@
         function updateShelfCountOptions() { const height = heightSelect.value; const shelfType = shelfTypeSelect.value; const currentValue = shelfCountSelect.value; let options = { '0': 'brak półek' }; if (!height || height === "" || shelfType === 'mug_shelf' || shelfType === 'modular') { shelfCountSelect.innerHTML = ''; if (!height || height === "") { const option = document.createElement('option'); option.value = '0'; option.textContent = 'brak półek'; shelfCountSelect.appendChild(option); shelfCountSelect.value = '0'; } return; } if (height === "40") options['2'] = '2 półki'; else if (height === "60") { options['2'] = '2 półki'; options['3'] = '3 półki'; } else if (height === "80") { options['2'] = '2 półki'; options['3'] = '3 półki'; options['4'] = '4 półki'; options['5'] = '5 półki'; } shelfCountSelect.innerHTML = ''; for (const value in options) { const option = document.createElement('option'); option.value = value; option.textContent = options[value]; shelfCountSelect.appendChild(option); } if (options.hasOwnProperty(currentValue)) { shelfCountSelect.value = currentValue; } else { shelfCountSelect.value = '0'; } }
         function checkCustomWidth() { const isCustom = widthSelect.value === 'custom'; if(customWidthInput && customWidthDisplay && customWidthFee) { customWidthInput.style.display = isCustom ? 'block' : 'none'; customWidthDisplay.style.display = isCustom ? 'inline' : 'none'; customWidthFee.style.display = isCustom ? 'inline' : 'none'; if (isCustom) { customWidthDisplay.textContent = customWidthInput.value + ' cm'; } } handleDimensionChange(); }
         function handleDimensionChange() { if (shelfTypeSelect.value !== 'mug_shelf') { updateDepthOptions(); updateShelfCountOptions(); } updatePreview(); updateOrderSummary(); }
-        function handleMugShelfHeightChange() { const height = heightSelect.value; if (shelfCountSelect && mugShelfDividersOptionsDiv) { if (height === '60') { shelfCountSelect.innerHTML = '<option value="3">3 półki (stałe)</option>'; shelfCountSelect.value = '3'; mugShelfDividersOptionsDiv.style.display = 'block'; } else if (height === '40') { shelfCountSelect.innerHTML = '<option value="2">2 półki (stałe)</option>'; shelfCountSelect.value = '2'; mugShelfDividersOptionsDiv.style.display = 'block'; } else { shelfCountSelect.innerHTML = '<option value="">-- Wybierz --</option>'; shelfCountSelect.value = ''; mugShelfDividersOptionsDiv.style.display = 'none'; } if(dividersTopCheckbox) dividersTopCheckbox.checked = false; if(dividersMiddleCheckbox) dividersMiddleCheckbox.checked = false; if(dividersBottomCheckbox) dividersBottomCheckbox.checked = false; } updatePreview(); updateOrderSummary(); }
+        function handleMugShelfHeightChange(isLoading = false) { const height = heightSelect.value; if (shelfCountSelect && mugShelfDividersOptionsDiv) { if (height === '60') { shelfCountSelect.innerHTML = '<option value="3">3 półki (stałe)</option>'; shelfCountSelect.value = '3'; mugShelfDividersOptionsDiv.style.display = 'block'; } else if (height === '40') { shelfCountSelect.innerHTML = '<option value="2">2 półki (stałe)</option>'; shelfCountSelect.value = '2'; mugShelfDividersOptionsDiv.style.display = 'block'; } else { shelfCountSelect.innerHTML = '<option value="">-- Wybierz --</option>'; shelfCountSelect.value = ''; mugShelfDividersOptionsDiv.style.display = 'none'; } if (!isLoading) { if(dividersTopCheckbox) dividersTopCheckbox.checked = false; if(dividersMiddleCheckbox) dividersMiddleCheckbox.checked = false; if(dividersBottomCheckbox) dividersBottomCheckbox.checked = false; } } if (!isLoading) { updatePreview(); updateOrderSummary(); } }
         
         function handleShelfTypeChange(isLoading = false) {
              const shelfType = shelfTypeSelect.value;
@@ -2091,7 +2089,7 @@
                      mugShelfMountOptionsDiv.style.display = 'block';
                      mugShelfMountOptionsDiv.innerHTML = `<h3 class="text-md font-semibold mb-2 text-stone-700">Sposób montażu:</h3><label class="flex items-center space-x-2"><input type="radio" name="mugShelfMount" value="hanging" class="rounded-full border-stone-300 text-green-600 shadow-sm focus:ring-green-500" onchange="updatePreview(false); updateOrderSummary(); updateMobileMountStripStates();"> <span>Wisząca</span></label><label class="flex items-center space-x-2 mt-1"><input type="radio" name="mugShelfMount" value="standing" class="rounded-full border-stone-300 text-green-600 shadow-sm focus:ring-green-500" onchange="updatePreview(false); updateOrderSummary(); updateMobileMountStripStates();" checked><span>Stojąca</span></label>`;
                  }
-                 handleMugShelfHeightChange();
+                 handleMugShelfHeightChange(isLoading);
              } else if (shelfType === 'modular') {
                 autoRotateEnabled = false;
                 standardDimensionsContainer.style.display = 'none';
@@ -2138,17 +2136,15 @@
         }
         
     function rebuildAndAnimateIn(config) {
-    // Anuluj poprzednią animację, jeśli była w trakcie
     if (currentAnimationTimeline) {
         currentAnimationTimeline.kill();
     }
 
     const shelfType = config.shelfType;
 
-    // Globalna linia czasu dla całej sekwencji
     const masterTimeline = gsap.timeline({
         onComplete: () => {
-            controls.enabled = true; // Włącz interakcję po zakończeniu animacji
+            controls.enabled = true;
             if (shelfType !== 'mug_shelf' && shelfType !== 'modular') {
                 autoRotateEnabled = true;
             }
@@ -2164,25 +2160,34 @@
 
     // --- FAZA 1: DEKONSTRUKCJA ---
     if (shelfGroup && shelfGroup.children.length > 0) {
-        masterTimeline.to(shelfGroup.children.map(p => p.position), {
-            y: "-=15",
-            duration: 0.6,
-            ease: 'power2.in',
-            stagger: 0.03
-        }, 0);
-        
-        // OPTYMALIZACJA: Zbierz wszystkie materiały i animuj je w jednym kroku
-        const materialsToFade = [];
-        shelfGroup.traverse(child => {
-            if (child.isMesh && child.material) {
-                child.material.transparent = true;
-                materialsToFade.push(child.material);
+        // Użyj nowej animacji "eksplozji" tylko dla półki na kubki
+        if (config.shelfType === 'mug_shelf') {
+            masterTimeline.to(shelfGroup.children.map(p => p.position), {
+                x: () => `random(-30, 30, 5)`,
+                y: () => `random(-20, 20, 5)`,
+                z: () => `random(-30, 30, 5)`,
+                duration: 0.8,
+                ease: 'power2.in',
+                stagger: 0.03
+            }, 0);
+        } else { // Dla pozostałych półek (stojącej, wiszącej) użyj starej animacji "opadania"
+            masterTimeline.to(shelfGroup.children.map(p => p.position), {
+                y: "-=15",
+                duration: 0.6,
+                ease: 'power2.in',
+                stagger: 0.03
+            }, 0);
+            const materialsToFade = [];
+            shelfGroup.traverse(child => {
+                if (child.isMesh && child.material) {
+                    child.material.transparent = true;
+                    materialsToFade.push(child.material);
+                }
+            });
+            if (materialsToFade.length > 0) {
+                masterTimeline.to(materialsToFade, { opacity: 0, duration: 0.5 }, "-=0.4");
             }
-        });
-        if (materialsToFade.length > 0) {
-            masterTimeline.to(materialsToFade, { opacity: 0, duration: 0.5 }, "-=0.4");
         }
-
         masterTimeline.add(() => {
             clearScene();
         });
@@ -2190,17 +2195,15 @@
 
     // --- FAZA 2, 3 i 4: MONTAŻ ---
     if (shelfType === 'modular') {
+        // Ta sekcja pozostaje bez zmian (oryginalna animacja dla półki modułowej)
         masterTimeline.add(() => {
             shelfGroup = buildModularShelf(config);
             if (!shelfGroup || shelfGroup.children.length === 0) { masterTimeline.progress(1); return; }
-
             const box = new THREE.Box3().setFromObject(shelfGroup);
             const center = box.getCenter(new THREE.Vector3());
             shelfGroup.children.forEach(child => child.position.sub(center));
-
             const finalPositions = new Map();
             shelfGroup.traverse(child => { if (child.isMesh) { finalPositions.set(child, child.position.clone()); } });
-
             const leftModule = shelfGroup.getObjectByName("leftModule");
             const rightModule = shelfGroup.getObjectByName("rightModule");
             const connectingShelves = shelfGroup.children.filter(c => c.name.startsWith("connecting_shelf_")).sort((a, b) => b.position.y - a.position.y);
@@ -2214,7 +2217,6 @@
             const rm_top = rightModule.getObjectByName("topPanel");
             const rm_bottom = rightModule.getObjectByName("bottomPanel");
             const rm_shelves = rightModule.children.filter(c => c.name.startsWith("internalShelf_")).sort((a, b) => b.position.y - a.position.y);
-
             const startY = 25;
             shelfGroup.traverse(child => {
                 if (child.isMesh) {
@@ -2223,37 +2225,76 @@
             });
             gsap.set(lm_bottom.position, { x: lm_bottom.position.x - 15 });
             gsap.set(rm_bottom.position, { x: rm_bottom.position.x + 15 });
-
             shelfGroup.position.y = -1;
             shelfGroup.scale.set(1.2, 1.2, 1.2);
             scene.add(shelfGroup);
-
-            const assemblyStartTime = ">+0.1"; // Skrócone opóźnienie
+            const assemblyStartTime = ">+0.1";
             const dropDuration = 0.5;
             const slideDuration = 0.4;
-
             masterTimeline.to([lm_left.position, rm_right.position], { y: (i) => finalPositions.get(i === 0 ? lm_left : rm_right).y, duration: dropDuration, ease: 'power2.out' }, assemblyStartTime);
-            
-            // FIX: Animujemy pozycję Y i X jednocześnie dla wsuwanych podstaw
-            masterTimeline.to([lm_bottom.position, rm_bottom.position], { 
-                x: (i) => finalPositions.get(i === 0 ? lm_bottom : rm_bottom).x,
-                y: finalPositions.get(lm_bottom).y, // Y jest ten sam dla obu podstaw
-                duration: slideDuration, 
-                ease: 'power2.out' 
-            }, `${assemblyStartTime}+=0.1`);
-            
+            masterTimeline.to([lm_bottom.position, rm_bottom.position], { x: (i) => finalPositions.get(i === 0 ? lm_bottom : rm_bottom).x, y: finalPositions.get(lm_bottom).y, duration: slideDuration, ease: 'power2.out' }, `${assemblyStartTime}+=0.1`);
             masterTimeline.to([lm_right.position, rm_left.position], { y: (i) => finalPositions.get(i === 0 ? lm_right : rm_left).y, duration: dropDuration, ease: 'power2.out' }, `${assemblyStartTime}+=0.2`);
-            
             const allModuleShelves = [...lm_shelves, ...rm_shelves];
             masterTimeline.to(allModuleShelves.map(s => s.position), { y: (i) => finalPositions.get(allModuleShelves[i]).y, duration: dropDuration * 0.8, ease: 'power1.out', stagger: 0.03 }, `${assemblyStartTime}+=0.3`);
-            
             masterTimeline.to(connectingShelves.map(s => s.position), { y: (i) => finalPositions.get(connectingShelves[i]).y, duration: dropDuration * 0.8, ease: 'power1.out', stagger: 0.04 }, `${assemblyStartTime}+=0.5`);
-            
             masterTimeline.to([lm_top.position, rm_top.position], { y: (i) => finalPositions.get(i === 0 ? lm_top : rm_top).y, duration: dropDuration, ease: 'bounce.out' }, `${assemblyStartTime}+=0.7`);
-
+            masterTimeline.to(shelfGroup.rotation, { y: `+=${Math.PI * 2}`, duration: 2.0, ease: 'power2.inOut' }, ">+0.5");
+        });
+    } else if (shelfType === 'mug_shelf') {
+        // Nowa animacja "wlatywania" tylko dla półki na kubki
+        masterTimeline.add(() => {
+            shelfGroup = buildShelfModel(config);
+            if (!shelfGroup || shelfGroup.children.length === 0) {
+                masterTimeline.progress(1);
+                return;
+            };
+            const box = new THREE.Box3().setFromObject(shelfGroup);
+            const center = box.getCenter(new THREE.Vector3());
+            shelfGroup.children.forEach(child => {
+                child.position.sub(center);
+            });
+            const finalPositions = new Map();
+            shelfGroup.children.forEach(child => {
+                finalPositions.set(child.name, child.position.clone());
+            });
+            const leftSide = shelfGroup.getObjectByName("leftSide");
+            const rightSide = shelfGroup.getObjectByName("rightSide");
+            const topPanel = shelfGroup.getObjectByName("topPanel");
+            const bottomPanel = shelfGroup.getObjectByName("bottomPanel");
+            const internalShelves = shelfGroup.children.filter(c => c.name.startsWith("internalShelf_")).sort((a, b) => finalPositions.get(a.name).y - finalPositions.get(b.name).y);
+            if (leftSide) gsap.set(leftSide.position, { x: -25 });
+            if (rightSide) gsap.set(rightSide.position, { x: 25 });
+            if (topPanel) gsap.set(topPanel.position, { y: 20 });
+            if (bottomPanel) gsap.set(bottomPanel.position, { y: -20 });
+            internalShelves.forEach(shelf => gsap.set(shelf.position, { z: -30 }));
+            shelfGroup.position.y = -1;
+            shelfGroup.scale.set(1.2, 1.2, 1.2);
+            scene.add(shelfGroup);
+            const assemblyStartTime = ">+0.2";
+            if (leftSide) {
+                masterTimeline.to(leftSide.position, { x: finalPositions.get("leftSide").x, duration: 0.7, ease: 'power2.out' }, assemblyStartTime);
+            }
+            if (bottomPanel) {
+                masterTimeline.to(bottomPanel.position, { y: finalPositions.get("bottomPanel").y, duration: 0.6, ease: 'bounce.out' }, `${assemblyStartTime}+=0.2`);
+            }
+            if (topPanel) {
+                masterTimeline.to(topPanel.position, { y: finalPositions.get("topPanel").y, duration: 0.6, ease: 'bounce.out' }, '<');
+            }
+            if (internalShelves.length > 0) {
+                masterTimeline.to(internalShelves.map(s => s.position), {
+                    z: (i) => finalPositions.get(internalShelves[i].name).z,
+                    duration: 0.5,
+                    ease: 'power2.out',
+                    stagger: 0.1
+                }, `${assemblyStartTime}+=0.4`);
+            }
+            if (rightSide) {
+                masterTimeline.to(rightSide.position, { x: finalPositions.get("rightSide").x, duration: 0.7, ease: 'power2.out' }, `${assemblyStartTime}+=0.7`);
+            }
             masterTimeline.to(shelfGroup.rotation, { y: `+=${Math.PI * 2}`, duration: 2.0, ease: 'power2.inOut' }, ">+0.5");
         });
     } else {
+        // Oryginalna animacja "opadania" dla półek stojących i wiszących
         masterTimeline.add(() => {
             shelfGroup = buildShelfModel(config);
             if (!shelfGroup || shelfGroup.children.length === 0) { masterTimeline.progress(1); return; };
@@ -2267,6 +2308,7 @@
             const topPanel = shelfGroup.getObjectByName("topPanel");
             const bottomPanel = shelfGroup.getObjectByName("bottomPanel");
             const internalShelves = shelfGroup.children.filter(c => c.name.startsWith("internalShelf_")).sort((a, b) => finalPositions.get(a.name).y - finalPositions.get(b.name).y);
+            const dividers = shelfGroup.children.filter(c => c.name.startsWith("divider_"));
             const startY = 20;
             shelfGroup.children.forEach((child, i) => {
                 const finalPos = finalPositions.get(child.name);
@@ -2275,11 +2317,12 @@
             shelfGroup.position.y = -1;
             shelfGroup.scale.set(1.2, 1.2, 1.2);
             scene.add(shelfGroup);
-            const assemblyStartTime = ">+0.1"; // Skrócone opóźnienie
+            const assemblyStartTime = ">+0.1";
             const dropDuration = 0.6;
             if (bottomPanel) { masterTimeline.to(bottomPanel.position, { y: finalPositions.get("bottomPanel").y, duration: dropDuration, ease: 'bounce.out' }, assemblyStartTime); }
             if (leftSide && rightSide) { masterTimeline.to([leftSide.position, rightSide.position], { y: finalPositions.get("leftSide").y, duration: dropDuration, ease: 'power1.out' }, `${assemblyStartTime}+=0.1`); }
             if (internalShelves.length > 0) { masterTimeline.to(internalShelves.map(s => s.position), { y: (i) => finalPositions.get(internalShelves[i].name).y, duration: dropDuration * 0.8, ease: 'power1.out', stagger: 0.05 }, `${assemblyStartTime}+=0.2`); }
+            if (dividers.length > 0) { masterTimeline.to(dividers.map(d => d.position), { y: (i) => finalPositions.get(dividers[i].name).y, duration: dropDuration * 0.8, ease: 'power1.out', stagger: 0.02 }, `${assemblyStartTime}+=0.25`); }
             if (topPanel) { masterTimeline.to(topPanel.position, { y: finalPositions.get("topPanel").y, duration: dropDuration, ease: 'bounce.out' }, `${assemblyStartTime}+=0.3`); }
             masterTimeline.to(shelfGroup.rotation, { y: `+=${Math.PI * 2}`, duration: 2.0, ease: 'power2.inOut' }, ">+0.5");
         });
@@ -2548,6 +2591,7 @@
                 const topPanel = shelfGroup.getObjectByName("topPanel");
                 const bottomPanel = shelfGroup.getObjectByName("bottomPanel");
                 const internalShelves = shelfGroup.children.filter(child => child.name.startsWith("internalShelf_"));
+                internalShelves.sort((a, b) => b.position.y - a.position.y);
 
                 if (topPanel && bottomPanel && internalShelves.length > 0) {
                     const innerWidthForDividers = width - 2 * thickness; const dividerThicknessThreeJs = thickness; let levels = [];
