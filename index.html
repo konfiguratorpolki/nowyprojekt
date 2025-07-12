@@ -3082,10 +3082,11 @@
                 }
 
                 if (priceDetails) {
+                    const discountedPrice = priceDetails.total * 0.90;
                     const dt = document.createElement('dt');
                     dt.textContent = 'Cena';
                     const dd = document.createElement('dd');
-                    dd.textContent = `${priceDetails.total.toFixed(2)} zł`;
+                    dd.innerHTML = `${discountedPrice.toFixed(2)} zł <small style="display: block; font-weight: normal; color: #15803d; font-size: 0.9em;">(z rabatem -10%)</small>`;
                     const item = document.createElement('div');
                     item.className = 'spec-item price-spec';
                     item.appendChild(dt);
