@@ -2160,22 +2160,21 @@
 
     // --- FAZA 1: DEKONSTRUKCJA ---
     if (shelfGroup && shelfGroup.children.length > 0) {
-        // Użyj nowej animacji "eksplozji" tylko dla półki na kubki
         if (config.shelfType === 'mug_shelf') {
             masterTimeline.to(shelfGroup.children.map(p => p.position), {
-                x: () => `random(-30, 30, 5)`,
-                y: () => `random(-20, 20, 5)`,
-                z: () => `random(-30, 30, 5)`,
-                duration: 0.8,
-                ease: 'power2.in',
-                stagger: 0.03
-            }, 0);
-        } else { // Dla pozostałych półek (stojącej, wiszącej) użyj starej animacji "opadania"
-            masterTimeline.to(shelfGroup.children.map(p => p.position), {
-                y: "-=15",
+                x: () => `random(-10, 10, 2)`,
+                y: () => `random(-10, 10, 2)`,
+                z: () => `random(-10, 10, 2)`,
                 duration: 0.6,
-                ease: 'power2.in',
-                stagger: 0.03
+                ease: 'power2.inOut',
+                stagger: 0.02
+            }, 0);
+        } else {
+            masterTimeline.to(shelfGroup.children.map(p => p.position), {
+                y: "-=10",
+                duration: 0.5,
+                ease: 'power2.inOut',
+                stagger: 0.02
             }, 0);
             const materialsToFade = [];
             shelfGroup.traverse(child => {
@@ -2185,7 +2184,7 @@
                 }
             });
             if (materialsToFade.length > 0) {
-                masterTimeline.to(materialsToFade, { opacity: 0, duration: 0.5 }, "-=0.4");
+                masterTimeline.to(materialsToFade, { opacity: 0, duration: 0.4 }, "-=0.3");
             }
         }
         masterTimeline.add(() => {
@@ -2195,7 +2194,6 @@
 
     // --- FAZA 2, 3 i 4: MONTAŻ ---
     if (shelfType === 'modular') {
-        // Ta sekcja pozostaje bez zmian (oryginalna animacja dla półki modułowej)
         masterTimeline.add(() => {
             shelfGroup = buildModularShelf(config);
             if (!shelfGroup || shelfGroup.children.length === 0) { masterTimeline.progress(1); return; }
@@ -2225,8 +2223,23 @@
             });
             gsap.set(lm_bottom.position, { x: lm_bottom.position.x - 15 });
             gsap.set(rm_bottom.position, { x: rm_bottom.position.x + 15 });
+            
+            // --- MODYFIKACJA START: "CIUT ZMNIEJSZENIE" ---
+            const modelBox = new THREE.Box3().setFromObject(shelfGroup);
+            const modelSize = modelBox.getSize(new THREE.Vector3());
+            const maxDimension = Math.max(modelSize.x, modelSize.y, modelSize.z);
+            
+            // Zmniejszono desiredViewSize i/lub mnożnik
+            const desiredViewSize = 14; // Było 15, teraz 14 (lub mniej, np. 12)
+            let targetScale = (desiredViewSize / maxDimension) * 2.2; // Było 2.5, teraz 2.2 (lub mniej, np. 1.8)
+            
+            // Możesz też zmniejszyć górne ograniczenie Math.max, jeśli poprzednio było zbyt wysokie
+            targetScale = Math.min(Math.max(targetScale, 0.5), 3.0); // Było 3.5, teraz 3.0 (lub mniej, np. 2.5)
+            
+            shelfGroup.scale.set(targetScale, targetScale, targetScale);
+            // --- MODYFIKACJA KONIEC ---
+
             shelfGroup.position.y = -1;
-            shelfGroup.scale.set(1.2, 1.2, 1.2);
             scene.add(shelfGroup);
             const assemblyStartTime = ">+0.1";
             const dropDuration = 0.5;
@@ -2237,11 +2250,10 @@
             const allModuleShelves = [...lm_shelves, ...rm_shelves];
             masterTimeline.to(allModuleShelves.map(s => s.position), { y: (i) => finalPositions.get(allModuleShelves[i]).y, duration: dropDuration * 0.8, ease: 'power1.out', stagger: 0.03 }, `${assemblyStartTime}+=0.3`);
             masterTimeline.to(connectingShelves.map(s => s.position), { y: (i) => finalPositions.get(connectingShelves[i]).y, duration: dropDuration * 0.8, ease: 'power1.out', stagger: 0.04 }, `${assemblyStartTime}+=0.5`);
-            masterTimeline.to([lm_top.position, rm_top.position], { y: (i) => finalPositions.get(i === 0 ? lm_top : rm_top).y, duration: dropDuration, ease: 'bounce.out' }, `${assemblyStartTime}+=0.7`);
+            masterTimeline.to([lm_top.position, rm_top.position], { y: (i) => finalPositions.get(i === 0 ? lm_top : rm_top).y, duration: dropDuration, ease: 'power2.out' }, `${assemblyStartTime}+=0.7`);
             masterTimeline.to(shelfGroup.rotation, { y: `+=${Math.PI * 2}`, duration: 2.0, ease: 'power2.inOut' }, ">+0.5");
         });
     } else if (shelfType === 'mug_shelf') {
-        // Nowa animacja "wlatywania" tylko dla półki na kubki
         masterTimeline.add(() => {
             shelfGroup = buildShelfModel(config);
             if (!shelfGroup || shelfGroup.children.length === 0) {
@@ -2262,39 +2274,38 @@
             const topPanel = shelfGroup.getObjectByName("topPanel");
             const bottomPanel = shelfGroup.getObjectByName("bottomPanel");
             const internalShelves = shelfGroup.children.filter(c => c.name.startsWith("internalShelf_")).sort((a, b) => finalPositions.get(a.name).y - finalPositions.get(b.name).y);
-            if (leftSide) gsap.set(leftSide.position, { x: -25 });
-            if (rightSide) gsap.set(rightSide.position, { x: 25 });
-            if (topPanel) gsap.set(topPanel.position, { y: 20 });
-            if (bottomPanel) gsap.set(bottomPanel.position, { y: -20 });
-            internalShelves.forEach(shelf => gsap.set(shelf.position, { z: -30 }));
+            if (leftSide) gsap.set(leftSide.position, { x: -20 });
+            if (rightSide) gsap.set(rightSide.position, { x: 20 });
+            if (topPanel) gsap.set(topPanel.position, { y: 15 });
+            if (bottomPanel) gsap.set(bottomPanel.position, { y: -15 });
+            internalShelves.forEach(shelf => gsap.set(shelf.position, { z: -20 }));
             shelfGroup.position.y = -1;
-            shelfGroup.scale.set(1.2, 1.2, 1.2);
+            shelfGroup.scale.set(1.1, 1.1, 1.1);
             scene.add(shelfGroup);
-            const assemblyStartTime = ">+0.2";
+            const assemblyStartTime = ">+0.1";
             if (leftSide) {
-                masterTimeline.to(leftSide.position, { x: finalPositions.get("leftSide").x, duration: 0.7, ease: 'power2.out' }, assemblyStartTime);
+                masterTimeline.to(leftSide.position, { x: finalPositions.get("leftSide").x, duration: 0.6, ease: 'power2.inOut' }, assemblyStartTime);
             }
             if (bottomPanel) {
-                masterTimeline.to(bottomPanel.position, { y: finalPositions.get("bottomPanel").y, duration: 0.6, ease: 'bounce.out' }, `${assemblyStartTime}+=0.2`);
+                masterTimeline.to(bottomPanel.position, { y: finalPositions.get("bottomPanel").y, duration: 0.5, ease: 'power2.inOut' }, `${assemblyStartTime}+=0.1`);
             }
             if (topPanel) {
-                masterTimeline.to(topPanel.position, { y: finalPositions.get("topPanel").y, duration: 0.6, ease: 'bounce.out' }, '<');
+                masterTimeline.to(topPanel.position, { y: finalPositions.get("topPanel").y, duration: 0.5, ease: 'power2.inOut' }, '<');
             }
             if (internalShelves.length > 0) {
                 masterTimeline.to(internalShelves.map(s => s.position), {
                     z: (i) => finalPositions.get(internalShelves[i].name).z,
-                    duration: 0.5,
-                    ease: 'power2.out',
-                    stagger: 0.1
-                }, `${assemblyStartTime}+=0.4`);
+                    duration: 0.4,
+                    ease: 'power2.inOut',
+                    stagger: 0.05
+                }, `${assemblyStartTime}+=0.3`);
             }
             if (rightSide) {
-                masterTimeline.to(rightSide.position, { x: finalPositions.get("rightSide").x, duration: 0.7, ease: 'power2.out' }, `${assemblyStartTime}+=0.7`);
+                masterTimeline.to(rightSide.position, { x: finalPositions.get("rightSide").x, duration: 0.6, ease: 'power2.inOut' }, `${assemblyStartTime}+=0.6`);
             }
-            masterTimeline.to(shelfGroup.rotation, { y: `+=${Math.PI * 2}`, duration: 2.0, ease: 'power2.inOut' }, ">+0.5");
+            masterTimeline.to(shelfGroup.rotation, { y: `+=${Math.PI * 2}`, duration: 1.8, ease: 'power2.inOut' }, ">+0.4");
         });
     } else {
-        // Oryginalna animacja "opadania" dla półek stojących i wiszących
         masterTimeline.add(() => {
             shelfGroup = buildShelfModel(config);
             if (!shelfGroup || shelfGroup.children.length === 0) { masterTimeline.progress(1); return; };
@@ -2309,22 +2320,22 @@
             const bottomPanel = shelfGroup.getObjectByName("bottomPanel");
             const internalShelves = shelfGroup.children.filter(c => c.name.startsWith("internalShelf_")).sort((a, b) => finalPositions.get(a.name).y - finalPositions.get(b.name).y);
             const dividers = shelfGroup.children.filter(c => c.name.startsWith("divider_"));
-            const startY = 20;
+            const startY = 15;
             shelfGroup.children.forEach((child, i) => {
                 const finalPos = finalPositions.get(child.name);
-                gsap.set(child.position, { x: finalPos.x, z: finalPos.z, y: startY + i * 0.1 });
+                gsap.set(child.position, { x: finalPos.x, z: finalPos.z, y: startY + i * 0.05 });
             });
             shelfGroup.position.y = -1;
-            shelfGroup.scale.set(1.2, 1.2, 1.2);
+            shelfGroup.scale.set(1.1, 1.1, 1.1);
             scene.add(shelfGroup);
             const assemblyStartTime = ">+0.1";
-            const dropDuration = 0.6;
-            if (bottomPanel) { masterTimeline.to(bottomPanel.position, { y: finalPositions.get("bottomPanel").y, duration: dropDuration, ease: 'bounce.out' }, assemblyStartTime); }
-            if (leftSide && rightSide) { masterTimeline.to([leftSide.position, rightSide.position], { y: finalPositions.get("leftSide").y, duration: dropDuration, ease: 'power1.out' }, `${assemblyStartTime}+=0.1`); }
-            if (internalShelves.length > 0) { masterTimeline.to(internalShelves.map(s => s.position), { y: (i) => finalPositions.get(internalShelves[i].name).y, duration: dropDuration * 0.8, ease: 'power1.out', stagger: 0.05 }, `${assemblyStartTime}+=0.2`); }
-            if (dividers.length > 0) { masterTimeline.to(dividers.map(d => d.position), { y: (i) => finalPositions.get(dividers[i].name).y, duration: dropDuration * 0.8, ease: 'power1.out', stagger: 0.02 }, `${assemblyStartTime}+=0.25`); }
-            if (topPanel) { masterTimeline.to(topPanel.position, { y: finalPositions.get("topPanel").y, duration: dropDuration, ease: 'bounce.out' }, `${assemblyStartTime}+=0.3`); }
-            masterTimeline.to(shelfGroup.rotation, { y: `+=${Math.PI * 2}`, duration: 2.0, ease: 'power2.inOut' }, ">+0.5");
+            const dropDuration = 0.5;
+            if (bottomPanel) { masterTimeline.to(bottomPanel.position, { y: finalPositions.get("bottomPanel").y, duration: dropDuration, ease: 'power2.out' }, assemblyStartTime); }
+            if (leftSide && rightSide) { masterTimeline.to([leftSide.position, rightSide.position], { y: finalPositions.get("leftSide").y, duration: dropDuration, ease: 'power2.out' }, `${assemblyStartTime}+=0.05`); }
+            if (internalShelves.length > 0) { masterTimeline.to(internalShelves.map(s => s.position), { y: (i) => finalPositions.get(internalShelves[i].name).y, duration: dropDuration * 0.7, ease: 'power2.out', stagger: 0.03 }, `${assemblyStartTime}+=0.1`); }
+            if (dividers.length > 0) { masterTimeline.to(dividers.map(d => d.position), { y: (i) => finalPositions.get(dividers[i].name).y, duration: dropDuration * 0.7, ease: 'power2.out', stagger: 0.01 }, `${assemblyStartTime}+=0.15`); }
+            if (topPanel) { masterTimeline.to(topPanel.position, { y: finalPositions.get("topPanel").y, duration: dropDuration, ease: 'power2.out' }, `${assemblyStartTime}+=0.2`); }
+            masterTimeline.to(shelfGroup.rotation, { y: `+=${Math.PI * 2}`, duration: 1.8, ease: 'power2.inOut' }, ">+0.4");
         });
     }
 }
