@@ -2049,6 +2049,13 @@
              const shelfType = shelfTypeSelect.value;
              
              shelfTypeOptionsDiv.style.display = 'none';
+             
+             // --- DODANY KOD ---
+             // Całkowite wyczyszczenie kontenera z opcjami dodatkowymi
+             // zapobiega przenoszeniu stanu (np. zaznaczonego checkboxa)
+             shelfTypeOptionsDiv.innerHTML = '';
+             // --- KONIEC DODANEGO KODU ---
+             
              mugShelfSpecificOptionsContainer.style.display = 'none';
              modularShelfOptionsContainer.style.display = 'none';
              standardDimensionsContainer.style.display = 'block';
