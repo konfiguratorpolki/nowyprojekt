@@ -42,6 +42,8 @@
         }
     }
 
+
+
     /* --- Style dla PŁYWAJĄCEGO przycisku "Zobacz kody" --- */
     #scrollToCodesBtn {
         position: absolute;
@@ -885,6 +887,44 @@
     #stickyFooterBar button svg { width: 1.5rem; height: 1.5rem; margin-bottom: 0.125rem; pointer-events: none; }
     @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     .animate-spin-slow { animation: spin 4s linear infinite; }
+ @keyframes breathe-border {
+    0% {
+        border-color: rgba(22, 163, 74, 0.2);
+    }
+    50% {
+        border-color: rgba(22, 163, 74, 1);
+    }
+    100% {
+        border-color: rgba(22, 163, 74, 0.2);
+    }
+}
+
+.requires-attention {
+    border: 2px solid transparent;
+    animation: breathe-border 2s infinite ease-in-out;
+}
+
+.requires-attention::before {
+    content: none;
+}
+
+@keyframes summary-glow {
+    0% {
+        box-shadow: 0 0 4px 0px rgba(22, 163, 74, 0.15);
+    }
+    50% {
+        box-shadow: 0 0 10px 3px rgba(22, 163, 74, 0.3);
+    }
+    100% {
+        box-shadow: 0 0 4px 0px rgba(22, 163, 74, 0.15);
+    }
+}
+
+.summary-highlight {
+    border-radius: 0.5rem;
+    animation: summary-glow 3s infinite ease-in-out;
+}
+
     @keyframes section-highlight-anim { 0% { background-color: rgba(22, 163, 74, 0) !important; } 50% { background-color: rgba(22, 163, 74, 0.15) !important; } 100% { background-color: rgba(22, 163, 74, 0) !important; } }
     .section-highlight-flash { animation: section-highlight-anim 0.75s ease-in-out; }
     .section-highlight-persistent { background-color: rgba(22, 163, 74, 0.08) !important; transition: background-color 0.3s ease-out; border-radius: 0.5rem; }
@@ -1713,7 +1753,7 @@
            </div>
         </div>
 <div class="w-full md:w-1/3 p-6 bg-stone-50 border border-stone-200 rounded-lg space-y-6 order-3 md:order-3">
-         <div class="order-summary bg-white shadow-lg rounded-lg p-6 transition-shadow duration-200 hover:shadow-xl">
+         <div id="orderSummarySection" class="order-summary bg-white shadow-lg rounded-lg p-6 transition-shadow duration-200 hover:shadow-xl">
             <div class="order-summary-header">
                 <h2 class="text-xl font-semibold text-stone-800">Podsumowanie</h2>
             </div>
@@ -2811,68 +2851,286 @@
         }
         if (widthVal == 84) { if (dividersTopChecked) dividerFee += 33; if (dividersMiddleChecked) dividerFee += 33; if (dividersBottomChecked) dividerFee += 33; } else { let feePerDividerRow = 0; if (widthVal == 44) feePerDividerRow = 27; else if (widthVal == 60) feePerDividerRow = 40; if (feePerDividerRow > 0) { if (dividersTopChecked) dividerFee += feePerDividerRow; if (dividersMiddleChecked) dividerFee += feePerDividerRow; if (dividersBottomChecked) dividerFee += feePerDividerRow; } } 
     } else { let baseWidthKey; const isCustomWidth = widthSelect.value === 'custom'; if (isCustomWidth) { if (isNaN(widthVal) || widthVal < 35 || widthVal > 59) return null; baseWidthKey = widthVal < 39 ? "34" : widthVal < 47 ? "44" : widthVal < 54 ? "50" : "60"; extraFee = 50; } else { baseWidthKey = String(widthVal); } if (pricing[baseWidthKey]?.[heightVal]?.[depthVal]?.[shelfCountVal] !== undefined) { basePrice = pricing[baseWidthKey][heightVal][depthVal][shelfCountVal]; } else { return null; } if (document.getElementById('noTopShelf')?.checked) deduction += 10; if (shelfType === 'standing' && document.getElementById('noBottomShelf')?.checked) deduction += 10; } if (basePrice === null) return null; const totalPrice = basePrice + extraFee + dividerFee - deduction; return { base: basePrice, extra: extraFee, divider: dividerFee, deduction: deduction, total: Math.max(50, totalPrice) }; }
-        function updateOrderSummary() { const shelfColorSummaryLabel = document.getElementById('shelfColorSummaryLabel'); const currentShelfType = shelfTypeSelect.value; if (shelfColorSummaryLabel) { if (currentShelfType === 'mug_shelf') shelfColorSummaryLabel.textContent = 'Kolor półek i przegródek:'; else shelfColorSummaryLabel.textContent = 'Kolor półek i podstaw:'; } document.getElementById("shelfTypeSummary").textContent = currentShelfType && shelfTypeSelect.selectedIndex > 0 ? shelfTypeSelect.options[shelfTypeSelect.selectedIndex].text : "-- Wybierz --"; const mugShelfMountItem = document.getElementById("mugShelfMountSummaryItem"); const mugShelfMountSummary = document.getElementById("mugShelfMountSummary"); if (currentShelfType === 'mug_shelf') { const selectedMountRadio = document.querySelector('input[name="mugShelfMount"]:checked'); mugShelfMountSummary.textContent = selectedMountRadio ? (selectedMountRadio.value === 'hanging' ? 'Wisząca' : 'Stojąca') : 'nie wybrano'; mugShelfMountItem.style.display = 'flex'; } else { mugShelfMountItem.style.display = 'none'; } const widthSummaryLabel = document.getElementById('widthSummaryLabel'); const heightSummaryLabel = document.getElementById('heightSummaryLabel'); const connectingWidthSummaryLabel = document.getElementById('connectingWidthSummaryLabel').parentElement; const shelfCountSummaryLabel = document.getElementById('shelfCountSummaryLabel'); if (currentShelfType === 'modular') {
-                const moduleW = parseInt(moduleWidthSelect.value);
-                const moduleH = parseInt(moduleHeightSelect.value);
-                const connectW = parseInt(connectingShelfWidthSelect.value);
-                const depth = parseInt(depthSelect.value);
+        function updateSectionHighlights() {
+            const sections = [shelfTypeSectionAnchor, dimensionSectionAnchor, colorSectionAnchor, shelfCountSection];
+            const mugParent = mugShelfSpecificOptionsContainer ? mugShelfSpecificOptionsContainer.closest('.p-6.shadow.rounded-lg') : null;
+            if(mugParent && !sections.includes(mugParent)) sections.push(mugParent);
 
-                let totalWidth = null;
-                let totalShelves = null;
-                
-                if (!isNaN(moduleW) && !isNaN(moduleH) && !isNaN(connectW)) {
-                    let shelfNum = 3;
-                    if (moduleH === 40) shelfNum = 2;
-                    if (moduleH === 80) shelfNum = 5;
-                    
-                    totalShelves = (2 * (shelfNum + 2)) + (shelfNum + 1); 
-                    totalWidth = (moduleW * 2) + connectW;
+            sections.forEach(sec => {
+                if (sec) sec.classList.remove('requires-attention');
+            });
+
+            // Krok 1: Sprawdź rodzaj półki
+            if (!shelfTypeSelect.value) {
+                shelfTypeSectionAnchor.classList.add('requires-attention');
+                return;
+            }
+
+            const shelfType = shelfTypeSelect.value;
+
+            // Krok 2: Sprawdź wymiary
+            let dimensionsComplete = false;
+            if (shelfType === 'modular') {
+                if (moduleWidthSelect.value && moduleHeightSelect.value && connectingShelfWidthSelect.value) {
+                    dimensionsComplete = true;
                 }
-
-                widthSummaryLabel.textContent = "Szer. całkowita:";
-                document.getElementById("widthSummary").textContent = totalWidth ? `${totalWidth} cm` : "--";
-
-                heightSummaryLabel.textContent = "Wysokość:";
-                document.getElementById("heightSummary").textContent = moduleH ? `${moduleH} cm` : "--";
-                
-                document.getElementById("depthSummary").parentElement.style.display = 'flex';
-                document.getElementById("depthSummary").textContent = depth ? `${depth} cm` : "--";
-
-                connectingWidthSummaryLabel.style.display = 'flex';
-                const connectingLabelSpan = document.getElementById("connectingWidthSummaryLabel");
-                if (connectingLabelSpan) connectingLabelSpan.textContent = "Komponenty (Szer.):";
-                document.getElementById("connectingWidthSummary").textContent = (moduleW && connectW) ? `${moduleW}cm + ${connectW}cm + ${moduleW}cm` : "--";
-
-                shelfCountSummaryLabel.textContent = "Ilość półek (łącznie):";
-                document.getElementById("shelfCountSummary").textContent = totalShelves ? `${totalShelves} szt.` : "--";
-                
-                updateModularInfoText();
-                
+            } else if (shelfType === 'mug_shelf') {
+                if (widthSelect.value && heightSelect.value) {
+                    dimensionsComplete = true;
+                }
             } else {
-                widthSummaryLabel.textContent = "Szerokość:";
-                heightSummaryLabel.textContent = "Wysokość:";
-                shelfCountSummaryLabel.textContent = "Ilość półek wewn.:";
-                connectingWidthSummaryLabel.style.display = 'none';
-                document.getElementById("depthSummary").parentElement.style.display = 'flex';
-                document.getElementById("widthSummary").textContent = !isNaN(getCurrentWidth()) ? getCurrentWidth() + " cm" : "--";
-                document.getElementById("heightSummary").textContent = heightSelect.value && heightSelect.value !== "" ? heightSelect.value + " cm" : "--";
-                document.getElementById("shelfCountSummary").textContent = shelfCountSelect.value !== "" ? (shelfCountSelect.options[shelfCountSelect.selectedIndex]?.text || '--') : '-- Wybierz --';
-                if(viewerInfoText) viewerInfoText.style.display = 'block';
-                if(modularInfoText) modularInfoText.style.display = 'none';
-            } document.getElementById("depthSummary").textContent = depthSelect.value && depthSelect.value !== "" ? depthSelect.value + " cm" : "--"; document.getElementById("sideColorSummary").textContent = sideColorSelect.value && sideColorSelect.selectedIndex > 0 ? sideColorSelect.options[sideColorSelect.selectedIndex].text : "nie wybrano"; document.getElementById("shelfColorSummary").textContent = shelfColorSelect.value && shelfColorSelect.selectedIndex > 0 ? shelfColorSelect.options[shelfColorSelect.selectedIndex].text : "nie wybrano"; const h = parseFloat(heightSelect.value); const sc = parseInt(shelfCountSelect.value); const t = 1.8; let gT = "n/d"; if (currentShelfType === 'modular') { const moduleH = parseInt(moduleHeightSelect.value); if (!isNaN(moduleH)) { let shelfNum = 3; if (moduleH === 40) shelfNum = 2; if (moduleH === 80) shelfNum = 5; const availableHeight = moduleH - 2 * t; const gap = (availableHeight - shelfNum * t) / (shelfNum + 1); gT = `${gap.toFixed(1)} cm`; } } else if (!isNaN(h) && h > 0 && !isNaN(sc) && sc >= 0) { if (currentShelfType === 'mug_shelf') { const mugGapHeight = h - 2 * t; const mugGapFreeSpace = mugGapHeight - sc * t; const mugGapsCount = sc + 1; if (mugGapFreeSpace >= 0 && mugGapsCount > 0) { const calculatedGap = mugGapFreeSpace / mugGapsCount; gT = `ok. ${calculatedGap > 0 ? calculatedGap.toFixed(1) : '0.0'} cm`; } else { gT = "za mało miejsca"; } } else {
-        const isTopShelf = !document.getElementById('noTopShelf')?.checked;
-        const isBottomShelf = currentShelfType !== 'standing' || !document.getElementById('noBottomShelf')?.checked;
-        const availableHeight = h - 2 * t;
-        const totalShelvesThickness = sc * t;
-        if (availableHeight >= totalShelvesThickness && (sc + 1) > 0) {
-            const freeSpace = availableHeight - totalShelvesThickness;
-            const gapsCount = sc + 1;
-            const calculatedGap = freeSpace / gapsCount;
-            gT = `${calculatedGap.toFixed(1)} cm`;
-        } else {
-            gT = "za mało miejsca";
+                if (!isNaN(getCurrentWidth()) && heightSelect.value && depthSelect.value) {
+                    dimensionsComplete = true;
+                }
+            }
+
+            if (!dimensionsComplete) {
+                dimensionSectionAnchor.classList.add('requires-attention');
+                return;
+            }
+
+            // Krok 3: Sprawdź opcje specyficzne dla danego typu (przegródki lub liczba półek)
+            if (shelfType === 'mug_shelf') {
+                const dividersSelected = dividersTopCheckbox?.checked || dividersMiddleCheckbox?.checked || dividersBottomCheckbox?.checked;
+                if (!dividersSelected) {
+                    // Opcje przegródek są w pierwszym oknie, więc je podświetlamy
+                    shelfTypeSectionAnchor.classList.add('requires-attention');
+                    return;
+                }
+            } else if (shelfType === 'standing' || shelfType === 'hanging') {
+                if (!shelfCountSelect.value || shelfCountSelect.value === "0") {
+                    shelfCountSection.classList.add('requires-attention');
+                    return;
+                }
+            }
+
+            // Krok 4: Sprawdź kolory
+            if (!sideColorSelect.value || !shelfColorSelect.value) {
+                colorSectionAnchor.classList.add('requires-attention');
+                return;
+            }
         }
-    } } document.getElementById("gapSummary").textContent = gT; document.getElementById("gapSummaryDisplay").textContent = gT; const gapSummaryLi = document.getElementById("gapSummary")?.parentElement; const gapDisplayP = document.getElementById("gapDisplay"); if (currentShelfType === 'mug_shelf' || currentShelfType === 'modular') { if (gapSummaryLi) gapSummaryLi.style.display = 'none'; if (gapDisplayP) gapDisplayP.style.display = 'none'; } else { if (gapSummaryLi) gapSummaryLi.style.display = 'flex'; if (gapDisplayP) gapDisplayP.style.display = 'block'; } const o = []; if (currentShelfType === 'mug_shelf') { const selectedMount = document.querySelector('input[name="mugShelfMount"]:checked'); if (selectedMount) o.push(selectedMount.value === 'hanging' ? 'Montaż wiszący' : 'Montaż stojący'); const dividersSelected = []; if (dividersTopCheckbox?.checked) dividersSelected.push("góra"); if (dividersMiddleCheckbox?.checked) dividersSelected.push("środek"); if (dividersBottomCheckbox?.checked) dividersSelected.push("dół"); if (dividersSelected.length > 0) o.push("Przegródki: " + dividersSelected.join(", ")); } else if (currentShelfType !== 'modular') { if (document.getElementById("noTopShelf")?.checked) o.push("bez górnej półki"); const isStandingType = (currentShelfType === "standing"); if (isStandingType && document.getElementById("noBottomShelf")?.checked) o.push("bez dolnej półki (podstawy)"); } document.getElementById("extraOptionsSummary").textContent = o.length ? o.join(" / ") : "standardowa"; if (mobileIconDetailsType) { if (shelfTypeSelect.selectedIndex > 0) { mobileIconDetailsType.textContent = shelfTypeSelect.options[shelfTypeSelect.selectedIndex].text.split(' ')[0]; mobileIconDetailsType.classList.remove('mobile-icon-prompt'); } else { mobileIconDetailsType.textContent = 'wybierz'; mobileIconDetailsType.classList.add('mobile-icon-prompt'); } } if (mobileIconDetailsDimensions) { if (!isNaN(getCurrentWidth()) && heightSelect.value && depthSelect.value) { mobileIconDetailsDimensions.textContent = `${getCurrentWidth()}x${heightSelect.value}x${depthSelect.value}`; mobileIconDetailsDimensions.classList.remove('mobile-icon-prompt'); } else { mobileIconDetailsDimensions.textContent = 'wybierz'; mobileIconDetailsDimensions.classList.add('mobile-icon-prompt'); } } if (mobileIconDetailsColors) { mobileIconDetailsColors.innerHTML = ''; const sideColorOption = sideColorSelect.options[sideColorSelect.selectedIndex]; const shelfColorOption = shelfColorSelect.options[shelfColorSelect.selectedIndex]; if (sideColorOption && sideColorOption.value && shelfColorOption && shelfColorOption.value) { const sideSwatch = document.createElement('span'); sideSwatch.className = 'mobile-color-swatch'; sideSwatch.style.backgroundColor = sideColorOption.dataset.color || '#ccc'; const shelfSwatch = document.createElement('span'); shelfSwatch.className = 'mobile-color-swatch'; shelfSwatch.style.backgroundColor = shelfColorOption.dataset.color || '#ccc'; mobileIconDetailsColors.appendChild(sideSwatch); mobileIconDetailsColors.appendChild(shelfSwatch); mobileIconDetailsColors.classList.remove('mobile-icon-prompt'); } else { mobileIconDetailsColors.textContent = 'wybierz'; mobileIconDetailsColors.classList.add('mobile-icon-prompt'); } } if (mobileIconDetailsShelves) { if (shelfCountSelect.value !== "" && shelfCountSelect.options[shelfCountSelect.selectedIndex]) { const selectedText = shelfCountSelect.options[shelfCountSelect.selectedIndex].text; mobileIconDetailsShelves.textContent = selectedText; if (shelfCountSelect.value === '0') { mobileIconDetailsShelves.classList.add('mobile-icon-prompt'); } else { mobileIconDetailsShelves.classList.remove('mobile-icon-prompt'); } } else { mobileIconDetailsShelves.textContent = 'wybierz'; mobileIconDetailsShelves.classList.add('mobile-icon-prompt'); } } const orderCode = generateOrderCode(); const isComplete = !!orderCode; if (isComplete) { const pD = computePriceDetailed(); if (pD !== null) { priceAndActionsContainer.style.display = 'block'; priceHint.style.display = 'none'; priceSummary.textContent = pD.total + " zł"; if (desktopCartContainer) { desktopCartContainer.classList.remove('animate-pulse-bg'); void desktopCartContainer.offsetWidth; desktopCartContainer.classList.add('animate-pulse-bg'); } if (mobile3dActionsContainer) mobile3dActionsContainer.style.display = 'flex'; if (mobilePriceValue) mobilePriceValue.textContent = pD.total + " zł"; } else { priceAndActionsContainer.style.display = 'none'; priceHint.textContent = "Błąd obliczania ceny. Sprawdź opcje."; priceHint.style.display = 'block'; if (mobile3dActionsContainer) mobile3dActionsContainer.style.display = 'none'; } } else { priceAndActionsContainer.style.display = 'none'; priceHint.textContent = "Wybierz wszystkie parametry, aby zobaczyć cenę."; priceHint.style.display = 'block'; if (mobile3dActionsContainer) mobile3dActionsContainer.style.display = 'none'; } updateDividerDimensionVisibility(); updateMobileShelfInfo(); }
+
+
+        function updateOrderSummary() {
+    const orderSummarySection = document.getElementById('orderSummarySection');
+    if (orderSummarySection) {
+        orderSummarySection.classList.remove('summary-highlight');
+    }
+
+    const shelfColorSummaryLabel = document.getElementById('shelfColorSummaryLabel');
+    const currentShelfType = shelfTypeSelect.value;
+    if (shelfColorSummaryLabel) {
+        if (currentShelfType === 'mug_shelf') shelfColorSummaryLabel.textContent = 'Kolor półek i przegródek:';
+        else shelfColorSummaryLabel.textContent = 'Kolor półek i podstaw:';
+    }
+    document.getElementById("shelfTypeSummary").textContent = currentShelfType && shelfTypeSelect.selectedIndex > 0 ? shelfTypeSelect.options[shelfTypeSelect.selectedIndex].text : "-- Wybierz --";
+    const mugShelfMountItem = document.getElementById("mugShelfMountSummaryItem");
+    const mugShelfMountSummary = document.getElementById("mugShelfMountSummary");
+    if (currentShelfType === 'mug_shelf') {
+        const selectedMountRadio = document.querySelector('input[name="mugShelfMount"]:checked');
+        mugShelfMountSummary.textContent = selectedMountRadio ? (selectedMountRadio.value === 'hanging' ? 'Wisząca' : 'Stojąca') : 'nie wybrano';
+        mugShelfMountItem.style.display = 'flex';
+    } else {
+        mugShelfMountItem.style.display = 'none';
+    }
+    const widthSummaryLabel = document.getElementById('widthSummaryLabel');
+    const heightSummaryLabel = document.getElementById('heightSummaryLabel');
+    const connectingWidthSummaryLabel = document.getElementById('connectingWidthSummaryLabel').parentElement;
+    const shelfCountSummaryLabel = document.getElementById('shelfCountSummaryLabel');
+    if (currentShelfType === 'modular') {
+        const moduleW = parseInt(moduleWidthSelect.value);
+        const moduleH = parseInt(moduleHeightSelect.value);
+        const connectW = parseInt(connectingShelfWidthSelect.value);
+        const depth = parseInt(depthSelect.value);
+        let totalWidth = null;
+        let totalShelves = null;
+        if (!isNaN(moduleW) && !isNaN(moduleH) && !isNaN(connectW)) {
+            let shelfNum = 3;
+            if (moduleH === 40) shelfNum = 2;
+            if (moduleH === 80) shelfNum = 5;
+            totalShelves = (2 * (shelfNum + 2)) + (shelfNum + 1);
+            totalWidth = (moduleW * 2) + connectW;
+        }
+        widthSummaryLabel.textContent = "Szer. całkowita:";
+        document.getElementById("widthSummary").textContent = totalWidth ? `${totalWidth} cm` : "--";
+        heightSummaryLabel.textContent = "Wysokość:";
+        document.getElementById("heightSummary").textContent = moduleH ? `${moduleH} cm` : "--";
+        document.getElementById("depthSummary").parentElement.style.display = 'flex';
+        document.getElementById("depthSummary").textContent = depth ? `${depth} cm` : "--";
+        connectingWidthSummaryLabel.style.display = 'flex';
+        const connectingLabelSpan = document.getElementById("connectingWidthSummaryLabel");
+        if (connectingLabelSpan) connectingLabelSpan.textContent = "Komponenty (Szer.):";
+        document.getElementById("connectingWidthSummary").textContent = (moduleW && connectW) ? `${moduleW}cm + ${connectW}cm + ${moduleW}cm` : "--";
+        shelfCountSummaryLabel.textContent = "Ilość półek (łącznie):";
+        document.getElementById("shelfCountSummary").textContent = totalShelves ? `${totalShelves} szt.` : "--";
+        updateModularInfoText();
+    } else {
+        widthSummaryLabel.textContent = "Szerokość:";
+        heightSummaryLabel.textContent = "Wysokość:";
+        shelfCountSummaryLabel.textContent = "Ilość półek wewn.:";
+        connectingWidthSummaryLabel.style.display = 'none';
+        document.getElementById("depthSummary").parentElement.style.display = 'flex';
+        document.getElementById("widthSummary").textContent = !isNaN(getCurrentWidth()) ? getCurrentWidth() + " cm" : "--";
+        document.getElementById("heightSummary").textContent = heightSelect.value && heightSelect.value !== "" ? heightSelect.value + " cm" : "--";
+        document.getElementById("shelfCountSummary").textContent = shelfCountSelect.value !== "" ? (shelfCountSelect.options[shelfCountSelect.selectedIndex]?.text || '--') : '-- Wybierz --';
+        if (viewerInfoText) viewerInfoText.style.display = 'block';
+        if (modularInfoText) modularInfoText.style.display = 'none';
+    }
+    document.getElementById("depthSummary").textContent = depthSelect.value && depthSelect.value !== "" ? depthSelect.value + " cm" : "--";
+    document.getElementById("sideColorSummary").textContent = sideColorSelect.value && sideColorSelect.selectedIndex > 0 ? sideColorSelect.options[sideColorSelect.selectedIndex].text : "nie wybrano";
+    document.getElementById("shelfColorSummary").textContent = shelfColorSelect.value && shelfColorSelect.selectedIndex > 0 ? shelfColorSelect.options[shelfColorSelect.selectedIndex].text : "nie wybrano";
+    const h = parseFloat(heightSelect.value);
+    const sc = parseInt(shelfCountSelect.value);
+    const t = 1.8;
+    let gT = "n/d";
+    if (currentShelfType === 'modular') {
+        const moduleH = parseInt(moduleHeightSelect.value);
+        if (!isNaN(moduleH)) {
+            let shelfNum = 3;
+            if (moduleH === 40) shelfNum = 2;
+            if (moduleH === 80) shelfNum = 5;
+            const availableHeight = moduleH - 2 * t;
+            const gap = (availableHeight - shelfNum * t) / (shelfNum + 1);
+            gT = `${gap.toFixed(1)} cm`;
+        }
+    } else if (!isNaN(h) && h > 0 && !isNaN(sc) && sc >= 0) {
+        if (currentShelfType === 'mug_shelf') {
+            const mugGapHeight = h - 2 * t;
+            const mugGapFreeSpace = mugGapHeight - sc * t;
+            const mugGapsCount = sc + 1;
+            if (mugGapFreeSpace >= 0 && mugGapsCount > 0) {
+                const calculatedGap = mugGapFreeSpace / mugGapsCount;
+                gT = `ok. ${calculatedGap > 0 ? calculatedGap.toFixed(1) : '0.0'} cm`;
+            } else {
+                gT = "za mało miejsca";
+            }
+        } else {
+            const isTopShelf = !document.getElementById('noTopShelf')?.checked;
+            const isBottomShelf = currentShelfType !== 'standing' || !document.getElementById('noBottomShelf')?.checked;
+            const availableHeight = h - 2 * t;
+            const totalShelvesThickness = sc * t;
+            if (availableHeight >= totalShelvesThickness && (sc + 1) > 0) {
+                const freeSpace = availableHeight - totalShelvesThickness;
+                const gapsCount = sc + 1;
+                const calculatedGap = freeSpace / gapsCount;
+                gT = `${calculatedGap.toFixed(1)} cm`;
+            } else {
+                gT = "za mało miejsca";
+            }
+        }
+    }
+    document.getElementById("gapSummary").textContent = gT;
+    document.getElementById("gapSummaryDisplay").textContent = gT;
+    const gapSummaryLi = document.getElementById("gapSummary")?.parentElement;
+    const gapDisplayP = document.getElementById("gapDisplay");
+    if (currentShelfType === 'mug_shelf' || currentShelfType === 'modular') {
+        if (gapSummaryLi) gapSummaryLi.style.display = 'none';
+        if (gapDisplayP) gapDisplayP.style.display = 'none';
+    } else {
+        if (gapSummaryLi) gapSummaryLi.style.display = 'flex';
+        if (gapDisplayP) gapDisplayP.style.display = 'block';
+    }
+    const o = [];
+    if (currentShelfType === 'mug_shelf') {
+        const selectedMount = document.querySelector('input[name="mugShelfMount"]:checked');
+        if (selectedMount) o.push(selectedMount.value === 'hanging' ? 'Montaż wiszący' : 'Montaż stojący');
+        const dividersSelected = [];
+        if (dividersTopCheckbox?.checked) dividersSelected.push("góra");
+        if (dividersMiddleCheckbox?.checked) dividersSelected.push("środek");
+        if (dividersBottomCheckbox?.checked) dividersSelected.push("dół");
+        if (dividersSelected.length > 0) o.push("Przegródki: " + dividersSelected.join(", "));
+    } else if (currentShelfType !== 'modular') {
+        if (document.getElementById("noTopShelf")?.checked) o.push("bez górnej półki");
+        const isStandingType = (currentShelfType === "standing");
+        if (isStandingType && document.getElementById("noBottomShelf")?.checked) o.push("bez dolnej półki (podstawy)");
+    }
+    document.getElementById("extraOptionsSummary").textContent = o.length ? o.join(" / ") : "standardowa";
+    if (mobileIconDetailsType) {
+        if (shelfTypeSelect.selectedIndex > 0) {
+            mobileIconDetailsType.textContent = shelfTypeSelect.options[shelfTypeSelect.selectedIndex].text.split(' ')[0];
+            mobileIconDetailsType.classList.remove('mobile-icon-prompt');
+        } else {
+            mobileIconDetailsType.textContent = 'wybierz';
+            mobileIconDetailsType.classList.add('mobile-icon-prompt');
+        }
+    }
+    if (mobileIconDetailsDimensions) {
+        if (!isNaN(getCurrentWidth()) && heightSelect.value && depthSelect.value) {
+            mobileIconDetailsDimensions.textContent = `${getCurrentWidth()}x${heightSelect.value}x${depthSelect.value}`;
+            mobileIconDetailsDimensions.classList.remove('mobile-icon-prompt');
+        } else {
+            mobileIconDetailsDimensions.textContent = 'wybierz';
+            mobileIconDetailsDimensions.classList.add('mobile-icon-prompt');
+        }
+    }
+    if (mobileIconDetailsColors) {
+        mobileIconDetailsColors.innerHTML = '';
+        const sideColorOption = sideColorSelect.options[sideColorSelect.selectedIndex];
+        const shelfColorOption = shelfColorSelect.options[shelfColorSelect.selectedIndex];
+        if (sideColorOption && sideColorOption.value && shelfColorOption && shelfColorOption.value) {
+            const sideSwatch = document.createElement('span');
+            sideSwatch.className = 'mobile-color-swatch';
+            sideSwatch.style.backgroundColor = sideColorOption.dataset.color || '#ccc';
+            const shelfSwatch = document.createElement('span');
+            shelfSwatch.className = 'mobile-color-swatch';
+            shelfSwatch.style.backgroundColor = shelfColorOption.dataset.color || '#ccc';
+            mobileIconDetailsColors.appendChild(sideSwatch);
+            mobileIconDetailsColors.appendChild(shelfSwatch);
+            mobileIconDetailsColors.classList.remove('mobile-icon-prompt');
+        } else {
+            mobileIconDetailsColors.textContent = 'wybierz';
+            mobileIconDetailsColors.classList.add('mobile-icon-prompt');
+        }
+    }
+    if (mobileIconDetailsShelves) {
+        if (shelfCountSelect.value !== "" && shelfCountSelect.options[shelfCountSelect.selectedIndex]) {
+            const selectedText = shelfCountSelect.options[shelfCountSelect.selectedIndex].text;
+            mobileIconDetailsShelves.textContent = selectedText;
+            if (shelfCountSelect.value === '0') {
+                mobileIconDetailsShelves.classList.add('mobile-icon-prompt');
+            } else {
+                mobileIconDetailsShelves.classList.remove('mobile-icon-prompt');
+            }
+        } else {
+            mobileIconDetailsShelves.textContent = 'wybierz';
+            mobileIconDetailsShelves.classList.add('mobile-icon-prompt');
+        }
+    }
+    const orderCode = generateOrderCode();
+    const isComplete = !!orderCode;
+    if (isComplete) {
+        const pD = computePriceDetailed();
+        if (pD !== null) {
+            priceAndActionsContainer.style.display = 'block';
+            priceHint.style.display = 'none';
+            priceSummary.textContent = pD.total + " zł";
+            if (desktopCartContainer) {
+                desktopCartContainer.classList.remove('animate-pulse-bg');
+                void desktopCartContainer.offsetWidth;
+                desktopCartContainer.classList.add('animate-pulse-bg');
+            }
+            if (mobile3dActionsContainer) mobile3dActionsContainer.style.display = 'flex';
+            if (mobilePriceValue) mobilePriceValue.textContent = pD.total + " zł";
+            if (orderSummarySection) {
+                orderSummarySection.classList.add('summary-highlight');
+            }
+        } else {
+            priceAndActionsContainer.style.display = 'none';
+            priceHint.textContent = "Błąd obliczania ceny. Sprawdź opcje.";
+            priceHint.style.display = 'block';
+            if (mobile3dActionsContainer) mobile3dActionsContainer.style.display = 'none';
+        }
+    } else {
+        priceAndActionsContainer.style.display = 'none';
+        priceHint.textContent = "Wybierz wszystkie parametry, aby zobaczyć cenę.";
+        priceHint.style.display = 'block';
+        if (mobile3dActionsContainer) mobile3dActionsContainer.style.display = 'none';
+    }
+    updateDividerDimensionVisibility();
+    updateMobileShelfInfo();
+    updateSectionHighlights();
+}
         function generateOrderCode() { const shelfTypeVal = shelfTypeSelect.value; const sideColorVal = sideColorSelect.value || ''; const shelfColorVal = shelfColorSelect.value || ''; if (!shelfTypeVal || !sideColorVal || !shelfColorVal) return null; const typeCode = valueToCode.type[shelfTypeVal]; const sideColorCode = valueToCode.color[sideColorVal]; const shelfColorCode = valueToCode.color[shelfColorVal]; if (!typeCode || sideColorCode === undefined || shelfColorCode === undefined) return null; if (shelfTypeVal === 'modular') { const moduleW = moduleWidthSelect.value; const moduleH = moduleHeightSelect.value; const connectW = connectingShelfWidthSelect.value; const depth = depthSelect.value; if (!moduleW || !moduleH || !connectW || !depth) return null; return `${typeCode}-W${moduleW}-H${moduleH}-C${connectW}-D${depth}-${sideColorCode}${shelfColorCode}`; } const widthNum = getCurrentWidth(); const heightVal = heightSelect.value; const depthVal = depthSelect.value; const shelfCountVal = shelfCountSelect.value; const isMugShelf = shelfTypeVal === 'mug_shelf'; if (isNaN(widthNum) || !heightVal || !depthVal || shelfCountVal === "") return null; const shelfCountNum = parseInt(shelfCountVal); if (isNaN(shelfCountNum) || shelfCountNum < 0 || (!isMugShelf && shelfCountNum === 0)) return null; let optionsCode = ''; if (isMugShelf) { const mountCode = document.querySelector('input[name="mugShelfMount"]:checked')?.value === 'hanging' ? 'h' : 's'; 
         let dividerCode = ''; 
         if (dividersTopCheckbox?.checked) dividerCode += 'g'; 
