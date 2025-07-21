@@ -41,6 +41,17 @@
             opacity: 1;
         }
     }
+
+/* --- Style dla animacji przejścia z galerii do konfiguratora --- */
+.gallery-to-config-animation {
+    position: fixed;
+    z-index: 2100; /* Wyżej niż inne elementy, w tym modal */
+    pointer-events: none;
+    border-radius: 6px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    overflow: hidden;
+    transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
 /* ---- NOWE STYLE DLA PANELU OPCJI PÓŁKI MODUŁOWEJ (MOBILE) ---- */
     #modularShelfIconsContainer {
         display: none;
@@ -3936,7 +3947,167 @@ function updateModularIconActiveStates() {
         function scrollToBottom() { window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }); }
         function openLightbox(imageSrc) { if (imageLightbox && lightboxImage) { lightboxImage.setAttribute('src', imageSrc); imageLightbox.classList.remove('hidden'); imageLightbox.classList.remove('opacity-0'); document.body.style.overflow = 'hidden'; } }
         function closeLightbox() { if (imageLightbox) { imageLightbox.classList.add('hidden'); imageLightbox.classList.add('opacity-0'); document.body.style.overflow = ''; } }
-        function initializeTabbedGallery() { if (!galleryTabsContainer || !galleryGridContainer || !galleryImageArea || !configuratorSection || !galleryPrevArrow || !galleryNextArrow) { console.error("Nie znaleziono wszystkich elementów galerii potrzebnych do inicjalizacji."); return; } const scrollToConfig = () => { configuratorSection.scrollIntoView({ behavior: 'smooth', block: 'start' }); }; const displayImages = (galleryIndex) => { if (gallerySwiperInstance) { gallerySwiperInstance.destroy(true, true); gallerySwiperInstance = null; } galleryGridContainer.innerHTML = ''; const images = galleryData[galleryIndex].imgs; const fragment = document.createDocumentFragment(); images.forEach((imgDataOrSrc, i) => { const imgSrc = typeof imgDataOrSrc === 'string' ? imgDataOrSrc : imgDataOrSrc.src; const tileDiv = document.createElement('div'); tileDiv.className = 'gallery-tile swiper-slide'; const imgContainer = document.createElement('div'); imgContainer.className = 'gallery-image-container'; if (galleryIndex === 0 && i === 0) { const introTileDiv = document.createElement('div'); introTileDiv.className = 'gallery-intro-tile'; introTileDiv.innerHTML = `<p><strong>Kliknij w zdjęcie</strong>, by przerobić gotową półkę, lub <strong>zaprojektuj własną</strong> od nowa.</p>`; imgContainer.appendChild(introTileDiv); setTimeout(() => { introTileDiv.classList.add('is-animating'); }, 100); setTimeout(() => { introTileDiv.classList.add('fade-out'); }, 3500); } const img = document.createElement('img'); img.src = imgSrc; img.alt = `${galleryData[galleryIndex].title} - zdjęcie ${i + 1}`; img.loading = 'lazy'; imgContainer.appendChild(img); const actionBarHTML = ` <div class="image-actions-bar"> <button class="action-icon-btn gallery-zoom-btn" title="Powiększ"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607zM10.5 7.5v6m3-3h-6" /></svg> </button> <button class="action-icon-btn gallery-configure-btn" title="Konfiguruj"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 0 1 0 1.905c-.007.379.137.75.431.99l1.005.828c.428.355.53 1.005.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.063-.374-.313-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 0 1 0-1.905c.007-.379-.137-.75-.43-.99l-1.004-.828a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" /></svg> </button> </div> `; imgContainer.insertAdjacentHTML('beforeend', actionBarHTML); const captionDiv = document.createElement('div'); captionDiv.className = 'gallery-caption'; captionDiv.textContent = 'Kliknij w ikonę, aby skonfigurować'; tileDiv.appendChild(imgContainer); tileDiv.appendChild(captionDiv); const currentZoomBtn = tileDiv.querySelector('.gallery-zoom-btn'); const currentConfigureBtn = tileDiv.querySelector('.gallery-configure-btn'); if (currentZoomBtn) { currentZoomBtn.addEventListener('click', (e) => { e.stopPropagation(); openLightbox(imgSrc); }); } if (currentConfigureBtn) { currentConfigureBtn.addEventListener('click', (e) => { e.stopPropagation(); document.querySelectorAll('.gallery-tile').forEach(t => t.classList.remove('gallery-tile--active')); tileDiv.classList.add('gallery-tile--active'); applyShelfConfigurationFromGallery(galleryIndex, i); scrollToConfig(); }); } fragment.appendChild(tileDiv); }); galleryGridContainer.appendChild(fragment); gallerySwiperInstance = new Swiper(galleryImageArea, { slidesPerView: 'auto', spaceBetween: 20, grabCursor: true, navigation: { nextEl: galleryNextArrow, prevEl: galleryPrevArrow, }, breakpoints: { 320: { slidesPerView: 'auto', spaceBetween: 10 }, 768: { slidesPerView: 'auto', spaceBetween: 20 }, } }); }; galleryData.forEach((gallery, index) => { const tab = document.createElement('button'); tab.className = 'gallery-tab'; tab.textContent = gallery.title; tab.dataset.index = index; if (index === 0) { tab.classList.add('active'); } tab.addEventListener('click', () => { galleryTabsContainer.querySelectorAll('.gallery-tab').forEach(t => t.classList.remove('active')); tab.classList.add('active'); displayImages(index); }); galleryTabsContainer.appendChild(tab); }); if (galleryData.length > 0) { displayImages(0); } }
+        function initializeTabbedGallery() {
+    if (!galleryTabsContainer || !galleryGridContainer || !galleryImageArea || !configuratorSection || !galleryPrevArrow || !galleryNextArrow) {
+        console.error("Nie znaleziono wszystkich elementów galerii potrzebnych do inicjalizacji.");
+        return;
+    }
+
+    // --- NOWA FUNKCJA DO OBSŁUGI ANIMACJI ---
+    const animateAndConfigure = (imgElement, galleryIndex, imageIndex) => {
+        // 1. Stwórz klona obrazka do animacji
+        const flyingImage = document.createElement('img');
+        flyingImage.src = imgElement.src;
+        flyingImage.className = 'gallery-to-config-animation';
+        document.body.appendChild(flyingImage);
+
+        // 2. Pobierz pozycje startową (obrazek w galerii) i końcową (konfigurator 3D)
+        const startRect = imgElement.getBoundingClientRect();
+        const endRect = document.getElementById('threeJsCanvasWrapper').getBoundingClientRect();
+
+        // 3. Ustaw klona na pozycji startowej
+        flyingImage.style.left = `${startRect.left}px`;
+        flyingImage.style.top = `${startRect.top}px`;
+        flyingImage.style.width = `${startRect.width}px`;
+        flyingImage.style.height = `${startRect.height}px`;
+
+        // Ukryj oryginalne przyciski na czas animacji
+        const actionBar = imgElement.closest('.gallery-image-container').querySelector('.image-actions-bar');
+        if (actionBar) actionBar.style.opacity = '0';
+
+        // 4. Uruchom animację przejścia
+        setTimeout(() => {
+            flyingImage.style.left = `${endRect.left + endRect.width / 2 - endRect.width * 0.75 / 2}px`;
+            flyingImage.style.top = `${endRect.top + endRect.height / 2 - endRect.height * 0.75 / 2}px`;
+            flyingImage.style.width = `${endRect.width * 0.75}px`;
+            flyingImage.style.height = `${endRect.height * 0.75}px`;
+            flyingImage.style.opacity = '0.8';
+            flyingImage.style.borderRadius = '1rem';
+        }, 50);
+
+        // 5. Po zakończeniu animacji
+        setTimeout(() => {
+            // Zastosuj wybraną konfigurację
+            applyShelfConfigurationFromGallery(galleryIndex, imageIndex);
+
+            // Płynne przewinięcie do konfiguratora
+            configuratorSection.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+
+            // Usuń animowany element i przywróć widoczność przycisków
+            flyingImage.remove();
+            if (actionBar) actionBar.style.opacity = '1';
+        }, 750);
+    };
+
+    const displayImages = (galleryIndex) => {
+        if (gallerySwiperInstance) {
+            gallerySwiperInstance.destroy(true, true);
+            gallerySwiperInstance = null;
+        }
+        galleryGridContainer.innerHTML = '';
+        const images = galleryData[galleryIndex].imgs;
+        const fragment = document.createDocumentFragment();
+        images.forEach((imgDataOrSrc, i) => {
+            const imgSrc = typeof imgDataOrSrc === 'string' ? imgDataOrSrc : imgDataOrSrc.src;
+            const tileDiv = document.createElement('div');
+            tileDiv.className = 'gallery-tile swiper-slide';
+            const imgContainer = document.createElement('div');
+            imgContainer.className = 'gallery-image-container';
+
+            if (galleryIndex === 0 && i === 0) {
+                const introTileDiv = document.createElement('div');
+                introTileDiv.className = 'gallery-intro-tile';
+                introTileDiv.innerHTML = `<p><strong>Kliknij w zdjęcie</strong>, by przerobić gotową półkę, lub <strong>zaprojektuj własną</strong> od nowa.</p>`;
+                imgContainer.appendChild(introTileDiv);
+                setTimeout(() => {
+                    introTileDiv.classList.add('is-animating');
+                }, 100);
+                setTimeout(() => {
+                    introTileDiv.classList.add('fade-out');
+                }, 3500);
+            }
+
+            const img = document.createElement('img');
+            img.src = imgSrc;
+            img.alt = `${galleryData[galleryIndex].title} - zdjęcie ${i + 1}`;
+            img.loading = 'lazy';
+            imgContainer.appendChild(img);
+
+            const actionBarHTML = ` <div class="image-actions-bar"> <button class="action-icon-btn gallery-zoom-btn" title="Powiększ"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607zM10.5 7.5v6m3-3h-6" /></svg> </button> <button class="action-icon-btn gallery-configure-btn" title="Konfiguruj"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 0 1 0 1.905c-.007.379.137.75.431.99l1.005.828c.428.355.53 1.005.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.063-.374-.313-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 0 1 0-1.905c.007-.379-.137-.75-.43-.99l-1.004-.828a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" /></svg> </button> </div> `;
+            imgContainer.insertAdjacentHTML('beforeend', actionBarHTML);
+            const captionDiv = document.createElement('div');
+            captionDiv.className = 'gallery-caption';
+            captionDiv.textContent = 'Kliknij w ikonę, aby skonfigurować';
+            tileDiv.appendChild(imgContainer);
+            tileDiv.appendChild(captionDiv);
+
+            const currentZoomBtn = tileDiv.querySelector('.gallery-zoom-btn');
+            const currentConfigureBtn = tileDiv.querySelector('.gallery-configure-btn');
+
+            if (currentZoomBtn) {
+                currentZoomBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    openLightbox(imgSrc);
+                });
+            }
+
+            // --- ZMIENIONA OBSŁUGA KLIKNIĘCIA ---
+            if (currentConfigureBtn) {
+                currentConfigureBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    document.querySelectorAll('.gallery-tile').forEach(t => t.classList.remove('gallery-tile--active'));
+                    tileDiv.classList.add('gallery-tile--active');
+                    // Wywołaj nową funkcję animacji zamiast starych
+                    animateAndConfigure(img, galleryIndex, i);
+                });
+            }
+            fragment.appendChild(tileDiv);
+        });
+        galleryGridContainer.appendChild(fragment);
+        gallerySwiperInstance = new Swiper(galleryImageArea, {
+            slidesPerView: 'auto',
+            spaceBetween: 20,
+            grabCursor: true,
+            navigation: {
+                nextEl: galleryNextArrow,
+                prevEl: galleryPrevArrow,
+            },
+            breakpoints: {
+                320: {
+                    slidesPerView: 'auto',
+                    spaceBetween: 10
+                },
+                768: {
+                    slidesPerView: 'auto',
+                    spaceBetween: 20
+                },
+            }
+        });
+    };
+
+    galleryData.forEach((gallery, index) => {
+        const tab = document.createElement('button');
+        tab.className = 'gallery-tab';
+        tab.textContent = gallery.title;
+        tab.dataset.index = index;
+        if (index === 0) {
+            tab.classList.add('active');
+        }
+        tab.addEventListener('click', () => {
+            galleryTabsContainer.querySelectorAll('.gallery-tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            displayImages(index);
+        });
+        galleryTabsContainer.appendChild(tab);
+    });
+
+    if (galleryData.length > 0) {
+        displayImages(0);
+    }
+}
         function initializeReviews() { const reviews = [ '"Fantastyczna półeczka, przyszła od razu zmontowana i idealnie pasuje w wielu miejscach. Serdecznie polecam!"', '"Piękna, zgrabna półka. Solidnie wykonana, bez żadnych wad. Polecam!"', '"Bardzo ładna i funkcjonalna półka, świetnie zapakowana na czas transportu. Polecam!"', '"Super produkt – pięknie wykonany, idealnie pasuje do małych słoiczków z przyprawami w kuchni. Polecam!"', '"Ładna i solidna półka, starannie wykonana. Kolor świetnie wpasował się w meble. Polecam!"' ]; let currentReviewIndex = 0; const reviewDisplay = document.getElementById('customerReview'); function showNextReview() { if (!reviewDisplay) return; reviewDisplay.classList.remove('review-fade-enter-active'); setTimeout(() => { const reviewData = reviews[currentReviewIndex]; reviewDisplay.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-lime-500 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg> ${reviewData}`; reviewDisplay.classList.add('review-fade-enter-active'); currentReviewIndex = (currentReviewIndex + 1) % reviews.length; }, 700); } if (reviewDisplay) { showNextReview(); setInterval(showNextReview, 6000); } }
         function open3dPanel() { if (shelfContainer) { shelfContainer.classList.add('active'); setTimeout(onWindowResize, 50); updateDividerIconsVisibility(); updateMobileMountStripStates(); updateModularIconsVisibility(); } else { console.error("Nie można otworzyć panelu 3D - brak elementu #shelfContainer"); } }
         function close3dPanel() { if (shelfContainer) { shelfContainer.classList.remove('active'); setActiveMobileIcon(null); updateDividerIconsVisibility(); } }
