@@ -42,6 +42,28 @@
         }
     }
 
+/* ---- NOWE STYLE DLA ANIMACJI PRZYCISKU 3D ---- */
+@keyframes pulse-glow-attention {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+    }
+    70% {
+        transform: scale(1.1);
+        box-shadow: 0 0 0 12px rgba(255, 255, 255, 0);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+    }
+}
+
+.button-attention-glow {
+    animation: pulse-glow-attention 2s infinite ease-out;
+    border-radius: 0.25rem; /* Zostawiamy dla ładniejszego efektu blasku */
+}
+/* ---- KONIEC NOWYCH STYLÓW ---- */
+
 /* --- Style dla FINAŁOWEJ animacji TRANSFORMACJI z galerii (sterowanej przez GSAP) --- */
 .image-explode-container {
     position: fixed;
@@ -3986,18 +4008,27 @@ function updateModularIconActiveStates() {
 
     // --- FINAŁOWA WERSJA ANIMACJI v2.3 Z BLOKADĄ PRZEWIJANIA ---
     const animateAndConfigure = (imgElement, galleryIndex, imageIndex) => {
-        // --- NOWOŚĆ: Natychmiast zablokuj przewijanie strony ---
+        // ---- POCZĄTEK MODYFIKACJI ----
+        // Sprawdź, czy widok jest mobilny (szerokość ekranu < 768px)
+        if (window.innerWidth < 768) {
+            // Na urządzeniach mobilnych, po prostu przewiń do konfiguratora...
+            configuratorSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            // ...i natychmiast zastosuj wybraną konfigurację bez animacji.
+            applyShelfConfigurationFromGallery(galleryIndex, imageIndex);
+            // Zakończ działanie funkcji, aby pominąć resztę kodu animacji.
+            return;
+        }
+        // ---- KONIEC MODYFIKACJI ----
+
+        // Poniższy kod (oryginalna animacja) wykona się tylko na urządzeniach desktopowych
         document.body.classList.add('no-scroll');
 
-        // Najpierw przewiń stronę do widoku konfiguratora
         configuratorSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-        // Poczekaj na zakończenie przewijania przed rozpoczęciem animacji
         setTimeout(() => {
             const endRect = document.getElementById('threeJsCanvasWrapper').getBoundingClientRect();
             const startRect = imgElement.getBoundingClientRect();
 
-            // 1. Stwórz kontener i 4 części obrazka
             const explodeContainer = document.createElement('div');
             explodeContainer.className = 'image-explode-container';
             document.body.appendChild(explodeContainer);
@@ -4030,15 +4061,12 @@ function updateModularIconActiveStates() {
                 height: startRect.height
             });
 
-            // 2. Stwórz oś czasu GSAP z funkcją zwrotną onComplete
             const tl = gsap.timeline({
-                // --- NOWOŚĆ: Odblokuj przewijanie po zakończeniu całej animacji ---
                 onComplete: () => {
                     document.body.classList.remove('no-scroll');
                 }
             });
 
-            // 3. ETAP 1: Animacja dolotu
             tl.to(explodeContainer, {
                 left: endRect.left,
                 top: endRect.top,
@@ -4049,7 +4077,6 @@ function updateModularIconActiveStates() {
                 ease: "power3.inOut"
             });
             
-            // 4. ETAP 2: SEKWENCYJNE rozbieranie części
             tl.to(pieces, {
                 xPercent: (i) => (i % 2 === 0 ? 50 : -50),
                 yPercent: (i) => (i < 2 ? 50 : -50),
@@ -4060,12 +4087,10 @@ function updateModularIconActiveStates() {
                 stagger: 0.25 
             }, ">+0.2");
 
-            // 5. ETAP 3 (SYNCHRONIZACJA): Budowanie półki
             tl.call(() => {
                 applyShelfConfigurationFromGallery(galleryIndex, imageIndex);
             }, [], ">-1.0");
 
-            // 6. ETAP 4: Sprzątanie po animacji (bez odblokowywania scrolla, robi to onComplete)
             tl.call(() => {
                 explodeContainer.remove();
                 if (actionBar) actionBar.style.opacity = '1';
@@ -4233,7 +4258,7 @@ function updateModularIconActiveStates() {
             try {
                 if(typeof init3D === 'function') init3D(); else console.error("init3D is not defined");
                 if(typeof updateSwatchDisplay === 'function') { updateSwatchDisplay('sideColor', 'sideColorSwatchDisplay'); updateSwatchDisplay('shelfColor', 'shelfColorSwatchDisplay'); } else console.error("updateSwatchDisplay is not defined");
-                if(typeof initializeTabbedGallery === 'function') initializeTabbedGallery(); else console.error("initializeTabbedGallery is not defined");
+              if(typeof initializeTabbedGallery === 'function') initializeTabbedGallery(); else console.error("initializeTabbedGallery is not defined");
                 if(typeof initialize3dPanel === 'function') initialize3dPanel(); else console.error("initialize3dPanel is not defined");
                 if(typeof initializeReviews === 'function') initializeReviews(); else console.error("initializeReviews is not defined");
                 
@@ -4326,6 +4351,18 @@ const setupMobileModularButton = (btn, checkboxId) => {
                 setupMobileModularButton(mobileModularStandingBtn, 'modularStanding');
                 setupMobileModularButton(mobileModularNoTopBtn, 'modularNoTopShelf');
                 setupMobileModularButton(mobileModularNoBottomBtn, 'modularNoBottomShelf');
+// +++ POCZĄTEK NOWEGO KODU +++
+const show3dButtonForAnimation = document.getElementById('show3dButton');
+if (show3dButtonForAnimation && window.innerWidth < 768) {
+    // Włącz animację przyciągającą uwagę po załadowaniu strony
+    show3dButtonForAnimation.classList.add('button-attention-glow');
+
+    // Dodaj nasłuchiwanie na JEDNO kliknięcie, aby usunąć animację
+    show3dButtonForAnimation.addEventListener('click', () => {
+        show3dButtonForAnimation.classList.remove('button-attention-glow');
+    }, { once: true });
+}
+// +++ KONIEC NOWEGO KODU +++
                 
                 console.log("Inicjalizacja zakończona pomyślnie.");
 
