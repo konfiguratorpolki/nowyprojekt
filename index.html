@@ -4013,19 +4013,65 @@ function updateModularIconActiveStates() {
 
     // --- FINAŁOWA WERSJA ANIMACJI v2.3 Z BLOKADĄ PRZEWIJANIA ---
     const animateAndConfigure = (imgElement, galleryIndex, imageIndex) => {
-        // ---- POCZĄTEK MODYFIKACJI ----
-        // Sprawdź, czy widok jest mobilny (szerokość ekranu < 768px)
+        // --- NOWA LOGIKA DLA URZĄDZEŃ MOBILNYCH ---
         if (window.innerWidth < 768) {
-            // Na urządzeniach mobilnych, po prostu przewiń do konfiguratora...
-            configuratorSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            // ...i natychmiast zastosuj wybraną konfigurację bez animacji.
-            applyShelfConfigurationFromGallery(galleryIndex, imageIndex);
-            // Zakończ działanie funkcji, aby pominąć resztę kodu animacji.
-            return;
-        }
-        // ---- KONIEC MODYFIKACJI ----
+            const startRect = imgElement.getBoundingClientRect();
+            const endButton = document.getElementById('show3dButton');
+            if (!endButton) return;
+            const endRect = endButton.getBoundingClientRect();
 
-        // Poniższy kod (oryginalna animacja) wykona się tylko na urządzeniach desktopowych
+            // 1. Tworzymy klon obrazka, który będzie animowany
+            const flyingClone = imgElement.cloneNode(true);
+            flyingClone.style.position = 'fixed';
+            flyingClone.style.top = `${startRect.top}px`;
+            flyingClone.style.left = `${startRect.left}px`;
+            flyingClone.style.width = `${startRect.width}px`;
+            flyingClone.style.height = `${startRect.height}px`;
+            flyingClone.style.zIndex = '9999';
+            flyingClone.style.margin = '0';
+            flyingClone.style.borderRadius = '6px';
+            flyingClone.style.boxShadow = '0 5px 15px rgba(0,0,0,0.2)';
+            document.body.appendChild(flyingClone);
+
+            // Ukrywamy przyciski na oryginalnym obrazku
+            const actionBar = imgElement.closest('.gallery-image-container').querySelector('.image-actions-bar');
+            if (actionBar) actionBar.style.opacity = '0';
+
+            // 2. Tworzymy oś czasu animacji (timeline) w GSAP
+            const tl = gsap.timeline({
+                onComplete: () => {
+                    // 4. Po zakończeniu animacji, usuwamy klon i przywracamy przyciski
+                    document.body.removeChild(flyingClone);
+                    if (actionBar) actionBar.style.opacity = '1';
+                }
+            });
+
+            // 3. Definiujemy kolejne kroki animacji
+            tl.to(flyingClone, {
+                // Animacja ruchu, zmniejszania, rotacji i zanikania
+                top: endRect.top + endRect.height / 4,
+                left: endRect.left + endRect.width / 4,
+                width: endRect.width / 2,
+                height: endRect.height / 2,
+                opacity: 0.2,
+                rotation: 540, // Efekt "wkręcania się"
+                borderRadius: '50%',
+                scale: 0.1,
+                duration: 1.0, // Czas trwania animacji
+                ease: 'power2.in' // Sprawia, że animacja przyspiesza pod koniec
+            });
+
+            // W trakcie animacji ładujemy nową półkę, ALE JUŻ NIE OTWIERAMY PANELU 3D
+            tl.call(() => {
+                applyShelfConfigurationFromGallery(galleryIndex, imageIndex);
+                // open3dPanel(); // ZMIANA: Ta linia została usunięta
+            }, [], ">-0.7"); 
+
+            return; // Kończymy, aby nie wykonać animacji dla desktopu
+        }
+        // --- KONIEC LOGIKI DLA URZĄDZEŃ MOBILNYCH ---
+
+        // Poniżej znajduje się istniejąca animacja dla wersji desktopowej (pozostaje bez zmian)
         document.body.classList.add('no-scroll');
 
         configuratorSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
