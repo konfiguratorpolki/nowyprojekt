@@ -2402,6 +2402,23 @@ function updateModularIconActiveStates() {
         }
         
    function rebuildAndAnimateIn(config, withRotationAnimation = true) {
+      // +++ POCZĄTEK PRZENIESIONEGO KODU +++
+      // 1. Natychmiast po wywołaniu funkcji, ustawiamy kamerę w docelowej pozycji.
+      if (camera && controls) {
+          gsap.to(camera.position, {
+              x: -4,   // ZMIANA: Mniejsza wartość obraca widok w lewo
+              y: 2,    // ZMIANA: Niższa wartość to widok bardziej z dołu
+              z: 7,
+              duration: 0.4, // Szybkie przejście kamery
+              ease: "power1.inOut",
+              onUpdate: function() {
+                  controls.update();
+              }
+          });
+          controls.target.set(0, 0, 0);
+      }
+      // +++ KONIEC PRZENIESIONEGO KODU +++
+
       return new Promise(resolve => {
             if (currentAnimationTimeline) {
                 currentAnimationTimeline.kill();
@@ -2413,8 +2430,14 @@ function updateModularIconActiveStates() {
                 onComplete: () => {
                     controls.enabled = true;
                     if (shelfType !== 'mug_shelf' && shelfType !== 'modular') {
-                        autoRotateEnabled = false;
+                        autoRotateEnabled = true; // ZMIANA: Wznowienie automatycznego obracania
                     }
+                    
+                    // Upewniamy się, że po wszystkim półka jest wyzerowana
+                    if (shelfGroup) {
+                       shelfGroup.rotation.set(0, 0, 0);
+                    }
+
                     updateOrderSummary();
                     lastValidConfig = { ...config };
                     controls.update();
@@ -2520,12 +2543,6 @@ function updateModularIconActiveStates() {
                     if(connectingShelves.length > 0) masterTimeline.to(connectingShelves.map(s => s.position), { y: (i) => finalPositions.get(connectingShelves[i]).y, duration: dropDuration * 0.8, ease: 'power1.out', stagger: 0.04 }, `${assemblyStartTime}+=0.5`);
                     if(lm_top && rm_top) masterTimeline.to([lm_top.position, rm_top.position], { y: (i) => finalPositions.get(i === 0 ? lm_top : rm_top).y, duration: dropDuration, ease: 'power2.out' }, `${assemblyStartTime}+=0.7`);
 
-                    // --- ZMIANA 1: WYŁĄCZENIE OBROTU DLA PÓŁKI MODUŁOWEJ ---
-                    /*
-                    if (withRotationAnimation) {
-                        masterTimeline.to(shelfGroup.rotation, { y: `+=${Math.PI * 2}`, duration: 2.0, ease: 'power2.inOut' }, ">+0.5");
-                    }
-                    */
                 });
             } else if (shelfType === 'mug_shelf') {
                 masterTimeline.add(() => {
@@ -2578,12 +2595,6 @@ function updateModularIconActiveStates() {
                         masterTimeline.to(rightSide.position, { x: finalPositions.get("rightSide").x, duration: 0.6, ease: 'power2.inOut' }, `${assemblyStartTime}+=0.6`);
                     }
 
-                    // --- ZMIANA 2: WYŁĄCZENIE OBROTU DLA PÓŁKI NA KUBKI ---
-                    /*
-                    if (withRotationAnimation) {
-                        masterTimeline.to(shelfGroup.rotation, { y: `+=${Math.PI * 2}`, duration: 1.8, ease: 'power2.inOut' }, ">+0.4");
-                    }
-                    */
                 });
             } else {
                 masterTimeline.add(() => {
@@ -2616,12 +2627,6 @@ function updateModularIconActiveStates() {
                     if (dividers.length > 0) { masterTimeline.to(dividers.map(d => d.position), { y: (i) => finalPositions.get(dividers[i].name).y, duration: dropDuration * 0.7, ease: 'power2.out', stagger: 0.01 }, `${assemblyStartTime}+=0.15`); }
                     if (topPanel) { masterTimeline.to(topPanel.position, { y: finalPositions.get("topPanel").y, duration: dropDuration, ease: 'power2.out' }, `${assemblyStartTime}+=0.2`); }
                     
-                    // --- ZMIANA 3: WYŁĄCZENIE OBROTU DLA POZOSTAŁYCH PÓŁEK ---
-                    /*
-                    if (withRotationAnimation) {
-                        masterTimeline.to(shelfGroup.rotation, { y: `+=${Math.PI * 2}`, duration: 1.8, ease: 'power2.inOut' }, ">+0.4");
-                    }
-                    */
                 });
             }
         });
