@@ -42,16 +42,36 @@
         }
     }
 
-/* --- Style dla animacji przejścia z galerii do konfiguratora --- */
-.gallery-to-config-animation {
+/* --- Style dla FINAŁOWEJ animacji TRANSFORMACJI z galerii (sterowanej przez GSAP) --- */
+.image-explode-container {
     position: fixed;
-    z-index: 2100; /* Wyżej niż inne elementy, w tym modal */
+    z-index: 2100;
     pointer-events: none;
-    border-radius: 6px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    overflow: hidden;
-    transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-style: preserve-3d;
+    /* Usunięto transition - GSAP przejmuje kontrolę */
 }
+
+.image-explode-piece {
+    position: absolute;
+    width: 50%;
+    height: 50%;
+    background-size: 200% 200%;
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    /* Usunięto transition - GSAP przejmuje kontrolę */
+}
+
+/* Punkty obrotu pozostają bez zmian */
+.image-explode-piece:nth-child(1) { transform-origin: bottom right; }
+.image-explode-piece:nth-child(2) { transform-origin: bottom left; }
+.image-explode-piece:nth-child(3) { transform-origin: top right; }
+.image-explode-piece:nth-child(4) { transform-origin: top left; }
+
+/* --- Klasa blokująca przewijanie strony --- */
+body.no-scroll {
+    overflow: hidden;
+}
+
+
 /* ---- NOWE STYLE DLA PANELU OPCJI PÓŁKI MODUŁOWEJ (MOBILE) ---- */
     #modularShelfIconsContainer {
         display: none;
@@ -2371,7 +2391,7 @@ function updateModularIconActiveStates() {
                 onComplete: () => {
                     controls.enabled = true;
                     if (shelfType !== 'mug_shelf' && shelfType !== 'modular') {
-                        autoRotateEnabled = true;
+                        autoRotateEnabled = false;
                     }
                     updateOrderSummary();
                     lastValidConfig = { ...config };
@@ -2478,9 +2498,12 @@ function updateModularIconActiveStates() {
                     if(connectingShelves.length > 0) masterTimeline.to(connectingShelves.map(s => s.position), { y: (i) => finalPositions.get(connectingShelves[i]).y, duration: dropDuration * 0.8, ease: 'power1.out', stagger: 0.04 }, `${assemblyStartTime}+=0.5`);
                     if(lm_top && rm_top) masterTimeline.to([lm_top.position, rm_top.position], { y: (i) => finalPositions.get(i === 0 ? lm_top : rm_top).y, duration: dropDuration, ease: 'power2.out' }, `${assemblyStartTime}+=0.7`);
 
+                    // --- ZMIANA 1: WYŁĄCZENIE OBROTU DLA PÓŁKI MODUŁOWEJ ---
+                    /*
                     if (withRotationAnimation) {
                         masterTimeline.to(shelfGroup.rotation, { y: `+=${Math.PI * 2}`, duration: 2.0, ease: 'power2.inOut' }, ">+0.5");
                     }
+                    */
                 });
             } else if (shelfType === 'mug_shelf') {
                 masterTimeline.add(() => {
@@ -2532,9 +2555,13 @@ function updateModularIconActiveStates() {
                     if (rightSide) {
                         masterTimeline.to(rightSide.position, { x: finalPositions.get("rightSide").x, duration: 0.6, ease: 'power2.inOut' }, `${assemblyStartTime}+=0.6`);
                     }
+
+                    // --- ZMIANA 2: WYŁĄCZENIE OBROTU DLA PÓŁKI NA KUBKI ---
+                    /*
                     if (withRotationAnimation) {
                         masterTimeline.to(shelfGroup.rotation, { y: `+=${Math.PI * 2}`, duration: 1.8, ease: 'power2.inOut' }, ">+0.4");
                     }
+                    */
                 });
             } else {
                 masterTimeline.add(() => {
@@ -2566,9 +2593,13 @@ function updateModularIconActiveStates() {
                     if (internalShelves.length > 0) { masterTimeline.to(internalShelves.map(s => s.position), { y: (i) => finalPositions.get(internalShelves[i].name).y, duration: dropDuration * 0.7, ease: 'power2.out', stagger: 0.03 }, `${assemblyStartTime}+=0.1`); }
                     if (dividers.length > 0) { masterTimeline.to(dividers.map(d => d.position), { y: (i) => finalPositions.get(dividers[i].name).y, duration: dropDuration * 0.7, ease: 'power2.out', stagger: 0.01 }, `${assemblyStartTime}+=0.15`); }
                     if (topPanel) { masterTimeline.to(topPanel.position, { y: finalPositions.get("topPanel").y, duration: dropDuration, ease: 'power2.out' }, `${assemblyStartTime}+=0.2`); }
+                    
+                    // --- ZMIANA 3: WYŁĄCZENIE OBROTU DLA POZOSTAŁYCH PÓŁEK ---
+                    /*
                     if (withRotationAnimation) {
                         masterTimeline.to(shelfGroup.rotation, { y: `+=${Math.PI * 2}`, duration: 1.8, ease: 'power2.inOut' }, ">+0.4");
                     }
+                    */
                 });
             }
         });
@@ -3953,60 +3984,98 @@ function updateModularIconActiveStates() {
         return;
     }
 
-    // --- NOWA FUNKCJA DO OBSŁUGI ANIMACJI ---
+    // --- FINAŁOWA WERSJA ANIMACJI v2.3 Z BLOKADĄ PRZEWIJANIA ---
     const animateAndConfigure = (imgElement, galleryIndex, imageIndex) => {
-        // 1. Stwórz klona obrazka do animacji
-        const flyingImage = document.createElement('img');
-        flyingImage.src = imgElement.src;
-        flyingImage.className = 'gallery-to-config-animation';
-        document.body.appendChild(flyingImage);
+        // --- NOWOŚĆ: Natychmiast zablokuj przewijanie strony ---
+        document.body.classList.add('no-scroll');
 
-        // 2. Pobierz pozycje startową (obrazek w galerii) i końcową (konfigurator 3D)
-        const startRect = imgElement.getBoundingClientRect();
-        const endRect = document.getElementById('threeJsCanvasWrapper').getBoundingClientRect();
+        // Najpierw przewiń stronę do widoku konfiguratora
+        configuratorSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-        // 3. Ustaw klona na pozycji startowej
-        flyingImage.style.left = `${startRect.left}px`;
-        flyingImage.style.top = `${startRect.top}px`;
-        flyingImage.style.width = `${startRect.width}px`;
-        flyingImage.style.height = `${startRect.height}px`;
-
-        // Ukryj oryginalne przyciski na czas animacji
-        const actionBar = imgElement.closest('.gallery-image-container').querySelector('.image-actions-bar');
-        if (actionBar) actionBar.style.opacity = '0';
-
-        // 4. Uruchom animację przejścia
+        // Poczekaj na zakończenie przewijania przed rozpoczęciem animacji
         setTimeout(() => {
-            flyingImage.style.left = `${endRect.left + endRect.width / 2 - endRect.width * 0.75 / 2}px`;
-            flyingImage.style.top = `${endRect.top + endRect.height / 2 - endRect.height * 0.75 / 2}px`;
-            flyingImage.style.width = `${endRect.width * 0.75}px`;
-            flyingImage.style.height = `${endRect.height * 0.75}px`;
-            flyingImage.style.opacity = '0.8';
-            flyingImage.style.borderRadius = '1rem';
-        }, 50);
+            const endRect = document.getElementById('threeJsCanvasWrapper').getBoundingClientRect();
+            const startRect = imgElement.getBoundingClientRect();
 
-        // 5. Po zakończeniu animacji
-        setTimeout(() => {
-            // Zastosuj wybraną konfigurację
-            applyShelfConfigurationFromGallery(galleryIndex, imageIndex);
+            // 1. Stwórz kontener i 4 części obrazka
+            const explodeContainer = document.createElement('div');
+            explodeContainer.className = 'image-explode-container';
+            document.body.appendChild(explodeContainer);
 
-            // Płynne przewinięcie do konfiguratora
-            configuratorSection.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
+            const positions = [
+                { top: '0', left: '0', bgPos: '0% 0%' },
+                { top: '0', left: '50%', bgPos: '100% 0%' },
+                { top: '50%', left: '0', bgPos: '0% 100%' },
+                { top: '50%', left: '50%', bgPos: '100% 100%' }
+            ];
+            
+            const pieces = positions.map(pos => {
+                const piece = document.createElement('div');
+                piece.className = 'image-explode-piece';
+                piece.style.top = pos.top;
+                piece.style.left = pos.left;
+                piece.style.backgroundImage = `url(${imgElement.src})`;
+                piece.style.backgroundPosition = pos.bgPos;
+                explodeContainer.appendChild(piece);
+                return piece;
             });
 
-            // Usuń animowany element i przywróć widoczność przycisków
-            flyingImage.remove();
-            if (actionBar) actionBar.style.opacity = '1';
-        }, 750);
+            const actionBar = imgElement.closest('.gallery-image-container').querySelector('.image-actions-bar');
+            if (actionBar) actionBar.style.opacity = '0';
+            
+            gsap.set(explodeContainer, {
+                left: startRect.left,
+                top: startRect.top,
+                width: startRect.width,
+                height: startRect.height
+            });
+
+            // 2. Stwórz oś czasu GSAP z funkcją zwrotną onComplete
+            const tl = gsap.timeline({
+                // --- NOWOŚĆ: Odblokuj przewijanie po zakończeniu całej animacji ---
+                onComplete: () => {
+                    document.body.classList.remove('no-scroll');
+                }
+            });
+
+            // 3. ETAP 1: Animacja dolotu
+            tl.to(explodeContainer, {
+                left: endRect.left,
+                top: endRect.top,
+                width: endRect.width,
+                height: endRect.height,
+                borderRadius: '0.5rem',
+                duration: 1.2,
+                ease: "power3.inOut"
+            });
+            
+            // 4. ETAP 2: SEKWENCYJNE rozbieranie części
+            tl.to(pieces, {
+                xPercent: (i) => (i % 2 === 0 ? 50 : -50),
+                yPercent: (i) => (i < 2 ? 50 : -50),
+                rotation: 90,
+                scale: 0,
+                duration: 1.0,
+                ease: "power3.in",
+                stagger: 0.25 
+            }, ">+0.2");
+
+            // 5. ETAP 3 (SYNCHRONIZACJA): Budowanie półki
+            tl.call(() => {
+                applyShelfConfigurationFromGallery(galleryIndex, imageIndex);
+            }, [], ">-1.0");
+
+            // 6. ETAP 4: Sprzątanie po animacji (bez odblokowywania scrolla, robi to onComplete)
+            tl.call(() => {
+                explodeContainer.remove();
+                if (actionBar) actionBar.style.opacity = '1';
+            });
+
+        }, 700);
     };
 
     const displayImages = (galleryIndex) => {
-        if (gallerySwiperInstance) {
-            gallerySwiperInstance.destroy(true, true);
-            gallerySwiperInstance = null;
-        }
+        if (gallerySwiperInstance) { gallerySwiperInstance.destroy(true, true); gallerySwiperInstance = null; }
         galleryGridContainer.innerHTML = '';
         const images = galleryData[galleryIndex].imgs;
         const fragment = document.createDocumentFragment();
@@ -4022,20 +4091,16 @@ function updateModularIconActiveStates() {
                 introTileDiv.className = 'gallery-intro-tile';
                 introTileDiv.innerHTML = `<p><strong>Kliknij w zdjęcie</strong>, by przerobić gotową półkę, lub <strong>zaprojektuj własną</strong> od nowa.</p>`;
                 imgContainer.appendChild(introTileDiv);
-                setTimeout(() => {
-                    introTileDiv.classList.add('is-animating');
-                }, 100);
-                setTimeout(() => {
-                    introTileDiv.classList.add('fade-out');
-                }, 3500);
+                setTimeout(() => { introTileDiv.classList.add('is-animating'); }, 100);
+                setTimeout(() => { introTileDiv.classList.add('fade-out'); }, 3500);
             }
-
+            
             const img = document.createElement('img');
             img.src = imgSrc;
             img.alt = `${galleryData[galleryIndex].title} - zdjęcie ${i + 1}`;
             img.loading = 'lazy';
             imgContainer.appendChild(img);
-
+            
             const actionBarHTML = ` <div class="image-actions-bar"> <button class="action-icon-btn gallery-zoom-btn" title="Powiększ"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607zM10.5 7.5v6m3-3h-6" /></svg> </button> <button class="action-icon-btn gallery-configure-btn" title="Konfiguruj"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 0 1 0 1.905c-.007.379.137.75.431.99l1.005.828c.428.355.53 1.005.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.063-.374-.313-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 0 1 0-1.905c.007-.379-.137-.75-.43-.99l-1.004-.828a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" /></svg> </button> </div> `;
             imgContainer.insertAdjacentHTML('beforeend', actionBarHTML);
             const captionDiv = document.createElement('div');
@@ -4047,20 +4112,13 @@ function updateModularIconActiveStates() {
             const currentZoomBtn = tileDiv.querySelector('.gallery-zoom-btn');
             const currentConfigureBtn = tileDiv.querySelector('.gallery-configure-btn');
 
-            if (currentZoomBtn) {
-                currentZoomBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    openLightbox(imgSrc);
-                });
-            }
-
-            // --- ZMIENIONA OBSŁUGA KLIKNIĘCIA ---
+            if (currentZoomBtn) { currentZoomBtn.addEventListener('click', (e) => { e.stopPropagation(); openLightbox(imgSrc); }); }
+            
             if (currentConfigureBtn) {
                 currentConfigureBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
                     document.querySelectorAll('.gallery-tile').forEach(t => t.classList.remove('gallery-tile--active'));
                     tileDiv.classList.add('gallery-tile--active');
-                    // Wywołaj nową funkcję animacji zamiast starych
                     animateAndConfigure(img, galleryIndex, i);
                 });
             }
@@ -4068,34 +4126,15 @@ function updateModularIconActiveStates() {
         });
         galleryGridContainer.appendChild(fragment);
         gallerySwiperInstance = new Swiper(galleryImageArea, {
-            slidesPerView: 'auto',
-            spaceBetween: 20,
-            grabCursor: true,
-            navigation: {
-                nextEl: galleryNextArrow,
-                prevEl: galleryPrevArrow,
-            },
-            breakpoints: {
-                320: {
-                    slidesPerView: 'auto',
-                    spaceBetween: 10
-                },
-                768: {
-                    slidesPerView: 'auto',
-                    spaceBetween: 20
-                },
-            }
+            slidesPerView: 'auto', spaceBetween: 20, grabCursor: true, navigation: { nextEl: galleryNextArrow, prevEl: galleryPrevArrow, },
+            breakpoints: { 320: { slidesPerView: 'auto', spaceBetween: 10 }, 768: { slidesPerView: 'auto', spaceBetween: 20 } }
         });
     };
 
     galleryData.forEach((gallery, index) => {
         const tab = document.createElement('button');
-        tab.className = 'gallery-tab';
-        tab.textContent = gallery.title;
-        tab.dataset.index = index;
-        if (index === 0) {
-            tab.classList.add('active');
-        }
+        tab.className = 'gallery-tab'; tab.textContent = gallery.title; tab.dataset.index = index;
+        if (index === 0) { tab.classList.add('active'); }
         tab.addEventListener('click', () => {
             galleryTabsContainer.querySelectorAll('.gallery-tab').forEach(t => t.classList.remove('active'));
             tab.classList.add('active');
