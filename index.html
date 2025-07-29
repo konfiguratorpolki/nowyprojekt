@@ -1417,7 +1417,7 @@ body.no-scroll {
                     <span id="cartDiscountAmount25"></span>
                  </div>
                  <div class="flex justify-between items-baseline font-bold text-base border-t border-stone-200 pt-1 mt-1" id="cartTotalPriceLine">
-                     <span>Do zapłaty:</span>
+                     <span>Cena:</span>
                      <span id="cartTotalPrice">0,00 zł</span>
                  </div>
             </div>
@@ -1502,13 +1502,13 @@ body.no-scroll {
                             <span id="cartSummaryCombinedDiscountAmount"></span>
                          </div>
                          <div class="flex justify-between items-baseline font-bold text-2xl border-t-2 border-stone-300 pt-2 mt-2">
-                             <span>Do zapłaty:</span>
+                             <span>Cena:</span>
                              <span id="cartSummaryTotalPrice" class="text-red-600">0,00 zł</span>
                          </div>
                     </div>
 
                     <div id="codesSection" class="mt-4 opacity-0" style="transform: translateY(15px);">
-                        <label for="cartSummaryAllCodes" class="block text-sm font-medium text-stone-600 mb-1">Twój unikalny kod konfiguracji do wysłania w "Pytaniu do Sprzedającego":</label>
+                        <label for="cartSummaryAllCodes" class="block text-sm font-medium text-stone-600 mb-1">Twój unikalny kod konfiguracji do wysłania w "Zadaj pytanie":</label>
                         <div class="relative">
                             <textarea id="cartSummaryAllCodes" rows="4" class="w-full rounded-md border-stone-300 shadow-sm text-base p-2 bg-stone-50 focus:ring-green-500 focus:border-green-500 font-bold" readonly></textarea>
                             <div id="typingCursor"></div>
@@ -1521,12 +1521,12 @@ body.no-scroll {
                     </div>
 
                     <div class="mt-4 p-3 bg-amber-50 rounded-md border border-amber-200">
-    <h4 class="font-semibold text-stone-700 mb-2 text-base">Co dalej? Profesjonalne zamówienie w 4 krokach:</h4>
+    <h4 class="font-semibold text-stone-700 mb-2 text-base">Co dalej?</h4>
     <ol class="list-decimal text-sm text-stone-600 space-y-1.5 pl-5">
         <li><b>Skopiuj kod projektu:</b> Użyj przycisku, aby skopiować wygenerowany powyżej kod Twojej konfiguracji.</li>
-        <li><b>Wyślij zapytanie na Allegro:</b> Przejdź na naszą stronę Allegro i kliknij "Pytanie do sprzedającego". Wklej tam skopiowany kod.</li>
-        <li><b>Otrzymaj dedykowaną aukcję:</b> W odpowiedzi przygotujemy i wyślemy Ci link do prywatnej aukcji, stworzonej specjalnie dla Ciebie.</li>
-        <li><b>Sfinalizuj zakup:</b> Wejdź w otrzymany link i dokończ zamówienie. Proste i bezpieczne! 😊</li>
+        <li><b>Wyślij zapytanie na Allegro:</b> Przejdź na naszą stronę Allegro i kliknij "Zadaj pytanie". Wklej tam skopiowany kod.</li>
+        <li><b>Otrzymaj dedykowaną aukcję:</b> W odpowiedzi przygotujemy i wyślemy Ci link do aukcji, stworzonej specjalnie dla Ciebie.</li>
+        <li><b>Sfinalizuj zakup:</b> Wejdź w otrzymany link na allegro, złóż i opłać zamówienie – a my zajmiemy się resztą 😊</li>
     </ol>
 </div>
                 </div>
@@ -1542,7 +1542,7 @@ body.no-scroll {
                 </div>
                 <div class="flex items-center gap-2">
                     <button id="cartSummaryGoToAllegroBtn" class="px-6 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-md shadow-sm hover:shadow-lg flex items-center gap-2">
-    <span>Skopiuj kod i przejdź do Allegro</span>
+    <span>Skopiuj kod i wyślij widomość na Allegro</span>
 </button>
                 </div>
             </div>
@@ -4407,7 +4407,7 @@ function updateModularIconActiveStates() {
                     if(cartSummaryGoToAllegroBtn) cartSummaryGoToAllegroBtn.addEventListener('click', () => {
     navigator.clipboard.writeText(cartSummaryAllCodes.value).then(() => {
     // ZMIANA: Podaj tutaj link do swojego profilu sprzedawcy na Allegro, gdzie klient może zadać pytanie.
-    window.open("https://allegro.pl/uzytkownik/TWOJA_NAZWA_SPRZEDAWCY/sklep", "_blank");
+    window.open("https://allegro.pl/oferta/zaprojektuj-wlasna-polke-podaj-wymiar-i-wybierz-kolory-do-kuchni-pokoju-17253898746#ask-question", "_blank");
     closeCartSummaryModal();
     }).catch(err => {
         alert('Nie udało się skopiować kodów. Spróbuj ręcznie, używając przycisku obok pola z kodami.');
