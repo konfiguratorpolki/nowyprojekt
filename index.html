@@ -503,10 +503,10 @@ body.no-scroll {
         }
 
         #mobileGoToSummaryBtn svg {
-            width: 1.5rem;
-            height: 1.5rem;
-            color: #374151;
-        }
+    width: 1.5rem;
+    height: 1.5rem;
+    stroke: #374151; /* ZMIANA: 'color' na 'stroke' */
+}
 
         /* NOWE STYLE DLA INFORMACJI O PÓŁKACH NA MOBILE */
         #mobileShelfInfo {
@@ -684,6 +684,13 @@ body.no-scroll {
          #scrollToCodesBtn {
              display: none !important;
          }
+    }
+
+    /* ---- NOWY STYL DLA PODPOWIEDZI O RABACIE NA STRONIE GŁÓWNEJ ---- */
+    #mainPageDiscountHint.visible {
+        display: block !important;
+        opacity: 1;
+        transform: translateY(0);
     }
 
     /* Reszta stylów podstawowych - bez zmian */
@@ -1758,11 +1765,11 @@ Zadaj pytanie", wklejając kod w wiadomości.</span></li>
                      </svg>
                      <span id="mobilePriceValue" class="price-value"></span>
                  </div>
-                 <button id="mobileGoToSummaryBtn" class="mobile-3d-action-btn" title="Przewiń do podsumowania">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                 </button>
+                 <button id="mobileGoToSummaryBtn" class="mobile-3d-action-btn" title="Przejdź do podsumowania">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+    </svg>
+</button>
             </div>
 
             <div id="mobilePanelIcons" class="hidden md:hidden">
@@ -1923,13 +1930,18 @@ Zadaj pytanie", wklejając kod w wiadomości.</span></li>
             <div class="mt-5 pt-4 border-t border-stone-200">
                 <div id="priceAndActionsContainer" style="display: none;">
     
-    <div class="bg-stone-100 border border-stone-200 rounded-lg p-4 mb-4 text-center">
-         <div class="flex justify-center items-baseline w-full">
+    <div class="bg-stone-100 border border-stone-200 rounded-lg p-4 mb-4">
+        <div class="flex justify-center items-baseline w-full relative">
             <span class="text-lg font-medium text-stone-600 mr-3">Cena:</span>
-            <span class="text-red-600 font-bold text-3xl" id="priceSummary"></span>
-         </div>
+            <div class="flex flex-col items-center">
+                <span id="originalPriceSummary" class="text-stone-400 font-medium text-xl line-through" style="display: none;"></span>
+                <span id="priceSummary" class="text-red-600 font-bold text-2xl -mt-2"></span>
+</div>
+        </div>
+        <div id="mainPageDiscountHint" class="text-center text-sm text-green-600 font-semibold mt-1 transition-all duration-300 opacity-0 transform -translate-y-2" style="display: none;">
+             Otrzymujesz 10% rabatu!
+        </div>
     </div>
-
     <button id="addToCartBtn" class="group w-full px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg text-lg font-semibold transition-all duration-150 ease-in-out flex items-center justify-center space-x-2 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 active:scale-95 mb-4">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -3601,19 +3613,54 @@ function updateModularIconActiveStates() {
     }
     const orderCode = generateOrderCode();
     const isComplete = !!orderCode;
+
+    // Pobierz elementy cenowe
+    const originalPriceSummary = document.getElementById('originalPriceSummary');
+    const priceSummary = document.getElementById('priceSummary');
+    const mainPageDiscountHint = document.getElementById('mainPageDiscountHint');
+
     if (isComplete) {
         const pD = computePriceDetailed();
         if (pD !== null) {
             priceAndActionsContainer.style.display = 'block';
             priceHint.style.display = 'none';
-            priceSummary.textContent = pD.total + " zł";
+
+            const originalPrice = pD.total;
+            const totalItemsInCart = cart.reduce((sum, item) => sum + item.quantity, 0);
+            
+            // Logika rabatu na stronie głównej
+            if (totalItemsInCart === 0) {
+                // Jeśli koszyk jest pusty, pokaż rabat -10% na pierwszy produkt
+                const discountedPrice = originalPrice * 0.90;
+                originalPriceSummary.textContent = originalPrice.toFixed(2) + " zł";
+                priceSummary.textContent = discountedPrice.toFixed(2) + " zł";
+                originalPriceSummary.style.display = 'block';
+                mainPageDiscountHint.textContent = "Otrzymujesz 10% rabatu!";
+                mainPageDiscountHint.classList.add('visible');
+                
+            } else if (totalItemsInCart === 1) {
+                // Jeśli w koszyku jest jeden produkt, pokaż rabat -25% na drugi (tańszy)
+                const discountedPrice = originalPrice * 0.75;
+                originalPriceSummary.textContent = originalPrice.toFixed(2) + " zł";
+                priceSummary.textContent = discountedPrice.toFixed(2) + " zł";
+                originalPriceSummary.style.display = 'block';
+                mainPageDiscountHint.textContent = "Brawo! Na tę półkę otrzymasz aż 25% zniżki!";
+                mainPageDiscountHint.classList.add('visible');
+
+            } else {
+                // Jeśli w koszyku są 2 lub więcej produkty, po prostu pokaż cenę bazową
+                priceSummary.textContent = originalPrice.toFixed(2) + " zł";
+                originalPriceSummary.style.display = 'none';
+                mainPageDiscountHint.classList.remove('visible');
+            }
+            
             if (desktopCartContainer) {
                 desktopCartContainer.classList.remove('animate-pulse-bg');
                 void desktopCartContainer.offsetWidth;
                 desktopCartContainer.classList.add('animate-pulse-bg');
             }
             if (mobile3dActionsContainer) mobile3dActionsContainer.style.display = 'flex';
-            if (mobilePriceValue) mobilePriceValue.textContent = pD.total + " zł";
+            if (mobilePriceValue) mobilePriceValue.textContent = priceSummary.textContent; // Aktualizuj cenę mobilną
             if (orderSummarySection) {
                 orderSummarySection.classList.add('summary-highlight');
             }
@@ -3633,7 +3680,7 @@ function updateModularIconActiveStates() {
     updateMobileShelfInfo();
     updateSectionHighlights();
 }
-       function generateOrderCode() { const shelfTypeVal = shelfTypeSelect.value; const sideColorVal = sideColorSelect.value || ''; const shelfColorVal = shelfColorSelect.value || ''; if (!shelfTypeVal || !sideColorVal || !shelfColorVal) return null; const typeCode = valueToCode.type[shelfTypeVal]; const sideColorCode = valueToCode.color[sideColorVal]; const shelfColorCode = valueToCode.color[shelfColorVal]; if (!typeCode || sideColorCode === undefined || shelfColorCode === undefined) return null; 
+function generateOrderCode() { const shelfTypeVal = shelfTypeSelect.value; const sideColorVal = sideColorSelect.value || ''; const shelfColorVal = shelfColorSelect.value || ''; if (!shelfTypeVal || !sideColorVal || !shelfColorVal) return null; const typeCode = valueToCode.type[shelfTypeVal]; const sideColorCode = valueToCode.color[sideColorVal]; const shelfColorCode = valueToCode.color[shelfColorVal]; if (!typeCode || sideColorCode === undefined || shelfColorCode === undefined) return null; 
             if (shelfTypeVal === 'modular') {
                 const moduleW = moduleWidthSelect.value;
                 const moduleH = moduleHeightSelect.value;
