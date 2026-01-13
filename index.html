@@ -3742,56 +3742,58 @@ function generateOrderCode() { const shelfTypeVal = shelfTypeSelect.value; const
             code = code.trim().toLowerCase();
             const parts = code.split('-');
 
-        if (parts[0] === 'm' && (parts.length === 6 || parts.length === 7)) { 
-            const [_, widthPart, heightPart, connectPart, depthPart, colorPart, optionsPart] = parts;
-            const moduleW = parseInt(widthPart.substring(1));
-            const moduleH = parseInt(heightPart.substring(1));
-            const connectW = parseInt(connectPart.substring(1));
-            const depth = parseInt(depthPart.substring(1));
-            const sideColorValue = codeToValue.color[colorPart[0]];
-            const shelfColorValue = codeToValue.color[colorPart[1]];
+            // Logika dla półek modułowych (M)
+            if (parts[0] === 'm' && (parts.length === 6 || parts.length === 7)) { 
+                const [_, widthPart, heightPart, connectPart, depthPart, colorPart, optionsPart] = parts;
+                const moduleW = parseInt(widthPart.substring(1));
+                const moduleH = parseInt(heightPart.substring(1));
+                const connectW = parseInt(connectPart.substring(1));
+                const depth = parseInt(depthPart.substring(1));
+                const sideColorValue = codeToValue.color[colorPart[0]];
+                const shelfColorValue = codeToValue.color[colorPart[1]];
 
-            if(!moduleW || !moduleH || !connectW || !depth || !sideColorValue || !shelfColorValue) return { error: 'Nieprawidłowe wartości w kodzie półki modułowej.'};
-            
-            const totalWidth = (moduleW * 2) + connectW;
-            let shelfNum = 3; 
-            if (moduleH === 40) shelfNum = 2;
-            if (moduleH === 80) shelfNum = 5;
-            const totalShelves = (2 * (shelfNum + 2)) + (shelfNum + 1);
-            const gap = ((moduleH - 2 * 1.8) - shelfNum * 1.8) / (shelfNum + 1);
-            
-            let optionsText = [];
-            let rawOptions = {};
-            if (optionsPart) {
-                if (optionsPart.includes('t')) { optionsText.push("Bez górnej półki"); rawOptions.noTopShelf = true; }
-                if (optionsPart.includes('b')) { optionsText.push("Bez dolnej podstawy (wersja wisząca)"); rawOptions.noBottomShelf = true; }
+                if(!moduleW || !moduleH || !connectW || !depth || !sideColorValue || !shelfColorValue) return { error: 'Nieprawidłowe wartości w kodzie półki modułowej.'};
+                
+                const totalWidth = (moduleW * 2) + connectW;
+                let shelfNum = 3; 
+                if (moduleH === 40) shelfNum = 2;
+                if (moduleH === 80) shelfNum = 5;
+                const totalShelves = (2 * (shelfNum + 2)) + (shelfNum + 1);
+                const gap = ((moduleH - 2 * 1.8) - shelfNum * 1.8) / (shelfNum + 1);
+                
+                let optionsText = [];
+                let rawOptions = {};
+                if (optionsPart) {
+                    if (optionsPart.includes('t')) { optionsText.push("Bez górnej półki"); rawOptions.noTopShelf = true; }
+                    if (optionsPart.includes('b')) { optionsText.push("Bez dolnej podstawy (wersja wisząca)"); rawOptions.noBottomShelf = true; }
+                }
+                 if (optionsText.length === 0) optionsText.push("Standardowa");
+
+                return {
+                    error: null,
+                    code: code.toUpperCase(),
+                    isModular: true,
+                    shelfTypeValue: 'modular',
+                    shelfType: 'Półka modułowa',
+                    moduleWidth: moduleW,
+                    moduleHeight: moduleH,
+                    connectingWidth: connectW,
+                    depth: depth,
+                    height: moduleH,
+                    totalWidth: `${totalWidth} cm`,
+                    totalShelves: `${totalShelves} szt.`,
+                    komponenty: `${moduleW}cm + ${connectW}cm + ${moduleW}cm`,
+                    gap: `${gap.toFixed(1)} cm`,
+                    sideColorValue,
+                    sideColor: sideColorSelect.querySelector(`option[value="${sideColorValue}"]`)?.textContent || 'Nieznany',
+                    shelfColorValue,
+                    shelfColor: shelfColorSelect.querySelector(`option[value="${shelfColorValue}"]`)?.textContent || 'Nieznany',
+                    options: optionsText.join(' / '),
+                    raw: rawOptions
+                };
             }
-             if (optionsText.length === 0) optionsText.push("Standardowa");
 
-            return {
-                error: null,
-                code: code.toUpperCase(),
-                isModular: true,
-                shelfTypeValue: 'modular',
-                shelfType: 'Półka modułowa',
-                moduleWidth: moduleW,
-                moduleHeight: moduleH,
-                connectingWidth: connectW,
-                depth: depth,
-                height: moduleH,
-                totalWidth: `${totalWidth} cm`,
-                totalShelves: `${totalShelves} szt.`,
-                komponenty: `${moduleW}cm + ${connectW}cm + ${moduleW}cm`,
-                gap: `${gap.toFixed(1)} cm`,
-                sideColorValue,
-                sideColor: sideColorSelect.querySelector(`option[value="${sideColorValue}"]`)?.textContent || 'Nieznany',
-                shelfColorValue,
-                shelfColor: shelfColorSelect.querySelector(`option[value="${shelfColorValue}"]`)?.textContent || 'Nieznany',
-                options: optionsText.join(' / '),
-                raw: rawOptions
-            };
-        }
-
+            // Logika dla standardowych półek
             if (parts.length !== 8) return { error: `Nieprawidłowy format kodu (oczekiwano 8 części, znaleziono ${parts.length}).` };
             const [typeCode, widthStr, heightStr, depthStr, shelfCountStr, sideColorCode, shelfColorCode, optionsCode] = parts;
 
@@ -3834,11 +3836,18 @@ function generateOrderCode() { const shelfTypeVal = shelfTypeSelect.value; const
                 
                 gapInfo = "ok. 10.9 cm";
             } else {
+                // Wykrywanie opcji "Bez góry/dołu"
                 if (optionsCode.includes('t')) { optionsText.push("Bez górnej półki"); rawOptions.noTopShelf = true; }
                 if (optionsCode.includes('b') && shelfTypeValue === 'standing') { optionsText.push("Bez dolnej półki (podstawy)"); rawOptions.noBottomShelf = true; }
                 
+                // --- TU JEST ZMIANA DOTYCZĄCA OBLICZANIA ODSTĘPU ---
                 const t = 1.8;
-                const availableHeight = height - (rawOptions.noTopShelf ? 0 : t) - (rawOptions.noBottomShelf ? 0 : t);
+                // Zamiast warunkowego odejmowania (rawOptions.noTopShelf ? 0 : t),
+                // odejmujemy zawsze 2 * t (góra i dół).
+                // Dzięki temu "odstęp" wyświetlany klientowi jest taki sam jak w wersji z pełną obudową,
+                // co sugeruje standardowe nawiercenia otworów.
+                const availableHeight = height - 2 * t; 
+                
                 const totalShelvesThickness = shelfCount * t;
                 const gaps = shelfCount + 1;
                 if (availableHeight >= totalShelvesThickness && gaps > 0) {
