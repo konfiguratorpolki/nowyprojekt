@@ -12,6 +12,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Konfigurator Półki</title>
+    <script src="ceny.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
@@ -3111,29 +3112,7 @@ Zadaj pytanie", wklejając kod w wiadomości.</span></li>
         const originalPreviewMaterialParams = { color: 0x777777, metalness: 0, roughness: 0.6 };
         let originalWidthOptions = [];
         let originalHeightOptions = [];
-        const pricing = {
-    "34": {
-        "40": { "10": { "2": 150 }, "15": { "2": 250 } },
-        "60": { "10": { "2": 175, "3": 200 }, "15": { "2": 275, "3": 300 } },
-        "80": { "10": { "2": 223, "3": 237, "4": 251, "5": 279 }, "15": { "2": 323, "3": 337, "4": 351, "5": 379 } }
-    },
-    "44": {
-        "40": { "10": { "2": 169 }, "15": { "2": 269 } },
-        "60": { "10": { "2": 179, "3": 189 }, "15": { "2": 279, "3": 289 } },
-        "80": { "10": { "2": 239, "3": 254, "4": 269, "5": 299 }, "15": { "2": 339, "3": 354, "4": 369, "5": 399 } }
-    },
-    "50": {
-        "40": { "10": { "2": 179 }, "15": { "2": 279 } },
-        "60": { "10": { "2": 189, "3": 199 }, "15": { "2": 289, "3": 299 } },
-        "80": { "10": { "2": 263, "3": 280, "4": 296, "5": 329 }, "15": { "2": 363, "3": 380, "4": 396, "5": 429 } }
-    },
-    "60": {
-        "40": { "10": { "2": 179 }, "15": { "2": 279 } },
-        "60": { "10": { "2": 209, "3": 219 }, "15": { "2": 309, "3": 319 } },
-        "80": { "10": { "2": 279, "3": 297, "4": 314, "5": 349 }, "15": { "2": 379, "3": 397, "4": 414, "5": 449 } }
-    }
-};
-        const mugShelfPricing = { "44": { "40": 169, "60": 189 }, "60": { "40": 179, "60": 219 }, "84": { "40": 299 } };
+        // pricing, mugShelfPricing, FEES, DISCOUNTS — wczytane z ceny.js
         const galleryData = [ { title: 'Półki wiszące', imgs: ['img/1.jpg', 'img/2.jpg', 'img/3.jpg', 'img/4.jpg', 'img/5.jpg', 'img/1f.jpg', 'img/2f.jpg', 'img/3f.jpg', 'img/4f.jpg', 'img/6.jpg', 'img/7.jpg', 'img/8.jpg', 'img/9.jpg', 'img/10.jpg', 'img/11.jpg', 'img/12.jpg', 'img/13.jpg', 'img/14.jpg', 'img/15.jpg'] }, { title: 'Półki stojące', imgs: ['img/1a.jpg', 'img/2a.jpg', 'img/3a.jpg', 'img/4a.jpg', 'img/5a.jpg', 'img/6a.jpg', 'img/7a.jpg', 'img/8a.jpg', 'img/9a.jpg', 'img/10a.jpg', 'img/11a.jpg'] }, { title: 'Półki na kubki', imgs: ['img/1b.jpg', 'img/2b.jpg', 'img/3b.jpg', 'img/4b.jpg', 'img/5b.jpg', 'img/6b.jpg', 'img/7b.jpg', 'img/8b.jpg', 'img/9b.jpg', 'img/10b.jpg', 'img/11b.jpg', 'img/12b.jpg', 'img/13b.jpg', 'img/14b.jpg', 'img/15b.jpg'] }, { title: 'Półka modułowa', imgs: ['img/modular_main.jpg', 'img/modular_1.jpg', 'img/modular_2.jpg'] } ];
         const codeToValue = { type: { s: 'standing', h: 'hanging', m: 'mug_shelf', M: 'modular'}, color: { '0': '#8B5A2B', '1': '#FFFFFF', '2': '#000000' }, mugMount: { h: 'hanging', s: 'standing' } };
         const valueToCode = { type: { standing: 's', hanging: 'h', mug_shelf: 'm', modular: 'M' }, color: { '#8B5A2B': '0', '#FFFFFF': '1', '#000000': '2' } };
@@ -3145,7 +3124,7 @@ Zadaj pytanie", wklejając kod w wiadomości.</span></li>
         function decreaseQuantity(itemCode) { const item = cart.find(i => i.code === itemCode); if (item && item.quantity > 1) { item.quantity--; } else { cart = cart.filter(i => i.code !== itemCode); } updateCartDisplay(); }
         function removeFromCart(itemCode) { cart = cart.filter(item => item.code !== itemCode); updateCartDisplay(); }
         
-        function calculateCartTotal() { const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0); let discount10 = 0; let discount25 = 0; const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0); if (totalItems === 1) { const itemPrice = cart[0].price; discount10 = itemPrice * 0.10; } else if (totalItems >= 2) { const allPrices = []; cart.forEach(item => { for (let i = 0; i < item.quantity; i++) { allPrices.push(item.price); } }); allPrices.sort((a, b) => b - a); const maxPrice = allPrices[0]; const minPrice = allPrices[allPrices.length - 1]; discount10 = maxPrice * 0.10; discount25 = minPrice * 0.25; } const totalDiscount = discount10 + discount25; const total = subtotal - totalDiscount; return { subtotal, discount10, discount25, totalDiscount, total }; }
+        function calculateCartTotal() { const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0); let discount10 = 0; let discount25 = 0; const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0); if (totalItems === 1) { const itemPrice = cart[0].price; discount10 = itemPrice * DISCOUNTS.discount1item; } else if (totalItems >= 2) { const allPrices = []; cart.forEach(item => { for (let i = 0; i < item.quantity; i++) { allPrices.push(item.price); } }); allPrices.sort((a, b) => b - a); const maxPrice = allPrices[0]; const minPrice = allPrices[allPrices.length - 1]; discount10 = maxPrice * DISCOUNTS.discountBest; discount25 = minPrice * DISCOUNTS.discountCheap; } const totalDiscount = discount10 + discount25; const total = subtotal - totalDiscount; return { subtotal, discount10, discount25, totalDiscount, total }; }
         function openCart() { if (cartPanel && cartPanelOverlay) { cartPanel.classList.add('visible'); cartPanelOverlay.classList.add('visible'); document.body.style.overflow = 'hidden'; } }
         function closeCart() { if (cartPanel && cartPanelOverlay) { cartPanel.classList.remove('visible'); cartPanelOverlay.classList.remove('visible'); document.body.style.overflow = ''; } }
         
@@ -4659,17 +4638,17 @@ function fitCameraToShelf() {
                 if (!baseShelfPrice) return null;
                 const connectingShelfCount = shelfNum + 1;
                 let connectingPrice = 0;
-                if (connectingW === 30) { connectingPrice = connectingShelfCount * 10; } else if (connectingW === 40) { connectingPrice = connectingShelfCount * 15; } else { return null; }
+                if (connectingW === 30) { connectingPrice = connectingShelfCount * FEES.modularConnector[30]; } else if (connectingW === 40) { connectingPrice = connectingShelfCount * FEES.modularConnector[40]; } else { return null; }
                 
                 let deduction = 0;
                 const noTop = document.getElementById('modularNoTopShelf')?.checked;
                 const noBottom = document.getElementById('modularNoBottomShelf')?.checked;
 
-                if (noTop) deduction += 20;
-                if (noBottom) deduction += 20;
+                if (noTop) deduction += FEES.modularNoTop;
+                if (noBottom) deduction += FEES.modularNoBottom;
 
                 const total = (baseShelfPrice * 2) + connectingPrice - deduction;
-                return { base: (baseShelfPrice * 2) + connectingPrice, extra: 0, divider: 0, deduction: deduction, total: Math.max(100, total) };
+                return { base: (baseShelfPrice * 2) + connectingPrice, extra: 0, divider: 0, deduction: deduction, total: Math.max(FEES.modularMinPrice, total) };
             }
             const widthVal = getCurrentWidth(); const heightVal = heightSelect.value; const depthVal = depthSelect.value; const shelfCountVal = shelfCountSelect.value; if (!shelfType || isNaN(widthVal) || !heightVal || !depthVal || !shelfCountVal || widthVal === "" || heightVal === "" || depthVal === "" || shelfCountVal === "" || (shelfType !== 'mug_shelf' && shelfCountVal === "0")) { return null; } let basePrice = null; let extraFee = 0; let deduction = 0; let dividerFee = 0; if (shelfType === 'mug_shelf') { const selectedMountRadio = document.querySelector('input[name="mugShelfMount"]:checked'); if (!selectedMountRadio) return null; if (mugShelfPricing[String(widthVal)]?.[heightVal] !== undefined) { basePrice = mugShelfPricing[String(widthVal)][heightVal]; } else { return null; } 
         const dividersTopChecked = dividersTopCheckbox?.checked; 
@@ -4679,7 +4658,7 @@ function fitCameraToShelf() {
             return null;
         }
         if (widthVal == 84) { if (dividersTopChecked) dividerFee += 33; if (dividersMiddleChecked) dividerFee += 33; if (dividersBottomChecked) dividerFee += 33; } else { let feePerDividerRow = 0; if (widthVal == 44) feePerDividerRow = 27; else if (widthVal == 60) feePerDividerRow = 40; if (feePerDividerRow > 0) { if (dividersTopChecked) dividerFee += feePerDividerRow; if (dividersMiddleChecked) dividerFee += feePerDividerRow; if (dividersBottomChecked) dividerFee += feePerDividerRow; } } 
-    } else { let baseWidthKey; const isCustomWidth = widthSelect.value === 'custom'; if (isCustomWidth) { if (isNaN(widthVal) || widthVal < 35 || widthVal > 59) return null; baseWidthKey = widthVal < 39 ? "34" : widthVal < 47 ? "44" : widthVal < 54 ? "50" : "60"; extraFee = 50; } else { baseWidthKey = String(widthVal); } if (pricing[baseWidthKey]?.[heightVal]?.[depthVal]?.[shelfCountVal] !== undefined) { basePrice = pricing[baseWidthKey][heightVal][depthVal][shelfCountVal]; } else { return null; } if (document.getElementById('noTopShelf')?.checked) deduction += 10; if (shelfType === 'standing' && document.getElementById('noBottomShelf')?.checked) deduction += 10; } if (basePrice === null) return null; const customFee = (typeof customPositionsModified !== 'undefined' && customPositionsModified) ? 50 : 0; const totalPrice = basePrice + extraFee + dividerFee + customFee - deduction; return { base: basePrice, extra: extraFee, divider: dividerFee, customFee: customFee, deduction: deduction, total: Math.max(50, totalPrice) }; }
+    } else { let baseWidthKey; const isCustomWidth = widthSelect.value === 'custom'; if (isCustomWidth) { if (isNaN(widthVal) || widthVal < 35 || widthVal > 59) return null; baseWidthKey = widthVal < 39 ? "34" : widthVal < 47 ? "44" : widthVal < 54 ? "50" : "60"; extraFee = FEES.customWidth; } else { baseWidthKey = String(widthVal); } if (pricing[baseWidthKey]?.[heightVal]?.[depthVal]?.[shelfCountVal] !== undefined) { basePrice = pricing[baseWidthKey][heightVal][depthVal][shelfCountVal]; } else { return null; } if (document.getElementById('noTopShelf')?.checked) deduction += FEES.noTopShelf; if (shelfType === 'standing' && document.getElementById('noBottomShelf')?.checked) deduction += FEES.noBottomShelf; } if (basePrice === null) return null; const customFee = (typeof customPositionsModified !== 'undefined' && customPositionsModified) ? FEES.customPositions : 0; const totalPrice = basePrice + extraFee + dividerFee + customFee - deduction; return { base: basePrice, extra: extraFee, divider: dividerFee, customFee: customFee, deduction: deduction, total: Math.max(FEES.minPrice, totalPrice) }; }
         function updateSectionHighlights() {
             const sections = [shelfTypeSectionAnchor, dimensionSectionAnchor, colorSectionAnchor, shelfCountSection];
             const mugParent = mugShelfSpecificOptionsContainer ? mugShelfSpecificOptionsContainer.closest('.p-6.shadow.rounded-lg') : null;
@@ -4981,7 +4960,7 @@ function fitCameraToShelf() {
             // Logika rabatu na stronie głównej
             if (totalItemsInCart === 0) {
                 // Jeśli koszyk jest pusty, pokaż rabat -10% na pierwszy produkt
-                const discountedPrice = originalPrice * 0.90;
+                const discountedPrice = originalPrice * (1 - DISCOUNTS.discount1item);
                 originalPriceSummary.textContent = originalPrice.toFixed(2) + " zł";
                 priceSummary.textContent = discountedPrice.toFixed(2) + " zł";
                 originalPriceSummary.style.display = 'block';
@@ -4990,7 +4969,7 @@ function fitCameraToShelf() {
                 
             } else if (totalItemsInCart === 1) {
                 // Jeśli w koszyku jest jeden produkt, pokaż rabat -25% na drugi (tańszy)
-                const discountedPrice = originalPrice * 0.75;
+                const discountedPrice = originalPrice * (1 - DISCOUNTS.discountCheap);
                 originalPriceSummary.textContent = originalPrice.toFixed(2) + " zł";
                 priceSummary.textContent = discountedPrice.toFixed(2) + " zł";
                 originalPriceSummary.style.display = 'block';
@@ -5442,7 +5421,7 @@ function generateOrderCode() { const shelfTypeVal = shelfTypeSelect.value; const
                 }
 
                 if (priceDetails) {
-                     const discountedPrice = priceDetails.total * 0.90;
+                     const discountedPrice = priceDetails.total * (1 - DISCOUNTS.discount1item);
                      const row = document.createElement('div');
                      row.className = 'spec-row border-t-2 border-stone-200 mt-2 pt-2';
                      const dt = document.createElement('dt');
@@ -5548,7 +5527,7 @@ function generateOrderCode() { const shelfTypeVal = shelfTypeSelect.value; const
                 }
 
                 if (priceDetails) {
-                    const discountedPrice = priceDetails.total * 0.90;
+                    const discountedPrice = priceDetails.total * (1 - DISCOUNTS.discount1item);
                     const dt = document.createElement('dt');
                     dt.textContent = 'Cena';
                     const dd = document.createElement('dd');
@@ -5683,7 +5662,7 @@ function generateOrderCode() { const shelfTypeVal = shelfTypeSelect.value; const
             ].filter(Boolean).filter(([,v]) => v && v !== 'n/d' && !v.startsWith('undefined'));
 
             const code = details.code||'—';
-            const disc = priceDetails ? (priceDetails.total * 0.90).toFixed(2) : null;
+            const disc = priceDetails ? (priceDetails.total * (1 - DISCOUNTS.discount1item)).toFixed(2) : null;
             const orig = priceDetails ? priceDetails.total.toFixed(2) : null;
 
             // Montaż — z kodu półki
@@ -5962,7 +5941,7 @@ function generateOrderCode() { const shelfTypeVal = shelfTypeSelect.value; const
 
             // ---- Cena ----
             if (priceDetails) {
-                const discountedPrice = (priceDetails.total * 0.90).toFixed(2);
+                const discountedPrice = (priceDetails.total * (1 - DISCOUNTS.discount1item)).toFixed(2);
                 const originalPrice = priceDetails.total.toFixed(2);
                 doc.setFillColor(...green);
                 doc.roundedRect(margin, y, contentW, 20, 3, 3, 'F');
@@ -7516,7 +7495,7 @@ async function generateCompositeImage(shelves) {
 
         // Cena w karcie
         if (shelf.price) {
-            const disc = (shelf.price.total * 0.90).toFixed(2);
+            const disc = (shelf.price.total * (1 - DISCOUNTS.discount1item)).toFixed(2);
             const orig = shelf.price.total.toFixed(2);
             const priceY = cardY + CARD_H - priceAreaH;
             ctx.strokeStyle = '#e5e7eb'; ctx.lineWidth = 1;
