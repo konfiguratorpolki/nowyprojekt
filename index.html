@@ -66,6 +66,50 @@
 }
 /* ---- KONIEC NOWYCH STYLÓW ---- */
 
+/* ---- DYMEK MOWY — przycisk 3D (mobile) ---- */
+@media (max-width: 767px) {
+    #tooltip3dBubble {
+        position: absolute;
+        bottom: calc(100% + 10px);
+        left: 50%;
+        transform: translateX(-50%);
+        background: #facc15;
+        border-radius: 10px;
+        padding: 6px 11px;
+        white-space: nowrap;
+        font-size: 11px;
+        font-weight: 700;
+        color: #713f12;
+        box-shadow: 0 3px 12px rgba(250, 204, 21, 0.45);
+        pointer-events: none;
+        animation: tooltip3dBob 2s ease-in-out infinite;
+        z-index: 60;
+        transition: opacity 0.25s ease, transform 0.25s ease;
+        line-height: 1.3;
+    }
+    #tooltip3dBubble::after {
+        content: '';
+        position: absolute;
+        bottom: -7px;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 7px solid transparent;
+        border-top: 7px solid #facc15;
+        border-bottom: 0;
+    }
+    #tooltip3dBubble.hidden {
+        opacity: 0;
+        pointer-events: none;
+        animation: none;
+        transform: translateX(-50%) translateY(-6px);
+    }
+    @keyframes tooltip3dBob {
+        0%, 100% { transform: translateX(-50%) translateY(0); }
+        50%       { transform: translateX(-50%) translateY(-5px); }
+    }
+}
+/* ---- KONIEC DYMKA 3D ---- */
+
 /* --- Style dla FINAŁOWEJ animacji TRANSFORMACJI z galerii (sterowanej przez GSAP) --- */
 .image-explode-container {
     position: fixed;
@@ -3060,7 +3104,7 @@ Zadaj pytanie", wklejając kod w wiadomości.</span></li>
     <button onclick="scrollToElementAndHighlight('dimensionSectionAnchor', 'start', this)" title="Przewiń do wymiarów"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75" /> <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v16.5M20.25 3.75v16.5" /> </svg> <span>Wymiary</span> </button>
     <button onclick="scrollToElementAndHighlight('colorSectionAnchor', 'start', this)" title="Przewiń do kolorów"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42" /> </svg> <span>Kolory</span> </button>
     <button onclick="scrollToElementAndHighlight('shelfCountSection', 'center', this)" title="Przewiń do dodawania półek"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /> <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 9h16.5M3.75 15h16.5" /> </svg> <span>Półki</span> </button>
-    <button id="show3dButton" title="Pokaż/ukryj podgląd 3D"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="animate-spin-slow"> <path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9.75l-9 5.25M12 21v-9.75" /> </svg> <span>Zobacz 3D</span> </button>
+    <button id="show3dButton" style="position:relative" title="Pokaż/ukryj podgląd 3D"> <div id="tooltip3dBubble">👁 Zobacz swój projekt 3D!</div> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="animate-spin-slow"> <path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9.75l-9 5.25M12 21v-9.75" /> </svg> <span>Zobacz 3D</span> </button>
     
     <button id="mobileCartButton" class="relative" title="Pokaż koszyk">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mb-1">
@@ -6395,7 +6439,7 @@ function generateOrderCode() { const shelfTypeVal = shelfTypeSelect.value; const
             if (d.classList.contains('open')) closeMobileParamsDrawer();
             else openMobileParamsDrawer();
         }
-        function initialize3dPanel() { show3dButton = document.getElementById('show3dButton'); collapse3dPanelButton = document.getElementById('collapse3dPanelButton'); if (show3dButton && collapse3dPanelButton && shelfContainer) { show3dButton.addEventListener('click', open3dPanel); console.log("Panel 3D zainicjalizowany."); } else { let missing = []; if (!show3dButton) missing.push("show3dButton"); if (!collapse3dPanelButton) missing.push("collapse3dPanelButton (lub jego odpowiednik)"); if (!shelfContainer) missing.push("shelfContainer"); console.warn(`Nie znaleziono elementów panelu 3D: ${missing.join(', ')}. Funkcjonalność może nie działać poprawnie.`); } }
+        function initialize3dPanel() { show3dButton = document.getElementById('show3dButton'); collapse3dPanelButton = document.getElementById('collapse3dPanelButton'); if (show3dButton && collapse3dPanelButton && shelfContainer) { show3dButton.addEventListener('click', open3dPanel); const tooltip3d = document.getElementById('tooltip3dBubble'); if (tooltip3d) { show3dButton.addEventListener('click', function() { tooltip3d.classList.add('hidden'); }, { once: true }); } console.log("Panel 3D zainicjalizowany."); } else { let missing = []; if (!show3dButton) missing.push("show3dButton"); if (!collapse3dPanelButton) missing.push("collapse3dPanelButton (lub jego odpowiednik)"); if (!shelfContainer) missing.push("shelfContainer"); console.warn(`Nie znaleziono elementów panelu 3D: ${missing.join(', ')}. Funkcjonalność może nie działać poprawnie.`); } }
 
         document.addEventListener('DOMContentLoaded', () => {
             const tickerContent = document.querySelector('.info-ticker-content');
