@@ -3070,6 +3070,43 @@ Zadaj pytanie", wklejając kod w wiadomości.</span></li>
         <span class="cart-badge" style="top: 0; right: 8px; width: 1rem; height: 1rem; font-size: 0.65rem; display: none;">0</span>
     </button>
 </div>
+
+<script>
+/* ===== ŚLEDZENIE GA4 ===== */
+(function() {
+    function sendGA4(eventName, label) {
+        if (typeof gtag === 'function') {
+            gtag('event', eventName, { button_label: label });
+        }
+    }
+    window.addEventListener('load', function() {
+        var bar = document.getElementById('stickyFooterBar');
+        if (!bar) return;
+        bar.querySelectorAll('button').forEach(function(btn) {
+            var span = btn.querySelector('span');
+            var label = span ? span.textContent.trim() : (btn.id || 'nieznany');
+            btn.addEventListener('click', function() {
+                var mapa = {
+                    'Wymiary':   'klik_wymiary',
+                    'Kolory':    'klik_kolory',
+                    'P\u00f3\u0142ki': 'klik_polki',
+                    'Zobacz 3D': 'klik_zobacz_3d',
+                    'Koszyk':    'klik_koszyk'
+                };
+                sendGA4(mapa[label] || 'klik_nawigacja', label);
+            });
+        });
+        var addBtn = document.getElementById('addToCartBtn');
+        if (addBtn) {
+            addBtn.addEventListener('click', function() {
+                sendGA4('klik_dodaj_do_koszyka', 'Dodaj do koszyka');
+            });
+        }
+    });
+})();
+/* ===== KONIEC ŚLEDZENIA ===== */
+</script>
+
 <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
 <script>
 // --- Zmienne globalne i elementy DOM ---
