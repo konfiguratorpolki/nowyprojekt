@@ -500,14 +500,20 @@ body.no-scroll {
 
         #topBarCollapse {
             display: flex; align-items: center; justify-content: center;
-            width: 28px; height: 28px;
-            background: rgba(255,255,255,0.6);
-            border: 1px solid rgba(209,213,219,0.5);
-            border-radius: 8px; cursor: pointer;
-            transition: all 0.15s ease; flex-shrink: 0;
+            gap: 5px;
+            height: 28px;
+            padding: 0 11px 0 9px;
+            background: #f3f4f6;
+            border: 1px solid #d1d5db;
+            border-radius: 99px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            flex-shrink: 0;
+            white-space: nowrap;
         }
-        #topBarCollapse:active { transform: scale(0.92); }
-        #topBarCollapse svg { width: 14px; height: 14px; color: #6b7280; }
+        #topBarCollapse:active { transform: scale(0.95); background: #e5e7eb; }
+        #topBarCollapse svg { width: 13px; height: 13px; stroke: #374151; stroke-width: 2.5; flex-shrink: 0; }
+        #topBarCollapse .tcl-label { font-size: 10px; font-weight: 700; color: #374151; line-height: 1; }
 
         #collapse3dPanelButton { display: none !important; }
 
@@ -2226,6 +2232,99 @@ body.no-scroll {
     .drag-hint { font-size: 11px; padding: 6px 14px; }
     .drag-hint svg { width: 14px; height: 14px; }
 }
+
+/* ======================================================
+   MOBILE SECTION ATTENTION — pulsująca ramka (Propozycja ①)
+   ====================================================== */
+@media (max-width: 767px) {
+
+  /* Kontener sekcji — aktywna */
+  .mobile-section-active {
+    position: relative !important;
+    border-radius: 0.75rem !important;
+    z-index: 1 !important;
+  }
+
+  /* Pulsująca zielona obwódka */
+  .mobile-section-active::before {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: calc(0.75rem + 3px);
+    pointer-events: none;
+    z-index: 50;
+    border: 2.5px solid #16a34a;
+    animation: msaPulse 1.9s ease-in-out infinite;
+  }
+
+  @keyframes msaPulse {
+    0%, 100% {
+      border-color: rgba(22, 163, 74, 0.45);
+      box-shadow: 0 0 0 0 rgba(22, 163, 74, 0), inset 0 0 0 rgba(22,163,74,0);
+    }
+    50% {
+      border-color: rgba(22, 163, 74, 1);
+      box-shadow: 0 0 0 7px rgba(22, 163, 74, 0), inset 0 0 22px rgba(22, 163, 74, 0.07);
+    }
+  }
+
+  /* Animowany pasek na górnej krawędzi ramki */
+  .mobile-section-active::after {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: 15%;
+    right: 15%;
+    height: 3.5px;
+    border-radius: 3px;
+    pointer-events: none;
+    z-index: 51;
+    background: linear-gradient(90deg, transparent 0%, #16a34a 25%, #4ade80 55%, #16a34a 75%, transparent 100%);
+    background-size: 200% 100%;
+    animation: msaShine 2s linear infinite;
+  }
+
+  @keyframes msaShine {
+    0%   { background-position: 200% center; opacity: 0.6; }
+    50%  { opacity: 1; }
+    100% { background-position: -200% center; opacity: 0.6; }
+  }
+
+  /* Selecty i inputy wewnątrz aktywnej sekcji */
+  .mobile-section-active select.custom-select {
+    border-color: #16a34a !important;
+    background-color: #f0fdf4 !important;
+    box-shadow: 0 0 0 2.5px rgba(22, 163, 74, 0.15) !important;
+    transition: all 0.3s ease !important;
+  }
+
+  /* Ikona aktywna — pulsujący ring */
+  #mobilePanelIcons button.mobile-icon-active {
+    animation: iconRingPulse 2s ease-in-out infinite !important;
+  }
+  @keyframes iconRingPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.55), 0 2px 8px rgba(22,163,74,0.12); }
+    50%       { box-shadow: 0 0 0 5px rgba(22, 163, 74, 0),   0 2px 14px rgba(22,163,74,0.3); }
+  }
+
+  /* Czerwona kropka "wymaga uwagi" na ikonkach */
+  #mobilePanelIcons button { position: relative; }
+  #mobilePanelIcons button.mobile-icon-needs-action::after {
+    content: '';
+    position: absolute;
+    top: 4px; right: 4px;
+    width: 7px; height: 7px;
+    background: #ef4444;
+    border-radius: 50%;
+    border: 1.5px solid #fff;
+    animation: needsDot 1.6s ease-in-out infinite;
+  }
+  @keyframes needsDot {
+    0%, 100% { transform: scale(1);   opacity: 1; }
+    50%       { transform: scale(1.4); opacity: 0.65; }
+  }
+
+}
 </style>
 </head>
 <body class="flex flex-col justify-center items-center min-h-screen bg-stone-100 font-sans text-stone-800 pb-20 md:pb-0">
@@ -2730,6 +2829,7 @@ Zadaj pytanie", wklejając kod w wiadomości.</span></li>
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/>
                         </svg>
+                        <span class="tcl-label">Zwiń 3D</span>
                     </button>
                 </div>
             </div>
@@ -4755,11 +4855,22 @@ function fitCameraToShelf() {
                 if (sec) sec.classList.remove('requires-attention');
             });
 
+            /* --- Mobile: helper do kropki "wymaga uwagi" na ikonce --- */
+            const _setIconNeedsAction = (queryStr, needs) => {
+                const btn = document.querySelector(`#mobilePanelIcons button[onclick*="${queryStr}"]`);
+                if (btn) {
+                    if (needs) btn.classList.add('mobile-icon-needs-action');
+                    else btn.classList.remove('mobile-icon-needs-action');
+                }
+            };
+
             // Krok 1: Sprawdź rodzaj półki
             if (!shelfTypeSelect.value) {
                 shelfTypeSectionAnchor.classList.add('requires-attention');
+                _setIconNeedsAction('shelfTypeSectionAnchor', true);
                 return;
             }
+            _setIconNeedsAction('shelfTypeSectionAnchor', false);
 
             const shelfType = shelfTypeSelect.value;
 
@@ -4781,29 +4892,35 @@ function fitCameraToShelf() {
 
             if (!dimensionsComplete) {
                 dimensionSectionAnchor.classList.add('requires-attention');
+                _setIconNeedsAction('dimensionSectionAnchor', true);
                 return;
             }
+            _setIconNeedsAction('dimensionSectionAnchor', false);
 
             // Krok 3: Sprawdź opcje specyficzne dla danego typu (przegródki lub liczba półek)
             if (shelfType === 'mug_shelf') {
                 const dividersSelected = dividersTopCheckbox?.checked || dividersMiddleCheckbox?.checked || dividersBottomCheckbox?.checked;
                 if (!dividersSelected) {
-                    // Opcje przegródek są w pierwszym oknie, więc je podświetlamy
                     shelfTypeSectionAnchor.classList.add('requires-attention');
+                    _setIconNeedsAction('shelfTypeSectionAnchor', true);
                     return;
                 }
             } else if (shelfType === 'standing' || shelfType === 'hanging') {
                 if (!shelfCountSelect.value || shelfCountSelect.value === "0") {
                     shelfCountSection.classList.add('requires-attention');
+                    _setIconNeedsAction('shelfCountSection', true);
                     return;
                 }
             }
+            _setIconNeedsAction('shelfCountSection', false);
 
             // Krok 4: Sprawdź kolory
             if (!sideColorSelect.value || !shelfColorSelect.value) {
                 colorSectionAnchor.classList.add('requires-attention');
+                _setIconNeedsAction('colorSectionAnchor', true);
                 return;
             }
+            _setIconNeedsAction('colorSectionAnchor', false);
         }
 
 
@@ -6064,7 +6181,60 @@ function generateOrderCode() { const shelfTypeVal = shelfTypeSelect.value; const
         function updateSwatchDisplay(selectElementId, swatchDisplayId) { const selectElement = document.getElementById(selectElementId); const swatchDisplay = document.getElementById(swatchDisplayId); if (!selectElement || !swatchDisplay) return; const selectedOption = selectElement.options[selectElement.selectedIndex]; const color = selectedOption ? selectedOption.dataset.color : null; if (color) { swatchDisplay.style.backgroundColor = color; swatchDisplay.style.display = 'inline-block'; if (color.toUpperCase() === '#FFFFFF') { swatchDisplay.classList.add('swatch-white-display'); } else { swatchDisplay.classList.remove('swatch-white-display'); } } else { swatchDisplay.style.backgroundColor = '#E5E7EB'; swatchDisplay.classList.remove('swatch-white-display'); } }
         function closeDetailsPanelIfNeeded() { const detailsPanel = document.getElementById('materialSamplesDetails'); if (detailsPanel && detailsPanel.open) { detailsPanel.open = false; } }
         function setActiveMobileIcon(clickedButton) { const mobileIconsContainer = document.getElementById('mobilePanelIcons'); if (!mobileIconsContainer) return; const buttons = mobileIconsContainer.querySelectorAll('button'); buttons.forEach(button => { button.classList.remove('mobile-icon-active'); }); if (clickedButton && buttons.length > 0) { clickedButton.classList.add('mobile-icon-active'); } }
-        function scrollToElementAndHighlight(elementId, blockPosition = 'start', clickedButton = null, inlinePosition = 'nearest') { const element = document.getElementById(elementId); if (element) { let highlightTarget = element.closest('.p-6.shadow.rounded-lg'); if (!highlightTarget) { highlightTarget = element.closest('.w-full.max-w-lg') || element; } document.querySelectorAll('.section-highlight-persistent').forEach(el => { if (el !== highlightTarget) { el.classList.remove('section-highlight-persistent'); } }); highlightTarget.scrollIntoView({ behavior: 'smooth', block: blockPosition, inline: inlinePosition }); if (clickedButton) { setActiveMobileIcon(clickedButton); } highlightTarget.classList.remove('section-highlight-flash'); void highlightTarget.offsetWidth; highlightTarget.classList.add('section-highlight-flash'); highlightTarget.classList.add('section-highlight-persistent'); setTimeout(() => { highlightTarget.classList.remove('section-highlight-flash'); }, 750); } else { console.error('Nie znaleziono elementu o ID do podświetlenia:', elementId); } }
+        function scrollToElementAndHighlight(elementId, blockPosition = 'start', clickedButton = null, inlinePosition = 'nearest') {
+            const element = document.getElementById(elementId);
+            if (!element) { console.error('Nie znaleziono elementu:', elementId); return; }
+
+            let highlightTarget = element.closest('.p-6.shadow.rounded-lg');
+            if (!highlightTarget) highlightTarget = element.closest('.w-full.max-w-lg') || element;
+
+            /* --- usuń poprzednie podświetlenia --- */
+            document.querySelectorAll('.section-highlight-persistent').forEach(el => {
+                if (el !== highlightTarget) el.classList.remove('section-highlight-persistent');
+            });
+            if (clickedButton) setActiveMobileIcon(clickedButton);
+
+            /* --- przewiń --- */
+            if (window.innerWidth < 768) {
+                /* Na mobile 3D zajmuje dolne 52vh → górna część to ~48vh.
+                   Chcemy, żeby sekcja była wyśrodkowana w tej górnej połowie. */
+                const visibleTopHeight = window.innerHeight * 0.48;
+                const elRect   = highlightTarget.getBoundingClientRect();
+                const elHeight = elRect.height;
+                const targetScrollY = window.scrollY + elRect.top
+                                    - (visibleTopHeight / 2)
+                                    + (elHeight / 2);
+                window.scrollTo({ top: Math.max(0, targetScrollY), behavior: 'smooth' });
+            } else {
+                highlightTarget.scrollIntoView({ behavior: 'smooth', block: blockPosition, inline: inlinePosition });
+            }
+
+            /* --- flash + persistent --- */
+            highlightTarget.classList.remove('section-highlight-flash');
+            void highlightTarget.offsetWidth;
+            highlightTarget.classList.add('section-highlight-flash');
+            highlightTarget.classList.add('section-highlight-persistent');
+            setTimeout(() => highlightTarget.classList.remove('section-highlight-flash'), 750);
+
+            /* --- MOBILE: pulsująca ramka, zniknie po wyborze --- */
+            if (window.innerWidth < 768) {
+                document.querySelectorAll('.mobile-section-active').forEach(el => el.classList.remove('mobile-section-active'));
+                highlightTarget.classList.add('mobile-section-active');
+
+                const inputs = highlightTarget.querySelectorAll('select, input[type="range"], input[type="radio"], input[type="checkbox"]');
+                const onInteract = () => {
+                    highlightTarget.classList.remove('mobile-section-active');
+                    inputs.forEach(i => {
+                        i.removeEventListener('change', onInteract);
+                        i.removeEventListener('input',  onInteract);
+                    });
+                };
+                inputs.forEach(i => {
+                    i.addEventListener('change', onInteract);
+                    i.addEventListener('input',  onInteract);
+                });
+            }
+        }
         function scrollToElement(elementId, blockPosition = 'start', clickedButton = null, inlinePosition = 'nearest') { const element = document.getElementById(elementId); if (element) { let targetElement = element.closest('.p-6.shadow.rounded-lg') || element.closest('.w-full.max-w-lg') || element; targetElement.scrollIntoView({ behavior: 'smooth', block: blockPosition, inline: inlinePosition }); } else { console.error('Nie znaleziono elementu o ID (scrollToElement):', elementId); } }
         function scrollToBottom() { window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }); }
         function openLightbox(imageSrc) { if (imageLightbox && lightboxImage) { lightboxImage.setAttribute('src', imageSrc); imageLightbox.classList.remove('hidden'); imageLightbox.classList.remove('opacity-0'); document.body.style.overflow = 'hidden'; } }
