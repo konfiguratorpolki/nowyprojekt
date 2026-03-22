@@ -3499,6 +3499,7 @@ Zadaj pytanie", wklejając kod w wiadomości.</span></li>
                     console.warn(`Shelf count ${config.shelfCount} not available for height ${config.height}. Defaulting or clearing.`);
                     if (shelfCountSelect.options.length > 0) shelfCountSelect.value = shelfCountSelect.options[0].value;
                 }
+                if (typeof showOrHideCustomShelfToggle === 'function') showOrHideCustomShelfToggle();
             }
             sideColorSelect.value = config.sideColor;
             shelfColorSelect.value = config.shelfColor;
@@ -6412,14 +6413,7 @@ function generateOrderCode() { const shelfTypeVal = shelfTypeSelect.value; const
             const imgContainer = document.createElement('div');
             imgContainer.className = 'gallery-image-container';
 
-            if (galleryIndex === 0 && i === 0) {
-                const introTileDiv = document.createElement('div');
-                introTileDiv.className = 'gallery-intro-tile';
-                introTileDiv.innerHTML = `<p><strong>Kliknij w zdjęcie</strong>, by przerobić gotową półkę, lub <strong>zaprojektuj własną</strong> od nowa.</p>`;
-                imgContainer.appendChild(introTileDiv);
-                setTimeout(() => { introTileDiv.classList.add('is-animating'); }, 100);
-                setTimeout(() => { introTileDiv.classList.add('fade-out'); }, 3500);
-            }
+
             
             const img = document.createElement('img');
             img.src = imgSrc;
@@ -6867,6 +6861,70 @@ if (show3dButtonForAnimation && window.innerWidth < 768) {
 }
 // +++ KONIEC NOWEGO KODU +++
                 
+                // ===== MOBILE INTRO ANIMATION =====
+                (function runMobileIntro() {
+                    if (window.innerWidth >= 768) return;
+                    if (sessionStorage.getItem('introPlayed')) return;
+                    if (navigator.hardwareConcurrency !== undefined && navigator.hardwareConcurrency <= 2) return;
+                    sessionStorage.setItem('introPlayed', '1');
+
+                    const GALLERY_IDX = 0;
+                    const IMAGE_IDX   = 0;
+
+                    let aborted = false;
+                    const abort = () => { aborted = true; };
+                    document.addEventListener('touchstart', abort, { once: true, passive: true });
+                    document.addEventListener('click', abort, { once: true });
+
+                    const delay = ms => new Promise(r => setTimeout(r, ms));
+
+                    async function intro() {
+                        // 1. Krótka pauza — strona się stabilizuje
+                        await delay(800);
+                        if (aborted) return;
+
+                        // 2. Pulse koła zębatego na pierwszym slajdzie
+                        const tiles = galleryGridContainer ? galleryGridContainer.querySelectorAll('.gallery-tile') : [];
+                        const targetTile = tiles[IMAGE_IDX];
+                        const gearBtn = targetTile ? targetTile.querySelector('.gallery-configure-btn') : null;
+
+                        if (gearBtn) {
+                            gearBtn.style.transition = 'transform 0.2s cubic-bezier(.34,1.56,.64,1), box-shadow 0.2s ease';
+                            for (let i = 0; i < 3; i++) {
+                                if (aborted) return;
+                                gearBtn.style.transform = 'scale(1.5)';
+                                gearBtn.style.boxShadow = '0 0 0 7px rgba(22,163,74,0.3)';
+                                await delay(210);
+                                if (aborted) return;
+                                gearBtn.style.transform = 'scale(1)';
+                                gearBtn.style.boxShadow = 'none';
+                                await delay(190);
+                            }
+                            gearBtn.style.transition = '';
+                        }
+                        if (aborted) return;
+
+                        // 3. Załaduj konfigurację i otwórz panel 3D
+                        applyShelfConfigurationFromGallery(GALLERY_IDX, IMAGE_IDX);
+                        await delay(100);
+                        if (aborted) return;
+                        open3dPanel();
+
+                        // Od tego momentu nie przerywamy — użytkownik niech ogląda
+                        document.removeEventListener('touchstart', abort);
+                        document.removeEventListener('click', abort);
+
+                        // 4. Poczekaj aż półka się zbuduje i pokręci
+                        await delay(5500);
+
+                        // 5. Zamknij panel płynnie
+                        close3dPanel();
+                    }
+
+                    intro().catch(() => {});
+                })();
+                // ===== KONIEC MOBILE INTRO =====
+
                 console.log("Inicjalizacja zakończona pomyślnie.");
 
              } catch (error) {
