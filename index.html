@@ -5250,7 +5250,22 @@ function fitCameraToShelf() {
                 if (newConnectingShelves.length > 0) {
                      currentAnimationTimeline.to(newConnectingShelves.map(s => s.scale), { x: 1, duration: 0.4, stagger: 0.05, ease: 'power2.out' }, 0.2);
                 }
-            
+
+                // Remove old dimension arrows immediately, re-add after animation
+                const _oldModDimLines = shelfGroup.children.filter(c => c.isLine || (c.isSprite && c.name && c.name.startsWith('dimensionLabel_')));
+                _oldModDimLines.forEach(c => shelfGroup.remove(c));
+                ['leftModule','rightModule'].forEach(mn => {
+                    const _m = shelfGroup.getObjectByName(mn);
+                    if (!_m) return;
+                    const _toRem = _m.children.filter(c => c.isLine || (c.isSprite && c.name && c.name.startsWith('dimensionLabel_')));
+                    _toRem.forEach(c => _m.remove(c));
+                });
+                currentAnimationTimeline.add(() => {
+                    if (typeof addModularDimensionArrows === 'function') {
+                        addModularDimensionArrows(shelfGroup);
+                    }
+                }, animDuration + 0.05);
+
             } else {
                 const targetWidth = config.width / 10;
                 const targetHeight = parseFloat(config.height) / 10;
@@ -9368,8 +9383,8 @@ function addModularDimensionArrows(mainGroup) {
         const depth = sideObj ? (sideObj.geometry.parameters.depth || 0.1) : 0.1;
 
         const modX = mod.position.x;
-        const xPos = modX + modWidth/2 + 0.08;
-        const labelX = modX + modWidth/2 + 0.75;
+        const xPos = modX - modWidth/2 + thickness + 0.06;
+        const labelX = modX;
         const zPos = depth/2 + 0.01;
 
         const bottomY = bottomPanel ? bottomPanel.position.y + thickness/2 : -modWidth/2;
@@ -9586,6 +9601,31 @@ function show(th){
 function hide(){clearTimeout(_h);_h=setTimeout(function(){box.style.opacity='0';box.style.transform='scale(0.88)';setTimeout(function(){box.style.display='none';},180);},50);}
 document.addEventListener('mouseover',function(e){var t=e.target.closest('.cart-item-thumb');if(t&&t.dataset.snap){clearTimeout(_h);show(t);}});
 document.addEventListener('mouseout',function(e){var t=e.target.closest('.cart-item-thumb');if(t){hide();}});
+// Touch support for mobile
+document.addEventListener('touchstart',function(e){
+  var t=e.target.closest('.cart-item-thumb');
+  if(t&&t.dataset.snap){
+    clearTimeout(_h);
+    // Position zoom box centered above/below the thumb
+    var s=t.dataset.snap;if(!s)return;
+    img.src=s;
+    var r=t.getBoundingClientRect(),bw=260,bh=260;
+    var left=r.left+r.width/2-bw/2;
+    left=Math.max(8,Math.min(left,window.innerWidth-bw-8));
+    var top=r.top-bh-12;
+    if(top<8)top=r.bottom+12;
+    top=Math.max(8,Math.min(top,window.innerHeight-bh-8));
+    box.style.left=left+'px';box.style.top=top+'px';
+    box.style.opacity='0';box.style.transform='scale(0.88)';
+    box.style.display='block';
+    requestAnimationFrame(function(){box.style.opacity='1';box.style.transform='scale(1)';});
+    e.preventDefault();
+  }
+},{passive:false});
+document.addEventListener('touchend',function(e){
+  var t=e.target.closest('.cart-item-thumb');
+  if(t){hide();}
+},{passive:true});
 })();
 </script>
 </body>
