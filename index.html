@@ -3168,7 +3168,7 @@ Zadaj pytanie", wklejając kod w wiadomości.</span></li>
 
                 <!-- Półki -->
                 <li class="param-row param-section-start"><span class="param-label"><span id="shelfCountSummaryLabel">Półki wewn.</span></span><span id="shelfCountSummary" class="param-value"></span></li>
-                <li class="param-row"><span class="param-label">Odległość</span><span id="gapSummary" class="param-value"></span></li>
+                <li class="param-row" style="display:none"><span class="param-label">Odległość</span><span id="gapSummary" class="param-value"></span></li>
                 <li id="customPosSummaryRow" class="param-row param-custom-pos full-width-row" style="display:none"><div id="customPosSummary" class="w-full"></div></li>
 
                 <!-- Opcje / materiał -->
@@ -4194,7 +4194,31 @@ Zadaj pytanie", wklejając kod w wiadomości.</span></li>
             name: shelfTypeSelect.options[shelfTypeSelect.selectedIndex].text,
             summary: `${document.getElementById("widthSummary").textContent} x ${document.getElementById("heightSummary").textContent} x ${document.getElementById("depthSummary").textContent}`,
             shelfCountText: document.getElementById("shelfCountSummary").textContent,
-            gapInfo: (typeof customShelfPositionEnabled !== "undefined" && customShelfPositionEnabled) ? "Własne rozmieszczenie" : document.getElementById("gapSummary").textContent, customPosInfo: (typeof getCustomPosInfoString === "function") ? getCustomPosInfoString() : null,
+            gapInfo: (function() {
+                if (typeof customShelfPositionEnabled !== "undefined" && customShelfPositionEnabled) return "Własne rozmieszczenie";
+                // Odczytaj rzeczywiste przerwy z aktualnego modelu 3D
+                if (shelfGroup && shelfGroup.children.length > 0) {
+                    const _t = 0.18;
+                    const _shelves = shelfGroup.children.filter(c => c.isMesh && c.name && c.name.startsWith('internalShelf_')).sort((a,b) => a.position.y - b.position.y);
+                    if (_shelves.length > 0) {
+                        const _tp = shelfGroup.getObjectByName('topPanel');
+                        const _bp = shelfGroup.getObjectByName('bottomPanel');
+                        const _h = parseFloat(heightSelect.value) / 10;
+                        const _botY = _bp ? _bp.position.y + _t/2 : -_h/2;
+                        const _topY = _tp ? _tp.position.y - _t/2 : _h/2;
+                        const _gaps = [];
+                        _gaps.push(Math.round((_shelves[0].position.y - _t/2 - _botY) * 10 * 10) / 10);
+                        for (let _i = 0; _i < _shelves.length - 1; _i++) {
+                            _gaps.push(Math.round((_shelves[_i+1].position.y - _t/2 - (_shelves[_i].position.y + _t/2)) * 10 * 10) / 10);
+                        }
+                        _gaps.push(Math.round((_topY - (_shelves[_shelves.length-1].position.y + _t/2)) * 10 * 10) / 10);
+                        const _allEqual = _gaps.every(g => Math.abs(g - _gaps[0]) < 0.2);
+                        if (_allEqual) return `${_gaps[0]} cm`;
+                        return _gaps.map(g => g + ' cm').join(' / ');
+                    }
+                }
+                return document.getElementById("gapSummary").textContent;
+            })(),
             sideColor: document.getElementById("sideColorSummary").textContent,
             shelfColor: document.getElementById("shelfColorSummary").textContent,
             extras: document.getElementById("extraOptionsSummary").textContent,
@@ -5659,6 +5683,9 @@ function fitCameraToShelf() {
                 let freshGroup;
                 if (shelfType === 'modular' && typeof buildModularShelf === 'function') {
                     freshGroup = buildModularShelf(freshConfig);
+                } else if (shelfGroup && shelfGroup.children.length > 0) {
+                    // Klonuj aktualny model 3D — pozycje półek są identyczne jak na żywo
+                    freshGroup = shelfGroup.clone(true);
                 } else {
                     freshGroup = buildShelfModel(freshConfig);
                 }
@@ -5967,7 +5994,8 @@ function fitCameraToShelf() {
         } else {
             const isTopShelf = !document.getElementById('noTopShelf')?.checked;
             const isBottomShelf = currentShelfType !== 'standing' || !document.getElementById('noBottomShelf')?.checked;
-            const availableHeight = h - 2 * t;
+            const panelCount = (isTopShelf ? 1 : 0) + (isBottomShelf ? 1 : 0);
+            const availableHeight = h - panelCount * t;
             const totalShelvesThickness = sc * t;
             if (availableHeight >= totalShelvesThickness && (sc + 1) > 0) {
                 const freeSpace = availableHeight - totalShelvesThickness;
@@ -5983,13 +6011,8 @@ function fitCameraToShelf() {
     document.getElementById("gapSummaryDisplay").textContent = gT;
     const gapSummaryLi = document.getElementById("gapSummary")?.parentElement;
     const gapDisplayP = document.getElementById("gapDisplay");
-    if (currentShelfType === 'mug_shelf' || currentShelfType === 'modular') {
-        if (gapSummaryLi) gapSummaryLi.style.display = 'none';
-        if (gapDisplayP) gapDisplayP.style.display = 'none';
-    } else {
-        if (gapSummaryLi) gapSummaryLi.style.display = 'flex';
-        if (gapDisplayP) gapDisplayP.style.display = 'flex';
-    }
+    if (gapSummaryLi) gapSummaryLi.style.display = 'none';
+    if (gapDisplayP) gapDisplayP.style.display = 'none';
     const o = [];
     if (currentShelfType === 'mug_shelf') {
         const selectedMount = document.querySelector('input[name="mugShelfMount"]:checked');
@@ -6318,18 +6341,15 @@ function generateOrderCode() { const shelfTypeVal = shelfTypeSelect.value; const
                 if (optionsCode.includes('t')) { optionsText.push("Bez górnej półki"); rawOptions.noTopShelf = true; }
                 if (optionsCode.includes('b') && shelfTypeValue === 'standing') { optionsText.push("Bez dolnej półki (podstawy)"); rawOptions.noBottomShelf = true; }
                 
-                // --- TU JEST ZMIANA DOTYCZĄCA OBLICZANIA ODSTĘPU ---
                 const t = 1.8;
-                // Zamiast warunkowego odejmowania (rawOptions.noTopShelf ? 0 : t),
-                // odejmujemy zawsze 2 * t (góra i dół).
-                // Dzięki temu "odstęp" wyświetlany klientowi jest taki sam jak w wersji z pełną obudową,
-                // co sugeruje standardowe nawiercenia otworów.
-                const availableHeight = height - 2 * t; 
-                
+                // Identyczna formuła jak w buildShelfModel (3D)
+                const topThickness = rawOptions.noTopShelf ? 0 : t;
+                const bottomThickness = rawOptions.noBottomShelf ? 0 : t;
+                const availableHeight = height - topThickness - bottomThickness;
                 const totalShelvesThickness = shelfCount * t;
                 const gaps = shelfCount + 1;
                 if (availableHeight >= totalShelvesThickness && gaps > 0) {
-                    gapInfo = `${Math.round((availableHeight - totalShelvesThickness) / gaps)} cm`;
+                    gapInfo = `${parseFloat(((availableHeight - totalShelvesThickness) / gaps).toFixed(1))} cm`;
                 }
             }
             if (optionsText.length === 0) optionsText.push("Standardowa");
@@ -8425,10 +8445,37 @@ function showOrHideCustomShelfToggle() {
 
 function getCustomPositionSummary() {
     if (!customShelfPositionEnabled || customShelfPositions.length === 0) return null;
+    const t3d = 0.18;
+    // Odczytaj rzeczywiste przerwy z modelu 3D - identycznie jak strzalki zielone
+    if (typeof shelfGroup !== 'undefined' && shelfGroup && shelfGroup.children.length > 0) {
+        const shelves = shelfGroup.children
+            .filter(c => c.isMesh && c.name && c.name.startsWith('internalShelf_'))
+            .sort((a, b) => a.position.y - b.position.y);
+        if (shelves.length > 0) {
+            const tp = shelfGroup.getObjectByName('topPanel');
+            const bp = shelfGroup.getObjectByName('bottomPanel');
+            const h3d = parseFloat(heightSelect.value) / 10;
+            const botY = bp ? bp.position.y + t3d / 2 : -h3d / 2;
+            const topY = tp ? tp.position.y - t3d / 2 : h3d / 2;
+            const distances = [];
+            distances.push(Math.round((shelves[0].position.y - t3d / 2 - botY) * 10));
+            for (let i = 0; i < shelves.length - 1; i++) {
+                distances.push(Math.round((shelves[i+1].position.y - t3d/2 - (shelves[i].position.y + t3d/2)) * 10));
+            }
+            distances.push(Math.round((topY - (shelves[shelves.length-1].position.y + t3d/2)) * 10));
+            const sorted = [...customShelfPositions].sort((a, b) => a - b);
+            return { distances, positions: sorted, fee: 50 };
+        }
+    }
+    // Fallback gdy shelfGroup niedostepny
     const sorted = [...customShelfPositions].sort((a, b) => a - b);
     const height = parseInt(heightSelect.value) || 60;
     const thickness = 1.8;
-    const innerHeight = height - 2 * thickness;
+    const noTop = document.getElementById('noTopShelf') && document.getElementById('noTopShelf').checked;
+    const noBottom = document.getElementById('noBottomShelf') && document.getElementById('noBottomShelf').checked;
+    const topT = noTop ? 0 : thickness;
+    const botT = noBottom ? 0 : thickness;
+    const innerHeight = height - topT - botT;
     const distances = [];
     distances.push(Math.round(sorted[0] - thickness / 2));
     for (let i = 0; i < sorted.length - 1; i++) {
