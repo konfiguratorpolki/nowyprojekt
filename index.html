@@ -1726,29 +1726,31 @@ body.no-scroll {
         background: #ffffff;
         border: 1.5px solid #f3f4f6;
         border-radius: 14px;
-        padding: 12px;
+        overflow: hidden;
         display: flex;
-        gap: 12px;
         transition: border-color 0.15s;
+        flex-shrink: 0;
     }
     .cart-item-card:hover { border-color: #e5e7eb; }
     .cart-item-thumb {
-    width: 110px;
-    height: 130px;
-    border-radius: 10px;
-    overflow: hidden;
-    background: #f5f5f4;
-    flex-shrink: 0;
-    border: 1px solid #e5e7eb;
-}
+        width: 100px; flex-shrink: 0;
+        background: #f0f0f0;
+        border-right: 1px solid #e5e7eb;
+        display: flex; align-items: center; justify-content: center;
+        min-height: 120px; cursor: zoom-in;
+    }
     .cart-item-thumb img { width: 100%; height: 100%; object-fit: contain; }
-    .cart-item-body { flex: 1; min-width: 0; }
+    .cart-item-body { flex: 1; min-width: 0; padding: 10px 11px; display: flex; flex-direction: column; justify-content: space-between; }
     .cart-item-name {
         font-size: 13px; font-weight: 700; color: #111827;
-        line-height: 1.3; margin-bottom: 4px;
+        line-height: 1.3; margin-bottom: 6px;
     }
     .cart-item-specs {
-        display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px;
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 2px 8px;
+        margin-bottom: 8px;
+        align-items: center;
     }
     .cart-item-spec-chip {
         font-size: 10px; font-weight: 600;
@@ -1757,11 +1759,23 @@ body.no-scroll {
         border-radius: 6px; padding: 2px 7px;
         white-space: nowrap;
     }
+    .cart-item-spec-label {
+        font-size: 10.5px; color: #9ca3af; white-space: nowrap;
+    }
+    .cart-item-spec-val {
+        font-size: 10.5px; font-weight: 600; color: #374151;
+        display: flex; align-items: center; gap: 4px;
+    }
+    .cart-item-color-dot {
+        width: 9px; height: 9px; border-radius: 2px;
+        border: 0.5px solid #d1d5db; flex-shrink: 0; display: inline-block;
+    }
     .cart-item-bottom {
         display: flex; align-items: center; justify-content: space-between;
+        padding-top: 7px; border-top: 1px solid #f3f4f6;
     }
     .cart-item-price {
-        font-size: 15px; font-weight: 800; color: #111827;
+        font-size: 14px; font-weight: 800; color: #16a34a;
     }
     .cart-item-actions { display: flex; align-items: center; gap: 8px; }
     .cart-item-qty {
@@ -1790,12 +1804,14 @@ body.no-scroll {
     .cart-item-remove:hover { color: #ef4444; background: #fef2f2; }
 
     #cartDiscountReminder {
-        margin: 0 16px 0;
+        flex-shrink: 0;
+        margin: 0 16px 8px;
         border-radius: 10px;
         font-size: 12px;
     }
 
     #cartPanelFooter {
+        flex-shrink: 0;
         padding: 16px 16px 20px;
         border-top: 1px solid #f3f4f6;
         background: #fff;
@@ -2347,6 +2363,20 @@ body.no-scroll {
   }
 
 }
+
+    /* Hover zoom popup */
+    #snapZoom {
+        position: fixed; z-index: 9999;
+        width: 280px; height: 280px;
+        background: #f0f0f0;
+        border-radius: 14px;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 12px 40px rgba(0,0,0,.22);
+        overflow: hidden; display: none;
+        pointer-events: none;
+        transition: opacity .18s ease, transform .18s ease;
+    }
+    #snapZoom img { width: 100%; height: 100%; object-fit: contain; }
 </style>
 </head>
 <body class="flex flex-col justify-center items-center min-h-screen bg-stone-100 font-sans text-stone-800 pb-20 md:pb-0">
@@ -4163,21 +4193,37 @@ Zadaj pytanie", wklejając kod w wiadomości.</span></li>
         
         const cartIcon = window.innerWidth >= 768 ? desktopCartContainer : document.getElementById('mobileCartButton'); const startRect = activeAddToCartButton.getBoundingClientRect(); const endRect = cartIcon.getBoundingClientRect(); const flyingShelf = document.createElement('img'); flyingShelf.src = snapshotDataUrl; flyingShelf.className = 'shelf-to-cart-animation'; document.body.appendChild(flyingShelf); flyingShelf.style.left = `${startRect.left + startRect.width / 2 - 50}px`; flyingShelf.style.top = `${startRect.top + startRect.height / 2 - 50}px`; flyingShelf.style.width = `100px`; flyingShelf.style.height = `100px`; flyingShelf.getBoundingClientRect(); flyingShelf.style.transform = `translate(${endRect.left - startRect.left}px, ${endRect.top - startRect.top}px) scale(0.2)`; flyingShelf.style.opacity = '0'; cart.push(newItem); setTimeout(() => { if(document.body.contains(flyingShelf)) document.body.removeChild(flyingShelf); updateCartDisplay(); openCart(); }, 1000); } catch (e) { console.error("Nie udało się wygenerować miniatury przy dodawaniu do koszyka:", e); alert("Wystąpił błąd podczas generowania podglądu. Spróbuj ponownie."); } finally { activeAddToCartButton.innerHTML = originalButtonContent; activeAddToCartButton.disabled = false; } }
         function triggerDiscountAnimation() { const subtotalPriceEl = document.getElementById('cartSubtotalPrice'); const discountLineEl10 = document.getElementById('cartDiscountLine10'); const discountLineEl25 = document.getElementById('cartDiscountLine25'); const totalPriceLineEl = document.getElementById('cartTotalPriceLine'); if (!subtotalPriceEl || !totalPriceLineEl || !discountLineEl10 || !discountLineEl25) { return; } subtotalPriceEl.classList.add('discount-subtotal-wobble', 'discount-subtotal-slash'); if(discountLineEl10.style.display === 'flex') discountLineEl10.classList.add('discount-line-pop'); if(discountLineEl25.style.display === 'flex') discountLineEl25.classList.add('discount-line-pop'); totalPriceLineEl.classList.add('discount-total-glow'); setTimeout(() => { subtotalPriceEl.classList.remove('discount-subtotal-wobble'); if(discountLineEl10) discountLineEl10.classList.remove('discount-line-pop'); if(discountLineEl25) discountLineEl25.classList.remove('discount-line-pop'); totalPriceLineEl.classList.remove('discount-total-glow'); }, 2000); }
-        function updateCartDisplay() { if (!cartItemsContainer || !cartBadges) return; const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0); const justGotDiscount = (totalItems === 1 && previousCartItemCount === 0) || (totalItems >= 2 && previousCartItemCount < 2); cartItemsContainer.innerHTML = ''; if (cart.length === 0) { if(cartEmptyMessage) { cartEmptyMessage.style.display = 'block'; cartItemsContainer.appendChild(cartEmptyMessage); } } else { if(cartEmptyMessage) cartEmptyMessage.style.display = 'none'; cart.forEach(item => { const itemElement = document.createElement('div');
+        function getColorHex(label) {
+    if (!label) return '#888';
+    const l = label.toLowerCase();
+    if (l.includes('ąb') || l.includes('ab') || l.includes('dąb')) return '#8B5A2B';
+    if (l.includes('biał') || l.includes('bial') || l.includes('white')) return '#FFFFFF';
+    if (l.includes('czarn') || l.includes('black')) return '#000000';
+    return '#888888';
+}
+function updateCartDisplay() { if (!cartItemsContainer || !cartBadges) return; const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0); const justGotDiscount = (totalItems === 1 && previousCartItemCount === 0) || (totalItems >= 2 && previousCartItemCount < 2); cartItemsContainer.innerHTML = ''; if (cart.length === 0) { if(cartEmptyMessage) { cartEmptyMessage.style.display = 'block'; cartItemsContainer.appendChild(cartEmptyMessage); } } else { if(cartEmptyMessage) cartEmptyMessage.style.display = 'none'; cart.forEach(item => { const itemElement = document.createElement('div');
         
         itemElement.className = 'cart-item-card';
         itemElement.dataset.code = item.code;
         
         itemElement.innerHTML = `
-            <div class="cart-item-thumb">
-                ${item.snapshot ? `<img src="${item.snapshot}" alt="${item.name}">` : ''}
+            <div class="cart-item-thumb" data-snap="${item.snapshot||''}">
+                ${item.snapshot ? `<img src="${item.snapshot}" alt="${item.name}">` : '<div style="font-size:10px;color:#d1d5db;text-align:center;padding:8px">brak</div>'}
             </div>
             <div class="cart-item-body">
-                <div class="cart-item-name">${item.name}</div>
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
+                    <div class="cart-item-name">${item.name}</div>
+                    <span class="cart-item-price">${(item.price * item.quantity).toFixed(2).replace('.',',')} zł</span>
+                </div>
                 <div class="cart-item-specs">
-                    <span class="cart-item-spec-chip">${item.summary}</span>
-                    <span class="cart-item-spec-chip">${item.sideColor}</span>
-                    <span class="cart-item-spec-chip">${item.shelfColor}</span>
+                    <span class="cart-item-spec-label">Wymiary</span>
+                    <span class="cart-item-spec-val">${item.summary}</span>
+                    <span class="cart-item-spec-label">Półki</span>
+                    <span class="cart-item-spec-val">${item.shelfCountText||'—'}</span>
+                    <span class="cart-item-spec-label">Boki</span>
+                    <span class="cart-item-spec-val"><span class="cart-item-color-dot" style="background:${getColorHex(item.sideColor)}"></span>${item.sideColor}</span>
+                    <span class="cart-item-spec-label">Półki kol.</span>
+                    <span class="cart-item-spec-val"><span class="cart-item-color-dot" style="background:${getColorHex(item.shelfColor)}"></span>${item.shelfColor}</span>
                 </div>
                 <div class="cart-item-bottom">
                     <div class="cart-item-actions">
@@ -4190,7 +4236,6 @@ Zadaj pytanie", wklejając kod w wiadomości.</span></li>
                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
                         </button>
                     </div>
-                    <span class="cart-item-price">${(item.price * item.quantity).toFixed(2)} zł</span>
                 </div>
             </div>
         `;
@@ -4217,24 +4262,26 @@ Zadaj pytanie", wklejając kod w wiadomości.</span></li>
         const itemCard = document.createElement('div'); 
         itemCard.className = 'cart-item-card'; 
         itemCard.innerHTML = `
-            <div class="cart-item-thumb">
-                ${item.snapshot ? `<img src="${item.snapshot}" alt="${item.name}">` : '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#d1d5db;font-size:10px;">brak</div>'}
+            <div class="cart-item-thumb" data-snap="${item.snapshot||''}">
+                ${item.snapshot ? `<img src="${item.snapshot}" alt="${item.name}">` : '<div style="font-size:10px;color:#d1d5db;text-align:center;padding:8px">brak</div>'}
             </div>
             <div class="cart-item-body">
-                <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px;">
-                    <div>
-                        <div class="cart-item-name">${item.name}</div>
-                        <div style="font-size:11px;color:#9ca3af;margin-top:1px;">Ilość: ${item.quantity}</div>
-                    </div>
-                    <span style="font-size:16px;font-weight:900;color:#111827;white-space:nowrap;">${(item.price * item.quantity).toFixed(2)} zł</span>
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
+                    <div class="cart-item-name">${item.name}</div>
+                    <span style="font-size:14px;font-weight:800;color:#16a34a;flex-shrink:0;margin-left:6px">${(item.price * item.quantity).toFixed(2).replace('.',',')} zł</span>
                 </div>
                 <div class="cart-item-specs">
-                    <span class="cart-item-spec-chip">${item.summary}</span>
-                    <span class="cart-item-spec-chip">${item.shelfCountText}</span>
-                    <span class="cart-item-spec-chip">${item.sideColor}</span>
-                    <span class="cart-item-spec-chip">${item.shelfColor}</span>
-                    ${item.extras && item.extras !== 'standardowa' ? `<span class="cart-item-spec-chip">${item.extras}</span>` : ''}
+                    <span class="cart-item-spec-label">Wymiary</span>
+                    <span class="cart-item-spec-val">${item.summary}</span>
+                    <span class="cart-item-spec-label">Półki</span>
+                    <span class="cart-item-spec-val">${item.shelfCountText||'—'}</span>
+                    <span class="cart-item-spec-label">Boki</span>
+                    <span class="cart-item-spec-val"><span class="cart-item-color-dot" style="background:${getColorHex(item.sideColor)}"></span>${item.sideColor}</span>
+                    <span class="cart-item-spec-label">Półki kol.</span>
+                    <span class="cart-item-spec-val"><span class="cart-item-color-dot" style="background:${getColorHex(item.shelfColor)}"></span>${item.shelfColor}</span>
+                    ${item.extras && item.extras !== 'standardowa' ? `<span class="cart-item-spec-label">Opcje</span><span class="cart-item-spec-val">${item.extras}</span>` : ''}
                 </div>
+                <div style="font-size:11px;color:#9ca3af;margin-top:4px">Ilość: ${item.quantity}</div>
             </div>
         `;
         cartSummaryItemsContainer.appendChild(itemCard);
@@ -5610,6 +5657,24 @@ function fitCameraToShelf() {
                 const size = box.getSize(new THREE.Vector3());
                 freshGroup.position.sub(center);
                 snapshotScene.add(freshGroup);
+
+                // Add dimension arrows to snapshot
+                const _snapThickness = 0.18;
+                if (shelfType === 'modular') {
+                    if (typeof addModularDimensionArrows === 'function') {
+                        addModularDimensionArrows(freshGroup);
+                    }
+                } else {
+                    const _snapShelves = freshGroup.children.filter(ch => ch.isMesh && ch.name && ch.name.startsWith('internalShelf_'));
+                    if (_snapShelves.length > 0 && typeof addShelfDimensionArrows === 'function') {
+                        const _snapTp = freshGroup.getObjectByName('topPanel');
+                        const _snapBp = freshGroup.getObjectByName('bottomPanel');
+                        const _snapW = parseFloat(freshConfig.width) / 10;
+                        const _snapH = parseFloat(freshConfig.height) / 10;
+                        const _snapD = parseFloat(freshConfig.depth) / 10;
+                        addShelfDimensionArrows(freshGroup, _snapShelves, _snapBp, _snapTp, _snapThickness, _snapW, _snapH, _snapD);
+                    }
+                }
 
                 const maxDim = Math.max(size.x, size.y, size.z);
                 const fov = snapshotCamera.fov * (Math.PI / 180);
@@ -8268,15 +8333,28 @@ function syncPositionsFromModel() {
 
 function refreshDimensionArrows() {
     if (!shelfGroup) return;
-    // Remove old
+    // Remove old arrows from main group
     const toRemove = shelfGroup.children.filter(c => c.isLine || (c.isSprite && c.name?.startsWith('dimensionLabel_')));
-    toRemove.forEach(c => { 
+    toRemove.forEach(c => {
         if (c.geometry) c.geometry.dispose();
         if (c.material) { if (c.material.map) c.material.map.dispose(); c.material.dispose(); }
         shelfGroup.remove(c);
     });
-    
-    // Dodaj strzalki zawsze gdy sa polki wewnetrzne
+    // Also clean from modular subgroups
+    ['leftModule','rightModule'].forEach(mn => {
+        const mod = shelfGroup.getObjectByName(mn);
+        if (!mod) return;
+        mod.children.filter(ch => ch.isLine || (ch.isSprite && ch.name?.startsWith('dimensionLabel_')))
+            .forEach(ch => { if (ch.geometry) ch.geometry.dispose(); if (ch.material) { if(ch.material.map) ch.material.map.dispose(); ch.material.dispose(); } mod.remove(ch); });
+    });
+
+    // Modular shelf — draw arrows on each module
+    if (shelfTypeSelect && shelfTypeSelect.value === 'modular') {
+        addModularDimensionArrows(shelfGroup);
+        return;
+    }
+
+    // Standard shelves
     const shelves = shelfGroup.children.filter(c => c.isMesh && c.name?.startsWith('internalShelf_'));
     if (shelves.length === 0) return;
     const tp = shelfGroup.getObjectByName('topPanel');
@@ -9225,6 +9303,88 @@ function addMugShelfCompartmentWidthArrow(group, widthNum, width, depth, thickne
     group.add(sprite);
 }
 
+
+function addModularDimensionArrows(mainGroup) {
+    if (!mainGroup) return;
+    const thickness = 0.18;
+    const lineMat = new THREE.LineBasicMaterial({ color: 0x16a34a, linewidth: 2 });
+
+    function makeLabel(text, x, y, z, scaleX) {
+        const canvas = document.createElement('canvas');
+        canvas.width = 512; canvas.height = 160;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = 'rgba(220,252,231,0.97)';
+        ctx.beginPath(); ctx.roundRect(6, 10, 500, 140, 24); ctx.fill();
+        ctx.strokeStyle = '#16a34a'; ctx.lineWidth = 8;
+        ctx.beginPath(); ctx.roundRect(6, 10, 500, 140, 24); ctx.stroke();
+        ctx.fillStyle = '#15803d'; ctx.font = 'bold 90px Arial';
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText(text, 256, 80);
+        const tex = new THREE.CanvasTexture(canvas);
+        const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false });
+        const sprite = new THREE.Sprite(mat);
+        sprite.position.set(x, y, z);
+        sprite.scale.set(scaleX || 1.6, 0.5, 1);
+        sprite.name = 'dimensionLabel_modular_' + text.replace(' ','_');
+        sprite.renderOrder = 999;
+        mainGroup.add(sprite);
+    }
+
+    function addVerticalArrow(y1, y2, xPos, zPos, labelX) {
+        const lineLen = 0.18;
+        const as = 0.10;
+        const rawCm = Math.round((y2 - y1) * 10 * 10) / 10;
+        if (rawCm <= 0) return;
+        const label = Number.isInteger(rawCm) ? rawCm + ' cm' : rawCm.toFixed(1) + ' cm';
+        const midY = (y1 + y2) / 2;
+        mainGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
+            new THREE.Vector3(xPos, y1, zPos), new THREE.Vector3(xPos, y2, zPos)]), lineMat));
+        mainGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
+            new THREE.Vector3(xPos-lineLen/2,y1,zPos), new THREE.Vector3(xPos+lineLen/2,y1,zPos)]), lineMat));
+        mainGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
+            new THREE.Vector3(xPos-lineLen/2,y2,zPos), new THREE.Vector3(xPos+lineLen/2,y2,zPos)]), lineMat));
+        mainGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
+            new THREE.Vector3(xPos-as/2,y2-as,zPos), new THREE.Vector3(xPos,y2,zPos), new THREE.Vector3(xPos+as/2,y2-as,zPos)]), lineMat));
+        mainGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
+            new THREE.Vector3(xPos-as/2,y1+as,zPos), new THREE.Vector3(xPos,y1,zPos), new THREE.Vector3(xPos+as/2,y1+as,zPos)]), lineMat));
+        makeLabel(label, labelX, midY, zPos + 0.05);
+    }
+
+    ['leftModule','rightModule'].forEach(modName => {
+        const mod = mainGroup.getObjectByName(modName);
+        if (!mod) return;
+        const shelves = mod.children.filter(ch => ch.name && ch.name.startsWith('internalShelf_'))
+                          .sort((a,b) => a.position.y - b.position.y);
+        const topPanel = mod.getObjectByName('topPanel');
+        const bottomPanel = mod.getObjectByName('bottomPanel');
+        if (shelves.length === 0) return;
+
+        const leftSide = mod.getObjectByName('leftSide');
+        const rightSide = mod.getObjectByName('rightSide');
+        const modWidth = (leftSide && rightSide)
+            ? Math.abs(rightSide.position.x - leftSide.position.x) + thickness
+            : 0.44;
+        const sideObj = leftSide || mod.children.find(ch => ch.isMesh);
+        const depth = sideObj ? (sideObj.geometry.parameters.depth || 0.1) : 0.1;
+
+        const modX = mod.position.x;
+        const xPos = modX + modWidth/2 + 0.08;
+        const labelX = modX + modWidth/2 + 0.75;
+        const zPos = depth/2 + 0.01;
+
+        const bottomY = bottomPanel ? bottomPanel.position.y + thickness/2 : -modWidth/2;
+        const topY    = topPanel    ? topPanel.position.y    - thickness/2 :  modWidth/2;
+
+        const levels = [];
+        levels.push({ y1: bottomY, y2: shelves[0].position.y - thickness/2 });
+        for (let i = 0; i < shelves.length-1; i++) {
+            levels.push({ y1: shelves[i].position.y + thickness/2, y2: shelves[i+1].position.y - thickness/2 });
+        }
+        levels.push({ y1: shelves[shelves.length-1].position.y + thickness/2, y2: topY });
+        levels.forEach(lvl => addVerticalArrow(lvl.y1, lvl.y2, xPos, zPos, labelX));
+    });
+}
+
 function addShelfDimensionArrows(group, internalShelves, bottomPanel, topPanel, thickness, width, height, depth) {
     const sorted = [...internalShelves].sort((a, b) => a.position.y - b.position.y);
     const lineMat = new THREE.LineBasicMaterial({ color: 0x16a34a, linewidth: 2 });
@@ -9403,5 +9563,30 @@ function addShelfDimensionArrows(group, internalShelves, bottomPanel, topPanel, 
 })();
 
 </script>
-    </body>
+    
+<div id="snapZoom" style="position:fixed;z-index:9999;width:280px;height:280px;background:#f0f0f0;border-radius:14px;border:1px solid #e5e7eb;box-shadow:0 12px 40px rgba(0,0,0,.22);overflow:hidden;display:none;pointer-events:none;transition:opacity .18s ease,transform .18s ease;"><img id="snapZoomImg" src="" style="width:100%;height:100%;object-fit:contain;"></div>
+<script>
+(function(){
+var box=document.getElementById('snapZoom');
+var img=document.getElementById('snapZoomImg');
+var _h;
+function show(th){
+  var s=th.dataset.snap;if(!s)return;
+  img.src=s;
+  var r=th.getBoundingClientRect(),bw=280,bh=280;
+  var left=r.right+10;
+  if(left+bw>window.innerWidth-8)left=r.left-bw-10;
+  var top=r.top+r.height/2-bh/2;
+  top=Math.max(8,Math.min(top,window.innerHeight-bh-8));
+  box.style.left=left+'px';box.style.top=top+'px';
+  box.style.opacity='0';box.style.transform='scale(0.88)';
+  box.style.display='block';
+  requestAnimationFrame(function(){box.style.opacity='1';box.style.transform='scale(1)';});
+}
+function hide(){clearTimeout(_h);_h=setTimeout(function(){box.style.opacity='0';box.style.transform='scale(0.88)';setTimeout(function(){box.style.display='none';},180);},50);}
+document.addEventListener('mouseover',function(e){var t=e.target.closest('.cart-item-thumb');if(t&&t.dataset.snap){clearTimeout(_h);show(t);}});
+document.addEventListener('mouseout',function(e){var t=e.target.closest('.cart-item-thumb');if(t){hide();}});
+})();
+</script>
+</body>
 </html>
