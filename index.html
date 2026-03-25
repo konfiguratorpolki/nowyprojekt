@@ -4414,7 +4414,7 @@ function updateCartDisplay() { if (!cartItemsContainer || !cartBadges) return; c
     codesTextarea.value = '';
     codesSection.classList.remove('visible');
     if (typingCursor) typingCursor.style.display = 'none';
-    cartSummaryModalOverlay.classList.add('visible');
+    cartSummaryModalOverlay.classList.add('visible'); document.body.classList.add('no-scroll');
     const modalBody = document.querySelector('#cartSummaryModal .modal-body');
     if (modalScrollListener) {
         modalBody.removeEventListener('scroll', modalScrollListener);
@@ -4427,7 +4427,7 @@ function updateCartDisplay() { if (!cartItemsContainer || !cartBadges) return; c
         checkCodesVisibility();
     }, 300);
 }
-        function closeCartSummaryModal() { if (cartSummaryModalOverlay) { cartSummaryModalOverlay.classList.remove('visible'); const modalBody = document.querySelector('#cartSummaryModal .modal-body'); if (modalBody && modalScrollListener) { modalBody.removeEventListener('scroll', modalScrollListener); modalScrollListener = null; } } }
+        function closeCartSummaryModal() { if (cartSummaryModalOverlay) { cartSummaryModalOverlay.classList.remove('visible'); document.body.classList.remove('no-scroll'); const modalBody = document.querySelector('#cartSummaryModal .modal-body'); if (modalBody && modalScrollListener) { modalBody.removeEventListener('scroll', modalScrollListener); modalScrollListener = null; } } }
         function downloadFullCartSummary() { if (cart.length === 0) { alert("Koszyk jest pusty."); return; } const totals = calculateCartTotal(); const allCodes = cart.flatMap(item => Array(item.quantity).fill(item.code)).join('\n'); const date = new Date().toLocaleString('pl-PL'); let content = `PODSUMOWANIE ZAMÓWIENIA\n`; content += `Data wygenerowania: ${date}\n`; content += `========================================\n\n`; cart.forEach((item, index) => { content += `PRODUKT ${index + 1}: ${item.name} (x${item.quantity})\n`; content += `  Wymiary: ${item.summary}\n`; content += `  Kolor boków: ${item.sideColor}\n`; content += `  Kolor półek: ${item.shelfColor}\n`; content += `  Ilość półek wewn.: ${item.shelfCountText}\n`; content += `  Opcje: ${item.extras}\n`; content += `  Cena jedn.: ${item.price.toFixed(2)} zł\n\n`; }); content += `========================================\n`; if (totals.totalDiscount > 0) { content += `SUMA CZĘŚCIOWA: ${totals.subtotal.toFixed(2)} zł\n`; if(totals.discount10 > 0) content += `Rabat na 1. półkę (-10%): -${totals.discount10.toFixed(2)} zł\n`; if(totals.discount25 > 0) content += `Rabat na 2. półkę (-25%): -${totals.discount25.toFixed(2)} zł\n`; } content += `ŁĄCZNIE DO ZAPŁATY: ${totals.total.toFixed(2)} zł\n\n`; content += `KODY ZAMÓWIEŃ DO WKLEJENIA NA ALLEGRO:\n`; content += `${allCodes}\n`; content += `========================================\n`; const blob = new Blob([content], { type: "text/plain;charset=utf-8" }); const url = URL.createObjectURL(blob); const link = document.createElement("a"); link.href = url; const filenameDate = new Date().toISOString().slice(0, 10); link.download = `zamowienie-polki-${filenameDate}.txt`; document.body.appendChild(link); link.click(); document.body.removeChild(link); URL.revokeObjectURL(url); }
         
     function applyShelfConfigurationFromGallery(galleryIndex, imageIndex) {
