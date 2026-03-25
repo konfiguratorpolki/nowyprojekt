@@ -33,17 +33,35 @@
     }
 
     #codeDisplayBox {
-        background: #f8fafc;
+        background: #fff;
         border-radius: 8px;
-        padding: 14px 16px;
+        padding: 13px 14px;
         margin-bottom: 10px;
-        border: 2px solid #16a34a;
+        border: 1.5px solid #e2e8f0;
+        border-left: 4px solid #16a34a;
         min-height: 52px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
     }
 
     #codeDisplayBox.animate-glow {
         animation: borderGlow 2s ease-in-out infinite;
     }
+
+    #codeBoxCopyBtn {
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        border-radius: 6px;
+        padding: 6px 7px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        transition: background 0.15s;
+    }
+    #codeBoxCopyBtn:hover { background: #dcfce7; }
 
     #codeDisplayText {
         font-family: monospace;
@@ -2622,7 +2640,7 @@ body.no-scroll {
                          </div>
                     </div>
 
-                    <div id="codesSection" class="mt-4 opacity-0" style="transform: translateY(15px);">
+                    <div id="codesSection" class="mt-4 opacity-0" style="transform: translateY(15px); margin-bottom: 16px;">
                         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
                             <span style="font-size:11px;font-weight:600;color:#6b7280;">Kod Twojego zamówienia</span>
                             <div id="codeReadyBadge">
@@ -2631,15 +2649,16 @@ body.no-scroll {
                             </div>
                         </div>
                         <div id="codeDisplayBox">
-                            <span id="codeDisplayText"></span><span id="typingCursor"></span>
+                            <span id="codeDisplayText" style="flex:1;"></span><span id="typingCursor"></span>
+                            <button id="codeBoxCopyBtn" title="Skopiuj kod">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                            </button>
                         </div>
                         <textarea id="cartSummaryAllCodes" style="position:fixed;top:-9999px;left:-9999px;opacity:0;pointer-events:none;width:1px;height:1px;" readonly></textarea>
-                        <button id="copyAllCodesBtn" style="width:100%;background:#16a34a;color:#fff;border:none;border-radius:8px;padding:11px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;margin-top:4px;">
-                            Kopiuj kod zamówienia
-                        </button>
+                        <button id="copyAllCodesBtn" style="display:none;"></button>
                     </div>
 
-                    <div class="mt-4 p-3 bg-amber-50 rounded-md border border-amber-200">
+                    <div class="p-3 bg-amber-50 rounded-md border border-amber-200" style="margin-top:40px;">
     <h4 class="font-semibold text-stone-700 mb-2 text-base">Co dalej?</h4>
     <ol class="list-decimal text-sm text-stone-600 space-y-1.5 pl-5">
         <li><b>Skopiuj kod projektu:</b> Użyj przycisku, aby skopiować wygenerowany powyżej kod Twojej konfiguracji.</li>
@@ -4230,7 +4249,7 @@ Zadaj pytanie", wklejając kod w wiadomości.</span></li>
 
         
         function checkCodesVisibility() { const modalBody = document.querySelector('#cartSummaryModal .modal-body'); const codesSection = document.getElementById('codesSection'); const scrollToBtn = document.getElementById('scrollToCodesBtn'); if (!modalBody || !codesSection || !scrollToBtn) return; const modalRect = modalBody.getBoundingClientRect(); const codesRect = codesSection.getBoundingClientRect(); if (codesRect.bottom > modalRect.bottom + 5) { scrollToBtn.classList.add('visible'); } else { scrollToBtn.classList.remove('visible'); } }
-        function animateCodeTyping(fullText) { const textarea = document.getElementById('cartSummaryAllCodes'); const displayEl = document.getElementById('codeDisplayText'); const cursor = document.getElementById('typingCursor'); const badge = document.getElementById('codeReadyBadge'); if (!displayEl || !cursor) return; if (textarea) textarea.value = fullText; displayEl.textContent = ''; if (badge) { badge.style.display = 'none'; } const box = document.getElementById('codeDisplayBox'); if (box) box.classList.remove('animate-glow'); cursor.style.display = 'inline-block'; const chars = fullText.split(''); let i = 0; const typingSpeed = 28; function type() { if (i < chars.length) { displayEl.textContent += chars[i]; i++; setTimeout(type, typingSpeed); } else { cursor.style.display = 'none'; if (badge) { badge.style.display = 'flex'; } const box = document.getElementById('codeDisplayBox'); if (box) box.classList.add('animate-glow'); checkCodesVisibility(); } } type(); }
+        function animateCodeTyping(fullText) { const textarea = document.getElementById('cartSummaryAllCodes'); const displayEl = document.getElementById('codeDisplayText'); const cursor = document.getElementById('typingCursor'); const badge = document.getElementById('codeReadyBadge'); if (!displayEl || !cursor) return; if (textarea) textarea.value = fullText; displayEl.textContent = ''; if (badge) { badge.style.display = 'none'; } cursor.style.display = 'inline-block'; const chars = fullText.split(''); let i = 0; const typingSpeed = 28; function type() { if (i < chars.length) { displayEl.textContent += chars[i]; i++; setTimeout(type, typingSpeed); } else { cursor.style.display = 'none'; if (badge) { badge.style.display = 'flex'; } checkCodesVisibility(); } } type(); }
         function increaseQuantity(itemCode) { const item = cart.find(i => i.code === itemCode); if (item) { item.quantity++; } updateCartDisplay(); }
         function decreaseQuantity(itemCode) { const item = cart.find(i => i.code === itemCode); if (item && item.quantity > 1) { item.quantity--; } else { cart = cart.filter(i => i.code !== itemCode); } updateCartDisplay(); }
         function removeFromCart(itemCode) { cart = cart.filter(item => item.code !== itemCode); updateCartDisplay(); }
@@ -7748,9 +7767,14 @@ function generateOrderCode() { const shelfTypeVal = shelfTypeSelect.value; const
                     if(copyAllCodesBtn) copyAllCodesBtn.addEventListener('click', () => {
                         cartSummaryAllCodes.select();
                         navigator.clipboard.writeText(cartSummaryAllCodes.value);
-                        const originalText = copyAllCodesBtn.innerHTML;
-                        copyAllCodesBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>`;
-                        setTimeout(() => { copyAllCodesBtn.innerHTML = originalText; }, 2000);
+                    });
+
+                    const codeBoxCopyBtn = document.getElementById('codeBoxCopyBtn');
+                    if(codeBoxCopyBtn) codeBoxCopyBtn.addEventListener('click', () => {
+                        navigator.clipboard.writeText(cartSummaryAllCodes.value);
+                        const origHTML = codeBoxCopyBtn.innerHTML;
+                        codeBoxCopyBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>';
+                        setTimeout(() => { codeBoxCopyBtn.innerHTML = origHTML; }, 2000);
                     });
 
                     if(cartSummaryGoToAllegroBtn) cartSummaryGoToAllegroBtn.addEventListener('click', () => {
