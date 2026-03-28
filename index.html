@@ -4462,6 +4462,7 @@ function updateCartDisplay() { if (!cartItemsContainer || !cartBadges) return; c
             if (config.type === 'mug_shelf') {
                 if (Array.from(widthSelect.options).some(opt => opt.value === String(config.width))) { widthSelect.value = String(config.width); } else if (widthSelect.options.length > 0) { widthSelect.value = widthSelect.options[0].value; }
                 if (Array.from(heightSelect.options).some(opt => opt.value === String(config.height))) { heightSelect.value = String(config.height); } else if (heightSelect.options.length > 0) { heightSelect.value = heightSelect.options[0].value; }
+                handleMugShelfHeightChange(true);
             } else {
                 const widthValueString = String(config.width);
                 const widthOptionExists = Array.from(widthSelect.options).some(opt => opt.value === widthValueString);
@@ -5110,11 +5111,12 @@ function fitCameraToShelf() {
                         masterTimeline.progress(1);
                         return;
                     }
+                    // Centruj tylko po Y — geometria jest symetryczna w X/Z
+                    // Centrowanie po X powoduje przesunięcie półki gdy przegródki są asymetryczne
                     const box = new THREE.Box3().setFromObject(shelfGroup);
-                    const center = box.getCenter(new THREE.Vector3());
-                    shelfGroup.children.forEach(child => child.position.sub(center));
-                    const _mobOff = 0;
-                    shelfGroup.position.y = _mobOff;
+                    const centerY = box.getCenter(new THREE.Vector3()).y;
+                    shelfGroup.children.forEach(child => { child.position.y -= centerY; });
+                    shelfGroup.position.set(0, 0, 0);
                     shelfGroup.scale.set(1.1, 1.1, 1.1);
                     scene.add(shelfGroup);
                 });
@@ -5403,16 +5405,6 @@ function fitCameraToShelf() {
                 let bottomPanel = shelfGroup.getObjectByName("bottomPanel");
                 const defaultMaterial = new THREE.MeshStandardMaterial(originalPreviewMaterialParams);
 
-                // Półka na kubki: zmiana wymiaru → pełen rebuild
-            if (shelfType === 'mug_shelf' && (
-                lastValidConfig.width !== config.width ||
-                lastValidConfig.height !== config.height
-            )) {
-                await rebuildAndAnimateIn(config, animateChanges);
-                lastValidConfig = { ...config };
-                return;
-            }
-
             if (!leftSide || !rightSide) { 
                     await rebuildAndAnimateIn(config, animateChanges);
                     lastValidConfig = { ...config };
@@ -5560,117 +5552,102 @@ function fitCameraToShelf() {
             }
 
             if (shelfType === 'mug_shelf') {
+                // Poczekaj na zakończenie animacji korpusu, potem przelicz i wstaw przegródki
                 const { width: widthNum, height: heightVal, depth: depthVal, addDividersTop, addDividersMiddle, addDividersBottom } = config;
-                const width = widthNum / 10; const depth = parseFloat(depthVal) / 10;
-                const defaultMaterial = new THREE.MeshStandardMaterial(originalPreviewMaterialParams);
-                const dividersToRemove = shelfGroup.children.filter(child => child.name.startsWith("divider_")); const mugWidthArrowToRemove = shelfGroup.children.filter(child => child.name && (child.name.startsWith("mugWidthArrow_") || child.name.startsWith("mugHeightArrow_")));
-                
-                if (dividersToRemove.length > 0 || mugWidthArrowToRemove.length > 0) {
-                    mugWidthArrowToRemove.forEach(d => shelfGroup.remove(d));
-                    if (dividersToRemove.length > 0) currentAnimationTimeline.to(dividersToRemove.map(d => d.scale), { y: 0.01, duration: animDuration / 2, stagger: 0.03, onComplete: () => {
-                        dividersToRemove.forEach(d => shelfGroup.remove(d));
-                    }}, ">-0.2");
-                }
-                
-                const topPanel = shelfGroup.getObjectByName("topPanel");
-                const bottomPanel = shelfGroup.getObjectByName("bottomPanel");
-                const internalShelves = shelfGroup.children.filter(child => child.name.startsWith("internalShelf_"));
-                internalShelves.sort((a, b) => b.position.y - a.position.y);
+                const mugWidth = widthNum / 10;
+                const mugDepth = parseFloat(depthVal) / 10;
+                const mugThickness = thickness;
 
-                if (topPanel && bottomPanel && internalShelves.length > 0) {
-                    const innerWidthForDividers = width - 2 * thickness; const dividerThicknessThreeJs = thickness; let levels = [];
-                    internalShelves.sort((a, b) => b.position.y - a.position.y);
-                    
-                    if (heightVal === '60' && internalShelves.length === 3) {
+                currentAnimationTimeline.call(() => {
+                    // Usuń stare przegródki i strzałki
+                    const toRemove = shelfGroup.children.filter(c => c.name && (
+                        c.name.startsWith('divider_') ||
+                        c.name.startsWith('mugWidthArrow_') ||
+                        c.name.startsWith('mugHeightArrow_')
+                    ));
+                    toRemove.forEach(c => shelfGroup.remove(c));
+
+                    if (!addDividersTop && !addDividersMiddle && !addDividersBottom) return;
+
+                    const tp = shelfGroup.getObjectByName('topPanel');
+                    const bp = shelfGroup.getObjectByName('bottomPanel');
+                    const shelves = shelfGroup.children
+                        .filter(c => c.name && c.name.startsWith('internalShelf_'))
+                        .sort((a, b) => a.position.y - b.position.y); // [0]=najniższa
+
+                    if (!tp || !bp || shelves.length === 0) return;
+
+                    let levels = [];
+                    if (heightVal === '60' && shelves.length >= 3) {
                         levels = [
-                           { top: topPanel.position.y, bottom: internalShelves[0].position.y },
-                           { top: internalShelves[0].position.y, bottom: internalShelves[1].position.y },
-                           { top: internalShelves[1].position.y, bottom: internalShelves[2].position.y },
-                           { top: internalShelves[2].position.y, bottom: bottomPanel.position.y }
-                       ].map(level => ({ top: level.top - thickness/2, bottom: level.bottom + thickness/2 }));
-                    } else if (heightVal === '40' && internalShelves.length === 2) {
+                            { top: tp.position.y - mugThickness/2, bottom: shelves[2].position.y + mugThickness/2 },
+                            { top: shelves[2].position.y - mugThickness/2, bottom: shelves[1].position.y + mugThickness/2 },
+                            { top: shelves[1].position.y - mugThickness/2, bottom: shelves[0].position.y + mugThickness/2 },
+                            { top: shelves[0].position.y - mugThickness/2, bottom: bp.position.y + mugThickness/2 }
+                        ];
+                    } else if (heightVal === '40' && shelves.length >= 2) {
                         levels = [
-                           { top: topPanel.position.y, bottom: internalShelves[0].position.y },
-                           { top: internalShelves[0].position.y, bottom: internalShelves[1].position.y },
-                           { top: internalShelves[1].position.y, bottom: bottomPanel.position.y }
-                       ].map(level => ({ top: level.top - thickness/2, bottom: level.bottom + thickness/2 }));
+                            { top: tp.position.y - mugThickness/2, bottom: shelves[1].position.y + mugThickness/2 },
+                            { top: shelves[1].position.y - mugThickness/2, bottom: shelves[0].position.y + mugThickness/2 },
+                            { top: shelves[0].position.y - mugThickness/2, bottom: bp.position.y + mugThickness/2 }
+                        ];
                     }
-                    
-                    const dividersToAdd = [];
-                    const createDividersForLevel = (levelData, levelName) => {
-                        const levelH = Math.max(0.01, levelData.top - levelData.bottom); if (levelH <= 0.01) return;
-                        const yCenter = levelData.bottom + levelH / 2; const dividerGeometry = new THREE.BoxGeometry(dividerThicknessThreeJs, levelH, depth);
-                        
+                    if (levels.length === 0) return;
+
+                    const innerW = mugWidth - 2 * mugThickness;
+                    const mat = new THREE.MeshStandardMaterial(originalPreviewMaterialParams);
+
+                    const createDividers = (levelData, levelName) => {
+                        const levelH = Math.max(0.01, levelData.top - levelData.bottom);
+                        if (levelH <= 0.01) return;
+                        const yCenter = levelData.bottom + levelH / 2;
+                        const geo = new THREE.BoxGeometry(mugThickness, levelH, mugDepth);
                         if (widthNum == 84) {
-                            const numPhysicalDividers = 3;
-                            const singleCompartmentWidth = 1.25;
-                            let currentXPos = -innerWidthForDividers / 2;
-                            for (let i = 0; i < numPhysicalDividers; i++) {
-                                currentXPos += singleCompartmentWidth;
-                                const dividerXCenter = currentXPos + (dividerThicknessThreeJs / 2);
-                                const dividerMesh = new THREE.Mesh(dividerGeometry.clone(), defaultMaterial);
-                                dividerMesh.position.set(dividerXCenter, yCenter, 0);
-                                dividerMesh.name = `divider_${levelName}_${i}`;
-                                dividerMesh.scale.set(1, 0.01, 1);
-                                dividersToAdd.push(dividerMesh);
-                                currentXPos += dividerThicknessThreeJs;
+                            const n84 = 3; const spacing84 = innerW / (n84 + 1);
+                            for (let i = 1; i <= n84; i++) {
+                                const m = new THREE.Mesh(geo.clone(), mat);
+                                m.position.set(-innerW/2 + i*spacing84, yCenter, 0);
+                                m.name = `divider_${levelName}_${i}`;
+                                shelfGroup.add(m);
                             }
                         } else {
-                            const numDividersOriginal = (widthNum == 60) ? 3 : ((widthNum == 44) ? 2 : 0);
-                            if (numDividersOriginal > 0) {
-                                const dividerSpacing = innerWidthForDividers / (numDividersOriginal + 1);
-                                for (let i = 1; i <= numDividersOriginal; i++) {
-                                    const xPos = (-innerWidthForDividers / 2) + i * dividerSpacing;
-                                    const dividerMesh = new THREE.Mesh(dividerGeometry.clone(), defaultMaterial);
-                                    dividerMesh.position.set(xPos, yCenter, 0);
-                                    dividerMesh.name = `divider_${levelName}_${i}`;
-                                    dividerMesh.scale.set(1, 0.01, 1);
-                                    dividersToAdd.push(dividerMesh);
+                            const n = (widthNum == 60) ? 3 : (widthNum == 44) ? 2 : 0;
+                            if (n > 0) {
+                                const spacing = innerW / (n + 1);
+                                for (let i = 1; i <= n; i++) {
+                                    const m = new THREE.Mesh(geo.clone(), mat);
+                                    m.position.set(-innerW/2 + i*spacing, yCenter, 0);
+                                    m.name = `divider_${levelName}_${i}`;
+                                    shelfGroup.add(m);
                                 }
                             }
                         }
                     };
 
-                    if (addDividersTop && levels[0]) createDividersForLevel(levels[0], 'top');
-                    if (addDividersMiddle && levels[1]) createDividersForLevel(levels[1], 'middle');
-                    if (addDividersBottom && levels[2]) createDividersForLevel(levels[2], 'bottom');
+                    if (addDividersTop && levels[0]) createDividers(levels[0], 'top');
+                    if (addDividersMiddle && levels[1]) createDividers(levels[1], 'middle');
+                    if (addDividersBottom && levels[2]) createDividers(levels[2], 'bottom');
 
-                    if (dividersToAdd.length > 0) {
-                        dividersToAdd.forEach(d => shelfGroup.add(d));
-                        currentAnimationTimeline.to(dividersToAdd.map(d => d.scale), { y: 1, duration: animDuration, stagger: 0.1, ease: 'power2.out' }, dividersToRemove.length > 0 ? ">-0.1" : "+=0.2");
-                        // Dodaj wymiary po zakończeniu animacji
-                        currentAnimationTimeline.call(() => {
-                            // Usuń stare wymiary
-                            shelfGroup.children.filter(c => c.name && (c.name.startsWith("mugWidthArrow_") || c.name.startsWith("mugHeightArrow_"))).forEach(c => shelfGroup.remove(c));
-                            // Wysokość — na każdej zaznaczonej przegródce + dolna wnęka h=60
-                            const selLevels = [];
-                            if (addDividersTop && levels[0]) selLevels.push(levels[0]);
-                            if (addDividersMiddle && levels[1]) selLevels.push(levels[1]);
-                            if (addDividersBottom && levels[2]) selLevels.push(levels[2]);
-                            // Dolna duża wnęka dla h=60 — zawsze
-                            if (heightVal === '60' && levels[3]) selLevels.push(levels[3]);
-                            selLevels.forEach(function(lvl) {
-                                if (typeof addMugShelfCompartmentHeightArrow === 'function')
-                                    addMugShelfCompartmentHeightArrow(shelfGroup, widthNum, width, parseFloat(depthVal) / 10, thickness, lvl);
-                            });
-                            // Szerokość — tylko na pierwszej (najwyższej) zaznaczonej przegródce
-                            let wLvl = null;
-                            if (addDividersTop && levels[0]) wLvl = levels[0];
-                            else if (addDividersMiddle && levels[1]) wLvl = levels[1];
-                            else if (addDividersBottom && levels[2]) wLvl = levels[2];
-                            if (wLvl && typeof addMugShelfCompartmentWidthArrow === 'function') {
-                                const _fb = { position: { y: wLvl.bottom - thickness / 2 } };
-                                const _ft = { position: { y: wLvl.top + thickness / 2 } };
-                                addMugShelfCompartmentWidthArrow(shelfGroup, widthNum, width, parseFloat(depthVal) / 10, thickness, _fb, _ft);
-                            }
-                        });
-                    } else if (!addDividersTop && !addDividersMiddle && !addDividersBottom) {
-                        // No dividers selected — remove width arrow if still present
-                        shelfGroup.children.filter(c => c.name && (c.name.startsWith("mugWidthArrow_") || c.name.startsWith("mugHeightArrow_"))).forEach(c => shelfGroup.remove(c));
+                    // Strzałki wymiarów
+                    const selLevels = [];
+                    if (addDividersTop && levels[0]) selLevels.push(levels[0]);
+                    if (addDividersMiddle && levels[1]) selLevels.push(levels[1]);
+                    if (addDividersBottom && levels[2]) selLevels.push(levels[2]);
+                    if (heightVal === '60' && levels[3]) selLevels.push(levels[3]);
+                    selLevels.forEach(lvl => {
+                        if (typeof addMugShelfCompartmentHeightArrow === 'function')
+                            addMugShelfCompartmentHeightArrow(shelfGroup, widthNum, mugWidth, mugDepth, mugThickness, lvl);
+                    });
+                    const wLvl = (addDividersTop && levels[0]) ? levels[0]
+                               : (addDividersMiddle && levels[1]) ? levels[1]
+                               : (addDividersBottom && levels[2]) ? levels[2] : null;
+                    if (wLvl && typeof addMugShelfCompartmentWidthArrow === 'function') {
+                        const fb = { position: { y: wLvl.bottom - mugThickness/2 } };
+                        const ft = { position: { y: wLvl.top + mugThickness/2 } };
+                        addMugShelfCompartmentWidthArrow(shelfGroup, widthNum, mugWidth, mugDepth, mugThickness, fb, ft);
                     }
-                }
+                });
             }
-            
             lastValidConfig = { ...config };
         }
         
@@ -5782,7 +5759,7 @@ function fitCameraToShelf() {
             } 
             return mainGroup; 
         }
-        function buildShelfModel(config) { const group = new THREE.Group(); const { width: widthNum, height: heightVal, depth: depthVal, shelfCount: shelfCountVal, shelfType, noTopShelf, noBottomShelf, addDividersTop, addDividersMiddle, addDividersBottom } = config; if (!widthNum || !heightVal || !depthVal || shelfCountVal === undefined) return group; const defaultMaterial = new THREE.MeshStandardMaterial(originalPreviewMaterialParams); const mkMat = () => defaultMaterial.clone(); const thickness = 0.18; const width = widthNum / 10; const height = parseFloat(heightVal) / 10; const depth = parseFloat(depthVal) / 10; const shelfCount = parseInt(shelfCountVal); if (isNaN(width) || isNaN(height) || isNaN(depth) || width <= 0 || height <= 0 || depth <= 0) return group; let topPanel, bottomPanel; if (!noBottomShelf) { const bottomGeometry = new THREE.BoxGeometry(width - 2 * thickness, thickness, depth); bottomPanel = new THREE.Mesh(bottomGeometry, mkMat()); bottomPanel.position.set(0, -height / 2 + thickness / 2, 0); bottomPanel.name = "bottomPanel"; group.add(bottomPanel); } if (!noTopShelf) { const topGeometry = new THREE.BoxGeometry(width - 2 * thickness, thickness, depth); topPanel = new THREE.Mesh(topGeometry, mkMat()); topPanel.position.set(0, height / 2 - thickness / 2, 0); topPanel.name = "topPanel"; group.add(topPanel); } const sideGeometry = new THREE.BoxGeometry(thickness, height, depth); const leftSideMesh = new THREE.Mesh(sideGeometry, mkMat()); leftSideMesh.position.set(-width / 2 + thickness / 2, 0, 0); leftSideMesh.name = "leftSide"; group.add(leftSideMesh); const rightSideMesh = new THREE.Mesh(sideGeometry, mkMat()); rightSideMesh.position.set(width / 2 - thickness / 2, 0, 0); rightSideMesh.name = "rightSide"; group.add(rightSideMesh); const internalShelves = []; if (!isNaN(shelfCount) && shelfCount > 0) { if (shelfType === 'mug_shelf' && heightVal === '60' && topPanel) { const fixedGap = 1.09; const topPanelBottomY = topPanel.position.y - thickness / 2; let lastShelfY = topPanelBottomY; const mugShelfCount60 = 3; for (let i = 0; i < mugShelfCount60; i++) { const shelfY = lastShelfY - fixedGap - thickness / 2; const shelfGeometry = new THREE.BoxGeometry(width - 2 * thickness, thickness, depth); const shelfMesh = new THREE.Mesh(shelfGeometry, mkMat()); shelfMesh.position.set(0, shelfY, 0); shelfMesh.name = `internalShelf_${i}`; group.add(shelfMesh); internalShelves.push(shelfMesh); lastShelfY = shelfY - thickness / 2; } } else { const topExists = !!topPanel; const bottomExists = !!bottomPanel; const topThicknessActual = topExists ? thickness : 0; const bottomThicknessActual = bottomExists ? thickness : 0; const totalAvailableHeight = height - topThicknessActual - bottomThicknessActual; if (totalAvailableHeight >= shelfCount * thickness && (shelfCount + 1) > 0) { const useCustom = config.customPositions && config.customPositions.length === shelfCount; if (useCustom) { const bottomY = -height / 2 + thickness; for (let i = 0; i < shelfCount; i++) { const posFromBottom = config.customPositions[i] / 10; const shelfY = bottomY + posFromBottom; const shelfGeometry = new THREE.BoxGeometry(width - 2 * thickness, thickness, depth); const shelfMesh = new THREE.Mesh(shelfGeometry, mkMat()); shelfMesh.position.set(0, shelfY, 0); shelfMesh.name = `internalShelf_${i}`; group.add(shelfMesh); internalShelves.push(shelfMesh); } } else { const gap = (totalAvailableHeight - shelfCount * thickness) / (shelfCount + 1); let startY = bottomExists ? (-height / 2 + bottomThicknessActual) : (-height / 2); for (let i = 1; i <= shelfCount; i++) { const shelfY = startY + i * gap + (i - 0.5) * thickness; const shelfGeometry = new THREE.BoxGeometry(width - 2 * thickness, thickness, depth); const shelfMesh = new THREE.Mesh(shelfGeometry, mkMat()); shelfMesh.position.set(0, shelfY, 0); shelfMesh.name = `internalShelf_${i-1}`; group.add(shelfMesh); internalShelves.push(shelfMesh); } } } } } if (config.customPositions && internalShelves.length > 0) { if (typeof addShelfDimensionArrows === 'function') addShelfDimensionArrows(group, internalShelves, bottomPanel, topPanel, thickness, width, height, depth); } if (shelfType === 'mug_shelf' && topPanel && bottomPanel && internalShelves.length > 0) { if (addDividersTop || addDividersMiddle || addDividersBottom) { const innerWidthForDividers = width - 2 * thickness; const dividerThicknessThreeJs = thickness; let levels = []; internalShelves.sort((a, b) => a.position.y - b.position.y); if (heightVal === '60' && internalShelves.length === 3) { levels = [ { top: topPanel.position.y - thickness / 2, bottom: internalShelves[2].position.y + thickness/2 }, { top: internalShelves[2].position.y - thickness/2, bottom: internalShelves[1].position.y + thickness/2 }, { top: internalShelves[1].position.y - thickness/2, bottom: internalShelves[0].position.y + thickness/2 }, { top: internalShelves[0].position.y - thickness/2, bottom: bottomPanel.position.y + thickness / 2 } ]; } else if (heightVal === '40' && internalShelves.length === 2) { levels = [ { top: topPanel.position.y - thickness / 2, bottom: internalShelves[1].position.y + thickness/2 }, { top: internalShelves[1].position.y - thickness/2, bottom: internalShelves[0].position.y + thickness/2 }, { top: internalShelves[0].position.y - thickness/2, bottom: bottomPanel.position.y + thickness / 2 } ]; } const drawDividersForLevel = (levelData) => { const levelH = Math.max(0.01, levelData.top - levelData.bottom); if (levelH <= 0.01) return; const yCenter = levelData.bottom + levelH / 2; const dividerGeometry = new THREE.BoxGeometry(dividerThicknessThreeJs, levelH, depth); if (widthNum == 84) { const numPhysicalDividers = 3; const singleCompartmentWidth = 1.25; let currentXPos = -innerWidthForDividers / 2; for (let i = 0; i < numPhysicalDividers; i++) { currentXPos += singleCompartmentWidth; const dividerXCenter = currentXPos + (dividerThicknessThreeJs / 2); const dividerMesh = new THREE.Mesh(dividerGeometry.clone(), mkMat()); dividerMesh.position.set(dividerXCenter, yCenter, 0); dividerMesh.name = `divider_h84_${i}`; group.add(dividerMesh); currentXPos += dividerThicknessThreeJs; } } else { const numDividersOriginal = (widthNum == 60) ? 3 : ((widthNum == 44) ? 2 : 0); if (numDividersOriginal > 0) { const dividerSpacing = innerWidthForDividers / (numDividersOriginal + 1); for (let i = 1; i <= numDividersOriginal; i++) { const xPos = (-innerWidthForDividers / 2) + i * dividerSpacing; const dividerMesh = new THREE.Mesh(dividerGeometry.clone(), mkMat()); dividerMesh.position.set(xPos, yCenter, 0); dividerMesh.name = `divider_${i}`; group.add(dividerMesh); } } } }; if (addDividersTop && levels[0]) drawDividersForLevel(levels[0]); if (addDividersMiddle && levels[1]) drawDividersForLevel(levels[1]); if (addDividersBottom && levels[2]) drawDividersForLevel(levels[2]); // --- Wymiary przegródek kubkowych ---
+        function buildShelfModel(config) { const group = new THREE.Group(); const { width: widthNum, height: heightVal, depth: depthVal, shelfCount: shelfCountVal, shelfType, noTopShelf, noBottomShelf, addDividersTop, addDividersMiddle, addDividersBottom } = config; if (!widthNum || !heightVal || !depthVal || shelfCountVal === undefined) return group; const defaultMaterial = new THREE.MeshStandardMaterial(originalPreviewMaterialParams); const mkMat = () => defaultMaterial.clone(); const thickness = 0.18; const width = widthNum / 10; const height = parseFloat(heightVal) / 10; const depth = parseFloat(depthVal) / 10; const shelfCount = parseInt(shelfCountVal); if (isNaN(width) || isNaN(height) || isNaN(depth) || width <= 0 || height <= 0 || depth <= 0) return group; let topPanel, bottomPanel; if (!noBottomShelf) { const bottomGeometry = new THREE.BoxGeometry(width - 2 * thickness, thickness, depth); bottomPanel = new THREE.Mesh(bottomGeometry, mkMat()); bottomPanel.position.set(0, -height / 2 + thickness / 2, 0); bottomPanel.name = "bottomPanel"; group.add(bottomPanel); } if (!noTopShelf) { const topGeometry = new THREE.BoxGeometry(width - 2 * thickness, thickness, depth); topPanel = new THREE.Mesh(topGeometry, mkMat()); topPanel.position.set(0, height / 2 - thickness / 2, 0); topPanel.name = "topPanel"; group.add(topPanel); } const sideGeometry = new THREE.BoxGeometry(thickness, height, depth); const leftSideMesh = new THREE.Mesh(sideGeometry, mkMat()); leftSideMesh.position.set(-width / 2 + thickness / 2, 0, 0); leftSideMesh.name = "leftSide"; group.add(leftSideMesh); const rightSideMesh = new THREE.Mesh(sideGeometry, mkMat()); rightSideMesh.position.set(width / 2 - thickness / 2, 0, 0); rightSideMesh.name = "rightSide"; group.add(rightSideMesh); const internalShelves = []; if (!isNaN(shelfCount) && shelfCount > 0) { if (shelfType === 'mug_shelf' && heightVal === '60' && topPanel) { const fixedGap = 1.09; const topPanelBottomY = topPanel.position.y - thickness / 2; let lastShelfY = topPanelBottomY; const mugShelfCount60 = 3; for (let i = 0; i < mugShelfCount60; i++) { const shelfY = lastShelfY - fixedGap - thickness / 2; const shelfGeometry = new THREE.BoxGeometry(width - 2 * thickness, thickness, depth); const shelfMesh = new THREE.Mesh(shelfGeometry, mkMat()); shelfMesh.position.set(0, shelfY, 0); shelfMesh.name = `internalShelf_${i}`; group.add(shelfMesh); internalShelves.push(shelfMesh); lastShelfY = shelfY - thickness / 2; } } else { const topExists = !!topPanel; const bottomExists = !!bottomPanel; const topThicknessActual = topExists ? thickness : 0; const bottomThicknessActual = bottomExists ? thickness : 0; const totalAvailableHeight = height - topThicknessActual - bottomThicknessActual; if (totalAvailableHeight >= shelfCount * thickness && (shelfCount + 1) > 0) { const useCustom = config.customPositions && config.customPositions.length === shelfCount; if (useCustom) { const bottomY = -height / 2 + thickness; for (let i = 0; i < shelfCount; i++) { const posFromBottom = config.customPositions[i] / 10; const shelfY = bottomY + posFromBottom; const shelfGeometry = new THREE.BoxGeometry(width - 2 * thickness, thickness, depth); const shelfMesh = new THREE.Mesh(shelfGeometry, mkMat()); shelfMesh.position.set(0, shelfY, 0); shelfMesh.name = `internalShelf_${i}`; group.add(shelfMesh); internalShelves.push(shelfMesh); } } else { const gap = (height - 2*thickness - shelfCount * thickness) / (shelfCount + 1); let startY = -height / 2 + thickness; for (let i = 1; i <= shelfCount; i++) { const shelfY = startY + i * gap + (i - 0.5) * thickness; const shelfGeometry = new THREE.BoxGeometry(width - 2 * thickness, thickness, depth); const shelfMesh = new THREE.Mesh(shelfGeometry, mkMat()); shelfMesh.position.set(0, shelfY, 0); shelfMesh.name = `internalShelf_${i-1}`; group.add(shelfMesh); internalShelves.push(shelfMesh); } } } } } if (config.customPositions && internalShelves.length > 0) { if (typeof addShelfDimensionArrows === 'function') addShelfDimensionArrows(group, internalShelves, bottomPanel, topPanel, thickness, width, height, depth); } if (shelfType === 'mug_shelf' && topPanel && bottomPanel && internalShelves.length > 0) { if (addDividersTop || addDividersMiddle || addDividersBottom) { const innerWidthForDividers = width - 2 * thickness; const dividerThicknessThreeJs = thickness; let levels = []; internalShelves.sort((a, b) => a.position.y - b.position.y); if (heightVal === '60' && internalShelves.length === 3) { levels = [ { top: topPanel.position.y - thickness / 2, bottom: internalShelves[2].position.y + thickness/2 }, { top: internalShelves[2].position.y - thickness/2, bottom: internalShelves[1].position.y + thickness/2 }, { top: internalShelves[1].position.y - thickness/2, bottom: internalShelves[0].position.y + thickness/2 }, { top: internalShelves[0].position.y - thickness/2, bottom: bottomPanel.position.y + thickness / 2 } ]; } else if (heightVal === '40' && internalShelves.length === 2) { levels = [ { top: topPanel.position.y - thickness / 2, bottom: internalShelves[1].position.y + thickness/2 }, { top: internalShelves[1].position.y - thickness/2, bottom: internalShelves[0].position.y + thickness/2 }, { top: internalShelves[0].position.y - thickness/2, bottom: bottomPanel.position.y + thickness / 2 } ]; } const drawDividersForLevel = (levelData) => { const levelH = Math.max(0.01, levelData.top - levelData.bottom); if (levelH <= 0.01) return; const yCenter = levelData.bottom + levelH / 2; const dividerGeometry = new THREE.BoxGeometry(dividerThicknessThreeJs, levelH, depth); if (widthNum == 84) { const n84 = 3; const spacing84 = innerWidthForDividers / (n84 + 1); for (let i = 1; i <= n84; i++) { const xPos = -innerWidthForDividers / 2 + i * spacing84; const dividerMesh = new THREE.Mesh(dividerGeometry.clone(), mkMat()); dividerMesh.position.set(xPos, yCenter, 0); dividerMesh.name = `divider_h84_${i}`; group.add(dividerMesh); } } else { const numDividersOriginal = (widthNum == 60) ? 3 : ((widthNum == 44) ? 2 : 0); if (numDividersOriginal > 0) { const dividerSpacing = innerWidthForDividers / (numDividersOriginal + 1); for (let i = 1; i <= numDividersOriginal; i++) { const xPos = (-innerWidthForDividers / 2) + i * dividerSpacing; const dividerMesh = new THREE.Mesh(dividerGeometry.clone(), mkMat()); dividerMesh.position.set(xPos, yCenter, 0); dividerMesh.name = `divider_${i}`; group.add(dividerMesh); } } } }; if (addDividersTop && levels[0]) drawDividersForLevel(levels[0]); if (addDividersMiddle && levels[1]) drawDividersForLevel(levels[1]); if (addDividersBottom && levels[2]) drawDividersForLevel(levels[2]); // --- Wymiary przegródek kubkowych ---
             // Wysokość: na każdej zaznaczonej przegródce + dolna wnęka (tylko h=60, levels[3])
             const selectedLevelsForHeight = [];
             if (addDividersTop && levels[0]) selectedLevelsForHeight.push(levels[0]);
@@ -9504,10 +9481,8 @@ function addMugShelfCompartmentWidthArrow(group, widthNum, width, depth, thickne
     // Calculate compartment width
     const innerWidth = width - 2 * thickness;
     let compartmentWidth;
-    if (widthNum == 84) {
-        compartmentWidth = 1.25;
-    } else {
-        const numDividers = (widthNum == 60) ? 3 : ((widthNum == 44) ? 2 : 0);
+    {
+        const numDividers = (widthNum == 84) ? 3 : (widthNum == 60) ? 3 : ((widthNum == 44) ? 2 : 0);
         if (numDividers === 0) return;
         const dividerSpacing = innerWidth / (numDividers + 1);
         compartmentWidth = dividerSpacing - thickness;
