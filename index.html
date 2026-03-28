@@ -2266,7 +2266,7 @@ body.no-scroll {
     background: #f5f5f4;
 }
 .drag-mode-overlay .drag-3d-area {
-    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    position: absolute; top: 52px; left: 0; right: 0; bottom: 0;
 }
 .drag-mode-overlay .drag-3d-area canvas {
     width: 100% !important; height: 100% !important;
@@ -8165,8 +8165,9 @@ function enterDragMode() {
                     camera.aspect = w / h;
                     camera.updateProjectionMatrix();
                     renderer.setSize(w, h);
+                    renderer.render(scene, camera);
                 }
-            }, 50);
+            }, 100);
         }
 
         // Show hint
