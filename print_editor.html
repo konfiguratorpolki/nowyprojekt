@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<title>Edytor Wydruku</title>
+<script src="wzory.js"></script>
+<style>
+:root {
+  --bg:#1a1a1a; --bg2:#232323; --bg3:#2d2d2d; --bd:#3a3a3a;
+  --t1:#f0f0f0; --t2:#a0a0a0; --t3:#555;
+  --acc:#16a34a; --acc2:#15803d; --acc-dim:rgba(22,163,74,.08);
+  --rs:6px; --shadow:0 2px 10px rgba(0,0,0,.5);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  background:var(--bg);color:var(--t1);display:flex;flex-direction:column;
+  height:100vh;overflow:hidden;font-size:12px;-webkit-font-smoothing:antialiased}
+
+/* ── TOP BAR ── */
+#topbar{display:flex;align-items:center;gap:6px;padding:7px 12px;
+  background:var(--bg2);border-bottom:1px solid var(--bd);flex-shrink:0;flex-wrap:wrap}
+.tb-logo{font-size:13px;font-weight:800;color:var(--t1);margin-right:4px;white-space:nowrap}
+.tb-sep{width:1px;height:20px;background:var(--bd);margin:0 2px;flex-shrink:0}
+.tb-btn{padding:5px 11px;border-radius:var(--rs);border:1px solid var(--bd);
+  background:var(--bg3);color:var(--t2);cursor:pointer;font-size:11px;font-weight:600;
+  transition:all .15s;white-space:nowrap;display:flex;align-items:center;gap:5px}
+.tb-btn:hover{background:var(--bd);color:var(--t1)}
+.tb-btn.acc{background:var(--acc);color:#fff;border-color:var(--acc)}
+.tb-btn.acc:hover{background:var(--acc2)}
+.tb-hint{font-size:10px;color:var(--t3);margin-left:4px}
+
+/* Layout switcher */
+.layout-group{display:flex;gap:3px}
+.lbtn{padding:5px 11px;border-radius:var(--rs);border:1px solid var(--bd);
+  background:var(--bg3);color:var(--t2);cursor:pointer;font-size:11px;font-weight:700;transition:all .15s}
+.lbtn:hover{border-color:var(--acc);color:var(--acc)}
+.lbtn.active{background:var(--acc);color:#fff;border-color:var(--acc)}
+
+/* ── MAIN ── */
+#main{display:flex;flex:1;overflow:hidden;min-height:0}
+
+/* Left sidebar */
+#sb-left{width:175px;flex-shrink:0;background:var(--bg2);border-right:1px solid var(--bd);
+  overflow-y:auto;padding:10px 8px;display:flex;flex-direction:column;gap:14px}
+.sb-sec-title{font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase;
+  letter-spacing:.08em;margin-bottom:5px;padding-left:2px}
+.sb-sec{display:flex;flex-direction:column;gap:3px}
+.add-btn{display:flex;align-items:center;gap:6px;width:100%;padding:6px 8px;
+  border-radius:var(--rs);border:1px dashed var(--bd);background:transparent;
+  color:var(--t2);cursor:pointer;font-size:11px;transition:all .15s;text-align:left}
+.add-btn:hover{border-color:var(--acc);color:var(--acc);background:var(--acc-dim)}
+.add-btn .ico{font-size:13px;width:18px;text-align:center;flex-shrink:0}
+
+/* Canvas wrap */
+#canvas-wrap{flex:1;overflow:auto;background:#0e0e0e;display:flex;
+  justify-content:center;align-items:flex-start;padding:28px;min-width:0}
+#page{position:relative;background:#fff;flex-shrink:0;box-shadow:0 6px 32px rgba(0,0,0,.7)}
+
+/* Card outline */
+.card-outline{position:absolute;border:1.5px dashed rgba(22,163,74,.35);
+  pointer-events:none;border-radius:1px}
+.card-lbl{position:absolute;top:-15px;left:1px;font-size:9px;
+  color:rgba(22,163,74,.6);font-weight:700}
+
+/* Elements */
+.pe-el{position:absolute;cursor:move;user-select:none}
+.pe-el:hover .pe-border{border-color:rgba(22,163,74,.5)}
+.pe-border{position:absolute;inset:-1px;border:1.5px solid transparent;
+  border-radius:1px;pointer-events:none;transition:border-color .1s}
+.pe-el.sel .pe-border{border-color:#16a34a !important}
+.pe-inner{width:100%;height:100%;overflow:hidden;display:flex;align-items:center}
+
+/* Resize handles */
+.rh{position:absolute;width:8px;height:8px;background:#fff;
+  border:1.5px solid #16a34a;border-radius:2px;display:none;z-index:20}
+.pe-el.sel .rh{display:block}
+.rh[data-d="nw"]{top:-4px;left:-4px;cursor:nw-resize}
+.rh[data-d="n"] {top:-4px;left:calc(50% - 4px);cursor:n-resize}
+.rh[data-d="ne"]{top:-4px;right:-4px;cursor:ne-resize}
+.rh[data-d="e"] {top:calc(50% - 4px);right:-4px;cursor:e-resize}
+.rh[data-d="se"]{bottom:-4px;right:-4px;cursor:se-resize}
+.rh[data-d="s"] {bottom:-4px;left:calc(50% - 4px);cursor:s-resize}
+.rh[data-d="sw"]{bottom:-4px;left:-4px;cursor:sw-resize}
+.rh[data-d="w"] {top:calc(50% - 4px);left:-4px;cursor:w-resize}
+
+/* Right sidebar */
+#sb-right{width:225px;flex-shrink:0;background:var(--bg2);border-left:1px solid var(--bd);
+  overflow-y:auto;padding:10px}
+.prop-title{font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase;
+  letter-spacing:.08em;margin-bottom:6px}
+.prop-group{margin-bottom:14px}
+.prop-row{display:flex;align-items:center;gap:6px;margin-bottom:5px}
+.prop-lbl{font-size:10px;color:var(--t2);width:64px;flex-shrink:0}
+.prop-inp{flex:1;background:var(--bg3);border:1px solid var(--bd);color:var(--t1);
+  border-radius:4px;padding:3px 6px;font-size:11px;outline:none;min-width:0}
+.prop-inp:focus{border-color:var(--acc)}
+.prop-inp[type="color"]{padding:1px 3px;height:24px;cursor:pointer}
+.prop-inp[type="number"]{max-width:70px}
+select.prop-inp{cursor:pointer}
+.no-sel{color:var(--t3);font-size:11px;text-align:center;padding:24px 8px;line-height:1.6}
+.prop-del{width:100%;padding:6px;border-radius:var(--rs);border:1px solid #ef4444;
+  background:transparent;color:#ef4444;cursor:pointer;font-size:11px;font-weight:600;
+  transition:all .15s;margin-top:8px}
+.prop-del:hover{background:#fef2f2}
+.prop-tip{font-size:9px;color:var(--t3);margin-top:4px;line-height:1.4;padding:4px 6px;
+  background:var(--bg3);border-radius:4px}
+
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--bd);border-radius:3px}
+
+/* Snap guides */
+.snap-guide{position:absolute;pointer-events:none;z-index:50}
+.snap-guide.h{left:0;right:0;height:1px;background:rgba(22,163,74,.9);box-shadow:0 0 3px rgba(22,163,74,.5)}
+.snap-guide.v{top:0;bottom:0;width:1px;background:rgba(22,163,74,.9);box-shadow:0 0 3px rgba(22,163,74,.5)}
+.tb-btn.snap-on{border-color:var(--acc)!important;color:var(--acc)!important;background:var(--acc-dim)!important}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div id="topbar">
+  <span class="tb-logo">🖨 Edytor Wydruku</span>
+  <div class="tb-sep"></div>
+  <div class="layout-group">
+    <button class="lbtn active" onclick="setLayout(1)" title="1 produkt na stronie">×1</button>
+    <button class="lbtn" onclick="setLayout(2)" title="2 produkty na stronie">×2</button>
+    <button class="lbtn" onclick="setLayout(3)" title="3 produkty na stronie">×3</button>
+    <button class="lbtn" onclick="setLayout(4)" title="4 produkty na stronie">×4</button>
+  </div>
+  <span class="tb-hint">układ strony</span>
+  <div class="tb-sep"></div>
+  <button class="tb-btn" onclick="loadTpl()">📂 Wgraj szablon</button>
+  <button class="tb-btn acc" onclick="saveTpl()">💾 Zapisz szablon</button>
+  <input type="file" id="file-in" accept=".js,.json" style="display:none" onchange="onFileLoad(event)">
+  <div class="tb-sep"></div>
+  <button class="tb-btn" onclick="resetDefault()" title="Przywróć domyślny układ">↺ Domyślny</button>
+  <div class="tb-sep"></div>
+  <button class="tb-btn" id="copyCardBtn" onclick="copyCard1ToAll()" title="Kopiuje układ karty 1 do pozostałych kart">📋 Kopiuj kartę 1 do pozostałych</button>
+  <div class="tb-sep"></div>
+  <button class="tb-btn snap-on" id="snap-btn" onclick="toggleSnap()" title="Przyciąganie do krawędzi innych elementów i linii pomocnicze">🧲 Przyciąganie</button>
+  <span class="tb-hint">Del = usuń &nbsp;|&nbsp; ← → ↑ ↓ = przesuń 0.5mm &nbsp;|&nbsp; Esc = odznacz</span>
+</div>
+
+<!-- MAIN -->
+<div id="main">
+
+  <!-- LEFT SIDEBAR: paleta elementów -->
+  <div id="sb-left">
+    <div>
+      <div class="sb-sec-title">Zawartość karty</div>
+      <div class="sb-sec">
+        <button class="add-btn" onclick="addEl('image3d')"><span class="ico">🖼</span>Zdjęcie 3D</button>
+        <button class="add-btn" onclick="addEl('field','index')"><span class="ico">#</span>Numer (#1)</button>
+        <button class="add-btn" onclick="addEl('field','code')"><span class="ico">🔑</span>Kod zamówienia</button>
+        <button class="add-btn" onclick="addEl('field','dimensions')"><span class="ico">📐</span>Wymiary</button>
+        <button class="add-btn" onclick="addEl('field','price')"><span class="ico">💰</span>Cena</button>
+        <button class="add-btn" onclick="addEl('field','shelfType')"><span class="ico">🪵</span>Typ półki</button>
+        <button class="add-btn" onclick="addEl('field','sideColor')"><span class="ico">🎨</span>Kolor boków</button>
+        <button class="add-btn" onclick="addEl('colorSwatch','sideColor')"><span class="ico">⬛</span>Próbnik boków</button>
+        <button class="add-btn" onclick="addEl('field','shelfColor')"><span class="ico">🎨</span>Kolor półek</button>
+        <button class="add-btn" onclick="addEl('colorSwatch','shelfColor')"><span class="ico">⬛</span>Próbnik półek</button>
+        <button class="add-btn" onclick="addEl('field','shelfCount')"><span class="ico">📊</span>Liczba półek</button>
+        <button class="add-btn" onclick="addEl('field','gap')"><span class="ico">↕</span>Odstęp półek</button>
+      </div>
+    </div>
+    <div>
+      <div class="sb-sec-title">Elementy dekoracyjne</div>
+      <div class="sb-sec">
+        <button class="add-btn" onclick="addEl('text')"><span class="ico">T</span>Tekst statyczny</button>
+        <button class="add-btn" onclick="addEl('rect')"><span class="ico">▭</span>Prostokąt / linia</button>
+      </div>
+    </div>
+    <div style="margin-top:auto;padding-top:10px;border-top:1px solid var(--bd)">
+      <div class="sb-sec-title">Informacja</div>
+      <div style="font-size:10px;color:var(--t3);line-height:1.6">
+        Edytuj układ osobno dla każdego trybu (×1, ×2, ×3, ×4). Zapisz szablon i wgraj go na stronę główną.
+      </div>
+    </div>
+  </div>
+
+  <!-- CANVAS: A4 -->
+  <div id="canvas-wrap" onmousedown="bgClick(event)">
+    <div id="page"></div>
+  </div>
+
+  <!-- RIGHT SIDEBAR: właściwości -->
+  <div id="sb-right">
+    <div id="props"><div class="no-sel">Kliknij element<br>aby edytować właściwości</div></div>
+  </div>
+
+</div>
+
+<script>
+// ════════════════════════════════════════════════
+//  STAŁE
+// ════════════════════════════════════════════════
+const PW = 210, PH = 297; // A4 w mm
+const SC = 3.3;            // px / mm
+
+const FIELDS = {
+  index:      { lbl:'Numer (#1)',            ex:'#1' },
+  code:       { lbl:'Kod zamówienia',        ex:'S-44-60-10-2-0-1-S' },
+  dimensions: { lbl:'Wymiary',               ex:'44×60×10 cm' },
+  price:      { lbl:'Cena',                  ex:'209.00 zł' },
+  shelfType:  { lbl:'Typ półki',             ex:'Stojąca na blacie' },
+  sideColor:  { lbl:'Kolor boków',           ex:'Dąb Craft Złoty' },
+  shelfColor: { lbl:'Kolor półek',           ex:'Biały matowy' },
+  shelfCount: { lbl:'Liczba półek',          ex:'2 półki wewnętrzne' },
+  gap:        { lbl:'Odstęp półek',          ex:'17.6 cm' },
+};
+
+// Przykładowe kolory dla podglądu próbników w edytorze
+const SWATCH_PREVIEW = {
+  sideColor:  '#8B5A2B', // Dąb Craft Złoty (przykład)
+  shelfColor: '#FFFFFF',  // Biały matowy (przykład)
+};
+
+// ════════════════════════════════════════════════
+//  STAN
+// ════════════════════════════════════════════════
+let curLayout  = 1;
+let selId      = null;
+let _drag      = null;
+let _idN       = 1;
+let tpl        = makeDefault();
+let _snapOn    = true;
+let _guides    = [];
+const SNAP_THR = 1.5; // mm — próg przyciągania
+
+// ════════════════════════════════════════════════
+//  DOMYŚLNY SZABLON
+//  Elementy mają ABSOLUTNE współrzędne strony A4
+//  + cardIndex (numer karty, 0-based)
+// ════════════════════════════════════════════════
+function mkEl(type, field, o) {
+  return {
+    id: 'e' + (_idN++), type, field: field||null,
+    cardIndex: o.ci||0,
+    x:o.x||0, y:o.y||0, w:o.w||40, h:o.h||10,
+    fontSize:o.fs||10, fontWeight:o.fw||'normal',
+    fontFamily:o.ff||'sans-serif', color:o.col||'#111111',
+    bg:o.bg||'transparent', align:o.al||'left', content:o.txt||'',
+  };
+}
+
+// Przesuwa tablicę elementów o offset karty (cx, cy) i ustawia cardIndex
+function _cardOff(els, cx, cy, ci) {
+  return els.map(e => ({...e, x: e.x + cx, y: e.y + cy, cardIndex: ci||0}));
+}
+
+function makeDefault() {
+  _idN = 1;
+  return { version:2, layouts:{
+    // ── ×1: kwadrat 200×200mm (karta od x:5,y:5) ──
+    1:{ cards:[{x:5,y:5,w:200,h:200}], elements: _cardOff([
+      mkEl('field','index',       {x:6,  y:5,  w:22, h:13, fs:12,fw:'bold',col:'#111'}),
+      mkEl('image3d', null,       {x:5,  y:20, w:190,h:120}),
+      mkEl('field','shelfType',   {x:5,  y:143,w:190,h:7,  fs:9, col:'#666'}),
+      mkEl('field','dimensions',  {x:5,  y:153,w:120,h:11, fs:13,fw:'bold',col:'#111'}),
+      mkEl('rect',  null,         {x:5,  y:168,w:190,h:0.5,bg:'#e5e7eb'}),
+      mkEl('text',  null,         {x:5,  y:172,w:85, h:5,  fs:7, col:'#999',txt:'KOLOR BOKÓW'}),
+      mkEl('field','sideColor',   {x:5,  y:179,w:90, h:8,  fs:9, col:'#333'}),
+      mkEl('text',  null,         {x:108,y:172,w:87, h:5,  fs:7, col:'#999',txt:'KOLOR PÓŁEK'}),
+      mkEl('field','shelfColor',  {x:108,y:179,w:87, h:8,  fs:9, col:'#333'}),
+      mkEl('field','price',       {x:130,y:183,w:65, h:14, fs:16,fw:'bold',col:'#111',al:'right'}),
+      mkEl('field','code',        {x:5,  y:189,w:120,h:7,  fs:8, col:'#777',ff:'monospace'}),
+    ], 5, 5, 0)},
+    // ── ×2: dwa rzędy (karta 0 od x:5,y:5) ──
+    2:{ cards:[{x:5,y:5,w:200,h:138},{x:5,y:154,w:200,h:138}], elements: _cardOff([
+      mkEl('image3d', null,       {x:4,  y:16, w:96, h:90}),
+      mkEl('field','index',       {x:4,  y:4,  w:18, h:10, fs:10,fw:'bold',col:'#111'}),
+      mkEl('field','shelfType',   {x:106,y:18, w:90, h:7,  fs:8, col:'#777'}),
+      mkEl('field','dimensions',  {x:106,y:28, w:90, h:10, fs:12,fw:'bold',col:'#111'}),
+      mkEl('text',  null,         {x:106,y:42, w:50, h:6,  fs:7, col:'#999',txt:'KOLOR BOKÓW'}),
+      mkEl('field','sideColor',   {x:106,y:49, w:90, h:8,  fs:9, col:'#333'}),
+      mkEl('text',  null,         {x:106,y:61, w:50, h:6,  fs:7, col:'#999',txt:'KOLOR PÓŁEK'}),
+      mkEl('field','shelfColor',  {x:106,y:68, w:90, h:8,  fs:9, col:'#333'}),
+      mkEl('rect',  null,         {x:4,  y:112,w:192,h:0.5,bg:'#e5e7eb'}),
+      mkEl('field','code',        {x:4,  y:116,w:120,h:7,  fs:8, col:'#888',ff:'monospace'}),
+      mkEl('field','price',       {x:130,y:112,w:66, h:12, fs:13,fw:'bold',col:'#111',al:'right'}),
+    ], 5, 5, 0)},
+    // ── ×3: trzy rzędy (karta 0 od x:5,y:5) ──
+    3:{ cards:[{x:5,y:5,w:200,h:88},{x:5,y:103,w:200,h:88},{x:5,y:201,w:200,h:88}], elements: _cardOff([
+      mkEl('image3d', null,       {x:4,  y:10, w:66, h:62}),
+      mkEl('field','index',       {x:4,  y:2,  w:15, h:8,  fs:9, fw:'bold',col:'#111'}),
+      mkEl('field','shelfType',   {x:76, y:12, w:120,h:6,  fs:7, col:'#777'}),
+      mkEl('field','dimensions',  {x:76, y:21, w:120,h:9,  fs:11,fw:'bold',col:'#111'}),
+      mkEl('text',  null,         {x:76, y:34, w:50, h:5,  fs:7, col:'#999',txt:'KOLOR BOKÓW'}),
+      mkEl('field','sideColor',   {x:76, y:40, w:55, h:7,  fs:9, col:'#333'}),
+      mkEl('text',  null,         {x:136,y:34, w:50, h:5,  fs:7, col:'#999',txt:'KOLOR PÓŁEK'}),
+      mkEl('field','shelfColor',  {x:136,y:40, w:60, h:7,  fs:9, col:'#333'}),
+      mkEl('rect',  null,         {x:4,  y:72, w:192,h:0.5,bg:'#e5e7eb'}),
+      mkEl('field','code',        {x:4,  y:76, w:120,h:6,  fs:8, col:'#888',ff:'monospace'}),
+      mkEl('field','price',       {x:130,y:72, w:66, h:10, fs:12,fw:'bold',col:'#111',al:'right'}),
+    ], 5, 5, 0)},
+    // ── ×4: siatka 2×2 (karta 0 od x:5,y:5) ──
+    4:{ cards:[{x:5,y:5,w:97,h:138},{x:108,y:5,w:97,h:138},
+               {x:5,y:154,w:97,h:138},{x:108,y:154,w:97,h:138}], elements: _cardOff([
+      mkEl('image3d', null,       {x:4,  y:14, w:89, h:72}),
+      mkEl('field','index',       {x:4,  y:3,  w:15, h:9,  fs:9, fw:'bold',col:'#111'}),
+      mkEl('field','dimensions',  {x:4,  y:90, w:89, h:9,  fs:10,fw:'bold',col:'#111'}),
+      mkEl('text',  null,         {x:4,  y:103,w:44, h:5,  fs:7, col:'#999',txt:'KOLOR BOKÓW'}),
+      mkEl('field','sideColor',   {x:4,  y:109,w:89, h:7,  fs:9, col:'#333'}),
+      mkEl('text',  null,         {x:4,  y:120,w:44, h:5,  fs:7, col:'#999',txt:'KOLOR PÓŁEK'}),
+      mkEl('field','shelfColor',  {x:4,  y:126,w:89, h:7,  fs:9, col:'#333'}),
+      mkEl('field','price',       {x:4,  y:116,w:89, h:11, fs:12,fw:'bold',col:'#111',al:'right'}),
+      mkEl('field','code',        {x:4,  y:129,w:89, h:6,  fs:7, col:'#999',ff:'monospace'}),
+    ], 5, 5, 0)},
+  }};
+}
+
+// ════════════════════════════════════════════════
+//  RENDER
+// ════════════════════════════════════════════════
+const px = v => v * SC;
+
+function render() {
+  const page = document.getElementById('page');
+  page.style.width  = px(PW) + 'px';
+  page.innerHTML = '';
+
+  const lay = tpl.layouts[curLayout];
+  if (!lay) return;
+
+  // Dla jednej karty: wysokość strony = karta + marginesy (kwadrat jeśli karta jest kwadratem)
+  // Dla wielu kart: zawsze pełne A4
+  if (lay.cards.length === 1) {
+    const c = lay.cards[0];
+    page.style.height = px(c.y + c.h + c.y) + 'px';
+  } else {
+    page.style.height = px(PH) + 'px';
+  }
+
+  // Card outlines
+  lay.cards.forEach((c, i) => {
+    const d = document.createElement('div');
+    d.className = 'card-outline';
+    d.style.cssText = `left:${px(c.x)}px;top:${px(c.y)}px;width:${px(c.w)}px;height:${px(c.h)}px`;
+    d.innerHTML = `<span class="card-lbl">Karta ${i+1}</span>`;
+    page.appendChild(d);
+  });
+
+  // Elementy mają absolutne współrzędne strony — renderuj bezpośrednio
+  lay.elements.forEach(e => {
+    const div = document.createElement('div');
+    div.className = 'pe-el' + (e.id === selId ? ' sel' : '');
+    div.dataset.id = e.id;
+    div.style.cssText = `left:${px(e.x)}px;top:${px(e.y)}px;width:${px(e.w)}px;height:${px(Math.max(e.h,.5))}px`;
+
+    // Border overlay
+    const border = document.createElement('div');
+    border.className = 'pe-border';
+    div.appendChild(border);
+
+    // Inner content
+    const inner = document.createElement('div');
+    inner.className = 'pe-inner';
+    inner.style.cssText = `
+      font-size:${e.fontSize * SC * 0.37}px;
+      font-weight:${e.fontWeight};
+      font-family:${e.fontFamily};
+      color:${e.color};
+      background:${e.bg||'transparent'};
+      padding:0 2px;
+      justify-content:${e.align==='right'?'flex-end':e.align==='center'?'center':'flex-start'};
+    `;
+
+    if (e.type === 'image3d') {
+      inner.style.flexDirection = 'column';
+      inner.style.justifyContent = 'center';
+      inner.style.background = '#f3f4f6';
+      inner.innerHTML = `<span style="font-size:${px(8)}px;opacity:.4">🖼</span>
+        <span style="font-size:${px(2.5)}px;color:#9ca3af;margin-top:2px">Zdjęcie 3D</span>`;
+    } else if (e.type === 'rect') {
+      inner.style.background = e.bg || '#e5e7eb';
+    } else if (e.type === 'text') {
+      inner.textContent = e.content || '(tekst statyczny)';
+    } else if (e.type === 'field') {
+      const fd = FIELDS[e.field];
+      inner.textContent = fd ? fd.ex : ('{{'+e.field+'}}');
+      inner.style.opacity = '.75';
+    } else if (e.type === 'colorSwatch') {
+      // Próbnik — prawdziwa tekstura z COLORS (wzory.js)
+      const colorsArr = (typeof COLORS !== 'undefined') ? COLORS : [];
+      const sample = colorsArr[e.previewColorIdx || 0];
+      inner.style.border = '1px solid rgba(0,0,0,.2)';
+      inner.style.borderRadius = '2px';
+      inner.style.overflow = 'hidden';
+      if (sample && sample.textureImg) {
+        inner.style.backgroundImage = `url('${sample.textureImg}')`;
+        inner.style.backgroundSize = 'cover';
+        inner.style.backgroundPosition = 'center';
+      } else if (sample && sample.value) {
+        inner.style.background = sample.value;
+      } else {
+        inner.style.background = '#cccccc';
+      }
+    }
+    div.appendChild(inner);
+
+    // Resize handles
+    ['nw','n','ne','e','se','s','sw','w'].forEach(d => {
+      const h = document.createElement('div');
+      h.className = 'rh'; h.dataset.d = d; h.dataset.id = e.id;
+      div.appendChild(h);
+    });
+    div.addEventListener('mousedown', onElMD);
+    page.appendChild(div);
+  });
+}
+
+// ════════════════════════════════════════════════
+//  MOUSE INTERACTION
+// ════════════════════════════════════════════════
+function bgClick(e) {
+  const t = e.target;
+  if (t.id === 'canvas-wrap' || t.id === 'page' ||
+      t.classList.contains('card-outline') || t.classList.contains('card-lbl')) {
+    selId = null; render(); renderProps();
+  }
+}
+
+function onElMD(e) {
+  e.stopPropagation();
+  const id = e.currentTarget.dataset.id;
+  if (!id) return;
+  const handle = e.target.closest('.rh');
+  selId = id; render(); renderProps();
+
+  const lay  = tpl.layouts[curLayout];
+  const elem = lay.elements.find(x => x.id === id);
+  if (!elem) return;
+  e.preventDefault();
+
+  _drag = {
+    move:   !handle,
+    dir:    handle ? handle.dataset.d : null,
+    x0: e.clientX, y0: e.clientY,
+    ex: elem.x, ey: elem.y, ew: elem.w, eh: elem.h,
+    elem, card: lay.cards[elem.cardIndex || 0] || lay.cards[0],
+  };
+  document.addEventListener('mousemove', onMM);
+  document.addEventListener('mouseup',   onMU, {once:true});
+}
+
+// ── Snap helpers ──────────────────────────────────
+function toggleSnap() {
+  _snapOn = !_snapOn;
+  const btn = document.getElementById('snap-btn');
+  btn.classList.toggle('snap-on', _snapOn);
+  btn.textContent = _snapOn ? '🧲 Przyciąganie' : '🧲 Wył.';
+}
+
+function _collectSnaps(excludeId) {
+  const lay = tpl.layouts[curLayout];
+  const c   = _drag.card;
+  // Krawędzie karty
+  const xs  = [c.x, c.x + c.w, c.x + c.w/2];
+  const ys  = [c.y, c.y + c.h, c.y + c.h/2];
+  // Krawędzie i środki pozostałych elementów
+  lay.elements.filter(e => e.id !== excludeId).forEach(e => {
+    xs.push(e.x, e.x + e.w, e.x + e.w/2);
+    ys.push(e.y, e.y + e.h, e.y + e.h/2);
+  });
+  return { xs, ys };
+}
+
+function _trySnap(val, arr, thr) {
+  let best = null, bd = thr;
+  for (const s of arr) { const d = Math.abs(val - s); if (d < bd) { bd = d; best = s; } }
+  return best;
+}
+
+function _showGuides(hArr, vArr) {
+  _guides.forEach(g => g.remove()); _guides = [];
+  const page = document.getElementById('page');
+  hArr.forEach(y => {
+    const g = document.createElement('div');
+    g.className = 'snap-guide h'; g.style.top = px(y) + 'px';
+    page.appendChild(g); _guides.push(g);
+  });
+  vArr.forEach(x => {
+    const g = document.createElement('div');
+    g.className = 'snap-guide v'; g.style.left = px(x) + 'px';
+    page.appendChild(g); _guides.push(g);
+  });
+}
+
+function _clearGuides() { _guides.forEach(g => g.remove()); _guides = []; }
+// ─────────────────────────────────────────────────
+
+function onMM(e) {
+  if (!_drag) return;
+  const dx = (e.clientX - _drag.x0) / SC;
+  const dy = (e.clientY - _drag.y0) / SC;
+  const el = _drag.elem;
+  const c  = _drag.card;
+  const minW = 3, minH = .5;
+  const hG = [], vG = [];
+
+  if (_drag.move) {
+    let nx = Math.max(c.x, Math.min(c.x + c.w - el.w, Math.round((_drag.ex + dx)*10)/10));
+    let ny = Math.max(c.y, Math.min(c.y + c.h - el.h, Math.round((_drag.ey + dy)*10)/10));
+
+    if (_snapOn) {
+      const {xs, ys} = _collectSnaps(el.id);
+      // Przyciąganie osi X (lewa krawędź, prawa, środek)
+      const sL  = _trySnap(nx,          xs, SNAP_THR);
+      const sR  = _trySnap(nx + el.w,   xs, SNAP_THR);
+      const sCX = _trySnap(nx + el.w/2, xs, SNAP_THR);
+      if      (sL  !== null) { nx = sL;           vG.push(sL);  }
+      else if (sR  !== null) { nx = sR - el.w;    vG.push(sR);  }
+      else if (sCX !== null) { nx = sCX - el.w/2; vG.push(sCX); }
+      // Przyciąganie osi Y (górna krawędź, dolna, środek)
+      const sT  = _trySnap(ny,          ys, SNAP_THR);
+      const sB  = _trySnap(ny + el.h,   ys, SNAP_THR);
+      const sCY = _trySnap(ny + el.h/2, ys, SNAP_THR);
+      if      (sT  !== null) { ny = sT;           hG.push(sT);  }
+      else if (sB  !== null) { ny = sB - el.h;    hG.push(sB);  }
+      else if (sCY !== null) { ny = sCY - el.h/2; hG.push(sCY); }
+    }
+    el.x = nx; el.y = ny;
+  } else {
+    const d = _drag.dir;
+    let nx=_drag.ex, ny=_drag.ey, nw=_drag.ew, nh=_drag.eh;
+    if (d.includes('e')) nw = Math.max(minW, _drag.ew + dx);
+    if (d.includes('s')) nh = Math.max(minH, _drag.eh + dy);
+    if (d.includes('w')) { nw = Math.max(minW, _drag.ew - dx); nx = _drag.ex + _drag.ew - nw; }
+    if (d.includes('n')) { nh = Math.max(minH, _drag.eh - dy); ny = _drag.ey + _drag.eh - nh; }
+    el.x = Math.round(nx*10)/10; el.y = Math.round(ny*10)/10;
+    el.w = Math.round(nw*10)/10; el.h = Math.round(nh*10)/10;
+  }
+  render();
+  _showGuides(hG, vG); // po render() — bo render() czyści innerHTML
+}
+
+function onMU() {
+  document.removeEventListener('mousemove', onMM);
+  _drag = null;
+  _clearGuides();
+  renderProps();
+}
+
+// ════════════════════════════════════════════════
+//  KEYBOARD
+// ════════════════════════════════════════════════
+document.addEventListener('keydown', e => {
+  if (document.activeElement.tagName === 'INPUT' ||
+      document.activeElement.tagName === 'SELECT' ||
+      document.activeElement.tagName === 'TEXTAREA') return;
+
+  if (e.key === 'Escape') { selId = null; render(); renderProps(); return; }
+  if ((e.key === 'Delete' || e.key === 'Backspace') && selId) { delSelected(); return; }
+
+  if (!selId) return;
+  const lay  = tpl.layouts[curLayout];
+  const elem = lay.elements.find(x => x.id === selId);
+  if (!elem) return;
+  const step = e.shiftKey ? 5 : 0.5;
+  if (e.key==='ArrowLeft')  { elem.x -= step; e.preventDefault(); }
+  if (e.key==='ArrowRight') { elem.x += step; e.preventDefault(); }
+  if (e.key==='ArrowUp')    { elem.y -= step; e.preventDefault(); }
+  if (e.key==='ArrowDown')  { elem.y += step; e.preventDefault(); }
+  render();
+});
+
+// ════════════════════════════════════════════════
+//  LAYOUT SWITCH
+// ════════════════════════════════════════════════
+function setLayout(n) {
+  curLayout = n; selId = null;
+  document.querySelectorAll('.lbtn').forEach((b,i) => b.classList.toggle('active', i+1===n));
+  render(); renderProps();
+}
+
+
+// ════════════════════════════════════════════════
+//  ADD / DELETE ELEMENT
+// ════════════════════════════════════════════════
+function addEl(type, field) {
+  const lay  = tpl.layouts[curLayout];
+  const c    = lay.cards[0];
+  const ne   = mkEl(type, field||null, {
+    x: Math.round(c.x + c.w/2 - 30),
+    y: Math.round(c.y + c.h/2 - 8),
+    w: type==='image3d'?80:type==='rect'?60:type==='colorSwatch'?12:60,
+    h: type==='image3d'?60:type==='rect'?.5:type==='colorSwatch'?12:10,
+    fs:10, col:'#111', bg: type==='rect'?'#e5e7eb':'transparent',
+  });
+  lay.elements.push(ne);
+  selId = ne.id;
+  render(); renderProps();
+}
+
+function delSelected() {
+  if (!selId) return;
+  const lay = tpl.layouts[curLayout];
+  lay.elements = lay.elements.filter(e => e.id !== selId);
+  selId = null; render(); renderProps();
+}
+
+// ════════════════════════════════════════════════
+//  PROPERTIES PANEL
+// ════════════════════════════════════════════════
+function renderProps() {
+  const panel = document.getElementById('props');
+  if (!selId) { panel.innerHTML = '<div class="no-sel">Kliknij element<br>aby edytować właściwości</div>'; return; }
+  const lay  = tpl.layouts[curLayout];
+  const el   = lay.elements.find(e => e.id === selId);
+  if (!el) { panel.innerHTML = '<div class="no-sel">—</div>'; return; }
+
+  const isRect   = el.type === 'rect';
+  const isImg    = el.type === 'image3d';
+  const isSwatch = el.type === 'colorSwatch';
+  const hasText  = el.type === 'text' || el.type === 'field';
+
+  panel.innerHTML = `
+    <div class="prop-group">
+      <div class="prop-title">Pozycja i rozmiar (mm)</div>
+      <div class="prop-row"><span class="prop-lbl">X</span>
+        <input class="prop-inp" type="number" step="0.5" value="${el.x}" oninput="sp('x',+this.value)"></div>
+      <div class="prop-row"><span class="prop-lbl">Y</span>
+        <input class="prop-inp" type="number" step="0.5" value="${el.y}" oninput="sp('y',+this.value)"></div>
+      <div class="prop-row"><span class="prop-lbl">Szerokość</span>
+        <input class="prop-inp" type="number" step="0.5" value="${el.w}" oninput="sp('w',+this.value)"></div>
+      <div class="prop-row"><span class="prop-lbl">Wysokość</span>
+        <input class="prop-inp" type="number" step="0.5" value="${el.h}" oninput="sp('h',+this.value)"></div>
+      <div class="prop-tip">Pozycja względem lewego górnego rogu karty.</div>
+    </div>
+
+    ${hasText ? `
+    <div class="prop-group">
+      <div class="prop-title">Tekst</div>
+      ${el.type==='text'
+        ? `<div class="prop-row"><span class="prop-lbl">Treść</span>
+           <input class="prop-inp" type="text" value="${(el.content||'').replace(/"/g,'&quot;')}" oninput="sp('content',this.value)"></div>`
+        : `<div class="prop-row"><span class="prop-lbl">Pole danych</span>
+           <span style="color:var(--acc);font-size:10px">${FIELDS[el.field]?.lbl||el.field}</span></div>`
+      }
+      <div class="prop-row"><span class="prop-lbl">Rozmiar (pt)</span>
+        <input class="prop-inp" type="number" step=".5" min="4" max="200" value="${el.fontSize}" oninput="sp('fontSize',+this.value)"></div>
+      <div class="prop-row"><span class="prop-lbl">Grubość</span>
+        <select class="prop-inp" onchange="sp('fontWeight',this.value)">
+          <option value="normal" ${el.fontWeight==='normal'?'selected':''}>Normal</option>
+          <option value="600"    ${el.fontWeight==='600'?'selected':''}>Semi-bold</option>
+          <option value="bold"   ${el.fontWeight==='bold'?'selected':''}>Bold</option>
+        </select></div>
+      <div class="prop-row"><span class="prop-lbl">Czcionka</span>
+        <select class="prop-inp" onchange="sp('fontFamily',this.value)">
+          <option value="sans-serif" ${el.fontFamily==='sans-serif'?'selected':''}>Sans-serif</option>
+          <option value="monospace"  ${el.fontFamily==='monospace'?'selected':''}>Monospace</option>
+          <option value="serif"      ${el.fontFamily==='serif'?'selected':''}>Serif</option>
+        </select></div>
+      <div class="prop-row"><span class="prop-lbl">Wyrównanie</span>
+        <select class="prop-inp" onchange="sp('align',this.value)">
+          <option value="left"   ${el.align==='left'?'selected':''}>Lewo</option>
+          <option value="center" ${el.align==='center'?'selected':''}>Środek</option>
+          <option value="right"  ${el.align==='right'?'selected':''}>Prawo</option>
+        </select></div>
+      <div class="prop-row"><span class="prop-lbl">Kolor</span>
+        <input class="prop-inp" type="color" value="${el.color||'#111111'}" oninput="sp('color',this.value)"></div>
+    </div>` : ''}
+
+    ${isRect ? `
+    <div class="prop-group">
+      <div class="prop-title">Styl prostokąta</div>
+      <div class="prop-row"><span class="prop-lbl">Kolor tła</span>
+        <input class="prop-inp" type="color" value="${el.bg||'#e5e7eb'}" oninput="sp('bg',this.value)"></div>
+      <div class="prop-tip">Ustaw wysokość na 0.5 mm aby uzyskać cienką linię.</div>
+    </div>` : ''}
+
+    ${isImg ? `
+    <div class="prop-group">
+      <div class="prop-title">Zdjęcie 3D</div>
+      <div class="prop-tip">Zdjęcie zostanie automatycznie wygenerowane z modelu 3D półki na podstawie kodu zamówienia.</div>
+    </div>` : ''}
+
+    ${isSwatch ? `
+    <div class="prop-group">
+      <div class="prop-title">Próbnik koloru</div>
+      <div class="prop-row"><span class="prop-lbl">Źródło</span>
+        <span style="color:var(--acc);font-size:10px">${el.field === 'sideColor' ? 'Kolor boków' : 'Kolor półek'}</span></div>
+      <div class="prop-row"><span class="prop-lbl">Podgląd</span>
+        <select onchange="sp('previewColorIdx',+this.value)" style="flex:1;font-size:11px;padding:2px 4px;border:1px solid #d1d5db;border-radius:4px;background:#fff">
+          ${(typeof COLORS !== 'undefined' ? COLORS : []).map((c,i) => `<option value="${i}"${(el.previewColorIdx||0)===i?' selected':''}>${c.name}</option>`).join('')}
+        </select>
+      </div>
+      <div class="prop-tip">Próbnik wyświetla prawdziwy wzornik materiału wybranego przez klienta. Rozmiar ustaw przeciągając uchwyty.</div>
+    </div>` : ''}
+
+    <button class="prop-del" onclick="delSelected()">🗑 Usuń element</button>
+  `;
+}
+
+function sp(key, val) {
+  const lay = tpl.layouts[curLayout];
+  const el  = lay.elements.find(e => e.id === selId);
+  if (!el) return;
+  el[key] = val;
+  render();
+}
+
+// ════════════════════════════════════════════════
+//  SAVE / LOAD / RESET
+// ════════════════════════════════════════════════
+function saveTpl() {
+  const json = JSON.stringify(tpl, null, 2);
+  const js = 'window._printTemplateData = ' + json + ';\n';
+  const a = Object.assign(document.createElement('a'), {
+    href: URL.createObjectURL(new Blob([js],{type:'application/javascript'})),
+    download: 'print_template.js',
+  });
+  a.click(); setTimeout(()=>URL.revokeObjectURL(a.href), 2000);
+}
+
+function loadTpl() { document.getElementById('file-in').click(); }
+
+function onFileLoad(e) {
+  const f = e.target.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = ev => {
+    try {
+      let loaded;
+      const text = ev.target.result.trim();
+      if (text.startsWith('window._printTemplateData')) {
+        // format .js — wyciągnij JSON po '= '
+        const jsonStr = text.replace(/^window\._printTemplateData\s*=\s*/, '').replace(/;\s*$/, '');
+        loaded = JSON.parse(jsonStr);
+      } else {
+        loaded = JSON.parse(text);
+      }
+      if (!loaded.version || !loaded.layouts) throw new Error('Nieprawidłowy format pliku');
+      tpl = loaded; selId = null; render(); renderProps();
+      alert('✓ Szablon wczytany pomyślnie');
+    } catch(err) { alert('Błąd wczytywania: ' + err.message); }
+  };
+  r.readAsText(f);
+  e.target.value = '';
+}
+
+function copyCard1ToAll() {
+  const lay = tpl.layouts[curLayout];
+  if (!lay || lay.cards.length < 2) {
+    alert('Kopiowanie działa tylko dla trybów ×2, ×3, ×4 (wymagane co najmniej 2 karty).');
+    return;
+  }
+  const c0 = lay.cards[0];
+  // Pobierz elementy karty 0
+  const card0Els = lay.elements.filter(e => (e.cardIndex || 0) === 0);
+  if (!card0Els.length) {
+    alert('Karta 1 nie ma żadnych elementów do skopiowania.');
+    return;
+  }
+  // Usuń istniejące kopie z kart 1,2,3
+  lay.elements = lay.elements.filter(e => (e.cardIndex || 0) === 0);
+  // Skopiuj do każdej kolejnej karty
+  for (let ci = 1; ci < lay.cards.length; ci++) {
+    const card = lay.cards[ci];
+    const dx = card.x - c0.x;
+    const dy = card.y - c0.y;
+    card0Els.forEach(el => {
+      lay.elements.push({
+        ...JSON.parse(JSON.stringify(el)),
+        id: 'e' + (_idN++),
+        x: el.x + dx,
+        y: el.y + dy,
+        cardIndex: ci,
+      });
+    });
+  }
+  selId = null;
+  render(); renderProps();
+  // Potwierdź wizualnie
+  const btn = document.getElementById('copyCardBtn');
+  if (btn) {
+    const orig = btn.textContent;
+    btn.textContent = '✓ Skopiowano!';
+    btn.style.color = '#16a34a';
+    setTimeout(() => { btn.textContent = orig; btn.style.color = ''; }, 1800);
+  }
+}
+
+function resetDefault() {
+  if (!confirm('Przywrócić domyślny szablon dla wszystkich układów?\nWszystkie zmiany zostaną utracone.')) return;
+  tpl = makeDefault(); selId = null; render(); renderProps();
+}
+
+// ════════════════════════════════════════════════
+//  INIT
+// ════════════════════════════════════════════════
+render();
+renderProps();
+</script>
+</body>
+</html>
