@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 28" role="img" aria-label="Półka">
+  <g fill="none" stroke="#1c1c1e" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Boki -->
+    <line x1="6"  y1="3"  x2="6"  y2="25"/>
+    <line x1="26" y1="3"  x2="26" y2="25"/>
+    <!-- Góra, 2 półki wewnętrzne, dół -->
+    <line x1="6" y1="3"  x2="26" y2="3"/>
+    <line x1="6" y1="10.3" x2="26" y2="10.3"/>
+    <line x1="6" y1="17.7" x2="26" y2="17.7"/>
+    <line x1="6" y1="25" x2="26" y2="25"/>
+  </g>
+</svg>
