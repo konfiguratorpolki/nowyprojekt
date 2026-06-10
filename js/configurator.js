@@ -1023,16 +1023,18 @@ function updateModularIconActiveStates() {
         };
         // Ustawienia dla konkretnych kombinacji (boki_półki) — najwyższy priorytet
         const SHELF3D_LIGHT_PER_COMBO = {
-            '#FFFFFF_#8B5A2B': {az:137,el:50,int:4.00,temp:83,hemi:0.76,rim:0.92,rimAz:217,shOp:0.11,shBlur:3,blOp:0},
+            '#FFFFFF_#8B5A2B': {az:-180,el:58,int:0.75,temp:0,hemi:0.09,rim:0.05,rimAz:160,shOp:0.14,shBlur:1,blOp:1.2},
             '#FFFFFF_#000000': {az:137,el:50,int:4.00,temp:83,hemi:0.76,rim:0.92,rimAz:217,shOp:0.11,shBlur:3,blOp:0},
             '#8B5A2B_#8B5A2B': {az:137,el:50,int:4.00,temp:83,hemi:0.76,rim:0.92,rimAz:217,shOp:0.11,shBlur:3,blOp:0},
+            '#8B5A2B_#FFFFFF': {az:137,el:50,int:4.00,temp:83,hemi:0.76,rim:0.92,rimAz:217,shOp:0.11,shBlur:3,blOp:0},
+
         };
         // Kolory z priorytetem — jeśli którykolwiek z nich jest użyty, jego ustawienia wygrywają
         const SHELF3D_LIGHT_PER_TYPE = {
             'mug_shelf': {az:154,el:44,int:4.00,temp:83,hemi:0.76,rim:0.92,rimAz:221,shOp:0.10,shBlur:5,blOp:0},
             'modular':   {az:150,el:51,int:3.30,temp:87,hemi:0.84,rim:0.78,rimAz:217,shOp:0.10,shBlur:3,blOp:1},
         };
-        const SHELF3D_LIGHT_PRIORITY = ['#8B5A2B'];
+        const SHELF3D_LIGHT_PRIORITY = ['#FFFFFF', '#8B5A2B']; // biały zawsze wygrywa nad dębem
         function shelf3dApplyColorLight(colorVal) {
             const key = colorVal ? colorVal.toUpperCase() : '';
             const cfg = SHELF3D_LIGHT_PER_COLOR[key];
