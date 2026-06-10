@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Regulamin Sklepu — Regaliki.pl</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:#f9fafb;color:#374151;-webkit-font-smoothing:antialiased;line-height:1.7}
+
+.topbar{background:#fff;border-bottom:1px solid #e5e7eb;height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 32px;position:sticky;top:0;z-index:100;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.logo{display:flex;align-items:center;gap:9px;text-decoration:none}
+.logo-mark{width:32px;height:32px;background:#16a34a;border-radius:8px;display:flex;align-items:center;justify-content:center}
+.logo-mark svg{width:17px;height:17px;fill:white}
+.logo-name{font-size:.9rem;font-weight:600;color:#111827}
+.logo-name span{color:#16a34a}
+.back-btn{display:inline-flex;align-items:center;gap:6px;font-size:.76rem;font-weight:500;color:#6b7280;text-decoration:none;padding:6px 13px;border:1px solid #e5e7eb;border-radius:7px;background:#fff;transition:all .15s}
+.back-btn:hover{color:#16a34a;border-color:#bbf7d0;background:#f0fdf4}
+.back-btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+.doc-wrap{max-width:720px;margin:0 auto;padding:40px 24px 64px}
+
+.doc-header{margin-bottom:40px;padding-bottom:28px;border-bottom:1px solid #e5e7eb}
+.doc-tag{display:inline-block;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:99px;padding:3px 12px;font-size:.68rem;font-weight:600;color:#15803d;letter-spacing:.07em;text-transform:uppercase;margin-bottom:14px}
+.doc-header h1{font-family:'Lora',serif;font-size:clamp(1.8rem,4vw,2.5rem);font-weight:600;color:#111827;line-height:1.2;margin-bottom:8px}
+.doc-header .subtitle{font-size:.88rem;color:#9ca3af;font-weight:300;margin-bottom:20px}
+.doc-meta{display:flex;flex-wrap:wrap;gap:20px}
+.doc-meta-item{font-size:.78rem;color:#6b7280}
+.doc-meta-item strong{color:#374151;font-weight:500}
+
+.toc{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:18px 22px;margin-bottom:36px}
+.toc p{font-size:.68rem;font-weight:600;color:#9ca3af;text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px}
+.toc ol{padding-left:18px;display:flex;flex-direction:column;gap:4px}
+.toc ol li a{font-size:.82rem;color:#6b7280;text-decoration:none;transition:color .15s}
+.toc ol li a:hover{color:#16a34a}
+
+.doc-section{margin-bottom:36px}
+.doc-section h2{font-family:'Lora',serif;font-size:1.2rem;font-weight:600;color:#111827;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid #f3f4f6;display:flex;align-items:center;gap:10px;scroll-margin-top:72px}
+.sec-num{font-size:.72rem;font-weight:700;color:#16a34a;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:6px;padding:2px 7px;flex-shrink:0}
+.doc-section p{font-size:.88rem;color:#374151;line-height:1.75;margin-bottom:10px}
+.doc-section p:last-child{margin-bottom:0}
+.doc-section ol.content{padding-left:20px;margin-bottom:10px;}
+.doc-section ol.content li{font-size:.88rem;color:#374151;line-height:1.75;margin-bottom:8px;}
+.doc-section ol.content li:last-child{margin-bottom:0}
+.doc-section ul{padding-left:20px;margin:8px 0;}
+.doc-section ul li{font-size:.88rem;color:#374151;line-height:1.75;margin-bottom:6px;}
+.doc-section ul li::marker{color:#16a34a}
+
+.bank-block{background:#f9fafb;border:1px solid #e5e7eb;border-left:3px solid #16a34a;border-radius:0 8px 8px 0;padding:14px 18px;margin:14px 0;font-size:.88rem;color:#374151;line-height:1.8}
+.bank-block strong{color:#111827;font-weight:500}
+
+.notice{background:#fffbeb;border:1px solid #fde68a;border-left:3px solid #f59e0b;border-radius:0 8px 8px 0;padding:14px 18px;margin:14px 0;font-size:.85rem;color:#78350f;line-height:1.7}
+.notice strong{font-weight:500}
+
+strong{color:#111827;font-weight:500}
+a.ext{color:#16a34a;text-decoration:none;font-weight:500}
+a.ext:hover{text-decoration:underline}
+
+.page-footer{background:#fff;border-top:1px solid #e5e7eb;padding:14px 32px}
+.page-footer-in{max-width:720px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px}
+.page-footer p{font-size:.7rem;color:#9ca3af}
+.page-footer a{font-size:.73rem;color:#6b7280;text-decoration:none;font-weight:500}
+.page-footer a:hover{color:#16a34a}
+
+@media(max-width:600px){
+  .topbar{padding:0 14px}
+  .doc-wrap{padding:24px 14px 48px}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a href="index.html" class="logo">
+    <div class="logo-mark"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="2.5" rx="1.2"/><rect x="2" y="11" width="20" height="2.5" rx="1.2"/><rect x="2" y="17" width="20" height="2.5" rx="1.2"/><rect x="3.5" y="3" width="2" height="18" rx="1"/><rect x="18.5" y="3" width="2" height="18" rx="1"/></svg></div>
+    <span class="logo-name">Nowy<span>Wymiar</span></span>
+  </a>
+  <a href="index.html" class="back-btn">
+    <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    Wróć do sklepu
+  </a>
+</header>
+
+<div class="doc-wrap">
+
+  <div class="doc-header">
+    <div class="doc-tag">📄 Dokument prawny</div>
+    <h1>Regulamin Sklepu Internetowego</h1>
+    <p class="subtitle">Prosimy o zapoznanie się z warunkami zakupu przed złożeniem zamówienia.</p>
+    <div class="doc-meta">
+      <div class="doc-meta-item">Obowiązuje od: <strong>23 marca 2026</strong></div>
+      <div class="doc-meta-item">Sprzedawca: <strong>Nowy Wymiar Damian Maga</strong></div>
+      <div class="doc-meta-item">NIP: <strong>7922074097</strong></div>
+      <div class="doc-meta-item">REGON: <strong>364201363</strong></div>
+      <div class="doc-meta-item">Siedziba: <strong>Tywonia 65aa, 37-500 Jarosław</strong></div>
+      <div class="doc-meta-item">E-mail: <strong>regaliki.pl@gmail.com</strong></div>
+    </div>
+  </div>
+
+  <div class="toc">
+    <p>Spis treści</p>
+    <ol>
+      <li><a href="#s1">§1 Postanowienia ogólne</a></li>
+      <li><a href="#s2">§2 Składanie zamówień</a></li>
+      <li><a href="#s3">§3 Ceny i płatności</a></li>
+      <li><a href="#s4">§4 Realizacja i dostawa</a></li>
+      <li><a href="#s5">§5 Reklamacje</a></li>
+      <li><a href="#s6">§6 Prawo odstąpienia od umowy</a></li>
+      <li><a href="#s7">§7 Ochrona danych osobowych</a></li>
+      <li><a href="#s8">§8 Postanowienia końcowe</a></li>
+    </ol>
+  </div>
+
+  <div class="doc-section" id="s1">
+    <h2><span class="sec-num">§1</span> Postanowienia ogólne</h2>
+    <ol class="content">
+      <li>Sklep internetowy działający pod adresem <strong>regaliki.pl</strong> prowadzony jest przez firmę <strong>Nowy Wymiar Damian Maga</strong>, z siedzibą: <strong>Tywonia 65aa, 37-500 Jarosław</strong>, NIP: <strong>7922074097</strong>, REGON: <strong>364201363</strong>.</li>
+      <li>Niniejszy regulamin określa zasady korzystania ze sklepu, składania zamówień, warunki płatności, realizacji oraz tryb postępowania reklamacyjnego.</li>
+      <li>Kupujący przed złożeniem zamówienia zobowiązany jest zapoznać się z niniejszym regulaminem. Złożenie zamówienia jest równoznaczne z akceptacją jego postanowień.</li>
+      <li>Dane kontaktowe sprzedawcy: e-mail: <strong>regaliki.pl@gmail.com</strong>. Sprzedawca odpowiada na wiadomości e-mail w terminie do 3 dni roboczych.</li>
+    </ol>
+  </div>
+
+  <div class="doc-section" id="s2">
+    <h2><span class="sec-num">§2</span> Składanie zamówień</h2>
+    <ol class="content">
+      <li>Zamówienia składane są poprzez konfigurator dostępny na stronie — klient samodzielnie wybiera wymiary, kolory i opcje półki, a następnie wypełnia formularz z danymi do wysyłki.</li>
+      <li>Złożenie zamówienia przez formularz stanowi ofertę zakupu skierowaną do sprzedawcy. Umowa sprzedaży zostaje zawarta z chwilą potwierdzenia przyjęcia zamówienia przez sprzedawcę drogą e-mail.</li>
+      <li>Po złożeniu zamówienia klient otrzymuje potwierdzenie na podany adres e-mail zawierające numer zamówienia, specyfikację produktu oraz dane do płatności.</li>
+      <li>Sprzedawca zastrzega sobie prawo odmowy realizacji zamówienia w przypadku podania błędnych danych lub niemożności nawiązania kontaktu z klientem. Ewentualna wpłata zostaje wówczas zwrócona w całości.</li>
+    </ol>
+  </div>
+
+  <div class="doc-section" id="s3">
+    <h2><span class="sec-num">§3</span> Ceny i płatności</h2>
+    <ol class="content">
+      <li>Wszystkie ceny podane na stronie są cenami brutto w złotych polskich (PLN) i zawierają podatek VAT.</li>
+      <li>Cena widoczna w momencie finalizacji zamówienia jest ceną wiążącą i nie może ulec zmianie po potwierdzeniu zamówienia.</li>
+      <li>Dostępna forma płatności: <strong>przelew bankowy</strong> na rachunek sprzedawcy.</li>
+      <li>Zamówienie jest realizowane po zaksięgowaniu wpłaty na koncie sprzedawcy.</li>
+    </ol>
+    <div class="bank-block">
+      <strong>Dane do przelewu:</strong><br>
+      Odbiorca: Nowy Wymiar<br>
+      Bank: mBank<br>
+      Numer konta: <strong>20 1140 2004 0000 3502 7615 5169</strong><br>
+      W tytule przelewu należy podać numer zamówienia.
+    </div>
+  </div>
+
+  <div class="doc-section" id="s4">
+    <h2><span class="sec-num">§4</span> Realizacja i dostawa</h2>
+    <ol class="content">
+      <li>Czas realizacji zamówienia wynosi <strong>7 dni roboczych</strong> od dnia zaksięgowania płatności na koncie sprzedawcy.</li>
+      <li>Produkty dostarczane są za pośrednictwem firmy kurierskiej na terenie Polski. Koszt dostawy podawany jest podczas składania zamówienia i uzależniony jest od gabarytów przesyłki.</li>
+      <li>Po nadaniu paczki sprzedawca przekazuje klientowi numer listu przewozowego umożliwiający śledzenie przesyłki. Klient otrzymuje również link do strony śledzenia z aktualnym statusem i podglądem 3D swojej półki.</li>
+      <li>Sprzedawca nie ponosi odpowiedzialności za opóźnienia wynikające z winy przewoźnika lub siły wyższej.</li>
+      <li>Klient zobowiązany jest do sprawdzenia stanu przesyłki w obecności kuriera. W przypadku stwierdzenia uszkodzeń mechanicznych należy sporządzić protokół szkody i niezwłocznie poinformować sprzedawcę.</li>
+    </ol>
+  </div>
+
+  <div class="doc-section" id="s5">
+    <h2><span class="sec-num">§5</span> Reklamacje</h2>
+    <ol class="content">
+      <li>Sprzedawca odpowiada wobec kupującego za wady fizyczne i prawne produktu przez okres <strong>2 lat</strong> od daty dostarczenia przesyłki (rękojmia zgodnie z art. 556–576 Kodeksu Cywilnego).</li>
+      <li>Reklamacje należy składać drogą e-mail na adres <strong>regaliki.pl@gmail.com</strong>, podając: numer zamówienia, opis stwierdzonej wady oraz dokumentację fotograficzną.</li>
+      <li>Sprzedawca rozpatruje reklamację w terminie <strong>14 dni roboczych</strong> od jej otrzymania i informuje klienta o sposobie jej rozpatrzenia.</li>
+      <li>W przypadku uznanej reklamacji sprzedawca według swojego wyboru naprawi produkt, wymieni go na wolny od wad lub zwróci uiszczoną cenę.</li>
+      <li>Reklamacje dotyczące uszkodzeń powstałych podczas transportu rozpatrywane są na podstawie protokołu szkody sporządzonego w obecności kuriera.</li>
+    </ol>
+  </div>
+
+  <div class="doc-section" id="s6">
+    <h2><span class="sec-num">§6</span> Prawo odstąpienia od umowy</h2>
+    <div class="notice">
+      <strong>Ważna informacja:</strong> Produkty oferowane w sklepie są wykonywane na indywidualne zamówienie według specyfikacji podanej przez klienta (wymiary, kolory, opcje). Na podstawie <strong>art. 38 pkt 3 ustawy o prawach konsumenta</strong> prawo odstąpienia od umowy w terminie 14 dni nie przysługuje w przypadku produktów wytworzonych według indywidualnej specyfikacji klienta.
+    </div>
+    <ol class="content">
+      <li>Każda półka jest produkowana indywidualnie na zamówienie klienta i nie podlega zwrotowi bez podania przyczyny.</li>
+      <li>Klient jest informowany o tym fakcie przed złożeniem zamówienia — złożenie zamówienia oznacza akceptację tego warunku.</li>
+      <li>Powyższe nie wyłącza uprawnień klienta z tytułu rękojmi opisanych w §5 niniejszego regulaminu.</li>
+    </ol>
+  </div>
+
+  <div class="doc-section" id="s7">
+    <h2><span class="sec-num">§7</span> Ochrona danych osobowych</h2>
+    <ol class="content">
+      <li>Administratorem danych osobowych jest firma <strong>Nowy Wymiar Damian Maga</strong>, Tywonia 65aa, 37-500 Jarosław, e-mail: <strong>regaliki.pl@gmail.com</strong>.</li>
+      <li>Dane osobowe przetwarzane są wyłącznie w celu realizacji zamówienia i kontaktu z klientem, na podstawie <strong>art. 6 ust. 1 lit. b RODO</strong> (wykonanie umowy).</li>
+      <li>Dane nie są udostępniane podmiotom trzecim, z wyjątkiem firmy kurierskiej (w zakresie niezbędnym do dostawy) oraz systemu BaseLinker (obsługa zamówień).</li>
+      <li>Klient ma prawo dostępu do swoich danych, ich sprostowania, usunięcia, ograniczenia przetwarzania oraz wniesienia sprzeciwu.</li>
+      <li>Szczegółowe informacje o przetwarzaniu danych osobowych zawarte są w <a href="polityka.html" class="ext">Polityce Prywatności</a>.</li>
+    </ol>
+  </div>
+
+  <div class="doc-section" id="s8">
+    <h2><span class="sec-num">§8</span> Postanowienia końcowe</h2>
+    <ol class="content">
+      <li>W sprawach nieuregulowanych niniejszym regulaminem zastosowanie mają przepisy Kodeksu Cywilnego oraz ustawy z dnia 30 maja 2014 r. o prawach konsumenta.</li>
+      <li>Sprzedawca zastrzega sobie prawo do zmiany regulaminu. Zmiany wchodzą w życie z dniem ich opublikowania na stronie. Zamówienia złożone przed zmianą realizowane są na warunkach dotychczasowych.</li>
+      <li>Konsument może skorzystać z pozasądowych sposobów rozpatrywania sporów i dochodzenia roszczeń, w tym z platformy ODR dostępnej pod adresem <a href="https://ec.europa.eu/consumers/odr" target="_blank" class="ext">ec.europa.eu/consumers/odr</a>.</li>
+      <li>Regulamin obowiązuje od dnia <strong>23 marca 2026 r.</strong></li>
+    </ol>
+  </div>
+
+</div>
+

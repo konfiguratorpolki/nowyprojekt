@@ -1,0 +1,1260 @@
+<!-- v2025-03-08-B --> <!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-DNBGJLP2FN"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-DNBGJLP2FN');
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>Konfigurator Półki</title>
+    <script src="wzory.js"></script>
+    <script src="shelf3d.js"></script>
+    <script src="print_template.js"></script>
+    <!-- ceny.js scalone z wzory.js -->
+    <script src="js/cart.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/pfx-premium.css">
+</head>
+<body class="flex flex-col justify-center items-center min-h-screen bg-stone-100 font-sans text-stone-800 pb-20 md:pb-0">
+
+    <!-- DRAG MODE FULLSCREEN OVERLAY -->
+    <div id="dragModeOverlay" class="drag-mode-overlay">
+        <div class="drag-3d-area" id="dragModeCanvas"></div>
+        <div class="drag-banner">
+            <div class="drag-banner-info">
+                <div class="drag-banner-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M8 14l4-4 4 4"/><path d="M4 4h16"/></svg>
+                </div>
+                <div class="drag-banner-texts">
+                    <div class="drag-banner-text">Tryb edycji półek</div>
+                    <div class="drag-banner-sub">Przeciągnij półki w górę / w dół</div>
+                </div>
+            </div>
+            <div class="drag-banner-sep"></div>
+            <button class="drag-btn drag-btn-reset" onclick="resetShelfPositions()" title="Przywróć domyślne rozmieszczenie">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>
+                Reset
+            </button>
+            <button class="drag-btn drag-btn-done" onclick="exitDragModeAndKeep()" title="Zakończ edycję i zachowaj zmiany">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>
+                Gotowe
+            </button>
+        </div>
+        <div class="drag-bottom-bar">
+            <button class="drag-btn drag-btn-reset" onclick="resetShelfPositions()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>
+                Reset
+            </button>
+            <button class="drag-btn drag-btn-done" onclick="exitDragModeAndKeep()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>
+                Gotowe
+            </button>
+        </div>
+    </div>
+
+    <div id="print-container" style="display: none;">
+        <div class="print-header">
+            <h1 id="print-title">Podsumowanie Projektu Półki</h1>
+            <p id="print-order-code"></p>
+        </div>
+        <div class="print-body">
+            <div class="print-visuals">
+                <h2>Wizualizacja 3D</h2>
+                <img id="print-snapshot-img" src="" alt="Wizualizacja 3D projektu">
+            </div>
+            <div class="print-specs">
+                <h2>Specyfikacja</h2>
+                <dl id="print-specs-list" class="spec-list"></dl>
+            </div>
+        </div>
+        <div class="print-footer">
+            <p>Wydruk wygenerowany z konfiguratora na stronie [nazwa-twojej-strony.pl]</p>
+        </div>
+    </div>
+
+<div id="cartPanelOverlay"></div>
+    <div id="cartPanel">
+        <div id="cartPanelHeader">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;"><path d="M6 2 3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+                <h2 id="cartPanelTitle">Twój koszyk</h2>
+            </div>
+            <button id="cartPanelCloseBtn" aria-label="Zamknij koszyk">&times;</button>
+        </div>
+        <div id="cartDiscountReminder" style="display:none;"></div>
+        <div id="cartItemsContainer">
+            <div id="cartEmptyMessage">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-stone-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                </svg>
+                <p>Twój koszyk jest pusty.</p>
+                <p class="text-sm mt-1">Dodaj produkty z konfiguratora.</p>
+            </div>
+        </div>
+        <div id="cartPanelFooter">
+            <div id="cartTotalContainer">
+                <div id="cartVariantC" style="display:none;padding:6px 0 4px;">
+                    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+                        <div style="display:flex;flex-direction:column;gap:4px;">
+                            <span id="cartSubtotalPrice" style="font-size:14px;font-weight:700;color:#6b7280;"></span>
+                            <div id="cartDiscountTags" style="display:flex;gap:4px;flex-wrap:wrap;"></div>
+                        </div>
+                        <div style="text-align:right;flex-shrink:0;">
+                            <div id="cartSavingsLine" style="font-size:11px;color:#16a34a;font-weight:600;display:none;"></div>
+                            <span class="price" id="cartTotalPrice" style="font-size:20px;font-weight:800;color:#dc2626;">0,00 zł</span>
+                        </div>
+                    </div>
+                    <div id="cartUpsellHint" style="display:none;margin-top:7px;background:#f0fdf4;border-radius:6px;padding:7px 10px;font-size:11px;color:#15803d;font-weight:600;align-items:center;gap:6px;flex-wrap:wrap;line-height:1.4;">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5" style="flex-shrink:0;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        <span>Dodaj 2. półkę → zyskaj <strong>-25%</strong> na tańszą!</span>
+                    </div>
+                </div>
+                <div id="cartSimpleTotal" style="display:none;">
+                    <div class="cart-total-final" id="cartTotalPriceLine">
+                        <span class="label">Razem</span>
+                        <span class="price" id="cartTotalPriceSimple">0,00 zł</span>
+                    </div>
+                </div>
+                <span id="cartSubtotalPriceHidden" style="display:none;"></span>
+                <span id="cartDiscountAmount10" style="display:none;"></span>
+                <span id="cartDiscountAmount25" style="display:none;"></span>
+                <div id="cartSubtotalLine" style="display:none;"></div>
+                <div id="cartDiscountLine10" style="display:none;"></div>
+                <div id="cartDiscountLine25" style="display:none;"></div>
+            </div>
+            <div id="cartShippingNote" style="display:none;font-size:11px;color:#6b7280;text-align:center;margin-bottom:4px;"></div>
+            <button id="cartCheckoutButton" disabled>
+                Zamów i zapłać
+            </button>
+        </div>
+    </div>
+
+    <div id="imageLightbox" class="fixed inset-0 bg-black bg-opacity-85 flex items-center justify-center z-[1060] hidden transition-opacity duration-300 ease-in-out">
+        <!-- Pulsante X — fisso in alto a destra, mai tagliato -->
+        <button id="lightboxClose" aria-label="Zamknij powiększenie">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.2" stroke="currentColor" width="20" height="20">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+        <div class="flex flex-col items-center gap-3">
+            <!-- slider viewport -->
+            <div id="lb-viewport">
+                <div id="lb-track"></div>
+                <!-- strzałki -->
+                <button id="lb-prev" class="lb-arrow" aria-label="Poprzednie">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                </button>
+                <button id="lb-next" class="lb-arrow" aria-label="Następne">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                </button>
+                <div id="lb-counter"></div>
+            </div>
+            <!-- miniatury -->
+            <div id="lb-strip" class="lb-strip"></div>
+        </div>
+    </div>
+    
+    <div id="visualDetailsModalOverlay" class="modal-overlay">
+        <div id="visualDetailsModal" class="modal !max-w-2xl" role="dialog" aria-modal="true" aria-labelledby="visualDetailsModalTitle">
+            <div class="modal-header">
+                <h3 id="visualDetailsModalTitle" class="modal-title">Podgląd Projektu</h3>
+                <button id="visualDetailsModalCloseBtn" class="modal-close-button" aria-label="Zamknij">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="visualDetailsLoader" class="text-center p-8 hidden">
+                    <svg class="animate-spin h-8 w-8 text-green-600 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <p class="mt-2 text-stone-600">Wczytuję projekt...</p>
+                </div>
+                <div id="visualDetailsContent" class="hidden">
+                    <p class="font-mono text-sm text-center text-stone-500 mb-4" id="visualDetailsOrderCode"></p>
+                    <div class="flex flex-col md:flex-row gap-6 items-start">
+                        <div class="w-full md:w-1/2">
+                            <h4 class="text-lg font-semibold text-stone-700 mb-2 text-center">Wizualizacja</h4>
+                            <div class="bg-stone-100 border border-stone-200 rounded-lg p-3" style="min-height:280px">
+                                <img id="visualDetailsSnapshot" src="" alt="Wizualizacja 3D projektu" class="w-full h-auto object-contain rounded-md">
+                            </div>
+                        </div>
+                        <div class="w-full md:w-1/2">
+                            <h4 class="text-lg font-semibold text-stone-700 mb-2">Specyfikacja</h4>
+                            <dl id="visualDetailsSpecsList" class="text-sm"></dl>
+                        </div>
+                    </div>
+                </div>
+                 <div id="visualDetailsError" class="text-center p-8 hidden">
+                    <p class="text-red-600 font-semibold"></p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="printVisualDetailsBtn" class="px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-md flex items-center gap-2 transition-colors disabled:bg-stone-400 disabled:cursor-not-allowed" disabled>
+                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                         <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                     </svg>
+                    <span>Pobierz PDF</span>
+                </button>
+                <button id="downloadAllegroJpgBtn" class="px-4 py-2 text-sm font-medium text-white bg-orange-500 hover:bg-orange-600 rounded-md flex items-center gap-2 transition-colors disabled:bg-stone-400 disabled:cursor-not-allowed" disabled>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <span>Zdjęcie Allegro (JPG)</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="cartSummaryModalOverlay" class="modal-overlay">
+        <div id="cartSummaryModal" class="modal !max-w-2xl" role="dialog" aria-modal="true" aria-labelledby="cartSummaryModalTitle">
+            <div class="modal-header">
+                <h3 id="cartSummaryModalTitle" class="modal-title" style="display:flex;align-items:center;gap:8px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;color:#16a34a;"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>Podsumowanie zamówienia</h3>
+                <button id="cartSummaryModalCloseBtnTop" class="modal-close-button" aria-label="Zamknij">&times;</button>
+            </div>
+            <div class="modal-body" style="padding-top:12px;padding-bottom:12px;">
+                <div id="cartSummaryItemsContainer" class="space-y-3"></div>
+                <div class="mt-3 pt-3">
+                    <div id="cartSummaryTotalContainer" class="space-y-1 mb-4">
+                        <div class="flex justify-between text-sm items-center" id="cartSummarySubtotalLine" style="display:none;">
+                            <span style="color:#6b7280;">Suma częściowa:</span>
+                            <span id="cartSummarySubtotalPrice" style="font-size:15px;font-weight:700;color:#6b7280;text-decoration:line-through;text-decoration-color:#ef4444;text-decoration-thickness:2px;"></span>
+                        </div>
+                        <div class="flex justify-between text-sm items-center" id="cartSummaryCombinedDiscountLine" style="display:none;">
+                            <span style="color:#16a34a;font-weight:600;">Rabat:</span>
+                            <span id="cartSummaryCombinedDiscountAmount" style="font-size:12px;color:#16a34a;font-weight:700;"></span>
+                        </div>
+                        <div class="flex justify-between text-sm text-stone-500" id="cartSummaryShippingLine" style="display:none;">
+                            <span style="display:flex;align-items:center;gap:4px;">
+                                <svg xmlns='http://www.w3.org/2000/svg' width='13' height='13' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='2'><rect x='1' y='3' width='15' height='13' rx='1'/><path d='M16 8h4l3 4v4h-7V8z'/><circle cx='5.5' cy='18.5' r='1.5'/><circle cx='18.5' cy='18.5' r='1.5'/></svg>
+                                Kurier DPD (19 zł / szt.)
+                            </span>
+                            <span id="cartSummaryShippingPrice" class="font-semibold text-stone-700"></span>
+                        </div>
+                        <div class="flex justify-between items-baseline font-bold text-xl border-t border-stone-300 pt-2 mt-2">
+                            <span>Razem z wysyłką:</span>
+                            <span id="cartSummaryTotalPrice" class="text-red-600">0,00 zł</span>
+                        </div>
+                    </div>
+
+                    <!-- ukryte pole z kodem konfiguracji -->
+                    <input type="hidden" id="cartSummaryAllCodes" />
+
+                    <!-- Formularz dostawy -->
+                    <div id="orderFormSection" class="mt-2">
+                        <h4 class="font-semibold text-stone-700 mb-3 text-base flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                            Dane do wysyłki
+                        </h4>
+                        <div class="grid grid-cols-1 gap-3" id="orderFormFields">
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-semibold text-stone-500 mb-1 uppercase tracking-wide">Imię *</label>
+                                    <input type="text" id="orderFirstName" class="w-full rounded-md border border-stone-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500" />
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-stone-500 mb-1 uppercase tracking-wide">Nazwisko *</label>
+                                    <input type="text" id="orderLastName" class="w-full rounded-md border border-stone-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500" />
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-semibold text-stone-500 mb-1 uppercase tracking-wide">E-mail *</label>
+                                    <input type="email" id="orderEmail" class="w-full rounded-md border border-stone-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500" />
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-stone-500 mb-1 uppercase tracking-wide">Telefon *</label>
+                                    <input type="tel" id="orderPhone" class="w-full rounded-md border border-stone-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500" />
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-stone-500 mb-1 uppercase tracking-wide">Ulica i numer domu/mieszkania *</label>
+                                <input type="text" id="orderStreet" class="w-full rounded-md border border-stone-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500" />
+                            </div>
+                            <div class="grid grid-cols-5 gap-3">
+                                <div class="col-span-2">
+                                    <label class="block text-xs font-semibold text-stone-500 mb-1 uppercase tracking-wide">Kod pocztowy *</label>
+                                    <input type="text" id="orderPostCode" maxlength="6" class="w-full rounded-md border border-stone-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500" />
+                                </div>
+                                <div class="col-span-3">
+                                    <label class="block text-xs font-semibold text-stone-500 mb-1 uppercase tracking-wide">Miasto *</label>
+                                    <input type="text" id="orderCity" class="w-full rounded-md border border-stone-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500" />
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-stone-500 mb-1 uppercase tracking-wide">Uwagi do zamówienia (opcjonalnie)</label>
+                                <textarea id="orderNotes" rows="2" class="w-full rounded-md border border-stone-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 resize-none"></textarea>
+                            </div>
+                            <!-- FAKTURA VAT -->
+                            <div id="invoiceSection" style="border:1.5px solid #e5e7eb;border-radius:10px;overflow:hidden;">
+                                <button type="button" id="invoiceToggleBtn" onclick="toggleInvoiceSection()" style="width:100%;display:flex;align-items:center;justify-content:space-between;padding:11px 14px;background:#f9fafb;border:none;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='#f9fafb'">
+                                    <span style="display:flex;align-items:center;gap:9px;">
+                                        <span style="width:28px;height:28px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                            <svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='none' viewBox='0 0 24 24' stroke='#16a34a' stroke-width='2'><rect x='4' y='2' width='16' height='20' rx='2'/><line x1='8' y1='6' x2='16' y2='6'/><line x1='8' y1='10' x2='16' y2='10'/><line x1='8' y1='14' x2='13' y2='14'/></svg>
+                                        </span>
+                                        <span>
+                                            <span style="font-size:0.82rem;font-weight:700;color:#374151;">Chcę fakturę VAT</span>
+                                            <span id="invoiceToggleHint" style="display:block;font-size:0.7rem;color:#9ca3af;margin-top:1px;">Kliknij, aby wypełnić dane firmy</span>
+                                        </span>
+                                    </span>
+                                    <span id="invoiceToggleIndicator" style="width:38px;height:21px;border-radius:99px;background:#e5e7eb;position:relative;transition:background 0.2s;flex-shrink:0;">
+                                        <span id="invoiceToggleKnob" style="position:absolute;left:2px;top:2px;width:17px;height:17px;border-radius:50%;background:white;box-shadow:0 1px 3px rgba(0,0,0,0.2);transition:transform 0.2s;"></span>
+                                    </span>
+                                </button>
+                                <div id="invoiceFields" style="display:none;padding:12px 14px 14px;border-top:1px solid #f3f4f6;background:#fff;">
+                                    <div style="display:flex;flex-direction:column;gap:10px;">
+                                        <div>
+                                            <label style="display:block;font-size:0.7rem;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Nazwa firmy *</label>
+                                            <input type="text" id="invoiceCompany" style="width:100%;border:1px solid #d1d5db;border-radius:6px;padding:8px 12px;font-size:0.875rem;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='#16a34a';this.style.boxShadow='0 0 0 2px rgba(22,163,74,0.2)'" onblur="this.style.borderColor='#d1d5db';this.style.boxShadow='none'" />
+                                        </div>
+                                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                                            <div>
+                                                <label style="display:block;font-size:0.7rem;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">NIP *</label>
+                                                <input type="text" id="invoiceNip" maxlength="13" style="width:100%;border:1px solid #d1d5db;border-radius:6px;padding:8px 12px;font-size:0.875rem;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='#16a34a';this.style.boxShadow='0 0 0 2px rgba(22,163,74,0.2)'" onblur="this.style.borderColor='#d1d5db';this.style.boxShadow='none'" />
+                                            </div>
+                                            <div>
+                                                <label style="display:block;font-size:0.7rem;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Kod pocztowy firmy *</label>
+                                                <input type="text" id="invoicePostCode" maxlength="6" style="width:100%;border:1px solid #d1d5db;border-radius:6px;padding:8px 12px;font-size:0.875rem;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='#16a34a';this.style.boxShadow='0 0 0 2px rgba(22,163,74,0.2)'" onblur="this.style.borderColor='#d1d5db';this.style.boxShadow='none'" />
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label style="display:block;font-size:0.7rem;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Adres firmy (ulica, miasto) *</label>
+                                            <input type="text" id="invoiceAddress" style="width:100%;border:1px solid #d1d5db;border-radius:6px;padding:8px 12px;font-size:0.875rem;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='#16a34a';this.style.boxShadow='0 0 0 2px rgba(22,163,74,0.2)'" onblur="this.style.borderColor='#d1d5db';this.style.boxShadow='none'" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="orderFormError" class="mt-2 text-sm text-red-600 font-medium hidden"></div>
+                        <div id="orderSuccessMsg" class="hidden mt-3"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-top:1px solid #e5e7eb;">
+                <button id="cartSummaryModalCloseBtn" onclick="closeCartSummaryModal()" class="px-4 py-2 text-sm font-medium text-stone-600 bg-stone-100 hover:bg-stone-200 rounded-md transition-colors">
+                    Wróć do koszyka
+                </button>
+                <button id="submitOrderBtn" class="px-6 py-2.5 text-sm font-semibold text-white bg-green-600 hover:bg-green-700 active:bg-green-800 rounded-md shadow-sm hover:shadow-lg flex items-center gap-2 transition-all">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                    <span id="submitOrderBtnLabel">Złóż zamówienie i zapłać</span>
+                </button>
+            </div>
+        </div>
+    </div>
+<div id="tabbedGalleryContainer" class="w-full max-w-7xl mx-auto">
+  <div class="gallery-tabs" id="galleryTabsContainer"></div>
+  <div class="gallery-content-wrapper">
+    <!-- iOS chevron — lewy -->
+    <button class="gallery-arrow gallery-prev-arrow" aria-label="Poprzednie zdjęcia">
+      <svg width="10" height="18" viewBox="0 0 10 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9,1 1,9 9,17"/></svg>
+    </button>
+    <div class="gallery-image-area" id="galleryImageArea">
+      <div class="gallery-grid" id="galleryGridContainer"></div>
+    </div>
+    <!-- iOS chevron — prawy -->
+    <button class="gallery-arrow gallery-next-arrow" aria-label="Następne zdjęcia">
+      <svg width="10" height="18" viewBox="0 0 10 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1,1 9,9 1,17"/></svg>
+    </button>
+  </div>
+  <!-- Pasek miniaturek — tylko mobile/tablet -->
+  <div id="galleryThumbStrip" class="gallery-thumb-strip">
+    <div id="galleryThumbTrack" class="gallery-thumb-track"></div>
+  </div>
+</div>
+<div class="w-full max-w-7xl mx-auto px-4 md:px-6 mb-2 md:mb-6">
+    <div class="bg-emerald-50 border-2 border-dashed border-emerald-300 rounded-xl p-4 md:p-5 flex items-center space-x-4 shadow-sm">
+    <div class="flex-shrink-0">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 md:h-12 md:w-12 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 12 20 22 4 22 4 12"></polyline>
+            <rect x="2" y="7" width="20" height="5"></rect>
+            <line x1="12" y1="22" x2="12" y2="7"></line>
+            <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path>
+            <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path>
+        </svg>
+    </div>
+    <div>
+        <h3 class="font-bold text-emerald-800 text-base md:text-lg">Super Zestaw Rabatów! 🛍️</h3>
+        <p class="text-emerald-700 text-sm md:text-base mt-1">Kup jedną półkę i zyskaj <span class="font-bold">10% rabatu</span>. Dokup drugą, a na nią dostaniesz aż <span class="font-bold">25% zniżki</span>!</p>
+    </div>
+</div>
+</div>
+<div class="w-full max-w-7xl mx-auto px-4 md:px-6 mt-1.5 mb-2 md:hidden">
+    <details class="rounded-2xl overflow-hidden shadow-sm border border-emerald-200 bg-white group" id="howToOrderAccordion">
+        <summary class="flex items-center justify-between px-4 py-3.5 cursor-pointer list-none select-none bg-white active:bg-emerald-50 transition-colors">
+            <div class="flex items-center gap-3">
+                <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#16a34a,#22c55e);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                </div>
+                <span class="text-sm font-semibold text-stone-800">Jak zamówić półkę?</span>
+            </div>
+            <span class="transform transition-transform duration-300 ease-in-out group-open:rotate-180 text-emerald-500">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </span>
+        </summary>
+        <div class="border-t border-emerald-100 px-4 pb-4 pt-3 bg-white">
+            <ol class="space-y-3" style="list-style:none;margin:0;padding:0;">
+                <li style="display:flex;gap:12px;align-items:flex-start;">
+                    <span style="min-width:24px;height:24px;border-radius:50%;background:#16a34a;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">1</span>
+                    <span style="font-size:12.5px;color:#374151;line-height:1.5;"><b style="color:#166534;">Skonfiguruj półkę</b> – wybierz rodzaj, wymiary, kolory i półki wewnętrzne.</span>
+                </li>
+                <li style="display:flex;gap:12px;align-items:flex-start;">
+                    <span style="min-width:24px;height:24px;border-radius:50%;background:#16a34a;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">2</span>
+                    <span style="font-size:12.5px;color:#374151;line-height:1.5;"><b style="color:#166534;">Dodaj do koszyka</b> – możesz dodać kilka różnych projektów i skorzystać z rabatów.</span>
+                </li>
+                <li style="display:flex;gap:12px;align-items:flex-start;">
+                    <span style="min-width:24px;height:24px;border-radius:50%;background:#16a34a;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">3</span>
+                    <span style="font-size:12.5px;color:#374151;line-height:1.5;"><b style="color:#166534;">Wypełnij formularz</b> – podaj dane do wysyłki w podsumowaniu koszyka.</span>
+                </li>
+                <li style="display:flex;gap:12px;align-items:flex-start;">
+                    <span style="min-width:24px;height:24px;border-radius:50%;background:#16a34a;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">4</span>
+                    <span style="font-size:12.5px;color:#374151;line-height:1.5;"><b style="color:#166534;">Zapłać online</b> – bezpieczna płatność przez Przelewy24 (karta, BLIK, przelew).</span>
+                </li>
+                <li style="display:flex;gap:12px;align-items:flex-start;">
+                    <span style="min-width:24px;height:24px;border-radius:50%;background:#16a34a;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">5</span>
+                    <span style="font-size:12.5px;color:#374151;line-height:1.5;"><b style="color:#166534;">Dostawa kurierem DPD</b> – Twoja półka trafi do Ciebie w 3–5 dni roboczych. 🚚</span>
+                </li>
+            </ol>
+        </div>
+    </details>
+</div>
+<div id="configuratorSection" class="p-4 md:p-8 bg-white shadow-lg rounded-xl flex flex-col md:flex-row md:space-x-8 w-full max-w-7xl mx-auto mb-6">
+    <div class="w-full md:w-1/3 space-y-4 md:space-y-8 mb-8 md:mb-0 order-1 md:order-1">
+         <div id="shelfTypeSectionAnchor" class="p-6 shadow rounded-lg bg-white border border-stone-200 transition-shadow duration-200 hover:shadow-md">
+            <h2 class="text-lg font-semibold mb-4 flex items-center text-stone-800">
+                <svg class="h-6 w-6 mr-2 text-green-600 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 0 1 0 1.905c-.007.379.137.75.431.99l1.005.828c.428.355.53 1.005.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.063-.374-.313-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 0 1 0-1.905c.007-.379-.137-.75-.43-.99l-1.004-.828a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>
+                Rodzaj półki
+            </h2>
+            <select id="shelfType" class="custom-select w-full" onchange="handleShelfTypeChange();">
+                <option value="">-- Wybierz --</option>
+            </select>
+            <div id="shelfTypeOptions" style="display:none; margin-top:1rem;" class="space-y-2"></div>
+            <div id="mugShelfSpecificOptionsContainer" style="display:none;">
+                <div id="mugShelfMountOptions" class="mt-3 pt-3 border-t border-dashed border-stone-100"></div>
+                <div id="mugShelfDividersOptions" class="mt-3 pt-3 border-t border-dashed border-stone-100" style="display:none;">
+                    <p class="text-xs font-semibold text-stone-500 uppercase tracking-wide mb-1">Przegródki</p>
+                    <div id="mugDividerHint">&#8627; Wstaw przegródki</div>
+                    <div class="flex gap-2">
+                        <label class="divider-toggle-chip">
+                            <input type="checkbox" id="dividersTop" class="sr-only" onchange="updatePreview(); updateOrderSummary(); var h=document.getElementById('mugDividerHint'); if(h&&this.checked)h.style.display='none';">
+                            <span>Góra</span>
+                        </label>
+                        <label class="divider-toggle-chip">
+                            <input type="checkbox" id="dividersMiddle" class="sr-only" onchange="updatePreview(); updateOrderSummary();">
+                            <span>Środek</span>
+                        </label>
+                        <label class="divider-toggle-chip">
+                            <input type="checkbox" id="dividersBottom" class="sr-only" onchange="updatePreview(); updateOrderSummary();">
+                            <span>Dół</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+         </div>
+        <div id="dimensionSectionAnchor" class="p-6 shadow rounded-lg bg-white border border-stone-200 transition-shadow duration-200 hover:shadow-md">
+            <h2 class="text-lg font-semibold mb-4 flex items-center text-stone-800">
+                <svg class="h-6 w-6 mr-2 text-green-600 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75" /> <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v16.5M20.25 3.75v16.5" /> </svg>
+                Wybierz wymiary
+            </h2>
+            <div id="standardDimensionsContainer">
+                <label class="block font-medium text-sm mb-1 text-stone-700">Szerokość:</label>
+                <div id="widthSelectionArea">
+                    <select id="width" class="custom-select w-full" onchange="checkCustomWidth();">
+                        <option value="">-- Wybierz --</option>
+                        <option value="34">34 cm</option>
+                        <option value="44">44 cm</option>
+                        <option value="50">50 cm</option>
+                        <option value="60">60 cm</option>
+                        <option value="84">84 cm</option>
+                        <option value="custom">Niestandardowa (35-59 cm)</option>
+                    </select>
+                    <div class="mt-2">
+                        <input type="range" id="customWidthInput" min="35" max="59" step="1" value="35" style="display:none;" class="mt-2 cursor-pointer" oninput="let val = this.value; if (val === '50') { val = '49'; this.value = val; } document.getElementById('customWidthDisplay').textContent=val+' cm'; handleDimensionChange();">
+                        <div class="flex justify-between items-center mt-1">
+                            <span id="customWidthDisplay" style="display:none; font-weight:bold;" class="text-stone-700"></span>
+                            <small id="customWidthFee" style="display:none; font-size:.8rem; color:red;">dopłata +50 zł</small>
+                        </div>
+                    </div>
+                </div>
+                <label id="heightLabel" class="block font-medium text-sm mt-4 mb-1 text-stone-700">Wysokość:</label>
+                <select id="height" class="custom-select w-full" onchange="handleDimensionChange();">
+                    <option value="">-- Wybierz --</option>
+                    <option value="40">40 cm</option>
+                    <option value="60">60 cm</option>
+                    <option value="80">80 cm</option>
+                </select>
+            </div>
+            <div id="modularShelfOptionsContainer" style="display: none;" class="space-y-4">
+                <div>
+                    <label for="moduleWidth" class="block font-medium text-sm mb-1 text-stone-700">Szerokość modułu bocznego:</label>
+                    <select id="moduleWidth" class="custom-select w-full" onchange="updatePreview(); updateOrderSummary();">
+                        <option value="34">34 cm</option>
+                        <option value="44">44 cm</option>
+                        <option value="50">50 cm</option>
+                        <option value="60">60 cm</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="moduleHeight" class="block font-medium text-sm mb-1 text-stone-700">Wysokość modułu bocznego:</label>
+                    <select id="moduleHeight" class="custom-select w-full" onchange="updatePreview(); updateOrderSummary();">
+                        <option value="40">40 cm</option>
+                        <option value="60">60 cm</option>
+                    </select>
+                </div>
+                 <div>
+    <label for="connectingShelfWidth" class="block font-medium text-sm mb-1 text-stone-700">Szerokość półek łączących:</label>
+    <select id="connectingShelfWidth" class="custom-select w-full" onchange="updatePreview(); updateOrderSummary();">
+        <option value="30">30 cm</option>
+        <option value="40">40 cm</option>
+    </select>
+</div>
+            </div>
+            <label id="depthLabel" class="block font-medium text-sm mt-4 mb-1 text-stone-700">Głębokość:</label>
+            <select id="depth" class="custom-select w-full" onchange="updatePreview(); updateOrderSummary();">
+                <option value="">-- Wybierz --</option>
+            </select>
+        </div>
+
+         <div id="colorSectionAnchor" class="p-6 shadow rounded-lg bg-white border border-stone-200 transition-shadow duration-200 hover:shadow-md space-y-4">
+            <h2 class="text-lg font-semibold mb-4 flex items-center text-stone-800">
+                <svg class="h-6 w-6 mr-2 text-green-600 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42" /> </svg>
+                Wybierz kolor
+            </h2>
+            <div>
+                <label for="sideColor" class="block font-medium text-sm mb-1 text-stone-700">Kolor boków:</label>
+                <div class="flex items-center">
+                    <select id="sideColor" class="custom-select flex-grow" onchange="updateOrderSummary(); updateSwatchDisplay('sideColor', 'sideColorSwatchDisplay'); if(typeof pulseShelfElements==='function') pulseShelfElements('sides');">
+                        <option value="">-- Wybierz --</option>
+                    </select>
+                    <span id="sideColorSwatchDisplay" class="color-swatch-display"></span>
+                </div>
+            </div>
+            <div class="pt-2">
+                <label id="shelfColorLabel" for="shelfColor" class="block font-medium text-sm mb-1 text-stone-700">Kolor półek i podstaw:</label>
+                <div class="flex items-center">
+                    <select id="shelfColor" class="custom-select flex-grow" onchange="updateOrderSummary(); updateSwatchDisplay('shelfColor', 'shelfColorSwatchDisplay'); if(typeof pulseShelfElements==='function') pulseShelfElements('shelves');">
+                         <option value="">-- Wybierz --</option>
+                    </select>
+                    <span id="shelfColorSwatchDisplay" class="color-swatch-display"></span>
+                </div>
+            </div>
+            <details class="color-samples-details" id="materialSamplesDetails">
+                <summary>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-2 text-stone-600" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5C7.305 4.5 3.135 7.515 1.5 12c1.635 4.485 5.805 7.5 10.5 7.5s8.865-3.015 10.5-7.5C20.865 7.515 16.695 4.5 12 4.5z" /><path stroke-linecap="round" stroke-linejoin="round" d="M12 9a3 3 0 100 6 3 3 0 000-6z" /></svg>
+                    <span>Zobacz próbki kolorów</span>
+                    <svg class="w-4 h-4 summary-chevron" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>
+                </summary>
+                <div id="materialSwiper" class="swiper">
+                    <div class="swiper-wrapper" id="materialSwiperWrapper"></div>
+                    <div class="material-swiper-button-prev swiper-button-prev"></div>
+                    <div class="material-swiper-button-next swiper-button-next"></div>
+                </div>
+            </details>
+         </div>
+    </div>
+<div class="w-full md:w-2/3 flex flex-col items-center mb-8 md:mb-0 order-2 md:order-2">
+         <!-- Backdrop dla mobilnego panelu 3D (zaciemnia stronę pod panelem) -->
+         <div id="shelf3dBackdrop" onclick="close3dPanel()" aria-hidden="true"></div>
+         <div id="shelfContainer" class="mx-auto relative">
+            <div id="mobileShelfInfo">
+                <p id="mobileInfoGap"></p>
+                <p id="mobileInfoDividers"></p>
+            </div>
+            <button id="collapse3dPanelButton" onclick="close3dPanel()" title="Zwiń podgląd 3D" class="z-20">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /> </svg> <span class="sr-only">Zwiń podgląd 3D</span>
+            </button>
+
+            <!-- DRAWER PARAMETRÓW -->
+            <div id="mobileParamsDrawer">
+                <div id="mobileParamsDrawer-handle"></div>
+                <div id="mobileParamsDrawer-header">
+                    <span id="mobileParamsDrawer-title">Parametry półki</span>
+                    <button id="mobileParamsDrawer-close" onclick="closeMobileParamsDrawer()">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+                <div id="mobileParamsDrawer-divider"></div>
+                <div id="mobileParamsDrawer-body">
+                    <div class="mdp-row"><span class="mdp-label">Rodzaj</span><span class="mdp-value not-set" id="mdp-type">nie wybrano</span></div>
+                    <div class="mdp-row"><span class="mdp-label">Szerokość</span><span class="mdp-value not-set" id="mdp-width">nie wybrano</span></div>
+                    <div class="mdp-row"><span class="mdp-label">Wysokość</span><span class="mdp-value not-set" id="mdp-height">nie wybrano</span></div>
+                    <div class="mdp-row"><span class="mdp-label">Głębokość</span><span class="mdp-value not-set" id="mdp-depth">nie wybrano</span></div>
+                    <div class="mdp-row"><span class="mdp-label">Kolor boków</span><span class="mdp-value not-set" id="mdp-sidecolor">nie wybrano</span></div>
+                    <div class="mdp-row"><span class="mdp-label">Kolor półek</span><span class="mdp-value not-set" id="mdp-shelfcolor">nie wybrano</span></div>
+                    <div class="mdp-row" id="mdp-shelfcount-row"><span class="mdp-label">Półki wewn.</span><span class="mdp-value not-set" id="mdp-shelfcount">nie wybrano</span></div>
+                    <div class="mdp-row" id="mdp-gap-row"><span class="mdp-label">Odstęp między półkami</span><span class="mdp-value not-set" id="mdp-gap">—</span></div>
+                    <div class="mdp-row" id="mdp-custompos-surcharge-row" style="display:none"><span class="mdp-label">Własne rozm.</span><span class="mdp-value" style="color:#dc2626;font-weight:800">+50 zł dopłata</span></div>
+                    <div class="mdp-row" id="mdp-extras-row"><span class="mdp-label">Opcje</span><span class="mdp-value" id="mdp-extras">standardowa</span></div>
+                </div>
+            </div>
+            
+            <!-- Stare floating kontenery — zachowane dla kompatybilności JS, ukryte w CSS -->
+            <div id="mobile3dActionsContainer" style="display:none!important">
+                <div id="mobilePriceIconWrap">
+                    <div id="mobilePriceIcon" class="mobile-3d-action-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6z" />
+                        </svg>
+                        <span id="mobilePriceOriginal"></span>
+                        <span id="mobilePriceValue" class="price-value"></span>
+                    </div>
+                    <div id="mobileDiscountHint"></div>
+                </div>
+            </div>
+            <button id="mobileParamsDrawerToggle" style="display:none!important"></button>
+            <button id="mobileDalej3dBtn" style="display:none!important"></button>
+
+            <!-- ════ NOWY TOP BAR ════ -->
+            <div id="mobile3dTopBar">
+                <!-- CENA -->
+                <div id="topBarPrice">
+                    <span id="topBarPriceLabel">CENA</span>
+                    <span id="topBarPriceOrig"></span>
+                    <span id="topBarPriceValue">—</span>
+                </div>
+                <!-- PARAMETRY (środek) -->
+                <div id="topBarParams" onclick="toggleMobileParamsDrawer()">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12"/>
+                    </svg>
+                    <span>Parametry</span>
+                </div>
+                <!-- PRAWA: Dalej + ∨ -->
+                <div id="topBarRight">
+                    <button id="topBarDalej" onclick="(function(){ const el = document.getElementById('priceAndActionsContainer'); if(el){ el.scrollIntoView({behavior:'smooth', block:'start'}); } else { document.getElementById('addToCartBtn')?.scrollIntoView({behavior:'smooth', block:'center'}); } })()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                        <span>Dalej</span>
+                    </button>
+                    <button id="topBarCollapse" onclick="close3dPanel()" title="Zwiń 3D">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/>
+                        </svg>
+                        <span class="tcl-label">Zwiń 3D</span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="mobilePanelIcons" class="hidden md:hidden">
+                <button onclick="if(window.innerWidth<768 && shelfContainer && !shelfContainer.classList.contains('active'))open3dPanel(); scrollToElementAndHighlight('shelfTypeSectionAnchor', 'start', this);" title="Przewiń do rodzaju półki">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 0 1 0 1.905c-.007.379.137.75.431.99l1.005.828c.428.355.53 1.005.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.063-.374-.313-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 0 1 0-1.905c.007-.379-.137-.75-.43-.99l-1.004-.828a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281Z" /> <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /> </svg>
+                    <span>Rodzaj</span>
+                    <small id="mobileIconDetailsType" class="mobile-icon-details mobile-icon-prompt">nie wybrano</small>
+                </button>
+                <button onclick="if(window.innerWidth<768 && shelfContainer && !shelfContainer.classList.contains('active'))open3dPanel(); scrollToElementAndHighlight('dimensionSectionAnchor', 'start', this);" title="Przewiń do wymiarów">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75" /> <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v16.5M20.25 3.75v16.5" /> </svg>
+                    <span>Wymiary</span>
+                    <small id="mobileIconDetailsDimensions" class="mobile-icon-details mobile-icon-prompt">nie wybrano</small>
+                </button>
+                <button onclick="if(window.innerWidth<768 && shelfContainer && !shelfContainer.classList.contains('active'))open3dPanel(); scrollToElementAndHighlight('colorSectionAnchor', 'start', this);" title="Przewiń do kolorów">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42" /> </svg>
+                    <span>Kolory</span>
+                    <small id="mobileIconDetailsColors" class="mobile-icon-details mobile-icon-prompt">nie wybrano</small>
+                </button>
+            </div>
+              
+            <div id="threeJsCanvasWrapper" class="flex-grow" style="position:relative;">
+            </div>
+
+
+            <!-- Lewy panel: Dodaj półki + Układ -->
+            <div id="mobileLeftPanel">
+
+                <!-- Widget +/- półek -->
+                <div id="mobileShelfCountWidget" style="
+                    display:flex; flex-direction:column; align-items:center; justify-content:center;
+                    width:52px; height:72px; padding:4px 2px;
+                    background:rgba(255,255,255,0.92);
+                    backdrop-filter:blur(10px);
+                    border:1px solid rgba(209,213,219,0.5);
+                    border-radius:13px;
+                    box-shadow:0 2px 8px rgba(0,0,0,0.10);
+                    transition:background .15s ease, transform .15s ease;
+                    overflow:hidden; cursor:default;
+                    will-change:transform; transform:translate3d(0,0,0);
+                    gap:3px;
+                ">
+                    <!-- + na górze -->
+                    <button id="mobileShelfPlus" onclick="mobileChangeShelfCount(+1)" style="
+                        width:22px;height:22px;border-radius:7px;padding:0;
+                        background:#16a34a;border:1px solid #15803d;
+                        font-size:16px;font-weight:700;color:#fff;
+                        display:flex;align-items:center;justify-content:center;
+                        cursor:pointer;line-height:1;transition:all .12s;flex-shrink:0;
+                    ">+</button>
+                    <!-- liczba -->
+                    <span id="mobileShelfCountDisplay" style="font-size:16px;font-weight:800;color:#15803d;line-height:1;min-width:14px;text-align:center;">—</span>
+                    <!-- nazwa -->
+                    <span style="font-size:7px;font-weight:700;color:#374151;line-height:1;letter-spacing:0.01em;text-align:center;white-space:nowrap;">Dodaj półki</span>
+                    <!-- − na dole -->
+                    <button id="mobileShelfMinus" onclick="mobileChangeShelfCount(-1)" style="
+                        width:22px;height:22px;border-radius:7px;padding:0;
+                        background:#f3f4f6;border:1px solid #d1d5db;
+                        font-size:16px;font-weight:700;color:#374151;
+                        display:flex;align-items:center;justify-content:center;
+                        cursor:pointer;line-height:1;transition:all .12s;flex-shrink:0;
+                    ">−</button>
+                </div>
+
+                <!-- Układ button -->
+                <div id="mobileCustomShelfPanel" title="Własne rozmieszczenie półek" onclick="(function(){const w=document.getElementById('customShelfPositionWrapper');if(w&&w.style.display!=='none'){toggleCustomShelfPosition&&toggleCustomShelfPosition();updateModularIconsVisibility&&updateModularIconsVisibility();}else{close3dPanel&&close3dPanel();setTimeout(()=>scrollToElementAndHighlight('customShelfPositionWrapper','center'),350);}})();">
+                    <div class="csp-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/>
+                        </svg>
+                    </div>
+                    <div class="csp-label">Własny układ półek</div>
+                    <div class="csp-surcharge">+50 zł</div>
+                </div>
+
+            </div>
+
+            <style>
+            #mobileShelfMinus:active { transform:scale(0.82) !important; }
+            #mobileShelfPlus:active  { transform:scale(0.82) !important; background:#15803d !important; }
+            #mobileShelfMinus:disabled { opacity:0.3; cursor:not-allowed; }
+            #mobileShelfPlus:disabled  { opacity:0.3; cursor:not-allowed; }
+            </style>
+
+            <script>
+            function mobileChangeShelfCount(delta) {
+                const sel = document.getElementById('shelfCount');
+                if (!sel || sel.disabled) return;
+                const opts = Array.from(sel.options).filter(o => o.value && o.value !== '0');
+                if (opts.length === 0) return;
+                const curIdx = opts.findIndex(o => o.value === sel.value);
+                const newIdx = Math.max(0, Math.min(opts.length - 1, curIdx + delta));
+                if (newIdx === curIdx) return;
+                sel.value = opts[newIdx].value;
+                sel.dispatchEvent(new Event('change', { bubbles: true }));
+                const btn = delta > 0 ? document.getElementById('mobileShelfPlus') : document.getElementById('mobileShelfMinus');
+                if (btn) { btn.style.transform = 'scale(0.82)'; setTimeout(() => btn.style.transform = '', 150); }
+                updateMobileShelfCountWidget();
+            }
+            function updateMobileShelfCountWidget() {
+                const sel = document.getElementById('shelfCount');
+                const display = document.getElementById('mobileShelfCountDisplay');
+                const minusBtn = document.getElementById('mobileShelfMinus');
+                const plusBtn = document.getElementById('mobileShelfPlus');
+                if (!sel || !display) return;
+                const opts = Array.from(sel.options).filter(o => o.value && o.value !== '0');
+                const curIdx = opts.findIndex(o => o.value === sel.value);
+                display.textContent = sel.value && sel.value !== '0' ? sel.value : '—';
+                if (minusBtn) minusBtn.disabled = (curIdx <= 0);
+                if (plusBtn)  plusBtn.disabled  = (curIdx >= opts.length - 1 || opts.length === 0);
+                // Ukryj widget jeśli nie dotyczy (mug_shelf, modular, custom)
+                const widget = document.getElementById('mobileShelfCountWidget');
+                const shelfType = document.getElementById('shelfType')?.value;
+                const hidden = !shelfType || shelfType === 'mug_shelf' || shelfType === 'modular' ||
+                    (typeof SHELF_TYPES !== 'undefined' && SHELF_TYPES.find(t => t.id === shelfType && t.isCustomLayout));
+                if (widget) widget.style.opacity = hidden ? '0.3' : '1';
+                if (widget) widget.style.pointerEvents = hidden ? 'none' : 'auto';
+                // Ukryj cały lewy panel dla mug_shelf (nie ma sensu Dodaj półki przy półce na kubki)
+                const _lp = document.getElementById('mobileLeftPanel');
+                if (_lp && window.innerWidth < 768) _lp.style.display = (shelfType === 'mug_shelf' || shelfType === 'modular') ? 'none' : '';
+            }
+            document.addEventListener('DOMContentLoaded', function() {
+                const sel = document.getElementById('shelfCount');
+                if (sel) sel.addEventListener('change', updateMobileShelfCountWidget);
+                const typeSel = document.getElementById('shelfType');
+                if (typeSel) typeSel.addEventListener('change', function() { setTimeout(updateMobileShelfCountWidget, 50); });
+                setTimeout(updateMobileShelfCountWidget, 300);
+            });
+            </script>
+
+            <div id="mugShelfDividerIconsContainer" class="z-10">
+
+                <!-- SEKCJA PRZEGRÓDEK — kompaktowa, bezpośrednio widoczna -->
+                <span class="mug-bar-label">Przegródki</span>
+                <button id="addTopDividerBtn" data-divider-type="top" title="Dodaj/Usuń górną przegródkę" class="mobile-divider-icon-small">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4h16v16H4V4zm0 6h16"/></svg>
+                    <span>góra</span>
+                </button>
+                <button id="addMiddleDividerBtn" data-divider-type="middle" title="Dodaj/Usuń środkową przegródkę" class="mobile-divider-icon-small">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4h16v16H4V4zm0 8h16"/></svg>
+                    <span>środek</span>
+                </button>
+                <button id="addBottomDividerBtn" data-divider-type="bottom" title="Dodaj/Usuń dolną przegródkę" class="mobile-divider-icon-small">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4h16v16H4V4zm0 10h16"/></svg>
+                    <span>dół</span>
+                </button>
+
+                <div class="mug-bar-sep"></div>
+
+                <!-- SEKCJA MONTAŻU — kompaktowa -->
+                <span class="mug-bar-label">Montaż</span>
+                <button id="mobileMountHangingStripBtn" title="Wybierz montaż wiszący" class="mount-text-button">wisząca</button>
+                <button id="mobileMountStandingStripBtn" title="Wybierz montaż stojący" class="mount-text-button">stojąca</button>
+
+                <!-- zachowane ukryte elementy dla kompatybilności JS -->
+                <div id="dividerCard" class="mdc-card" style="display:none!important"></div>
+                <button class="mdc-fab" id="dividerFabBtn" style="display:none!important"></button>
+                <div id="mountCard" class="mdc-card" style="display:none!important"></div>
+                <button class="mdc-fab" id="mountFabBtn" style="display:none!important"></button>
+                <div id="dividerTooltip" style="display:none!important"></div>
+            </div>
+
+            <div id="modularShelfIconsContainer" class="z-10">
+                <span style="font-size:0.42rem;font-weight:800;color:#9ca3af;letter-spacing:0.05em;text-transform:uppercase;white-space:nowrap">MONTAŻ</span>
+                <div class="modular-icon-group">
+                    <button id="mobileModularStandingBtn" title="Wersja stojąca" class="modular-control-button">Stojąca</button>
+                    <button id="mobileModularHangingBtn" title="Wersja wisząca" class="modular-control-button">Wisząca</button>
+                </div>
+                <div class="modular-options-divider"></div>
+                <span style="font-size:0.42rem;font-weight:800;color:#9ca3af;letter-spacing:0.05em;text-transform:uppercase;white-space:nowrap">OPCJE</span>
+                <div class="modular-icon-group">
+                    <button id="mobileModularNoTopBtn" title="Bez górnej półki" class="modular-control-button">Brak góry</button>
+                    <button id="mobileModularNoBottomBtn" title="Bez dolnej podstawy" class="modular-control-button">Brak dołu</button>
+                </div>
+            </div>
+            
+            <div id="mobileMugShelfMountPanel"></div>
+
+            <!-- PASEK OPCJI dla półki WISZĄCEJ i STOJĄCEJ — mobile, styl paska kubki -->
+            <div id="hangingStandingShelfIconsContainer" class="z-10">
+                <span class="hs-bar-label">Opcje</span>
+                <div class="hs-icon-group">
+                    <button id="mobileHsNoTopBtn" title="Bez górnej półki" class="hs-control-button" type="button">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 4h14M5 4v16M19 4v16M5 20h14M8 10h8M8 14h8"/>
+                            <line x1="4" y1="4" x2="20" y2="4" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="2 2"/>
+                            <line x1="4" y1="2" x2="20" y2="6" stroke="#dc2626" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        <span>Bez góry</span>
+                    </button>
+                    <button id="mobileHsNoBottomBtn" title="Bez dolnej półki" class="hs-control-button" type="button" style="display:none">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 4h14M5 4v16M19 4v16M5 20h14M8 10h8M8 14h8"/>
+                            <line x1="4" y1="20" x2="20" y2="20" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="2 2"/>
+                            <line x1="4" y1="18" x2="20" y2="22" stroke="#dc2626" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        <span>Bez dołu</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- INFO TICKER — ukryty na stałe (zastąpiony paskiem opcji) -->
+            <div id="mobile3dInfoTicker" style="display:none !important;"></div>
+
+            <!-- Floating bottom-right actions -->
+            <div id="mobileBottomRightActions">
+                <button class="m3d-pill" id="rotateToggleMobile" onclick="autoRotateEnabled=!autoRotateEnabled; const ip=document.getElementById('rotateIconPause'),ipl=document.getElementById('rotateIconPlay'); if(ip&&ipl){if(autoRotateEnabled){ip.style.display='';ipl.style.display='none';}else{ip.style.display='none';ipl.style.display='';}}" title="Obrót">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
+                </button>
+                <button class="m3d-action-main" onclick="scrollToElementAndHighlight('priceAndActionsContainer', 'center')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                    <span>Dalej</span>
+                </button>
+            </div>
+         </div> 
+        <div class="text-sm text-stone-600 italic mt-2 text-center md:hidden"></div>
+
+         <div id="modularInfoText" class="text-sm text-stone-600 mt-2 text-center hidden" style="display: none;"></div>
+         <!-- ===== POŁĄCZONY PANEL PÓŁEK WEWNĘTRZNYCH ===== -->
+         <div id="shelfCountSection" class="sp-panel w-full max-w-lg mt-0.5 md:mt-8">
+             <div class="sp-header">
+                 <div class="sp-header-icon">
+                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
+                         <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                     </svg>
+                 </div>
+                 <div class="sp-header-text">
+                     <h2>Półki wewnętrzne</h2>
+                     <p>Wybierz ilość i rozmieszczenie</p>
+                 </div>
+             </div>
+
+             <div class="sp-body">
+                 <div class="sp-select-wrap">
+                     <select id="shelfCount" onchange="showOrHideCustomShelfToggle(); if(customShelfPositionEnabled) buildCustomShelfInputs(); updatePreview(); updateOrderSummary();">
+                         <option value="">-- Wybierz --</option>
+                     </select>
+                 </div>
+
+                 <div id="gapDisplay" class="sp-gap-info" style="display:none;">
+                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
+                         <path stroke-linecap="round" stroke-linejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/>
+                     </svg>
+                     <span>Odległość między półkami: <span id="gapSummaryDisplay" class="sp-gap-value"></span></span>
+                 </div>
+             </div>
+
+             <!-- Sekcja własnego rozmieszczenia -->
+             <div id="customShelfPositionWrapper" style="display:none;">
+                 <div class="sp-custom-divider"></div>
+                 <div class="sp-custom-toggle" onclick="toggleCustomShelfPosition()">
+                     <div class="sp-custom-left">
+                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                             <path stroke-linecap="round" stroke-linejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/>
+                         </svg>
+                         <div>
+                             <div class="sp-custom-label">Własne rozmieszczenie</div>
+                             <div class="sp-custom-sub">Przeciągnij półki na modelu 3D</div>
+                         </div>
+                     </div>
+                     <div class="sp-custom-right">
+                         <span class="sp-custom-badge">+50 zł</span>
+                         <div class="custom-shelf-toggle-switch" id="customShelfSwitch">
+                             <div class="custom-shelf-switch-knob"></div>
+                         </div>
+                     </div>
+                 </div>
+                 <div class="sp-custom-status" id="customShelfStatusArea">
+                     <!-- Trwa edycja -->
+                     <div id="cspStatusEditing" class="sp-custom-status-inner" style="display:none;">
+                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.042 21.672L13.684 16.6m0 0l-2.51 2.225.569-9.47 5.227 7.917-3.286-.672zM12 2.25V4.5m5.834.166l-1.591 1.591M20.25 10.5H18M7.757 14.743l-1.59 1.59M6 10.5H3.75m4.007-4.243l-1.59-1.59"/></svg>
+                         <span>Przeciągnij półki na modelu 3D</span>
+                     </div>
+                     <!-- Zapisane pozycje -->
+                     <div id="cspStatusSaved" style="display:none;">
+                         <button type="button" onclick="reenterDragMode()" class="sp-edit-btn">
+                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z"/></svg>
+                             Edytuj rozmieszczenie
+                         </button>
+                         <button type="button" onclick="disableCustomPositions()" class="sp-disable-btn" title="Wyłącz">
+                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                         </button>
+                     </div>
+                 </div>
+             </div>
+         </div>
+         <details class="rounded-2xl overflow-hidden shadow-sm border border-emerald-200 bg-white mt-8 w-full max-w-lg hidden md:block group">
+             <summary class="flex items-center justify-between px-5 py-4 cursor-pointer list-none select-none bg-white active:bg-emerald-50 transition-colors">
+                 <div class="flex items-center gap-3">
+                     <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#16a34a,#22c55e);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                     </div>
+                     <span class="text-base font-semibold text-stone-800">Jak zamówić półkę?</span>
+                 </div>
+                 <span class="transform transition-transform duration-300 ease-in-out group-open:rotate-180 text-emerald-500">
+                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                 </span>
+             </summary>
+             <div class="border-t border-emerald-100 px-5 pb-5 pt-4 bg-white">
+                 <ol class="space-y-3" style="list-style:none;margin:0;padding:0;">
+                     <li style="display:flex;gap:14px;align-items:flex-start;">
+                         <span style="min-width:26px;height:26px;border-radius:50%;background:#16a34a;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">1</span>
+                         <span style="font-size:13.5px;color:#374151;line-height:1.5;"><b style="color:#166534;">Skonfiguruj półkę</b> – wybierz rodzaj, wymiary, kolory i półki wewnętrzne.</span>
+                     </li>
+                     <li style="display:flex;gap:14px;align-items:flex-start;">
+                         <span style="min-width:26px;height:26px;border-radius:50%;background:#16a34a;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">2</span>
+                         <span style="font-size:13.5px;color:#374151;line-height:1.5;"><b style="color:#166534;">Dodaj do koszyka</b> – możesz dodać kilka różnych projektów i skorzystać z rabatów.</span>
+                     </li>
+                     <li style="display:flex;gap:14px;align-items:flex-start;">
+                         <span style="min-width:26px;height:26px;border-radius:50%;background:#16a34a;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">3</span>
+                         <span style="font-size:13.5px;color:#374151;line-height:1.5;"><b style="color:#166534;">Wypełnij formularz</b> – podaj dane do wysyłki w podsumowaniu koszyka.</span>
+                     </li>
+                     <li style="display:flex;gap:14px;align-items:flex-start;">
+                         <span style="min-width:26px;height:26px;border-radius:50%;background:#16a34a;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">4</span>
+                         <span style="font-size:13.5px;color:#374151;line-height:1.5;"><b style="color:#166534;">Zapłać online</b> – bezpieczna płatność przez Przelewy24 (karta, BLIK, przelew).</span>
+                     </li>
+                     <li style="display:flex;gap:14px;align-items:flex-start;">
+                         <span style="min-width:26px;height:26px;border-radius:50%;background:#16a34a;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">5</span>
+                         <span style="font-size:13.5px;color:#374151;line-height:1.5;"><b style="color:#166534;">Dostawa kurierem DPD</b> – Twoja półka trafi do Ciebie w 3–5 dni roboczych. 🚚</span>
+                     </li>
+                 </ol>
+             </div>
+         </details> <div class="mt-8 bg-white p-6 rounded-lg shadow-md text-center border border-stone-200 transition-shadow duration-200 hover:shadow-lg w-full max-w-lg">
+               <h3 class="text-stone-700 font-semibold mb-3 text-base">Co mówią nasi klienci?</h3>
+               <div id="customerReview" class="text-stone-600 text-base italic review-fade-enter flex items-center justify-center space-x-2 min-h-[4em]"></div>
+           </div>
+        </div>
+<div class="w-full md:w-1/3 p-6 bg-stone-50 border border-stone-200 rounded-lg space-y-6 order-3 md:order-3">
+         <div id="orderSummarySection" class="order-summary bg-white shadow-lg rounded-xl transition-shadow duration-200 hover:shadow-xl overflow-hidden">
+            <div class="order-summary-header px-5 pt-5 pb-3 border-b border-stone-100">
+                <h2 class="text-base font-bold text-stone-800 tracking-tight">Parametry półki</h2>
+            </div>
+            <div class="px-5 py-3">
+            <ul class="text-sm space-y-0">
+
+                <!-- Rodzaj -->
+                <li class="param-row full-width-row"><span class="param-label">Rodzaj półki</span><span id="shelfTypeSummary" class="param-value">nie wybrano</span></li>
+                <li id="mugShelfMountSummaryItem" class="param-row full-width-row" style="display: none;"><span class="param-label">Montaż</span><span id="mugShelfMountSummary" class="param-value"></span></li>
+
+                <!-- Wymiary -->
+                <li class="param-row param-section-start"><span class="param-label"><span id="widthSummaryLabel">Szerokość</span></span>
+                    <span class="param-value flex items-center gap-1.5">
+                        <span id="widthSummary"></span>
+                        <span id="widthCustomBadge" style="display:none" class="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-700 border border-amber-200">+50 zł</span>
+                    </span>
+                </li>
+                <li class="param-row param-section-start"><span class="param-label"><span id="heightSummaryLabel">Wysokość</span></span><span id="heightSummary" class="param-value"></span></li>
+                <li class="param-row"><span class="param-label"><span id="depthSummaryLabel">Głębokość</span></span><span id="depthSummary" class="param-value"></span></li>
+                <li class="param-row" style="display: none;"><span class="param-label"><span id="connectingWidthSummaryLabel">Szer. łączenia</span></span><span id="connectingWidthSummary" class="param-value"></span></li>
+
+                <!-- Kolory -->
+                <li class="param-row param-section-start full-width-row"><span class="param-label">Kolor boków</span><span id="sideColorSummary" class="param-value">nie wybrano</span></li>
+                <li class="param-row full-width-row"><span class="param-label"><span id="shelfColorSummaryLabel">Kolor półek</span></span><span id="shelfColorSummary" class="param-value">nie wybrano</span></li>
+
+                <!-- Półki -->
+                <li class="param-row param-section-start"><span class="param-label"><span id="shelfCountSummaryLabel">Półki wewn.</span></span><span id="shelfCountSummary" class="param-value"></span></li>
+                <li class="param-row" style="display:none !important"><span class="param-label">Odległość</span><span id="gapSummary" class="param-value"></span></li>
+                <li id="customPosSummaryRow" class="param-row param-custom-pos full-width-row" style="display:none"><div id="customPosSummary" class="w-full"></div></li>
+
+                <!-- Opcje / materiał -->
+                <li class="param-row param-section-start full-width-row"><span class="param-label">Opcje</span><span id="extraOptionsSummary" class="param-value">standardowa</span></li>
+                <li class="param-row full-width-row"><span class="param-label">Materiał</span><span class="param-value">płyta laminowana gr. 1,8 cm</span></li>
+                <li class="param-row full-width-row"><span class="param-label">Realizacja</span><span class="param-value">3–7 dni roboczych</span></li>
+
+            </ul>
+            </div>
+
+        </div>
+
+        <!-- ===== CENA + AKCJE — osobna czysta karta ===== -->
+        <div id="priceAndActionsContainer" class="bg-white rounded-xl shadow-lg overflow-hidden" style="display: none;">
+
+            <!-- Cena -->
+            <div class="px-5 py-4 border-b border-stone-100">
+                <p class="text-xs font-700 text-stone-400 uppercase tracking-widest mb-1">Cena</p>
+                <div class="flex items-baseline gap-2">
+                    <span id="originalPriceSummary" class="text-stone-400 font-medium text-base line-through" style="display: none;"></span>
+                    <span id="priceSummary" class="text-red-600 font-black text-3xl tracking-tight" style="color: #dc2626 !important; text-shadow: 0 1px 0 rgba(220,38,38,0.15);"></span>
+                </div>
+                <div id="mainPageDiscountHint" class="text-xs text-green-600 font-semibold mt-1 transition-all duration-300 opacity-0 transform -translate-y-2" style="display: none;">
+                    Otrzymujesz 10% rabatu!
+                </div>
+            </div>
+
+<!-- Przyciski -->
+            <div class="px-5 py-4 space-y-3">
+                <button id="addToCartBtn" class="group w-full py-3.5 bg-green-600 hover:bg-green-700 text-white rounded-xl text-base font-bold transition-all duration-150 flex items-center justify-center gap-2.5 shadow-md hover:shadow-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 active:scale-95">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span>Dodaj do koszyka</span>
+                </button>
+
+                <div id="desktopCartContainer" class="group cursor-pointer" title="Otwórz koszyk">
+                    <div class="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-stone-200 group-hover:border-green-400 group-hover:bg-green-50 transition-all duration-150 relative">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-stone-400 group-hover:text-green-600 transition-colors" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                        <span class="text-sm font-semibold text-stone-600 group-hover:text-green-700 transition-colors">Zobacz koszyk</span>
+                        <span class="cart-badge" style="display: none; position: absolute; top: -8px; right: -8px; width: 1.25rem; height: 1.25rem; font-size: 0.7rem;">0</span>
+                    </div>
+                </div>
+            </div>
+
+
+
+        </div>
+
+        <p id="priceHint" class="text-stone-400 text-xs text-center px-1">Wybierz wszystkie parametry, aby zobaczyć cenę.</p>
+
+        <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:11px 13px;display:flex;align-items:flex-start;gap:9px;">
+            <svg xmlns="http://www.w3.org/2000/svg" style="width:17px;height:17px;flex-shrink:0;margin-top:2px;color:#16a34a;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <p style="font-size:13px;font-weight:700;color:#166534;margin:0;line-height:1.5;">Kod konfiguracyjny półki znajdziesz po dodaniu produktu do koszyka.</p>
+        </div>
+
+        <div id="viewOrderSection" class="bg-white rounded-xl shadow-sm p-4 border border-stone-100">
+            <button onclick="openBatchExportModal()" class="w-full flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg bg-stone-50 border border-stone-200 text-xs font-semibold text-stone-600 hover:border-green-500 hover:text-green-700 hover:bg-green-50 transition-all">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                Sprawdź projekt
+            </button>
+        </div>
+
+        <!-- BATCH EXPORT MODAL -->
+        <div id="batchExportOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:2000;align-items:center;justify-content:center;" onclick="if(event.target===this)closeBatchExportModal()">
+            <div style="background:#fff;border-radius:20px;width:min(620px,95vw);max-height:90vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 25px 60px rgba(0,0,0,0.25);">
+                <!-- Header -->
+                <div style="padding:24px 28px 20px;border-bottom:1px solid #f3f4f6;display:flex;align-items:center;justify-content:space-between;">
+                    <div>
+                        <h2 style="font-size:18px;font-weight:800;color:#111827;margin:0">Sprawdź projekt</h2>
+                        <p style="font-size:13px;color:#9ca3af;margin:4px 0 0">Wklej kody konfiguracyjne — jeden na linię (max. 4)</p>
+                    </div>
+                    <button onclick="closeBatchExportModal()" style="width:32px;height:32px;border-radius:50%;border:none;background:#f3f4f6;cursor:pointer;font-size:18px;color:#6b7280;display:flex;align-items:center;justify-content:center;">&times;</button>
+                </div>
+                <!-- Body -->
+                <div style="padding:24px 28px;overflow-y:auto;flex:1;">
+                    <textarea id="batchCodesInput" style="width:100%;height:140px;border:1.5px solid #e5e7eb;border-radius:12px;padding:12px;font-family:'Courier New',monospace;font-size:13px;color:#374151;resize:none;outline:none;line-height:1.8;box-sizing:border-box;" placeholder="S-44-60-10-2-0-1-S&#10;S-60-80-15-3-1-0-H&#10;S-44-40-10-1-0-0-S&#10;..."></textarea>
+                    <div id="batchResultsList" style="margin-top:16px;display:none;">
+                        <div id="batchItemsContainer" style="display:flex;flex-direction:column;gap:10px;"></div>
+                    </div>
+                </div>
+                <!-- Footer -->
+                <div style="padding:16px 28px;border-top:1px solid #f3f4f6;display:flex;gap:10px;align-items:center;">
+                    <button id="batchCompositeBtn" onclick="startCompositeExport()" style="flex:1;padding:13px;background:#16a34a;color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" style="width:16px;height:16px;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                        Generuj zdjęcie
+                    </button>
+                    <button onclick="closeBatchExportModal()" style="padding:13px 20px;background:#f3f4f6;color:#374151;border:none;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;">Anuluj</button>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- koniec w-full.md:w-1/3 -->
+</div><!-- koniec configuratorSection -->
+<div id="stickyFooterBar" class="fixed bottom-0 left-0 w-full bg-green-600 shadow-[0_-3px_6px_rgba(0,0,0,0.06)] flex justify-around items-stretch md:hidden z-50">
+    <button onclick="scrollToElementAndHighlight('dimensionSectionAnchor', 'start', this)" title="Przewiń do wymiarów"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75" /> <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v16.5M20.25 3.75v16.5" /> </svg> <span>Wymiary</span> </button>
+    <button onclick="scrollToElementAndHighlight('colorSectionAnchor', 'start', this)" title="Przewiń do kolorów"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42" /> </svg> <span>Kolory</span> </button>
+    <button onclick="scrollToElementAndHighlight('shelfCountSection', 'center', this)" title="Przewiń do dodawania półek"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /> <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 9h16.5M3.75 15h16.5" /> </svg> <span>Półki</span> </button>
+    <button id="show3dButton" style="position:relative" title="Pokaż/ukryj podgląd 3D"> <div id="tooltip3dBubble">👁 Zobacz swój projekt 3D!</div> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="animate-spin-slow"> <path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9.75l-9 5.25M12 21v-9.75" /> </svg> <span>Zobacz 3D</span> </button>
+    
+    <button id="mobileCartButton" class="relative" title="Pokaż koszyk">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mb-1">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+        </svg>
+        <span class="mobile-cart-price text-xs font-bold">Koszyk</span>
+        <span class="cart-badge" style="top: 0; right: 8px; width: 1rem; height: 1rem; font-size: 0.65rem; display: none;">0</span>
+    </button>
+</div>
+
+<script src="js/analytics.js"></script>
+<script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+<script src="js/configurator.js"></script>
+    
+<div id="snapZoom" style="position:fixed;z-index:9999;width:280px;height:280px;background:#f0f0f0;border-radius:14px;border:1px solid #e5e7eb;box-shadow:0 12px 40px rgba(0,0,0,.22);overflow:hidden;display:none;pointer-events:none;transition:opacity .18s ease,transform .18s ease;"><img id="snapZoomImg" src="" style="width:100%;height:100%;object-fit:contain;-webkit-user-select:none;user-select:none;pointer-events:none;-webkit-touch-callout:none;"></div>
+<script src="js/snap-zoom.js"></script>
+
+<!-- ============================================================
+     PREMIUM SHELF-BUILDING ANIMATION PACKAGE v1.0
+     Dodaje uczucie "tworzę zajebistą półkę" dla wszystkich typów
+     półek (zwykłe, wiszące, na kubki, modułowe).
+     Bazuje wyłącznie na hookach — nie psuje istniejącej logiki.
+     ============================================================ -->
+
+<script id="pfx-premium-logic" src="pfx-effects.js"></script>
+
+<!-- ============================================================
+     TRYB TESTOWY — pomija płatność PayNow
+     Usuń ten blok przed wdrożeniem produkcyjnym!
+     ============================================================ -->
+<script>
+(function() {
+    // Ten skrypt jest na samym dole <body> — DOM już gotowy.
+    // DOMContentLoaded już minął, więc NIE używamy addEventListener.
+    // Uruchamiamy logikę bezpośrednio (banner od razu, podmiana przycisku po chwili).
+
+        // Pasek testowy na górze strony
+        var banner = document.createElement('div');
+        banner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99999;background:#f59e0b;color:#000;text-align:center;font-size:13px;font-weight:700;padding:6px;letter-spacing:0.05em;';
+        banner.textContent = '⚠️ TRYB TESTOWY — płatność jest pomijana, zamówienie zatwierdza się automatycznie';
+        document.body.appendChild(banner);
+
+        // Podmień listener na przycisku — sklonuj żeby usunąć stare eventy z initSubmitOrderBtn()
+        // 800ms daje czas żeby configurator.js skończył inicjalizację
+        function replaceSubmitBtn() {
+            var old = document.getElementById('submitOrderBtn');
+            if (!old) { setTimeout(replaceSubmitBtn, 200); return; }
+            var fresh = old.cloneNode(true);
+            old.parentNode.replaceChild(fresh, old);
+            fresh.addEventListener('click', mockSubmitOrder);
+            console.log('🧪 Przycisk submit podmieniony na wersję testową');
+        }
+        setTimeout(replaceSubmitBtn, 800);
+
+        // Testowa wersja submitOrder — wywołuje /api/test-order (BEZ płatności)
+        // Zamówienie trafia do BaseLinker i wysyłany jest email, ale nie ma przekierowania do PayNow
+        async function mockSubmitOrder() {
+            var errEl     = document.getElementById('orderFormError');
+            var submitBtn = document.getElementById('submitOrderBtn');
+            var submitLabel = document.getElementById('submitOrderBtnLabel');
+            var successEl = document.getElementById('orderSuccessMsg');
+            var formFields = document.getElementById('orderFormFields');
+
+            // Walidacja — identyczna jak w cart.js submitOrder
+            var firstName = document.getElementById('orderFirstName')?.value.trim();
+            var lastName  = document.getElementById('orderLastName')?.value.trim();
+            var email     = document.getElementById('orderEmail')?.value.trim();
+            var phone     = document.getElementById('orderPhone')?.value.trim();
+            var street    = document.getElementById('orderStreet')?.value.trim();
+            var postCode  = document.getElementById('orderPostCode')?.value.trim();
+            var city      = document.getElementById('orderCity')?.value.trim();
+            var notes     = document.getElementById('orderNotes')?.value.trim() || '';
+            var missing   = [];
+            if (!firstName) missing.push('Imię');
+            if (!lastName)  missing.push('Nazwisko');
+            if (!email || !email.includes('@')) missing.push('E-mail');
+            if (!phone)     missing.push('Telefon');
+            if (!street)    missing.push('Ulica');
+            if (!postCode)  missing.push('Kod pocztowy');
+            if (!city)      missing.push('Miasto');
+            var invoiceFieldsEl = document.getElementById('invoiceFields');
+            var wantInvoice = invoiceFieldsEl && invoiceFieldsEl.style.display !== 'none';
+            if (wantInvoice) {
+                if (!document.getElementById('invoiceCompany')?.value.trim()) missing.push('Nazwa firmy');
+                if (!document.getElementById('invoiceNip')?.value.trim())     missing.push('NIP');
+                if (!document.getElementById('invoicePostCode')?.value.trim()) missing.push('Kod pocztowy firmy');
+                if (!document.getElementById('invoiceAddress')?.value.trim()) missing.push('Adres firmy');
+            }
+            if (missing.length > 0) {
+                if (errEl) { errEl.textContent = 'Uzupełnij: ' + missing.join(', '); errEl.classList.remove('hidden'); errEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
+                return;
+            }
+            if (errEl) errEl.classList.add('hidden');
+
+            // Zablokuj przycisk i pokaż spinner
+            if (submitBtn) submitBtn.disabled = true;
+            if (submitLabel) submitLabel.innerHTML = '<svg style="width:16px;height:16px;animation:spin 1s linear infinite;vertical-align:middle" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.3)" stroke-width="3"/><path d="M12 2a10 10 0 0110 10" stroke="white" stroke-width="3" stroke-linecap="round"/></svg> Wysyłam do BaseLinker (TEST)...';
+
+            try {
+                // Oblicz kwotę (taka sama logika jak calculateCartTotal w cart.js)
+                var totals = (typeof calculateCartTotal === 'function') ? calculateCartTotal() : { total: 0, shipping: 0, totalDiscount: 0 };
+                var amountGr = Math.round(totals.total * 100);
+                var orderCode = document.getElementById('cartSummaryAllCodes')?.value || '';
+
+                var orderData = {
+                    firstName, lastName, email, phone,
+                    street, postCode, city, notes,
+                    orderCode,
+                    wantInvoice,
+                    invCompany:  wantInvoice ? (document.getElementById('invoiceCompany')?.value.trim()  || '') : '',
+                    invNip:      wantInvoice ? (document.getElementById('invoiceNip')?.value.trim()      || '') : '',
+                    invPostCode: wantInvoice ? (document.getElementById('invoicePostCode')?.value.trim() || '') : '',
+                    invAddr:     wantInvoice ? (document.getElementById('invoiceAddress')?.value.trim()  || '') : '',
+                    shipping: totals.shipping || 0,
+                    discount: totals.totalDiscount || 0,
+                    cart: (typeof cart !== 'undefined' ? cart : []).map(function(item) {
+                        return {
+                            name: item.name, code: item.code, quantity: item.quantity,
+                            price: item.price, summary: item.summary || '',
+                            sideColor: item.sideColor || '', shelfColor: item.shelfColor || '',
+                            snapshot: item.snapshot || ''
+                        };
+                    })
+                };
+
+                // Wywołaj /api/test-order — BEZ PŁATNOŚCI, ale z zapisem do BaseLinker + email
+                var response = await fetch('https://polki-backend-production.up.railway.app/api/test-order', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ amount: amountGr, orderData })
+                });
+                var result = await response.json();
+
+                if (result.success) {
+                    if (successEl) {
+                        successEl.innerHTML = '<div style="padding:12px 14px;background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:10px;color:#15803d;font-weight:600;font-size:.9rem;">✅ [TEST] Zamówienie #' + (result.baselinker_id || result.order_uuid || '') + ' wysłane do BaseLinker! Przekierowuję...</div>';
+                        successEl.classList.remove('hidden');
+                    }
+                    if (formFields) { formFields.style.opacity = '0.4'; formFields.style.pointerEvents = 'none'; }
+                    setTimeout(function() {
+                        window.location.href = 'thank-you.html?session=' + encodeURIComponent(result.order_uuid || 'TEST-' + Date.now());
+                    }, 1500);
+                } else {
+                    throw new Error(result.error || 'Nieznany błąd backendu');
+                }
+            } catch(err) {
+                if (submitBtn) submitBtn.disabled = false;
+                if (submitLabel) submitLabel.textContent = 'Złóż zamówienie i zapłać';
+                if (errEl) {
+                    errEl.textContent = '❌ Błąd: ' + err.message;
+                    errEl.classList.remove('hidden');
+                }
+                console.error('🧪 test-order błąd:', err);
+            }
+        }
+
+        console.log('🧪 Tryb testowy aktywny — submitOrder zostanie podmieniony po 800ms');
+})();
+</script>
+</body>
+</html>
