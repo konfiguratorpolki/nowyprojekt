@@ -1,0 +1,130 @@
+  /* ---- Light sweep po gotowej półce ---- */
+  .pfx-sweep {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 10;
+    border-radius: inherit;
+    opacity: 0;
+  }
+  .pfx-sweep::before {
+    content: "";
+    position: absolute;
+    top: -10%;
+    left: -40%;
+    width: 35%;
+    height: 120%;
+    background: linear-gradient(115deg,
+      rgba(255,255,255,0) 0%,
+      rgba(255,255,255,0.18) 45%,
+      rgba(255,255,255,0.55) 50%,
+      rgba(255,255,255,0.18) 55%,
+      rgba(255,255,255,0) 100%);
+    filter: blur(6px);
+    transform: skewX(-18deg) translateX(0);
+  }
+  .pfx-sweep.pfx-run {
+    opacity: 1;
+    animation: pfxSweepFade 1.05s ease-out forwards;
+  }
+  .pfx-sweep.pfx-run::before {
+    animation: pfxSweepMove 1.05s cubic-bezier(.22,.8,.36,1) forwards;
+  }
+  @keyframes pfxSweepMove {
+    0%   { transform: skewX(-18deg) translateX(0); }
+    100% { transform: skewX(-18deg) translateX(340%); }
+  }
+  @keyframes pfxSweepFade {
+    0% { opacity: 0; }
+    10% { opacity: 1; }
+    85% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* ---- Rolling numbers + price flash ---- */
+  .pfx-price-flash {
+    animation: pfxPriceFlash 0.9s ease-out;
+  }
+  @keyframes pfxPriceFlash {
+    0%   { transform: scale(1);    filter: drop-shadow(0 0 0 rgba(22,163,74,0)); }
+    25%  { transform: scale(1.07); filter: drop-shadow(0 0 12px rgba(22,163,74,0.55)); color: #15803d; }
+    60%  { transform: scale(1.02); filter: drop-shadow(0 0 6px rgba(22,163,74,0.3)); }
+    100% { transform: scale(1);    filter: drop-shadow(0 0 0 rgba(22,163,74,0)); }
+  }
+  .pfx-price-up   { color: #15803d !important; }
+  .pfx-price-down { color: #16a34a !important; }
+
+  /* ---- Subtelny "ready glow" ramki preview po zakończonej animacji montażu ---- */
+  #canvasContainer, #shelfContainer {
+    position: relative;
+  }
+  .pfx-frame-glow::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border-radius: inherit;
+    box-shadow: inset 0 0 0 2px rgba(22,163,74,0.0);
+    animation: pfxFrameGlow 1.4s ease-out forwards;
+    z-index: 9;
+  }
+  @keyframes pfxFrameGlow {
+    0%   { box-shadow: inset 0 0 0 0 rgba(22,163,74,0.0); }
+    30%  { box-shadow: inset 0 0 26px 2px rgba(22,163,74,0.28); }
+    100% { box-shadow: inset 0 0 0 0 rgba(22,163,74,0.0); }
+  }
+
+  /* ---- Ripple przycisku "Dodaj ..." / selectów ---- */
+  .pfx-ripple {
+    position: absolute;
+    border-radius: 50%;
+    transform: scale(0);
+    background: rgba(22,163,74,0.35);
+    animation: pfxRipple 520ms cubic-bezier(.22,.8,.36,1) forwards;
+    pointer-events: none;
+    z-index: 99;
+  }
+  @keyframes pfxRipple {
+    0%   { transform: scale(0);   opacity: 0.75; }
+    100% { transform: scale(2.6); opacity: 0; }
+  }
+
+  /* ---- "Oddychająca" pusta scena ---- */
+  .pfx-breathe {
+    /* animation disabled */
+    animation: none;
+  }
+  @keyframes pfxBreathe {
+    0%,100% { transform: scale(1);    opacity: 1;   }
+    50%     { transform: scale(1.015); opacity: 0.96; }
+  }
+
+  /* ---- Flash selectów/checkboxów po zmianie (krótki zielony rozbłysk) ---- */
+  .pfx-input-flash {
+    animation: pfxInputFlash 600ms ease-out;
+  }
+  @keyframes pfxInputFlash {
+    0%   { box-shadow: 0 0 0 0 rgba(22,163,74,0.0); }
+    30%  { box-shadow: 0 0 0 4px rgba(22,163,74,0.22); }
+    100% { box-shadow: 0 0 0 0 rgba(22,163,74,0.0); }
+  }
+
+  /* ===== Wymuszenie czerwonej głównej ceny (priorytet nad cache/Tailwind) ===== */
+  #priceSummary,
+  #mobilePriceValue,
+  #topBarPriceValue {
+    color: #dc2626 !important;
+    -webkit-text-fill-color: #dc2626 !important;
+  }
+  #priceSummary {
+    text-shadow: 0 1px 0 rgba(220,38,38,0.15);
+  }
+
+/* ===== ANIMACJE WYŁĄCZONE (optymalizacja wydajności) ===== */
+.pfx-sweep, .pfx-sweep.pfx-run { animation: none !important; opacity: 0 !important; }
+.pfx-price-flash { animation: none !important; }
+.pfx-frame-glow::after { animation: none !important; }
+.pfx-ripple { animation: none !important; display: none !important; }
+.pfx-input-flash { animation: none !important; }
+/* ===== KONIEC WYŁĄCZONYCH ANIMACJI ===== */
