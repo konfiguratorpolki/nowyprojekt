@@ -1017,7 +1017,7 @@ function updateModularIconActiveStates() {
         // Ustawienia oświetlenia per kolor półki
         // Biała i czarna mają te same ustawienia ze screenshota; dąb craft = domyślne (Studio)
         const SHELF3D_LIGHT_PER_COLOR = {
-            '#FFFFFF': {az:137,el:50,int:4.00,temp:83,hemi:0.76,rim:0.92,rimAz:217,shOp:0.10,shBlur:3,blOp:1},
+            '#FFFFFF': {az:-180,el:58,int:0.75,temp:0,hemi:0.09,rim:0.05,rimAz:160,shOp:0.14,shBlur:1,blOp:1.2},
             '#000000': {az:137,el:50,int:4.00,temp:83,hemi:0.76,rim:0.92,rimAz:217,shOp:0.10,shBlur:3,blOp:1},
             '#8B5A2B': {az:137,el:50,int:4.00,temp:83,hemi:0.76,rim:0.92,rimAz:217,shOp:0.11,shBlur:3,blOp:0},
         };
@@ -1074,6 +1074,19 @@ function updateModularIconActiveStates() {
             if (scene && window._rglBgDefault && window._rglBgWhite) {
                 const _hasWhite = _sideVal === '#FFFFFF' || _shelfVal === '#FFFFFF';
                 scene.background = _hasWhite ? window._rglBgWhite : window._rglBgDefault;
+                // Delikatne cienie: biała półka otrzymuje cienie ale hemi wypełnia je miękko
+                if (shelfGroup) {
+                    shelfGroup.traverse(o => {
+                        if (o.isMesh && !o.name?.startsWith('__')) {
+                            o.receiveShadow = true;
+                        }
+                    });
+                }
+                // Kontrast canvasa: biała półka potrzebuje wyższego kontrastu żeby krawędzie były widoczne
+                if (renderer && renderer.domElement) {
+                    const _c = _hasWhite ? 1.22 : SHELF3D_CANVAS_CONTRAST;
+                    renderer.domElement.style.filter = 'contrast('+_c+') saturate('+SHELF3D_CANVAS_SAT+') hue-rotate('+SHELF3D_CANVAS_HUE+'deg) brightness('+SHELF3D_CANVAS_BRIGHT+')';
+                }
             }
             // Roughness per kolor — czarny = glossy (łapie refleksy), reszta = standardowa
             const _hasBlack = _sideVal === '#000000' || _shelfVal === '#000000';
@@ -1154,6 +1167,28 @@ function updateModularIconActiveStates() {
                 _shelf3dTextures['__edge__'] = tex;
             });
 
+            // Generuj subteLną teksturę szumu dla białego lakieru (brak pliku — canvas 2D)
+            (function() {
+                const _wc = document.createElement('canvas');
+                _wc.width = 512; _wc.height = 512;
+                const _wx = _wc.getContext('2d');
+                _wx.fillStyle = '#fafaf8';
+                _wx.fillRect(0, 0, 512, 512);
+                const _id = _wx.getImageData(0, 0, 512, 512);
+                const _d = _id.data;
+                for (let i = 0; i < _d.length; i += 4) {
+                    const n = (Math.random() - 0.5) * 14;
+                    _d[i]   = Math.min(255, Math.max(220, _d[i]   + n));
+                    _d[i+1] = Math.min(255, Math.max(220, _d[i+1] + n * 0.92));
+                    _d[i+2] = Math.min(255, Math.max(215, _d[i+2] + n * 0.82));
+                }
+                _wx.putImageData(_id, 0, 0);
+                const _wt = new THREE.CanvasTexture(_wc);
+                _wt.wrapS = _wt.wrapT = THREE.RepeatWrapping;
+                _wt.encoding = THREE.sRGBEncoding;
+                _shelf3dTextures['__white__'] = _wt;
+            })();
+
             // Załaduj wszystkie tekstury powierzchniowe (horiz + vert warianty)
             const _loadTex = (path) => {
                 if (!path || _shelf3dTextures[path]) return;
@@ -1212,7 +1247,15 @@ function updateModularIconActiveStates() {
             const { diffuse: faceTex, normal: normTex, rough: roughTex, rotated: doRotate } = shelf3dGetTexEntry(colorVal, isSide);
 
             if (!faceTex) {
-                const col = (colorVal && colorVal !== '') ? colorVal : '#8B7355';
+                let col = (colorVal && colorVal !== '') ? colorVal : '#8B7355';
+                // Biały: zastąp czystą biel ciepłą offwhite (lakierowany MDF wygląda naturalniej)
+                if (col.toUpperCase() === '#FFFFFF') {
+                    const _wTex = (_shelf3dTextures && _shelf3dTextures['__white__']) ? _shelf3dTextures['__white__'].clone() : undefined;
+                    if (_wTex) { _wTex.repeat.set(0.9, 0.9); _wTex.needsUpdate = true; }
+                    const m = new THREE.MeshPhysicalMaterial({ color: '#fafaf8', map: _wTex, roughness: SHELF3D_MAT_ROUGHNESS, metalness: 0, envMapIntensity: SHELF3D_MAT_ENV, clearcoat: 0.7, clearcoatRoughness: 0.15 });
+                    m.polygonOffset = true; m.polygonOffsetFactor = -1; m.polygonOffsetUnits = -1;
+                    return m;
+                }
                 return new THREE.MeshPhysicalMaterial({ color: col, roughness: 0.8, metalness: 0, envMapIntensity: 0.8 });
             }
 
@@ -1382,6 +1425,7 @@ function updateModularIconActiveStates() {
                 window._rglBgDefault = new THREE.CanvasTexture(_bgCanvas);
 
                 window._rglBgWhite = new THREE.Color(0xffffff);
+                window._rglScene = scene; // eksponuj scenę dla panelu
 
                 scene.background = window._rglBgDefault;
             })(); camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000); camera.position.set(initialCameraPosition.x, initialCameraPosition.y, initialCameraPosition.z); renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true }); renderer.setSize(container.clientWidth, container.clientHeight); renderer.outputEncoding = THREE.sRGBEncoding; renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.42; renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap; renderer.physicallyCorrectLights = true; container.innerHTML = ''; renderer.domElement.style.borderRadius = '0'; container.appendChild(renderer.domElement); container.style.position = 'relative'; _dbgHemi = new THREE.HemisphereLight(0xfdf6ec, 0x8a9aaa, 0.50); scene.add(_dbgHemi); _dbgDir1 = new THREE.DirectionalLight(0xfff8ee, 2.00); _dbgDir1.position.set(-6, 14, 10); _dbgDir1.castShadow = true; _dbgDir1.shadow.mapSize.width = 1024; _dbgDir1.shadow.mapSize.height = 1024; _dbgDir1.shadow.camera.near = 0.5; _dbgDir1.shadow.camera.far = 80; _dbgDir1.shadow.camera.left = -20; _dbgDir1.shadow.camera.right = 20; _dbgDir1.shadow.camera.top = 20; _dbgDir1.shadow.camera.bottom = -20; _dbgDir1.shadow.bias = -0.001; scene.add(_dbgDir1); _dbgDir2 = new THREE.DirectionalLight(0xe8effa, 0.55); _dbgDir2.position.set(8, 4, -2); scene.add(_dbgDir2); const _rimLight = new THREE.DirectionalLight(0xf0f4fa, SHELF3D_RIM_INTENSITY); _rimLight.position.set(0, 6, -10); _rimLight.name = '__rimLight__'; scene.add(_rimLight); const _shadowFloorGeo = new THREE.PlaneGeometry(60, 60); const _shadowFloorMat = new THREE.ShadowMaterial({ opacity: 0, transparent: true, depthWrite: false }); const _shadowFloor = new THREE.Mesh(_shadowFloorGeo, _shadowFloorMat); _shadowFloor.rotation.x = -Math.PI / 2; _shadowFloor.position.y = -5.0; _shadowFloor.receiveShadow = true; _shadowFloor.visible = true; _shadowFloor.material.opacity = SHELF3D_SHADOW_OPACITY; _shadowFloor.name = '__shadowFloor__'; scene.add(_shadowFloor); (function(){ const _bc=document.createElement('canvas'); _bc.width=512; _bc.height=256; const _bx=_bc.getContext('2d'); const _bg=_bx.createRadialGradient(220,108,0,256,138,248); _bg.addColorStop(0,'rgba(0,0,0,0.42)'); _bg.addColorStop(0.08,'rgba(0,0,0,0.30)'); _bg.addColorStop(0.22,'rgba(0,0,0,0.16)'); _bg.addColorStop(0.45,'rgba(0,0,0,0.07)'); _bg.addColorStop(0.70,'rgba(0,0,0,0.02)'); _bg.addColorStop(1,'rgba(0,0,0,0)'); _bx.fillStyle=_bg; _bx.fillRect(0,0,512,256); const _bg2=_bx.createRadialGradient(300,148,10,320,155,190); _bg2.addColorStop(0,'rgba(0,0,0,0.10)'); _bg2.addColorStop(0.40,'rgba(0,0,0,0.04)'); _bg2.addColorStop(1,'rgba(0,0,0,0)'); _bx.fillStyle=_bg2; _bx.fillRect(0,0,512,256); const _bt=new THREE.CanvasTexture(_bc); const _bm=new THREE.MeshBasicMaterial({map:_bt,transparent:true,depthWrite:false}); const _bmesh=new THREE.Mesh(new THREE.PlaneGeometry(1,1),_bm); _bmesh.rotation.x=-Math.PI/2; _bmesh.position.y=-5.02; _bmesh.name='__blobShadow__'; scene.add(_bmesh); })(); renderer.domElement.style.filter='contrast('+SHELF3D_CANVAS_CONTRAST+') saturate('+SHELF3D_CANVAS_SAT+') hue-rotate('+SHELF3D_CANVAS_HUE+'deg) brightness('+SHELF3D_CANVAS_BRIGHT+')'; shelf3dInitTextures(scene, renderer); controls = new THREE.OrbitControls(camera, renderer.domElement); controls.enableDamping = true; controls.target.set(0, -2.0, 0);
@@ -3110,6 +3154,7 @@ function fitCameraToShelf() {
                                 const m = new THREE.Mesh(geo.clone(), dMat);
                                 m.position.set(dividerXCenter, yCenter + levelH * 0.6, 0);
                                 m.userData._pfxFinalY = yCenter;
+                                m.userData.shelfMatInfo = { type: 'shelf', w: levelH, h: mugThickness, d: mugDepth };
                                 m.name = `divider_${levelName}_${i}`;
                                 shelfGroup.add(m);
                                 _freshDividers.push(m);
@@ -3124,6 +3169,7 @@ function fitCameraToShelf() {
                                     const m = new THREE.Mesh(geo.clone(), dMat);
                                     m.position.set(-innerW/2 + i*spacing, yCenter + levelH * 0.6, 0);
                                     m.userData._pfxFinalY = yCenter;
+                                    m.userData.shelfMatInfo = { type: 'shelf', w: levelH, h: mugThickness, d: mugDepth };
                                     m.name = `divider_${levelName}_${i}`;
                                     shelfGroup.add(m);
                                     _freshDividers.push(m);
