@@ -2111,8 +2111,8 @@ function fitCameraToShelf() {
                 const _iMW = parseInt(config && config.width) || 44;
                 const _iMH = parseInt(config && config.height) || 60;
                 const _isWide84m = _iMW === 84;
-                const _czM = _isWide84m ? 17.6 : (_iMH >= 80 ? 20.4 : 16.7);
-                const _cxM = _isWide84m ? 0.0001 : 5.6;
+                const _czM = _isWide84m ? 17.6 : (_iMH >= 80 ? 20.4 : _iMH >= 60 ? 16.7 : 14.8);
+                const _cxM = _isWide84m ? 0.0001 : 7.4;
                 controls.target.set(0, 0, 0);
                 camera.position.set(_cxM, 0.5, _czM);
                 controls.update();
@@ -6122,8 +6122,9 @@ function generateOrderCode() { const shelfTypeVal = shelfTypeSelect.value; const
                     const h = parseInt(heightSelect && heightSelect.value) || 60;
                     const w = parseInt(widthSelect && (widthSelect.value === 'custom' ? (customWidthInput && customWidthInput.value) : widthSelect.value)) || 0;
                     const isWide84 = w === 84;
-                    const camZ = isWide84 ? 9.5 : (h >= 80 ? 11 : h >= 60 ? 9 : 8);
-                    const camX = isWide84 ? 0.0001 : -3;
+                    // Ten sam profil kamery co budowa/desktop (rebuildAndAnimateIn) — bez przeskoku po złożeniu
+                    const camZ = isWide84 ? 17.6 : (h >= 80 ? 20.4 : h >= 60 ? 16.7 : 14.8);
+                    const camX = isWide84 ? 0.0001 : 7.4;
                     controls.target.set(0, 0, 0);
                     camera.position.set(camX, 0.5, camZ);
                     controls.update();
