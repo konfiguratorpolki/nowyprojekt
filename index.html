@@ -1698,33 +1698,36 @@ document.addEventListener('keydown', e => {
 </script>
 
 
-<!-- przycisk słoneczka usunięty -->
+<!-- Przycisk serwisowy: panel oświetlenia 3D (tylko dla właściciela) -->
+<div id="rgl-sun-btn" onclick="if(window._rglLightToggle){window._rglLightToggle();}else{alert('Załaduj konfigurator 3D najpierw');}" title="Panel oświetlenia 3D (Ctrl+Shift+L)" style="position:fixed;bottom:20px;left:20px;z-index:99999;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,0.92);backdrop-filter:blur(8px);border:1.5px solid #f59e0b;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.12);transition:transform 0.15s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+</div>
 
 <!-- ═══════════════════════════════════════════════════
      PANEL OŚWIETLENIA 3D — statyczny HTML (serwisowy)
      ═══════════════════════════════════════════════════ -->
+<!-- Przyciski deweloperskie (słoneczko/zębatka/kamera) ukryte na produkcji. Panele nadal otwieralne skrótem Ctrl+Shift+L / Ctrl+Shift+D. -->
+<style>#rgl-sun-btn,#shelf3dLightBtn,#shelf3dDbgBtn,#shelf3dCamHelperBtn{display:none!important;}</style>
+
 <div id="rglLightPanel" style="display:none;position:fixed;top:16px;right:16px;z-index:2147483647;width:320px;background:#0e1726;color:#f0f0f0;border:1.5px solid #2563eb;border-radius:14px;padding:18px 18px 14px;box-shadow:0 8px 40px rgba(0,0,0,0.8);font-family:ui-monospace,monospace;font-size:12px;overflow-y:auto;max-height:92vh;">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
     <span style="font-size:14px;font-weight:bold;color:#60a5fa;">💡 Oświetlenie 3D</span>
     <span onclick="document.getElementById('rglLightPanel').style.display='none'" style="cursor:pointer;color:#9ca3af;font-size:18px;line-height:1;padding:0 4px;">✕</span>
   </div>
 
-  <div style="background:#1a2540;border-radius:8px;padding:8px 10px;margin-bottom:12px;">
-    <div style="display:flex;align-items:center;gap:6px;">
-      <span style="flex:1;color:#e2e8f0;font-size:12px;font-weight:bold;">🖤 Matowość półki</span>
-      <input id="rglM_roughness_top" type="range" min="0" max="1" step="0.01" value="0.62" style="width:90px;accent-color:#a78bfa;" oninput="rglMat('roughness',this,document.getElementById('rglMV_roughness_top'));document.getElementById('rglM_roughness').value=this.value;document.getElementById('rglMV_roughness').textContent=parseFloat(this.value).toFixed(2);">
-      <span id="rglMV_roughness_top" style="font-size:11px;min-width:34px;text-align:right;color:#a78bfa;font-family:monospace;">0.62</span>
-    </div>
-    <div style="font-size:10px;color:#6b7280;margin-top:3px;">0 = połysk / lustro &nbsp;·&nbsp; 1 = mat / drewno</div>
-  </div>
+  <div style="margin:2px 0 10px;font-size:11px;color:#7dd3fc;font-weight:bold;text-transform:uppercase;letter-spacing:1px;text-align:center;background:#10243a;border-radius:6px;padding:6px;">🌍 Wspólne (scena) — światło · cień · tło · obraz</div>
 
   <div style="background:#1a2540;border-radius:8px;padding:8px 10px;margin-bottom:12px;">
     <div style="display:flex;align-items:center;gap:6px;">
-      <span style="flex:1;color:#e2e8f0;font-size:12px;font-weight:bold;">📐 Oklein krawędzi</span>
-      <input id="rglEdge" type="range" min="0" max="1" step="0.01" value="0" style="width:90px;accent-color:#34d399;" oninput="rglEdgeFn(this,document.getElementById('rglEdgeV'))">
-      <span id="rglEdgeV" style="font-size:11px;min-width:34px;text-align:right;color:#34d399;font-family:monospace;">0.00</span>
+      <span style="flex:1;color:#e2e8f0;font-size:12px;font-weight:bold;">🎨 Tło sceny</span>
+      <input id="rglBgColor" type="color" value="#f5f4f2" style="width:32px;height:24px;border:none;border-radius:4px;cursor:pointer;background:transparent;" oninput="rglBgFn(this.value)">
     </div>
-    <div style="font-size:10px;color:#6b7280;margin-top:3px;">0 = brak &nbsp;·&nbsp; 1 = wyraźna krawędź przodu</div>
+    <div style="display:flex;gap:4px;margin-top:6px;flex-wrap:wrap;">
+      <button onclick="rglBgFn('#ffffff');document.getElementById('rglBgColor').value='#ffffff'" style="flex:1;padding:4px 2px;background:#ffffff;border:1px solid #4b5563;color:#111;border-radius:4px;cursor:pointer;font-size:10px;">Białe</button>
+      <button onclick="rglBgFn('#f0eeeb');document.getElementById('rglBgColor').value='#f0eeeb'" style="flex:1;padding:4px 2px;background:#f0eeeb;border:1px solid #4b5563;color:#555;border-radius:4px;cursor:pointer;font-size:10px;">Kremowe</button>
+      <button onclick="rglBgFn('#e8e8e8');document.getElementById('rglBgColor').value='#e8e8e8'" style="flex:1;padding:4px 2px;background:#e8e8e8;border:1px solid #4b5563;color:#555;border-radius:4px;cursor:pointer;font-size:10px;">Szare</button>
+      <button onclick="rglBgGradient()" style="flex:1;padding:4px 2px;background:linear-gradient(#f5f4f2,#ddd6cc);border:1px solid #4b5563;color:#555;border-radius:4px;cursor:pointer;font-size:10px;">Gradient</button>
+    </div>
   </div>
 
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:12px;">
@@ -1735,7 +1738,7 @@ document.addEventListener('keydown', e => {
   </div>
 
   <div style="margin:10px 0 5px;font-size:10px;color:#60a5fa;font-weight:bold;text-transform:uppercase;border-bottom:1px solid #1e3a5f;padding-bottom:2px;">☀ Światło główne</div>
-  <div style="display:flex;align-items:center;gap:6px;margin:4px 0;"><span style="flex:1;color:#9ca3af;font-size:11px;">Azymut</span><input id="rglL_az" type="range" min="-180" max="180" step="1" value="137" style="width:90px;accent-color:#60a5fa;" oninput="rglS('az',this,document.getElementById('rglV_az'))"><span id="rglV_az" style="font-size:11px;min-width:34px;text-align:right;color:#f59e0b;font-family:monospace;">137</span></div>
+  <div style="display:flex;align-items:center;gap:6px;margin:4px 0;"><span style="flex:1;color:#9ca3af;font-size:11px;">Azymut</span><input id="rglL_az" type="range" min="-180" max="180" step="1" value="146" style="width:90px;accent-color:#60a5fa;" oninput="rglS('az',this,document.getElementById('rglV_az'))"><span id="rglV_az" style="font-size:11px;min-width:34px;text-align:right;color:#f59e0b;font-family:monospace;">146</span></div>
   <div style="display:flex;align-items:center;gap:6px;margin:4px 0;"><span style="flex:1;color:#9ca3af;font-size:11px;">Wysokość (°)</span><input id="rglL_el" type="range" min="5" max="85" step="1" value="50" style="width:90px;accent-color:#60a5fa;" oninput="rglS('el',this,document.getElementById('rglV_el'))"><span id="rglV_el" style="font-size:11px;min-width:34px;text-align:right;color:#f59e0b;font-family:monospace;">50</span></div>
   <div style="display:flex;align-items:center;gap:6px;margin:4px 0;"><span style="flex:1;color:#9ca3af;font-size:11px;">Intensywność</span><input id="rglL_int" type="range" min="0" max="4" step="0.05" value="4" style="width:90px;accent-color:#60a5fa;" oninput="rglS('int',this,document.getElementById('rglV_int'))"><span id="rglV_int" style="font-size:11px;min-width:34px;text-align:right;color:#f59e0b;font-family:monospace;">4</span></div>
   <div style="display:flex;align-items:center;gap:6px;margin:4px 0;"><span style="flex:1;color:#9ca3af;font-size:11px;">Ciepłota</span><input id="rglL_temp" type="range" min="0" max="100" step="1" value="83" style="width:90px;accent-color:#60a5fa;" oninput="rglS('temp',this,document.getElementById('rglV_temp'))"><span id="rglV_temp" style="font-size:11px;min-width:34px;text-align:right;color:#f59e0b;font-family:monospace;">83</span></div>
@@ -1752,10 +1755,34 @@ document.addEventListener('keydown', e => {
   <div style="display:flex;align-items:center;gap:6px;margin:4px 0;"><span style="flex:1;color:#9ca3af;font-size:11px;">Miękkość cienia</span><input id="rglL_shBlur" type="range" min="1" max="12" step="1" value="3" style="width:90px;accent-color:#60a5fa;" oninput="rglS('shBlur',this,document.getElementById('rglV_shBlur'))"><span id="rglV_shBlur" style="font-size:11px;min-width:34px;text-align:right;color:#f59e0b;font-family:monospace;">3</span></div>
   <div style="display:flex;align-items:center;gap:6px;margin:4px 0;"><span style="flex:1;color:#9ca3af;font-size:11px;">Blob (pod półką)</span><input id="rglL_blOp" type="range" min="0" max="1.5" step="0.05" value="1.0" style="width:90px;accent-color:#60a5fa;" oninput="rglS('blOp',this,document.getElementById('rglV_blOp'))"><span id="rglV_blOp" style="font-size:11px;min-width:34px;text-align:right;color:#f59e0b;font-family:monospace;">0</span></div>
 
-  <div style="margin:10px 0 5px;font-size:10px;color:#a78bfa;font-weight:bold;text-transform:uppercase;border-bottom:1px solid #2d1e5f;padding-bottom:2px;">🎨 Materiał</div>
-  <div style="display:flex;align-items:center;gap:6px;margin:4px 0;"><span style="flex:1;color:#9ca3af;font-size:11px;">Chropowatość</span><input id="rglM_roughness" type="range" min="0" max="1" step="0.01" value="0.62" style="width:90px;accent-color:#a78bfa;" oninput="rglMat('roughness',this,document.getElementById('rglMV_roughness'))"><span id="rglMV_roughness" style="font-size:11px;min-width:34px;text-align:right;color:#a78bfa;font-family:monospace;">0.62</span></div>
-  <div style="display:flex;align-items:center;gap:6px;margin:4px 0;"><span style="flex:1;color:#9ca3af;font-size:11px;">Metaliczność</span><input id="rglM_metalness" type="range" min="0" max="1" step="0.01" value="0" style="width:90px;accent-color:#a78bfa;" oninput="rglMat('metalness',this,document.getElementById('rglMV_metalness'))"><span id="rglMV_metalness" style="font-size:11px;min-width:34px;text-align:right;color:#a78bfa;font-family:monospace;">0.00</span></div>
-  <div style="display:flex;align-items:center;gap:6px;margin:4px 0;"><span style="flex:1;color:#9ca3af;font-size:11px;">Odbicia env</span><input id="rglM_envInt" type="range" min="0" max="3" step="0.05" value="1.15" style="width:90px;accent-color:#a78bfa;" oninput="rglMat('envInt',this,document.getElementById('rglMV_envInt'))"><span id="rglMV_envInt" style="font-size:11px;min-width:34px;text-align:right;color:#a78bfa;font-family:monospace;">1.15</span></div>
+  <!-- Globalny „Materiał" przeniesiony do sekcji „Per kolor płyty" niżej -->
+
+  <div style="margin:10px 0 5px;font-size:10px;color:#fbbf24;font-weight:bold;text-transform:uppercase;border-bottom:1px solid #5f4a1e;padding-bottom:2px;">🌳 Kolor drewna — dopasuj do realu</div>
+  <div style="font-size:10px;color:#6b7280;margin:0 0 6px;">↑ R = cieplej / jaśniej &nbsp;·&nbsp; ↓ B = mniej chłodu &nbsp;·&nbsp; nasycenie ↑ = żywsze</div>
+  <div style="display:flex;align-items:center;gap:6px;margin:4px 0;"><span style="flex:1;color:#9ca3af;font-size:11px;">R — czerwień (ciepło/jasność)</span><input id="rglW_r" type="range" min="0.2" max="1.3" step="0.01" value="0.52" style="width:90px;accent-color:#fbbf24;" oninput="rglWood('r',this,document.getElementById('rglWV_r'))"><span id="rglWV_r" style="font-size:11px;min-width:34px;text-align:right;color:#fbbf24;font-family:monospace;">0.52</span></div>
+  <div style="display:flex;align-items:center;gap:6px;margin:4px 0;"><span style="flex:1;color:#9ca3af;font-size:11px;">G — zieleń (ton)</span><input id="rglW_g" type="range" min="0.2" max="1.2" step="0.01" value="0.58" style="width:90px;accent-color:#fbbf24;" oninput="rglWood('g',this,document.getElementById('rglWV_g'))"><span id="rglWV_g" style="font-size:11px;min-width:34px;text-align:right;color:#fbbf24;font-family:monospace;">0.58</span></div>
+  <div style="display:flex;align-items:center;gap:6px;margin:4px 0;"><span style="flex:1;color:#9ca3af;font-size:11px;">B — błękit (chłód ↓ = cieplej)</span><input id="rglW_b" type="range" min="0.2" max="1.1" step="0.01" value="0.62" style="width:90px;accent-color:#fbbf24;" oninput="rglWood('b',this,document.getElementById('rglWV_b'))"><span id="rglWV_b" style="font-size:11px;min-width:34px;text-align:right;color:#fbbf24;font-family:monospace;">0.62</span></div>
+  <div style="display:flex;align-items:center;gap:6px;margin:4px 0;"><span style="flex:1;color:#9ca3af;font-size:11px;">Nasycenie</span><input id="rglI_saturation" type="range" min="0.3" max="2.0" step="0.01" value="0.85" style="width:90px;accent-color:#fbbf24;" oninput="rglImg('saturation',this,document.getElementById('rglIV_saturation'))"><span id="rglIV_saturation" style="font-size:11px;min-width:34px;text-align:right;color:#fbbf24;font-family:monospace;">0.85</span></div>
+  <div style="display:flex;align-items:center;gap:6px;margin:4px 0;"><span style="flex:1;color:#9ca3af;font-size:11px;">Odcień (− chłodno / + ciepło)</span><input id="rglI_hue" type="range" min="-30" max="30" step="1" value="-8" style="width:90px;accent-color:#fbbf24;" oninput="rglImg('hue',this,document.getElementById('rglIV_hue'))"><span id="rglIV_hue" style="font-size:11px;min-width:34px;text-align:right;color:#fbbf24;font-family:monospace;">-8</span></div>
+  <div style="display:flex;align-items:center;gap:6px;margin:4px 0;"><span style="flex:1;color:#9ca3af;font-size:11px;">Jasność (całe okno)</span><input id="rglI_bright" type="range" min="0.6" max="1.6" step="0.01" value="1.03" style="width:90px;accent-color:#fbbf24;" oninput="rglImg('bright',this,document.getElementById('rglIV_bright'))"><span id="rglIV_bright" style="font-size:11px;min-width:34px;text-align:right;color:#fbbf24;font-family:monospace;">1.03</span></div>
+  <div style="display:flex;align-items:center;gap:6px;margin:4px 0;"><span style="flex:1;color:#9ca3af;font-size:11px;">Kontrast (całe okno)</span><input id="rglI_contrast" type="range" min="0.7" max="1.8" step="0.01" value="1.14" style="width:90px;accent-color:#fbbf24;" oninput="rglImg('contrast',this,document.getElementById('rglIV_contrast'))"><span id="rglIV_contrast" style="font-size:11px;min-width:34px;text-align:right;color:#fbbf24;font-family:monospace;">1.14</span></div>
+  <div style="display:flex;align-items:center;gap:6px;margin:4px 0;"><span style="flex:1;color:#9ca3af;font-size:11px;">Ekspozycja (jasność całości)</span><input id="rglI_exposure" type="range" min="0.3" max="1.8" step="0.01" value="1.42" style="width:90px;accent-color:#fbbf24;" oninput="rglImg('exposure',this,document.getElementById('rglIV_exposure'))"><span id="rglIV_exposure" style="font-size:11px;min-width:34px;text-align:right;color:#fbbf24;font-family:monospace;">1.42</span></div>
+
+  <div style="margin:14px 0 6px;font-size:11px;color:#2dd4bf;font-weight:bold;text-transform:uppercase;letter-spacing:1px;text-align:center;background:#0f2a28;border-radius:6px;padding:6px;">🎨 Per kolor płyty (osobno)</div>
+  <div style="font-size:10px;color:#6b7280;margin:0 0 6px;">Wybierz kolor i ustaw — dąb / biała / czarna mają WŁASNE wartości. (Ustawiaj na półce w tym kolorze.)</div>
+  <div id="rglMCswitch" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;margin-bottom:8px;">
+    <button data-col="#8B5A2B" onclick="rglMCpick('#8B5A2B')" style="padding:7px 2px;background:#3a2a18;border:2px solid #2dd4bf;color:#e7c9a0;border-radius:6px;cursor:pointer;font-size:11px;font-weight:bold;">Dąb craft</button>
+    <button data-col="#FFFFFF" onclick="rglMCpick('#FFFFFF')" style="padding:7px 2px;background:#2a3340;border:1px solid #2a3a4f;color:#e8eef5;border-radius:6px;cursor:pointer;font-size:11px;">Biała</button>
+    <button data-col="#000000" onclick="rglMCpick('#000000')" style="padding:7px 2px;background:#15181c;border:1px solid #2a3a4f;color:#cbd5e1;border-radius:6px;cursor:pointer;font-size:11px;">Czarna</button>
+  </div>
+  <div style="display:flex;align-items:center;gap:6px;margin:4px 0;"><span style="flex:1;color:#9ca3af;font-size:11px;">Chropowatość (mat↔połysk)</span><input id="rglMC_rough" type="range" min="0" max="1" step="0.01" value="0.62" style="width:90px;accent-color:#2dd4bf;" oninput="rglMC('rough',this,document.getElementById('rglMCV_rough'))"><span id="rglMCV_rough" style="font-size:11px;min-width:34px;text-align:right;color:#2dd4bf;font-family:monospace;">0.62</span></div>
+  <div style="display:flex;align-items:center;gap:6px;margin:4px 0;"><span style="flex:1;color:#9ca3af;font-size:11px;">Odbicia env (kontury!)</span><input id="rglMC_env" type="range" min="0" max="3" step="0.05" value="1.15" style="width:90px;accent-color:#2dd4bf;" oninput="rglMC('env',this,document.getElementById('rglMCV_env'))"><span id="rglMCV_env" style="font-size:11px;min-width:34px;text-align:right;color:#2dd4bf;font-family:monospace;">1.15</span></div>
+  <div style="display:flex;align-items:center;gap:6px;margin:4px 0;"><span style="flex:1;color:#9ca3af;font-size:11px;">Clearcoat (lakier)</span><input id="rglMC_cc" type="range" min="0" max="1" step="0.01" value="0.38" style="width:90px;accent-color:#2dd4bf;" oninput="rglMC('cc',this,document.getElementById('rglMCV_cc'))"><span id="rglMCV_cc" style="font-size:11px;min-width:34px;text-align:right;color:#2dd4bf;font-family:monospace;">0.38</span></div>
+  <div style="display:flex;align-items:center;gap:6px;margin:4px 0;"><span style="flex:1;color:#9ca3af;font-size:11px;">Matowość lakieru</span><input id="rglMC_ccr" type="range" min="0" max="1" step="0.01" value="0.32" style="width:90px;accent-color:#2dd4bf;" oninput="rglMC('ccr',this,document.getElementById('rglMCV_ccr'))"><span id="rglMCV_ccr" style="font-size:11px;min-width:34px;text-align:right;color:#2dd4bf;font-family:monospace;">0.32</span></div>
+  <div style="display:flex;align-items:center;gap:6px;margin:4px 0;"><span style="flex:1;color:#9ca3af;font-size:11px;">Metaliczność</span><input id="rglMC_metal" type="range" min="0" max="1" step="0.01" value="0.00" style="width:90px;accent-color:#2dd4bf;" oninput="rglMC('metal',this,document.getElementById('rglMCV_metal'))"><span id="rglMCV_metal" style="font-size:11px;min-width:34px;text-align:right;color:#2dd4bf;font-family:monospace;">0.00</span></div>
+  <div style="display:flex;align-items:center;gap:6px;margin:4px 0;"><span style="flex:1;color:#9ca3af;font-size:11px;">Jasność płyty</span><input id="rglMC_bright" type="range" min="0.5" max="1.8" step="0.01" value="0.70" style="width:90px;accent-color:#2dd4bf;" oninput="rglMC('bright',this,document.getElementById('rglMCV_bright'))"><span id="rglMCV_bright" style="font-size:11px;min-width:34px;text-align:right;color:#2dd4bf;font-family:monospace;">0.70</span></div>
+  <div style="display:flex;align-items:center;gap:6px;margin:4px 0;"><span style="flex:1;color:#9ca3af;font-size:11px;">Kontrast płyty</span><input id="rglMC_contrast" type="range" min="0.5" max="2.0" step="0.01" value="1.09" style="width:90px;accent-color:#2dd4bf;" oninput="rglMC('contrast',this,document.getElementById('rglMCV_contrast'))"><span id="rglMCV_contrast" style="font-size:11px;min-width:34px;text-align:right;color:#2dd4bf;font-family:monospace;">1.09</span></div>
+  <div style="display:flex;align-items:center;gap:6px;margin:4px 0;"><span style="flex:1;color:#9ca3af;font-size:11px;">Oklein krawędzi (kontur)</span><input id="rglMC_edge" type="range" min="0" max="1" step="0.01" value="0.00" style="width:90px;accent-color:#2dd4bf;" oninput="rglMC('edge',this,document.getElementById('rglMCV_edge'))"><span id="rglMCV_edge" style="font-size:11px;min-width:34px;text-align:right;color:#2dd4bf;font-family:monospace;">0.00</span></div>
 
   <button id="rglCopyBtn" onclick="rglCopy()" style="margin-top:14px;width:100%;padding:8px;background:#1e3a5f;border:1px solid #60a5fa;color:#60a5fa;border-radius:8px;cursor:pointer;font-size:11px;font-family:ui-monospace,monospace;">📋 Kopiuj JSON</button>
 </div>
@@ -1777,6 +1804,48 @@ function rglEdgeFn(inp,valEl){
   valEl.textContent=v.toFixed(2);
   if(window._rglSetEdge) window._rglSetEdge(v);
 }
+function rglWood(ch,inp,valEl){
+  var v=parseFloat(inp.value);
+  valEl.textContent=v.toFixed(2);
+  if(window._rglSetWood) window._rglSetWood(ch,v);
+}
+function rglImg(key,inp,valEl){
+  var v=parseFloat(inp.value);
+  valEl.textContent=v.toFixed(key==='hue'?0:2);
+  if(window._rglSetImg) window._rglSetImg(key,v);
+}
+function rglShelfTone(key,inp,valEl){
+  var v=parseFloat(inp.value);
+  valEl.textContent=v.toFixed(2);
+  if(window._rglSetShelfTone) window._rglSetShelfTone(key,v);
+}
+var _rglMCcur='#8B5A2B';
+var _rglMCmap={rough:'rglMC_rough',env:'rglMC_env',cc:'rglMC_cc',ccr:'rglMC_ccr',metal:'rglMC_metal',bright:'rglMC_bright',contrast:'rglMC_contrast',edge:'rglMC_edge'};
+function rglMCpick(col){
+  _rglMCcur=col;
+  var btns=document.querySelectorAll('#rglMCswitch button');
+  for(var i=0;i<btns.length;i++){ var on=btns[i].getAttribute('data-col')===col; btns[i].style.border=on?'2px solid #2dd4bf':'1px solid #2a3a4f'; btns[i].style.fontWeight=on?'bold':'normal'; }
+  var e=window._rglGetMatColor?window._rglGetMatColor(col):null;
+  if(!e) return;
+  for(var k in _rglMCmap){ var inp=document.getElementById(_rglMCmap[k]); var vEl=document.getElementById(_rglMCmap[k].replace('rglMC_','rglMCV_')); if(inp&&e[k]!=null){inp.value=e[k];} if(vEl&&e[k]!=null){vEl.textContent=Number(e[k]).toFixed(2);} }
+}
+function rglMC(param,inp,valEl){
+  var v=parseFloat(inp.value);
+  valEl.textContent=v.toFixed(2);
+  if(window._rglSetMatColor) window._rglSetMatColor(_rglMCcur,param,v);
+}
+function rglBgFn(hex){
+  if(!window._rglScene && window.scene) window._rglScene=window.scene;
+  var s=window._rglScene||window.scene;
+  if(!s) return;
+  if(typeof THREE!=='undefined') s.background=new THREE.Color(hex);
+}
+function rglBgGradient(){
+  if(window._rglBgDefault){
+    var s=window._rglScene||window.scene;
+    if(s) s.background=window._rglBgDefault;
+  }
+}
 function rglPreset(name){
   var p={
     'Studio': {az:-31,el:53,int:1.8,temp:45,hemi:0.30,rim:0.25,rimAz:105,shOp:0.10,shBlur:3,blOp:1.0},
@@ -1797,6 +1866,9 @@ function rglCopy(){
   var keys=['az','el','int','temp','hemi','rim','rimAz','shOp','shBlur','blOp'];
   var o={};
   keys.forEach(function(k){var el=document.getElementById('rglL_'+k);if(el)o[k]=parseFloat(parseFloat(el.value).toFixed(el.step<1?2:0));});
+  ['r','g','b'].forEach(function(ch){var el=document.getElementById('rglW_'+ch);if(el)o[ch]=parseFloat(parseFloat(el.value).toFixed(2));});
+  ['saturation','hue','bright','contrast','exposure'].forEach(function(k){var el=document.getElementById('rglI_'+k);if(el)o[k]=parseFloat(parseFloat(el.value).toFixed(k==='hue'?0:2));});
+  if(window._rglGetMatColor){ o.mat = { '#8B5A2B': window._rglGetMatColor('#8B5A2B'), '#FFFFFF': window._rglGetMatColor('#FFFFFF'), '#000000': window._rglGetMatColor('#000000') }; }
   var txt=JSON.stringify(o);
   if(navigator.clipboard){navigator.clipboard.writeText(txt).then(function(){var b=document.getElementById('rglCopyBtn');b.textContent='✓ Skopiowano!';setTimeout(function(){b.textContent='📋 Kopiuj JSON';},2000);});}
   else{var ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);}
