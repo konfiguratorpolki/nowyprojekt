@@ -1036,7 +1036,7 @@ function updateModularIconActiveStates() {
         };
         // Kolory z priorytetem — jeśli którykolwiek z nich jest użyty, jego ustawienia wygrywają
         const SHELF3D_LIGHT_PER_TYPE = {
-            'mug_shelf': {az:167,el:48,int:4.00,temp:83,hemi:0.76,rim:0.89,rimAz:225,shOp:0.20,shBlur:3,blOp:1},
+            'mug_shelf': {az:167,el:41,int:4.00,temp:58,hemi:0.65,rim:0.60,rimAz:217,shOp:0.09,shBlur:3,blOp:1}, // dostrojone
             'modular':   {az:150,el:51,int:3.30,temp:87,hemi:0.84,rim:0.78,rimAz:217,shOp:0.10,shBlur:3,blOp:1},
         };
         const SHELF3D_LIGHT_PRIORITY = ['#FFFFFF', '#8B5A2B']; // biały zawsze wygrywa nad dębem
@@ -1489,6 +1489,11 @@ function updateModularIconActiveStates() {
                 if (child.name && (child.name.startsWith('dimensionLabel_') ||
                     child.name.startsWith('mugHeightArrow_') ||
                     child.name.startsWith('mugWidthArrow_'))) return;
+
+                // Zapewnij cienie po KAŻDEJ przebudowie (np. dodanie/usunięcie przegródek
+                // szło lżejszą ścieżką, która nie ustawiała castShadow → cienie znikały).
+                child.castShadow = true;
+                child.receiveShadow = true;
 
                 let type, w, h, d;
 
@@ -3384,6 +3389,9 @@ function fitCameraToShelf() {
                     // ===== PROFESJONALNA ANIMACJA WEJŚCIA PRZEGRÓDEK =====
                     // Stagger od lewej do prawej, lekki drop + fade-in + sprężyste osiadanie.
                     if (_freshDividers.length > 0) {
+                        // FIX: świeżo dodane przegródki muszą rzucać/odbierać cień (lekka ścieżka
+                        // toggle'a nie szła przez pełną budowę, więc cienie/kratka znikały).
+                        _freshDividers.forEach(d => { d.castShadow = true; d.receiveShadow = true; });
                         // Posortuj po pozycji X (lewo -> prawo) dla naturalnego stagger
                         const _ordered = _freshDividers.slice().sort((a, b) => a.position.x - b.position.x);
                         const _delayBetween = 0.055;
