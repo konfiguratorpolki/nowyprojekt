@@ -1017,27 +1017,27 @@ function updateModularIconActiveStates() {
         // Ustawienia oświetlenia per kolor półki
         // Biała i czarna mają te same ustawienia ze screenshota; dąb craft = domyślne (Studio)
         const SHELF3D_LIGHT_PER_COLOR = {
-            '#FFFFFF': {az:-180,el:58,int:0.75,temp:0,hemi:0.09,rim:0.05,rimAz:160,shOp:0.14,shBlur:1,blOp:1.2},
-            '#000000': {az:137,el:50,int:4.00,temp:83,hemi:0.76,rim:0.92,rimAz:217,shOp:0.10,shBlur:3,blOp:1},
+            '#FFFFFF': {az:-180,el:58,int:0.75,temp:0,hemi:0.09,rim:0.05,rimAz:160,shOp:0.14,shBlur:1,blOp:0},
+            '#000000': {az:137,el:50,int:4.00,temp:83,hemi:0.76,rim:0.92,rimAz:217,shOp:0.10,shBlur:3,blOp:0},
             '#8B5A2B': {az:146,el:50,int:4.00,temp:83,hemi:0.76,rim:0.92,rimAz:217,shOp:0.11,shBlur:3,blOp:0},
         };
         // Ustawienia dla konkretnych kombinacji (boki_półki) — najwyższy priorytet
         const SHELF3D_LIGHT_PER_COMBO = {
-            '#FFFFFF_#8B5A2B': {az:146,el:50,int:4.00,temp:83,hemi:0.76,rim:0.00,rimAz:217,shOp:0.19,shBlur:3,blOp:1},
-            '#FFFFFF_#000000': {az:146,el:50,int:4.00,temp:83,hemi:0.60,rim:0.20,rimAz:217,shOp:0.12,shBlur:3,blOp:1}, // białe boki / czarne półki — światło zbalansowane pod biel i czerń
+            '#FFFFFF_#8B5A2B': {az:146,el:50,int:4.00,temp:83,hemi:0.76,rim:0.00,rimAz:217,shOp:0.19,shBlur:3,blOp:0},
+            '#FFFFFF_#000000': {az:146,el:50,int:4.00,temp:83,hemi:0.60,rim:0.20,rimAz:217,shOp:0.12,shBlur:3,blOp:0}, // białe boki / czarne półki — światło zbalansowane pod biel i czerń
             '#8B5A2B_#8B5A2B': {az:146,el:50,int:4.00,temp:83,hemi:0.76,rim:0.92,rimAz:217,shOp:0.11,shBlur:3,blOp:0},
-            '#8B5A2B_#FFFFFF': {az:146,el:50,int:4.00,temp:83,hemi:0.55,rim:0.92,rimAz:217,shOp:0.18,shBlur:3,blOp:1},
-            '#8B5A2B_#000000': {az:150,el:50,int:4.00,temp:83,hemi:0.65,rim:0.17,rimAz:217,shOp:0.10,shBlur:3,blOp:1}, // dąb boki / czarne półki
-            '#000000_#8B5A2B': {az:146,el:50,int:4.00,temp:83,hemi:0.76,rim:0.92,rimAz:217,shOp:0.10,shBlur:3,blOp:1}, // czarne boki / dąb półki
-            '#000000_#FFFFFF': {az:146,el:50,int:4.00,temp:83,hemi:0.60,rim:0.20,rimAz:217,shOp:0.12,shBlur:3,blOp:1}, // czarne boki / białe półki — jak wyżej (symetryczne)
-            '#FFFFFF_#FFFFFF': {az:146,el:52,int:4.00,temp:83,hemi:0.34,rim:0.92,rimAz:217,shOp:0.10,shBlur:3,blOp:1}, // białe boki + białe półki (dostrojone) — kierunkowe + rim, mniej ambientu
-            '#000000_#000000': {az:146,el:50,int:4.00,temp:83,hemi:0.76,rim:0.03,rimAz:217,shOp:0.10,shBlur:3,blOp:1}, // pełna czarna MATOWA — rim wyłączony
+            '#8B5A2B_#FFFFFF': {az:146,el:50,int:4.00,temp:83,hemi:0.55,rim:0.92,rimAz:217,shOp:0.18,shBlur:3,blOp:0},
+            '#8B5A2B_#000000': {az:150,el:50,int:4.00,temp:83,hemi:0.65,rim:0.17,rimAz:217,shOp:0.10,shBlur:3,blOp:0}, // dąb boki / czarne półki
+            '#000000_#8B5A2B': {az:146,el:50,int:4.00,temp:83,hemi:0.76,rim:0.92,rimAz:217,shOp:0.10,shBlur:3,blOp:0}, // czarne boki / dąb półki
+            '#000000_#FFFFFF': {az:146,el:50,int:4.00,temp:83,hemi:0.60,rim:0.20,rimAz:217,shOp:0.12,shBlur:3,blOp:0}, // czarne boki / białe półki — jak wyżej (symetryczne)
+            '#FFFFFF_#FFFFFF': {az:146,el:52,int:4.00,temp:83,hemi:0.34,rim:0.92,rimAz:217,shOp:0.10,shBlur:3,blOp:0}, // białe boki + białe półki (dostrojone) — kierunkowe + rim, mniej ambientu
+            '#000000_#000000': {az:146,el:50,int:4.00,temp:83,hemi:0.76,rim:0.03,rimAz:217,shOp:0.10,shBlur:3,blOp:0}, // pełna czarna MATOWA — rim wyłączony
 
         };
         // Kolory z priorytetem — jeśli którykolwiek z nich jest użyty, jego ustawienia wygrywają
         const SHELF3D_LIGHT_PER_TYPE = {
-            'mug_shelf': {az:167,el:41,int:4.00,temp:58,hemi:0.65,rim:0.60,rimAz:217,shOp:0.09,shBlur:3,blOp:1}, // dostrojone
-            'modular':   {az:150,el:51,int:3.30,temp:87,hemi:0.84,rim:0.78,rimAz:217,shOp:0.10,shBlur:3,blOp:1},
+            'mug_shelf': {az:167,el:41,int:4.00,temp:58,hemi:0.65,rim:0.60,rimAz:217,shOp:0.09,shBlur:3,blOp:0}, // dostrojone
+            'modular':   {az:150,el:51,int:3.30,temp:87,hemi:0.84,rim:0.78,rimAz:217,shOp:0.10,shBlur:3,blOp:0},
         };
         const SHELF3D_LIGHT_PRIORITY = ['#FFFFFF', '#8B5A2B']; // biały zawsze wygrywa nad dębem
         // ── Korekcja obrazu PER KOMBINACJA (boki_półki) ──
