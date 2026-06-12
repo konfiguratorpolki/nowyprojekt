@@ -790,18 +790,25 @@ body {
                     <span id="shelfColorSwatchDisplay" class="color-swatch-display"></span>
                 </div>
             </div>
-            <details class="color-samples-details" id="materialSamplesDetails">
-                <summary>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-2 text-stone-600" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5C7.305 4.5 3.135 7.515 1.5 12c1.635 4.485 5.805 7.5 10.5 7.5s8.865-3.015 10.5-7.5C20.865 7.515 16.695 4.5 12 4.5z" /><path stroke-linecap="round" stroke-linejoin="round" d="M12 9a3 3 0 100 6 3 3 0 000-6z" /></svg>
-                    <span>Zobacz próbki kolorów</span>
-                    <svg class="w-4 h-4 summary-chevron" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>
-                </summary>
-                <div id="materialSwiper" class="swiper">
-                    <div class="swiper-wrapper" id="materialSwiperWrapper"></div>
-                    <div class="material-swiper-button-prev swiper-button-prev"></div>
-                    <div class="material-swiper-button-next swiper-button-next"></div>
+            <!-- PANEL MATERIAŁU: infografika (zawsze widoczna) + rozwijane próbki kolorów w jednej ramce -->
+            <div style="margin-top:12px;border:1px solid #e7e5e4;border-radius:14px;background:#fff;box-shadow:0 1px 6px rgba(0,0,0,0.05);overflow:hidden;">
+                <div style="padding:12px 12px 10px;">
+                    <img id="plytaInfoImg" src="img/plyta.png" alt="Płyta laminowana 18 mm Premium Kronospan, okleina ABS 0,8 mm — odporna na wilgoć, łatwa w czyszczeniu, trwała i przyjazna środowisku" loading="lazy" style="width:100%;height:auto;display:block;border-radius:10px;cursor:zoom-in;transition:transform .18s ease, box-shadow .18s ease;">
+                    <p style="font-size:11px;color:#9ca3af;text-align:center;margin:9px 0 0;display:flex;align-items:center;justify-content:center;gap:5px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>Kliknij, aby powiększyć</p>
                 </div>
-            </details>
+                <details class="color-samples-details" id="materialSamplesDetails" style="margin-top:0;padding:0 14px 6px;">
+                    <summary>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-2 text-stone-600" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5C7.305 4.5 3.135 7.515 1.5 12c1.635 4.485 5.805 7.5 10.5 7.5s8.865-3.015 10.5-7.5C20.865 7.515 16.695 4.5 12 4.5z" /><path stroke-linecap="round" stroke-linejoin="round" d="M12 9a3 3 0 100 6 3 3 0 000-6z" /></svg>
+                        <span>Zobacz próbki kolorów</span>
+                        <svg class="w-4 h-4 summary-chevron" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>
+                    </summary>
+                    <div id="materialSwiper" class="swiper">
+                        <div class="swiper-wrapper" id="materialSwiperWrapper"></div>
+                        <div class="material-swiper-button-prev swiper-button-prev"></div>
+                        <div class="material-swiper-button-next swiper-button-next"></div>
+                    </div>
+                </details>
+            </div>
          </div>
     </div>
 <div class="w-full md:w-2/3 flex flex-col items-center mb-8 md:mb-0 order-2 md:order-2">
@@ -1557,6 +1564,70 @@ body {
     
 <div id="snapZoom" style="position:fixed;z-index:9999;width:280px;height:280px;background:#f0f0f0;border-radius:14px;border:1px solid #e5e7eb;box-shadow:0 12px 40px rgba(0,0,0,.22);overflow:hidden;display:none;pointer-events:none;transition:opacity .18s ease,transform .18s ease;"><img id="snapZoomImg" src="" style="width:100%;height:100%;object-fit:contain;-webkit-user-select:none;user-select:none;pointer-events:none;-webkit-touch-callout:none;"></div>
 <script src="js/snap-zoom.js"></script>
+
+<!-- ZOOM INFOGRAFIKI PŁYTY — klik/tap otwiera kartę: duża infografika + próbki materiałów -->
+<style>
+  #plytaZoomOverlay{ position:fixed; inset:0; z-index:10000; display:none; align-items:center; justify-content:center; background:rgba(15,23,42,.74); opacity:0; transition:opacity .2s ease; -webkit-backdrop-filter:blur(2px); backdrop-filter:blur(2px); padding:18px; }
+  #plytaZoomOverlay.show{ opacity:1; }
+  #plytaZoomCard{ position:relative; background:#fff; border-radius:16px; box-shadow:0 24px 70px rgba(0,0,0,.5); width:auto; max-width:min(600px,94vw); max-height:90vh; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:16px; transform:scale(.92); transition:transform .2s ease; }
+  #plytaZoomOverlay.show #plytaZoomCard{ transform:scale(1); }
+  #plytaZoomBig{ width:100%; height:auto; display:block; border-radius:12px; -webkit-user-select:none; user-select:none; -webkit-touch-callout:none; }
+  #plytaZoomClose{ position:absolute; top:9px; right:11px; z-index:2; width:32px; height:32px; border:none; border-radius:50%; background:rgba(255,255,255,.92); color:#374151; font-size:21px; line-height:1; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,.18); display:flex; align-items:center; justify-content:center; }
+  #plytaZoomClose:hover{ background:#fff; color:#16a34a; }
+  #plytaZoomSamples{ margin-top:14px; padding-top:12px; border-top:1px dashed #E7E5E4; }
+  #plytaZoomSamples .pz-title{ font-size:11px; font-weight:700; color:#9ca3af; letter-spacing:.1em; text-transform:uppercase; text-align:center; margin:0 0 10px; }
+  #plytaZoomSamplesRow{ display:flex; gap:10px; overflow-x:auto; padding:2px 2px 6px; -webkit-overflow-scrolling:touch; }
+  #plytaZoomSamplesRow .pz-sample{ flex:0 0 auto; width:82px; text-align:center; }
+  #plytaZoomSamplesRow .pz-sample img{ width:82px; height:82px; object-fit:cover; border-radius:10px; border:1px solid #e7e5e4; display:block; -webkit-user-select:none; user-select:none; -webkit-touch-callout:none; }
+  #plytaZoomSamplesRow .pz-sample span{ display:block; font-size:10.5px; color:#57534e; margin-top:5px; line-height:1.25; }
+</style>
+<div id="plytaZoomOverlay">
+  <div id="plytaZoomCard">
+    <button id="plytaZoomClose" type="button" aria-label="Zamknij">&times;</button>
+    <img id="plytaZoomBig" src="" alt="Płyta laminowana — szczegóły">
+    <div id="plytaZoomSamples" style="display:none;">
+      <p class="pz-title">Próbki materiałów</p>
+      <div id="plytaZoomSamplesRow"></div>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  var img=document.getElementById('plytaInfoImg');
+  var ov=document.getElementById('plytaZoomOverlay');
+  var card=document.getElementById('plytaZoomCard');
+  var big=document.getElementById('plytaZoomBig');
+  var samplesBox=document.getElementById('plytaZoomSamples');
+  var row=document.getElementById('plytaZoomSamplesRow');
+  var closeBtn=document.getElementById('plytaZoomClose');
+  if(!img||!ov||!big) return;
+  var open=false, t;
+  function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function buildSamples(){
+    if(!row||!samplesBox) return;
+    var src=document.getElementById('materialSwiperWrapper');
+    var slides=src?src.querySelectorAll('.swiper-slide'):[];
+    var html='';
+    for(var i=0;i<slides.length;i++){
+      var im=slides[i].querySelector('img'); if(!im) continue;
+      var nmEl=slides[i].querySelector('.material-name');
+      var name=nmEl?nmEl.textContent:(im.getAttribute('alt')||'');
+      html+='<div class="pz-sample"><img src="'+esc(im.getAttribute('src'))+'" alt="'+esc(name)+'" draggable="false"><span>'+esc(name)+'</span></div>';
+    }
+    if(html){ row.innerHTML=html; samplesBox.style.display='block'; }
+    else { samplesBox.style.display='none'; }
+  }
+  function show(){ clearTimeout(t); big.src=img.currentSrc||img.src; buildSamples(); ov.style.display='flex'; if(card) card.scrollTop=0; requestAnimationFrame(function(){ ov.classList.add('show'); }); open=true; }
+  function hide(){ ov.classList.remove('show'); open=false; t=setTimeout(function(){ if(!open) ov.style.display='none'; },220); }
+  // Klik/tap w infografikę otwiera; klik w tło lub przycisk × zamyka
+  img.addEventListener('click', function(e){ e.preventDefault(); if(open){ hide(); } else { show(); } });
+  ov.addEventListener('click', function(e){ if(e.target===ov){ hide(); } });
+  if(card){ card.addEventListener('click', function(e){ e.stopPropagation(); }); }
+  if(closeBtn){ closeBtn.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); hide(); }); }
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape' && open){ hide(); } });
+  big.addEventListener('contextmenu', function(e){ e.preventDefault(); });
+})();
+</script>
 
 <!-- ============================================================
      PREMIUM SHELF-BUILDING ANIMATION PACKAGE v1.0
