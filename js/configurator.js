@@ -2053,6 +2053,16 @@ function updateModularIconActiveStates() {
             if (_dbgDir1) {
                 _dbgDir1.target.position.copy(_center);
                 _dbgDir1.target.updateMatrixWorld();
+                // Dopasuj kamerę cieni do półki + zapas na rzut cienia na podłogę (skaluje się z wysokością).
+                if (_dbgDir1.shadow && _dbgDir1.shadow.camera) {
+                    var _sx = _bb.max.x - _bb.min.x, _sy = _bb.max.y - _bb.min.y, _sz = _bb.max.z - _bb.min.z;
+                    var _r = Math.max(_sx, _sz) * 0.8 + _sy * 1.3 + 2.5;
+                    var _cam = _dbgDir1.shadow.camera;
+                    if (Math.abs(_cam.right - _r) > 0.2) {
+                        _cam.left = -_r; _cam.right = _r; _cam.top = _r; _cam.bottom = -_r;
+                        _cam.updateProjectionMatrix();
+                    }
+                }
             }
         };
 
@@ -3709,7 +3719,32 @@ function fitCameraToShelf() {
                         camera.updateMatrixWorld(true);
                         controls.update();
 
-                        // Renderuj klatkę z domyślnego kątu
+                        // Snapshot z półki w STANIE SPOCZYNKU — wyzeruj showcase-swing.
+                        // Nawet kilka stopni obrotu prawie nie widać na półce, ale cień rzucony
+                        // daleko na podłogę przesuwa się mocno → wyglądał „nie pasuje do półki".
+                        const _snapRot = shelfGroup ? { x: shelfGroup.rotation.x, y: shelfGroup.rotation.y, z: shelfGroup.rotation.z } : null;
+                        if (shelfGroup) { shelfGroup.rotation.set(0, 0, 0); shelfGroup.updateMatrixWorld(true); }
+                        // IDENTYCZNIE jak strona główna: użyj DOKŁADNIE bieżącej kamery żywego podglądu
+                        // (po wczytaniu konfiguracji to jest widok domyślny ze strony) — bez własnego repozycjonowania.
+                        camera.position.copy(_savedPos);
+                        controls.target.copy(_savedTgt);
+                        camera.lookAt(_savedTgt);
+                        camera.updateMatrixWorld(true);
+                        controls.update();
+                        // Dopasuj kamerę cieni do bieżącej (wyzerowanej) półki — żeby cień nie był ucięty
+                        if (typeof window._rglSyncShadow === 'function') window._rglSyncShadow();
+
+                        // ── CIEŃ NA ZDJĘCIU WYŁĄCZONY ── ukryj cień podłogi + blob TYLKO na czas zrzutu
+                        // (w żywym podglądzie cień zostaje). Zmień SHELF3D_SNAP_NO_SHADOW na false, by wrócił.
+                        const SHELF3D_SNAP_NO_SHADOW = true;
+                        const _sfHide = scene.getObjectByName('__shadowFloor__');
+                        const _bsHide = scene.getObjectByName('__blobShadow__');
+                        const _sfVis = _sfHide ? _sfHide.visible : null;
+                        const _bsVis = _bsHide ? _bsHide.visible : null;
+                        if (SHELF3D_SNAP_NO_SHADOW) { if (_sfHide) _sfHide.visible = false; if (_bsHide) _bsHide.visible = false; }
+
+                        // Renderuj klatkę (dwa razy — pierwszy render odświeża mapę cieni do wyzerowanej geometrii)
+                        renderer.render(scene, camera);
                         renderer.render(scene, camera);
                         // Wypal wymiary na snapshocie (overlay SVG nie trafia do toDataURL)
                         let _snap;
@@ -3723,7 +3758,10 @@ function fitCameraToShelf() {
                             const _cnv = document.createElement('canvas');
                             _cnv.width = _cw; _cnv.height = _ch;
                             const _c2 = _cnv.getContext('2d');
+                            // Wypal korekcję obrazu (jak filtr CSS żywego canvasa) — żeby odcień snapshotu = podgląd
+                            _c2.filter = 'contrast(' + SHELF3D_CANVAS_CONTRAST + ') saturate(' + SHELF3D_CANVAS_SAT + ') hue-rotate(' + SHELF3D_CANVAS_HUE + 'deg) brightness(' + SHELF3D_CANVAS_BRIGHT + ')';
                             _c2.drawImage(renderer.domElement, 0, 0);
+                            _c2.filter = 'none';
                             if (typeof _drawDimsToCanvas === 'function' && _liveSegs.length) {
                                 _drawDimsToCanvas(_c2, _liveSegs, camera, _cw, _ch);
                             }
@@ -3731,6 +3769,12 @@ function fitCameraToShelf() {
                         } catch (_eLive) {
                             _snap = renderer.domElement.toDataURL('image/png');
                         }
+
+                        // Przywróć cień podłogi/blob (był ukryty tylko na czas zrzutu)
+                        if (_sfHide && _sfVis !== null) _sfHide.visible = _sfVis;
+                        if (_bsHide && _bsVis !== null) _bsHide.visible = _bsVis;
+                        // Przywróć obrót półki (showcase-swing leci dalej w żywym podglądzie)
+                        if (shelfGroup && _snapRot) { shelfGroup.rotation.set(_snapRot.x, _snapRot.y, _snapRot.z); }
 
                         // Przywróć oryginalną pozycję kamery
                         camera.position.copy(_savedPos);
@@ -3805,13 +3849,14 @@ function fitCameraToShelf() {
 
                 snapshotScene.add(new THREE.HemisphereLight(0xfdf6ec, 0x8a9aaa, _hemiInt));
                 const dirLight = new THREE.DirectionalLight(0xfff8ee, _dir1Int);
-                dirLight.position.set(-6, 14, 10);
+                // Kopiuj kierunek I ciepłotę z żywego światła głównego (per-kombinacja az/el/temp)
+                if (_dbgDir1) { dirLight.color.copy(_dbgDir1.color); dirLight.position.copy(_dbgDir1.position); } else dirLight.position.set(-6, 14, 10);
                 snapshotScene.add(dirLight);
                 const dirLight2 = new THREE.DirectionalLight(0xe8effa, _dir2Int);
-                dirLight2.position.set(8, 4, -2);
+                if (_dbgDir2) { dirLight2.color.copy(_dbgDir2.color); dirLight2.position.copy(_dbgDir2.position); } else dirLight2.position.set(8, 4, -2);
                 snapshotScene.add(dirLight2);
                 const rimLight = new THREE.DirectionalLight(0xf0f4fa, _rimInt);
-                rimLight.position.set(0, 6, -10);
+                if (_liveRim) { rimLight.color.copy(_liveRim.color); rimLight.position.copy(_liveRim.position); } else rimLight.position.set(0, 6, -10);
                 snapshotScene.add(rimLight);
 
                 freshGroup.rotation.set(0, 0, 0);
@@ -3891,7 +3936,7 @@ function fitCameraToShelf() {
                 snapshotRenderer.setSize(_SNAP_SIZE, _SNAP_SIZE);
                 snapshotRenderer.outputEncoding = THREE.sRGBEncoding;
                 snapshotRenderer.toneMapping = THREE.ACESFilmicToneMapping;
-                snapshotRenderer.toneMappingExposure = 1.42;
+                snapshotRenderer.toneMappingExposure = (renderer && renderer.toneMappingExposure) || 1.42; // ekspozycja jak żywa (per-kombinacja)
                 snapshotRenderer.physicallyCorrectLights = true;
 
                 setTimeout(() => {
@@ -3903,7 +3948,10 @@ function fitCameraToShelf() {
                             const _cnv = document.createElement('canvas');
                             _cnv.width = _SNAP_SIZE; _cnv.height = _SNAP_SIZE;
                             const _c2 = _cnv.getContext('2d');
+                            // Wypal korekcję obrazu (jak filtr CSS żywego canvasa) — odcień snapshotu = podgląd
+                            _c2.filter = 'contrast(' + SHELF3D_CANVAS_CONTRAST + ') saturate(' + SHELF3D_CANVAS_SAT + ') hue-rotate(' + SHELF3D_CANVAS_HUE + 'deg) brightness(' + SHELF3D_CANVAS_BRIGHT + ')';
                             _c2.drawImage(snapshotRenderer.domElement, 0, 0, _SNAP_SIZE, _SNAP_SIZE);
+                            _c2.filter = 'none';
                             if (typeof _drawDimsToCanvas === 'function' && _snapDimSegs && _snapDimSegs.length) {
                                 _drawDimsToCanvas(_c2, _snapDimSegs, snapshotCamera, _SNAP_SIZE, _SNAP_SIZE);
                             }
@@ -5047,8 +5095,19 @@ function generateOrderCode() { const shelfTypeVal = shelfTypeSelect.value; const
                 }
 
                 renderer.setSize(RENDER_W, H);
+                const _sfA = scene.getObjectByName('__shadowFloor__'); const _sfAv = _sfA ? _sfA.visible : null; if (_sfA) _sfA.visible = false;
+                const _bsA = scene.getObjectByName('__blobShadow__'); const _bsAv = _bsA ? _bsA.visible : null; if (_bsA) _bsA.visible = false;
                 renderer.render(scene, camera);
-                const dataUrl = renderer.domElement.toDataURL('image/png');
+                let dataUrl;
+                try {
+                    const _fc = document.createElement('canvas'); _fc.width = renderer.domElement.width; _fc.height = renderer.domElement.height;
+                    const _fx = _fc.getContext('2d');
+                    _fx.filter = 'contrast(' + SHELF3D_CANVAS_CONTRAST + ') saturate(' + SHELF3D_CANVAS_SAT + ') hue-rotate(' + SHELF3D_CANVAS_HUE + 'deg) brightness(' + SHELF3D_CANVAS_BRIGHT + ')';
+                    _fx.drawImage(renderer.domElement, 0, 0);
+                    dataUrl = _fc.toDataURL('image/png');
+                } catch(_e) { dataUrl = renderer.domElement.toDataURL('image/png'); }
+                if (_sfA && _sfAv !== null) _sfA.visible = _sfAv;
+                if (_bsA && _bsAv !== null) _bsA.visible = _bsAv;
 
                 // Przywróć
                 if (prevBg) scene.background = prevBg;
@@ -5428,13 +5487,21 @@ function generateOrderCode() { const shelfTypeVal = shelfTypeSelect.value; const
             /* --- przewiń --- */
             if (window.innerWidth < 768) {
                 /* Na mobile 3D zajmuje dolne 52vh → górna część to ~48vh.
-                   Chcemy, żeby sekcja była wyśrodkowana w tej górnej połowie. */
+                   Sekcje niższe niż widoczny obszar wyśrodkowujemy; sekcje wyższe
+                   (np. kolory z infografiką) wyrównujemy DO GÓRY, żeby nie ucinało
+                   selektorów kolorów u góry. */
                 const visibleTopHeight = window.innerHeight * 0.48;
+                const topMargin = 14;
                 const elRect   = highlightTarget.getBoundingClientRect();
                 const elHeight = elRect.height;
-                const targetScrollY = window.scrollY + elRect.top
-                                    - (visibleTopHeight / 2)
-                                    + (elHeight / 2);
+                let targetScrollY;
+                if (elHeight > visibleTopHeight - topMargin) {
+                    targetScrollY = window.scrollY + elRect.top - topMargin;
+                } else {
+                    targetScrollY = window.scrollY + elRect.top
+                                  - (visibleTopHeight / 2)
+                                  + (elHeight / 2);
+                }
                 window.scrollTo({ top: Math.max(0, targetScrollY), behavior: 'smooth' });
             } else {
                 highlightTarget.scrollIntoView({ behavior: 'smooth', block: blockPosition, inline: inlinePosition });
@@ -8004,8 +8071,19 @@ async function startBatchExport() {
                 const prevH = renderer.domElement.height / (window.devicePixelRatio||1);
                 renderer.setSize(900, 1100);
                 camera.aspect = 900/1100; camera.updateProjectionMatrix();
+                const _sfH1 = scene.getObjectByName('__shadowFloor__'); const _sfV1 = _sfH1 ? _sfH1.visible : null; if (_sfH1) _sfH1.visible = false;
+                const _bsH1 = scene.getObjectByName('__blobShadow__'); const _bsV1 = _bsH1 ? _bsH1.visible : null; if (_bsH1) _bsH1.visible = false;
                 renderer.render(scene, camera);
-                const dataUrl = renderer.domElement.toDataURL('image/png');
+                let dataUrl;
+                try {
+                    const _fc = document.createElement('canvas'); _fc.width = renderer.domElement.width; _fc.height = renderer.domElement.height;
+                    const _fx = _fc.getContext('2d');
+                    _fx.filter = 'contrast(' + SHELF3D_CANVAS_CONTRAST + ') saturate(' + SHELF3D_CANVAS_SAT + ') hue-rotate(' + SHELF3D_CANVAS_HUE + 'deg) brightness(' + SHELF3D_CANVAS_BRIGHT + ')';
+                    _fx.drawImage(renderer.domElement, 0, 0);
+                    dataUrl = _fc.toDataURL('image/png');
+                } catch(_e) { dataUrl = renderer.domElement.toDataURL('image/png'); }
+                if (_sfH1 && _sfV1 !== null) _sfH1.visible = _sfV1;
+                if (_bsH1 && _bsV1 !== null) _bsH1.visible = _bsV1;
                 if (prevBg) scene.background = prevBg; else scene.background = null;
                 renderer.setClearColor(prevClearColor, prevClearAlpha);
                 renderer.setSize(prevW||400, prevH||500);
@@ -8700,7 +8778,9 @@ async function captureLiveRenderer(targetW, targetH) {
             }
         });
 
-        // Renderuj i przechwyć
+        // Renderuj i przechwyć — bez cienia podłogi
+        const _sfHd = scene.getObjectByName('__shadowFloor__'); const _sfHdv = _sfHd ? _sfHd.visible : null; if (_sfHd) _sfHd.visible = false;
+        const _bsHd = scene.getObjectByName('__blobShadow__'); const _bsHdv = _bsHd ? _bsHd.visible : null; if (_bsHd) _bsHd.visible = false;
         renderer.render(scene, camera);
 
         // Nałóż wymiary na kopię 2D (Sprites nie trafiają do PNG bez tego)
@@ -8709,7 +8789,10 @@ async function captureLiveRenderer(targetW, targetH) {
             const _cnv = document.createElement('canvas');
             _cnv.width = HD_W; _cnv.height = HD_H;
             const _c2 = _cnv.getContext('2d');
+            // Wypal korekcję obrazu (jak filtr CSS żywego canvasa) — odcień = podgląd
+            _c2.filter = 'contrast(' + SHELF3D_CANVAS_CONTRAST + ') saturate(' + SHELF3D_CANVAS_SAT + ') hue-rotate(' + SHELF3D_CANVAS_HUE + 'deg) brightness(' + SHELF3D_CANVAS_BRIGHT + ')';
             _c2.drawImage(renderer.domElement, 0, 0, HD_W, HD_H);
+            _c2.filter = 'none';
             const _segs = (typeof _dimSegments !== 'undefined' && Array.isArray(_dimSegments)) ? _dimSegments : [];
             if (_segs.length && typeof _drawDimsToCanvas === 'function') {
                 _drawDimsToCanvas(_c2, _segs, camera, HD_W, HD_H);
@@ -8718,6 +8801,8 @@ async function captureLiveRenderer(targetW, targetH) {
         } catch(_e) {
             dataUrl = renderer.domElement.toDataURL('image/png');
         }
+        if (_sfHd && _sfHdv !== null) _sfHd.visible = _sfHdv;
+        if (_bsHd && _bsHdv !== null) _bsHd.visible = _bsHdv;
 
         // Przywróć skalę etykiet wymiarów
         _dimSprites.forEach(({ obj, sx, sy, sz }) => obj.scale.set(sx, sy, sz));
