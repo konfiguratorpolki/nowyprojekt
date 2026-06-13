@@ -1568,7 +1568,7 @@ body {
   #plytaZoomOverlay.show{ opacity:1; }
   #plytaZoomCard{ position:relative; background:#fff; border-radius:16px; box-shadow:0 24px 70px rgba(0,0,0,.5); width:auto; max-width:min(600px,94vw); max-height:90vh; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:16px; transform:scale(.92); transition:transform .2s ease; }
   #plytaZoomOverlay.show #plytaZoomCard{ transform:scale(1); }
-  #plytaZoomBig{ width:100%; height:auto; display:block; border-radius:12px; -webkit-user-select:none; user-select:none; -webkit-touch-callout:none; }
+  #plytaZoomBig{ width:100%; height:auto; display:block; border-radius:12px; cursor:zoom-in; -webkit-user-select:none; user-select:none; -webkit-touch-callout:none; }
   #plytaZoomClose{ position:absolute; top:9px; right:11px; z-index:2; width:32px; height:32px; border:none; border-radius:50%; background:rgba(255,255,255,.92); color:#374151; font-size:21px; line-height:1; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,.18); display:flex; align-items:center; justify-content:center; }
   #plytaZoomClose:hover{ background:#fff; color:#16a34a; }
   #plytaZoomSamples{ margin-top:14px; padding-top:12px; border-top:1px dashed #E7E5E4; }
@@ -1585,6 +1585,9 @@ body {
   #plytaSwatchZoom.show #plytaSwatchZoomInner{ transform:scale(1); }
   #plytaSwatchZoomImg{ width:auto; height:auto; max-width:min(420px,86vw); max-height:70vh; object-fit:cover; border-radius:16px; border:3px solid #fff; box-shadow:0 24px 70px rgba(0,0,0,.5); -webkit-user-select:none; user-select:none; -webkit-touch-callout:none; }
   #plytaSwatchZoomName{ display:block; color:#fff; font-size:15px; font-weight:600; margin-top:14px; letter-spacing:.02em; }
+  /* tryb „duży" — powiększenie głównej infografiki na pełny ekran */
+  #plytaSwatchZoom.big #plytaSwatchZoomImg{ max-width:96vw; max-height:92vh; object-fit:contain; border-radius:10px; border:2px solid #fff; }
+  #plytaSwatchZoom.big #plytaSwatchZoomName{ display:none; }
 </style>
 <div id="plytaZoomOverlay">
   <div id="plytaZoomCard">
@@ -1635,7 +1638,7 @@ body {
   var swImg=document.getElementById('plytaSwatchZoomImg');
   var swName=document.getElementById('plytaSwatchZoomName');
   var swOpen=false, st;
-  function showSwatch(src,name){ if(!sw||!swImg) return; clearTimeout(st); swImg.src=src; if(swName) swName.textContent=name||''; sw.style.display='flex'; requestAnimationFrame(function(){ sw.classList.add('show'); }); swOpen=true; }
+  function showSwatch(src,name,isBig){ if(!sw||!swImg) return; clearTimeout(st); if(sw.classList) sw.classList.toggle('big', !!isBig); swImg.src=src; if(swName) swName.textContent=name||''; sw.style.display='flex'; requestAnimationFrame(function(){ sw.classList.add('show'); }); swOpen=true; }
   function hideSwatch(){ if(!sw) return; sw.classList.remove('show'); swOpen=false; st=setTimeout(function(){ if(!swOpen) sw.style.display='none'; },200); }
 
   // Klik/tap w infografikę otwiera; klik w tło lub przycisk × zamyka
@@ -1652,6 +1655,8 @@ body {
   if(swImg){ swImg.addEventListener('contextmenu', function(e){ e.preventDefault(); }); }
   document.addEventListener('keydown', function(e){ if(e.key==='Escape'){ if(swOpen){ hideSwatch(); } else if(open){ hide(); } } });
   big.addEventListener('contextmenu', function(e){ e.preventDefault(); });
+  // Klik w główną infografikę → powiększenie na pełny ekran (tryb „duży")
+  big.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); showSwatch(big.currentSrc||big.src, '', true); });
 })();
 </script>
 
