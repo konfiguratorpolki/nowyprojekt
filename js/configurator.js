@@ -1030,7 +1030,7 @@ function updateModularIconActiveStates() {
             '#8B5A2B_#000000': {az:150,el:50,int:4.00,temp:83,hemi:0.65,rim:0.17,rimAz:217,shOp:0.10,shBlur:3,blOp:0}, // dąb boki / czarne półki
             '#000000_#8B5A2B': {az:146,el:50,int:4.00,temp:83,hemi:0.76,rim:0.92,rimAz:217,shOp:0.10,shBlur:3,blOp:0}, // czarne boki / dąb półki
             '#000000_#FFFFFF': {az:146,el:50,int:4.00,temp:83,hemi:0.60,rim:0.20,rimAz:217,shOp:0.12,shBlur:3,blOp:0}, // czarne boki / białe półki — jak wyżej (symetryczne)
-            '#FFFFFF_#FFFFFF': {az:146,el:52,int:4.00,temp:83,hemi:0.34,rim:0.92,rimAz:217,shOp:0.10,shBlur:3,blOp:0}, // białe boki + białe półki (dostrojone) — kierunkowe + rim, mniej ambientu
+            '#FFFFFF_#FFFFFF': {az:146,el:50,int:4.00,temp:83,hemi:0.76,rim:0.92,rimAz:217,shOp:0.19,shBlur:3,blOp:1}, // białe boki + białe półki (dostrojone)
             '#000000_#000000': {az:146,el:50,int:4.00,temp:83,hemi:0.76,rim:0.03,rimAz:217,shOp:0.10,shBlur:3,blOp:0}, // pełna czarna MATOWA — rim wyłączony
 
         };
@@ -1047,7 +1047,7 @@ function updateModularIconActiveStates() {
         const SHELF3D_IMG_PER_COMBO = {
             '#8B5A2B_#FFFFFF': { exposure: 1.51, contrast: 1.16, saturation: 0.85, hue: -8, bright: 1.03 }, // dąb boki / białe półki
             '#FFFFFF_#8B5A2B': { exposure: 1.42, contrast: 1.14, saturation: 0.85, hue: -8, bright: 1.03 }, // białe boki / dąb półki
-            '#FFFFFF_#FFFFFF': { exposure: 1.42, contrast: 1.06, saturation: 0.85, hue: -8, bright: 1.07 }, // białe boki + białe półki (dostrojone)
+            '#FFFFFF_#FFFFFF': { exposure: 1.42, contrast: 1.14, saturation: 0.85, hue: -8, bright: 1.03 }, // białe boki + białe półki (dostrojone)
             '#000000_#000000': { exposure: 1.42, contrast: 1.14, saturation: 0.85, hue: -8, bright: 1.03 }, // pełna czarna MATOWA — łagodny kontrast
             '#FFFFFF_#000000': { exposure: 1.40, contrast: 1.16, saturation: 0.85, hue: -8, bright: 1.03 }, // biała + czarna — chroni biel, pogłębia czerń
             '#000000_#FFFFFF': { exposure: 1.40, contrast: 1.16, saturation: 0.85, hue: -8, bright: 1.03 }, // czarna + biała — jak wyżej
@@ -1271,7 +1271,7 @@ function updateModularIconActiveStates() {
         //   ccr=matowość lakieru, bright/contrast=jasność/kontrast samej płyty, edge=jasność okleiny krawędzi
         const SHELF3D_MAT_PER_COLOR = {
             '#8B5A2B': { rough: 0.62, metal: 0.00, env: 1.15, cc: 0.38, ccr: 0.32, bright: 0.70, contrast: 1.09, edge: 0.00 }, // dąb craft
-            '#FFFFFF': { rough: 0.17, metal: 0.00, env: 0.70, cc: 0.38, ccr: 0.18, bright: 0.50, contrast: 0.50, edge: 0.00 }, // biała (dostrojona) — połysk + przyciemnienie = odznacza się od tła
+            '#FFFFFF': { rough: 0.22, metal: 0.00, env: 0.92, cc: 0.55, ccr: 0.14, bright: 0.50, contrast: 0.50, edge: 0.00 }, // biała (dostrojona) — satynowy laminat: lakier (clearcoat) + odbicia = mniej płaska, bardziej realna
             '#000000': { rough: 0.48, metal: 0.00, env: 1.60, cc: 0.55, ccr: 0.22, bright: 1.12, contrast: 1.10, edge: 0.30 }, // czarna — rozjaśnij+odbicia+oklein = kontury
         };
         const SHELF3D_MAT_DEFAULT = { rough: 0.62, metal: 0.00, env: 1.15, cc: 0.38, ccr: 0.32, bright: 1.00, contrast: 1.00, edge: 0.00 };
@@ -1279,7 +1279,7 @@ function updateModularIconActiveStates() {
         // zależnie od drugiego koloru. Brak wpisu = zwykłe ustawienia per-kolor.
         const SHELF3D_MAT_PER_COMBO = {
             '#FFFFFF_#8B5A2B': { '#FFFFFF': { rough: 0.11, metal: 0.00, env: 0.65, cc: 0.13, ccr: 0.01, bright: 0.87, contrast: 0.93, edge: 0.00 } }, // białe boki / dąb półki — biała inna niż w odwrotnej kombinacji
-            '#FFFFFF_#FFFFFF': { '#FFFFFF': { rough: 0.62, metal: 0.00, env: 0.55, cc: 0.10, ccr: 0.40, bright: 0.97, contrast: 1.02, edge: 0.00 } }, // pełna biała — MATOWA płyta laminowana, czysta biel (jak na zdjęciu referencyjnym)
+            '#FFFFFF_#FFFFFF': { '#FFFFFF': { rough: 0.62, metal: 0.23, env: 0.35, cc: 0.10, ccr: 0.35, bright: 0.97, contrast: 1.02, edge: 0.00 } }, // pełna biała (dostrojona)
             '#000000_#000000': { '#000000': { rough: 0.55, metal: 0.19, env: 1.10, cc: 0.00, ccr: 0.35, bright: 0.72, contrast: 0.77, edge: 0.01 } }, // pełna czarna (dostrojona) — metal+env daje refleksyjny sheen, przyciemnienie + mocny kontrast obrazu = głęboka czerń
             '#8B5A2B_#000000': { '#000000': { rough: 0.38, metal: 0.15, env: 0.80, cc: 0.58, ccr: 0.13, bright: 0.56, contrast: 2.00, edge: 0.00 } }, // dąb boki / czarne półki — czarna: crush + clearcoat = głęboka błyszcząca czerń
             '#000000_#8B5A2B': { '#000000': { rough: 0.46, metal: 0.69, env: 1.55, cc: 0.23, ccr: 0.60, bright: 0.97, contrast: 2.00, edge: 0.00 } }, // czarne boki / dąb półki — czarna: metaliczna, błyszcząca antracytowa
@@ -1855,7 +1855,7 @@ function updateModularIconActiveStates() {
             function _tempCol(t){ return new THREE.Color(1.0, 0.84+(0.98-0.84)*(t/100), 0.55+(1.0-0.55)*(t/100)); }
             function _updMain(){ if(!_dbgDir1) return; const az=_az*Math.PI/180, el=_el*Math.PI/180; _dbgDir1.position.set(_dist*Math.cos(el)*Math.sin(az), _dist*Math.sin(el), _dist*Math.cos(el)*Math.cos(az)); _dbgDir1.intensity=_int; _dbgDir1.color.copy(_tempCol(_temp)); }
             function _updRim(){ if(!_dbgDir2) return; const az=_rimAz*Math.PI/180; _dbgDir2.position.set(12*Math.sin(az),4,12*Math.cos(az)); _dbgDir2.intensity=_rim; }
-            function _updSh(){ const sf=scene&&scene.getObjectByName('__shadowFloor__'); if(sf&&sf.material){ sf.visible=true; sf.material.opacity=_shOp; } const bs=scene&&scene.getObjectByName('__blobShadow__'); if(bs&&bs.material) bs.material.opacity=_blOp; if(_dbgDir1) _dbgDir1.shadow.radius=_shBlur; }
+            function _updSh(){ const sf=scene&&scene.getObjectByName('__shadowFloor__'); if(sf&&sf.material){ sf.visible=true; sf.material.opacity=_shOp; } const bs=scene&&scene.getObjectByName('__blobShadow__'); if(bs&&bs.material) bs.material.opacity=_blOp; if(_dbgDir1) _dbgDir1.shadow.radius=Math.min(11, _shBlur + 2); }
             const PRESETS={ 'Studio':{az:-31,el:53,int:1.8,temp:45,hemi:0.30,rim:0.25,rimAz:105,shOp:0.10,shBlur:3,blOp:1.0}, 'Dzień':{az:25,el:65,int:2.2,temp:62,hemi:0.45,rim:0.15,rimAz:130,shOp:0.16,shBlur:5,blOp:1.0}, 'Wieczór':{az:-55,el:22,int:1.4,temp:18,hemi:0.14,rim:0.38,rimAz:55,shOp:0.07,shBlur:2,blOp:0.75}, 'Dramatyczne':{az:-18,el:42,int:3.0,temp:33,hemi:0.09,rim:0.05,rimAz:160,shOp:0.24,shBlur:7,blOp:1.2} };
             const _sr={};
             function _applyPreset(name){ const p=PRESETS[name]; if(!p) return; _az=p.az;_el=p.el;_int=p.int;_temp=p.temp;_hemi=p.hemi;_rim=p.rim;_rimAz=p.rimAz;_shOp=p.shOp;_shBlur=p.shBlur;_blOp=p.blOp; _updMain(); if(_dbgHemi) _dbgHemi.intensity=_hemi; _updRim(); _updSh(); _syncSliders(); }
@@ -5168,7 +5168,7 @@ function generateOrderCode() { const shelfTypeVal = shelfTypeSelect.value; const
 
             // Ile miejsca na parametry vs cena na dole
             const PRICE_H = disc ? 120 : 0;
-            const CODE_H = 72; // więcej miejsca na kod i montaż
+            const CODE_H = 92; // więcej miejsca na kod i montaż — kod nie jest ucinany u dołu
             const PARAMS_H = H - PAD - PRICE_H - CODE_H - PAD;
             const paramRowH = Math.floor(PARAMS_H / paramList.length);
 
@@ -8190,8 +8190,17 @@ async function startCompositeExport() {
             if (details.error) throw new Error(`Kod #${i+1}: ${details.error}`);
 
             await reconfigureFromDetails(details);
-            // Poczekaj na: refreshDimensionArrows (120ms) + showcase swing + stabilizacja sceny
-            await new Promise(r => setTimeout(r, 800));
+            // Poczekaj aż animacja składania FAKTYCZNIE się zakończy (zamiast sztywnych 800 ms),
+            // żeby zrzut nie złapał półki w trakcie składania (rogi „niezłożone").
+            {
+                const _t0 = Date.now();
+                await new Promise(r => setTimeout(r, 350)); // daj animacji wystartować
+                while (currentAnimationTimeline && typeof currentAnimationTimeline.isActive === 'function'
+                       && currentAnimationTimeline.isActive() && (Date.now() - _t0) < 6000) {
+                    await new Promise(r => setTimeout(r, 60));
+                }
+                await new Promise(r => setTimeout(r, 200)); // krótka stabilizacja sceny
+            }
 
             const price = computePriceDetailed();
 
@@ -8261,11 +8270,13 @@ async function generateCompositeFromTemplate(shelves, tpl) {
     if (!lay) throw new Error('Brak układu dla ' + N + ' produktów w szablonie.');
 
     const W = Math.round(PW * SC);
-    // Dla jednej karty: wysokość obrazu = karta + marginesy (np. kwadrat)
-    // Dla wielu kart: pełne A4
-    const pageH = (lay.cards.length === 1)
-        ? lay.cards[0].y + lay.cards[0].h + lay.cards[0].y
-        : PH;
+    // Wysokość strony liczona z zawartości (kart + elementów) — pozwala na układy
+    // poziome (karty obok siebie ze wspólnym paskiem na dole), nie tylko sztywne A4.
+    let _maxBottom = 0;
+    lay.cards.forEach(c => { _maxBottom = Math.max(_maxBottom, c.y + c.h); });
+    lay.elements.forEach(e => { _maxBottom = Math.max(_maxBottom, e.y + Math.max(e.h || 0, 0.5)); });
+    const _topMargin = lay.cards.length ? Math.min(...lay.cards.map(c => c.y)) : 5;
+    const pageH = _maxBottom + _topMargin;
     const H = Math.round(pageH * SC);
 
     const canvas = document.createElement('canvas');
@@ -8320,6 +8331,19 @@ async function generateCompositeFromTemplate(shelves, tpl) {
         }
     }
 
+    // Sumy całego zamówienia — IDENTYCZNA logika jak koszyk (js/cart.js):
+    // 1 szt. → −10%; 2+ szt. → −10% na najdroższą + −25% na najtańszą.
+    const _rawTotalAll = rawPrices.reduce((a, b) => a + (b > 0 ? b : 0), 0);
+    const _validPrices = rawPrices.filter(p => p > 0);
+    let _discTotalAll = 0;
+    if (_validPrices.length === 1) {
+        _discTotalAll = _validPrices[0] * disc.discount1item;
+    } else if (_validPrices.length >= 2) {
+        _discTotalAll = Math.max(..._validPrices) * disc.discountBest
+                      + Math.min(..._validPrices) * disc.discountCheap;
+    }
+    const _payTotalAll = _rawTotalAll - _discTotalAll;
+
     const c0 = lay.cards[0];
     // Nowy format v2: elementy mają absolutne pozycje + cardIndex
     // Stary format v1: elementy są względem card[0], stosujemy offset
@@ -8341,6 +8365,10 @@ async function generateCompositeFromTemplate(shelves, tpl) {
             shelfColor: d.shelfColor || '—',
             shelfCount: d.shelfCount ? d.shelfCount + ' szt.' : '—',
             gap:        d.gapInfo || d.gap || '—',
+            priceOriginal: rawPrices[idx] > 0 ? rawPrices[idx].toFixed(2) + ' zł' : '—',
+            discount:      (rawPrices[idx] - discPrices[idx]) > 0.005 ? '−' + (rawPrices[idx] - discPrices[idx]).toFixed(2) + ' zł' : '—',
+            discountTotal: _discTotalAll > 0.005 ? '−' + _discTotalAll.toFixed(2) + ' zł' : '—',
+            total:         _payTotalAll > 0 ? _payTotalAll.toFixed(2) + ' zł' : '—',
         };
 
         // Wybierz elementy dla tej karty
@@ -8427,6 +8455,39 @@ async function generateCompositeFromTemplate(shelves, tpl) {
             }
 
             ctx.restore(); // koniec clippingu do karty
+        }
+    }
+
+    // ── Elementy na poziomie STRONY (cardIndex === -1): wspólny pasek RABATY/ŁĄCZNIE ──
+    const pageEls = lay.elements.filter(el => el.cardIndex === -1);
+    if (pageEls.length) {
+        const pageData = {
+            discountTotal: _discTotalAll > 0.005 ? '−' + _discTotalAll.toFixed(2) + ' zł' : '—',
+            total:         _payTotalAll > 0 ? _payTotalAll.toFixed(2) + ' zł' : '—',
+            priceOriginal: _rawTotalAll > 0 ? _rawTotalAll.toFixed(2) + ' zł' : '—',
+        };
+        for (const el of pageEls) {
+            const ex = Math.round(el.x * SC);
+            const ey = Math.round(el.y * SC);
+            const ew = Math.round(el.w * SC);
+            const eh = Math.round(Math.max(el.h, 0.5) * SC);
+            if (el.type === 'rect') {
+                ctx.fillStyle = el.bg || '#e5e7eb';
+                ctx.fillRect(ex, ey, ew, eh);
+            } else if (el.type === 'text' || el.type === 'field') {
+                const txt = el.type === 'text' ? (el.content || '') : (pageData[el.field] || '');
+                if (!txt) continue;
+                const fsPx = Math.max(8, Math.round(el.fontSize * 0.37 * SC));
+                const fontStr = (el.fontWeight === 'bold' ? 'bold ' : '') + fsPx + 'px ' +
+                                (el.fontFamily === 'monospace' ? '"Courier New",monospace' : 'Arial,sans-serif');
+                if (el.bg && el.bg !== 'transparent') { ctx.fillStyle = el.bg; ctx.fillRect(ex, ey, ew, eh); }
+                ctx.fillStyle = el.color || '#111111';
+                ctx.font = fontStr;
+                ctx.textAlign = el.align || 'left';
+                const tx = el.align === 'right' ? ex + ew : el.align === 'center' ? ex + ew / 2 : ex;
+                ctx.fillText(txt, tx, ey + eh * 0.75);
+                ctx.textAlign = 'left';
+            }
         }
     }
 
@@ -8644,9 +8705,19 @@ async function startCompositeExport() {
             // Snapshot z żywego renderera — identyczny z podglądem na stronie
             // Przekaż docelowy aspect ratio karty żeby obraz pasował bez zniekształceń
             const _N = codes.length;
-            const _PAD = 12, _INFO_H = 190, _PRICE_H = 110;
-            const _cardW = Math.floor((1400 - (_N + 1) * _PAD) / _N);
-            const _cardH = 1200 - _INFO_H - _PRICE_H - _PAD * 2;
+            // Dopasuj proporcje zrzutu do kadru 3D w szablonie (element image3d) — bez zniekształceń/letterboxa
+            let _cardW, _cardH;
+            const _tplLay = _printTemplate && _printTemplate.layouts &&
+                            (_printTemplate.layouts[_N] || _printTemplate.layouts[Math.min(_N, 4)] || _printTemplate.layouts[1]);
+            const _img3d = _tplLay && _tplLay.elements && _tplLay.elements.find(e => e.type === 'image3d');
+            if (_img3d) {
+                _cardW = Math.round(_img3d.w * 6);
+                _cardH = Math.round(_img3d.h * 6);
+            } else {
+                const _PAD = 12, _INFO_H = 190, _PRICE_H = 110;
+                _cardW = Math.floor((1400 - (_N + 1) * _PAD) / _N);
+                _cardH = 1200 - _INFO_H - _PRICE_H - _PAD * 2;
+            }
             const snap = await captureLiveRenderer(_cardW, _cardH);
 
             shelves.push({ snap, details, price });
@@ -8654,7 +8725,10 @@ async function startCompositeExport() {
 
         statusDiv.textContent = '🎨 Składam zdjęcie zbiorcze...';
 
-        const blob = await generateCompositeImage(shelves);
+        // Użyj szablonu z print_template.js (edytowalnego w print_editor), a gdy go brak — generator zaszyty
+        const blob = _printTemplate
+            ? await generateCompositeFromTemplate(shelves, _printTemplate)
+            : await generateCompositeImage(shelves);
 
         statusDiv.innerHTML = '';
         const successRow = document.createElement('div');
@@ -8827,7 +8901,7 @@ async function generateCompositeImage(shelves) {
     const OUT_H = 1200;
     const PAD = 12;
     const PRICE_BAR_H = 110;
-    const INFO_H = 190;
+    const INFO_H = 255; // wyższa sekcja info — boks KOD KONFIGURACYJNY mieści się nad paskiem cen (nie jest przykryty)
     const SHELF_W = Math.floor((OUT_W - (N + 1) * PAD) / N);
     const SHELF_H = OUT_H - INFO_H - PRICE_BAR_H - PAD * 2;
     const W = OUT_W;
