@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88 32" role="img" aria-label="BLIK">
+  <defs>
+    <radialGradient id="blikDot" cx="35%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#ff7aa3"/>
+      <stop offset="55%" stop-color="#f0254f"/>
+      <stop offset="100%" stop-color="#c00f33"/>
+    </radialGradient>
+  </defs>
+  <rect x="0" y="0" width="88" height="32" rx="6" fill="#0a0a0a"/>
+  <!-- "blik" tekst — sans-serif bold, biały. Kropkę nad "i" zastępujemy czerwonym kołem. -->
+  <text x="44" y="24"
+        text-anchor="middle"
+        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
+        font-weight="800"
+        font-size="20"
+        letter-spacing="-1"
+        fill="#ffffff">blik</text>
+  <!-- maskowanie oryginalnej kropki nad "i" (ciemny prostokąt) + czerwone koło na wierzchu -->
+  <rect x="46" y="2" width="9" height="9" fill="#0a0a0a"/>
+  <circle cx="50.5" cy="7.5" r="3.6" fill="url(#blikDot)"/>
+</svg>
