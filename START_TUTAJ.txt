@@ -1,0 +1,38 @@
+🤖 BOT ALLEGRO - SZYBKI START
+==============================
+
+KROK 1️⃣  - INSTALACJA (tylko raz!)
+-----------------------------------
+Kliknij plik: 1_INSTALACJA.bat
+→ Czekaj aż się zainstaluje
+→ Naciśnij ENTER gdy się skończy
+
+KROK 2️⃣  - TESTOWANIE (opcjonalne ale ważne!)
+---------------------------------------------
+Przed uruchomieniem na 100 ofertach, testuj na kilku:
+
+1. Edytuj plik: allegro_bot.py
+2. Znajdź linię: max_offers = 100
+3. Zmień na: max_offers = 2 (test na 2 ofertach)
+4. Kliknij plik: 2_URUCHOM_BOT.bat
+5. Zaloguj się w przeglądarce Chrome
+6. Czekaj aż skrypt skończy pracę
+7. Sprawdź czy zdjęcie i opis zostały dodane
+
+KROK 3️⃣  - PEŁNE URUCHOMIENIE
+-------------------------------
+Jak test przejdzie pomyślnie:
+
+1. Edytuj plik: allegro_bot.py
+2. Zmień linię z powrotem na: max_offers = 100
+3. Kliknij plik: 2_URUCHOM_BOT.bat
+4. Zaloguj się w przeglądarce Chrome
+5. 🎉 Czekaj ~30-60 minut!
+
+WAŻNE!
+------
+⚠️  Nie zamykaj okna przeglądarki Chrome!
+⚠️  Nie przeszkadzaj skryptowi aż się skończy
+⚠️  Możesz przerwać naciskając Ctrl+C
+
+Gotowy? Zaczynaj od KROKU 1! 🚀

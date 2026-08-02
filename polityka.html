@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Polityka Prywatności — Regaliki.pl</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:#f9fafb;color:#374151;-webkit-font-smoothing:antialiased;line-height:1.7}
+
+.topbar{background:#fff;border-bottom:1px solid #e5e7eb;height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 32px;position:sticky;top:0;z-index:100;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.logo{display:flex;align-items:center;gap:9px;text-decoration:none}
+.logo-mark{width:32px;height:32px;background:#16a34a;border-radius:8px;display:flex;align-items:center;justify-content:center}
+.logo-mark svg{width:17px;height:17px;fill:white}
+.logo-name{font-size:.9rem;font-weight:600;color:#111827}
+.logo-name span{color:#16a34a}
+.back-btn{display:inline-flex;align-items:center;gap:6px;font-size:.76rem;font-weight:500;color:#6b7280;text-decoration:none;padding:6px 13px;border:1px solid #e5e7eb;border-radius:7px;background:#fff;transition:all .15s}
+.back-btn:hover{color:#16a34a;border-color:#bbf7d0;background:#f0fdf4}
+.back-btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* DOKUMENT */
+.doc-wrap{max-width:720px;margin:0 auto;padding:40px 24px 64px}
+
+.doc-header{margin-bottom:40px;padding-bottom:28px;border-bottom:1px solid #e5e7eb}
+.doc-tag{display:inline-block;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:99px;padding:3px 12px;font-size:.68rem;font-weight:600;color:#15803d;letter-spacing:.07em;text-transform:uppercase;margin-bottom:14px}
+.doc-header h1{font-family:'Lora',serif;font-size:clamp(1.8rem,4vw,2.5rem);font-weight:600;color:#111827;line-height:1.2;margin-bottom:8px}
+.doc-header .subtitle{font-size:.88rem;color:#9ca3af;font-weight:300;margin-bottom:20px}
+.doc-meta{display:flex;flex-wrap:wrap;gap:20px}
+.doc-meta-item{font-size:.78rem;color:#6b7280}
+.doc-meta-item strong{color:#374151;font-weight:500}
+
+/* TOC */
+.toc{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:18px 22px;margin-bottom:36px}
+.toc p{font-size:.68rem;font-weight:600;color:#9ca3af;text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px}
+.toc ol{padding-left:18px;display:flex;flex-direction:column;gap:4px}
+.toc ol li a{font-size:.82rem;color:#6b7280;text-decoration:none;transition:color .15s}
+.toc ol li a:hover{color:#16a34a}
+
+/* SEKCJE */
+.doc-section{margin-bottom:36px}
+.doc-section h2{font-family:'Lora',serif;font-size:1.2rem;font-weight:600;color:#111827;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid #f3f4f6;display:flex;align-items:center;gap:10px;scroll-margin-top:72px}
+.sec-num{font-size:.72rem;font-weight:700;color:#16a34a;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:6px;padding:2px 7px;flex-shrink:0}
+.doc-section p{font-size:.88rem;color:#374151;line-height:1.75;margin-bottom:10px}
+.doc-section p:last-child{margin-bottom:0}
+.doc-section ul,.doc-section ol.content{padding-left:20px;margin-bottom:10px;}
+.doc-section ul li,.doc-section ol.content li{font-size:.88rem;color:#374151;line-height:1.75;margin-bottom:8px;}
+.doc-section ul li::marker{color:#16a34a}
+
+/* TABELA */
+.doc-section table{width:100%;border-collapse:collapse;margin:14px 0;font-size:.83rem}
+.doc-section table th{background:#f9fafb;border:1px solid #e5e7eb;padding:9px 12px;text-align:left;font-size:.68rem;font-weight:600;color:#9ca3af;text-transform:uppercase;letter-spacing:.06em}
+.doc-section table td{border:1px solid #f3f4f6;padding:9px 12px;color:#374151;vertical-align:top;line-height:1.6}
+.doc-section table tr:nth-child(even) td{background:#fafafa}
+.doc-section table strong{color:#111827;font-weight:500}
+
+strong{color:#111827;font-weight:500}
+a.ext{color:#16a34a;text-decoration:none;font-weight:500}
+a.ext:hover{text-decoration:underline}
+
+/* FOOTER */
+.page-footer{background:#fff;border-top:1px solid #e5e7eb;padding:14px 32px}
+.page-footer-in{max-width:720px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px}
+.page-footer p{font-size:.7rem;color:#9ca3af}
+.page-footer a{font-size:.73rem;color:#6b7280;text-decoration:none;font-weight:500}
+.page-footer a:hover{color:#16a34a}
+
+@media(max-width:600px){
+  .topbar{padding:0 14px}
+  .doc-wrap{padding:24px 14px 48px}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a href="index.html" class="logo">
+    <div class="logo-mark"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="2.5" rx="1.2"/><rect x="2" y="11" width="20" height="2.5" rx="1.2"/><rect x="2" y="17" width="20" height="2.5" rx="1.2"/><rect x="3.5" y="3" width="2" height="18" rx="1"/><rect x="18.5" y="3" width="2" height="18" rx="1"/></svg></div>
+    <span class="logo-name">Nowy<span>Wymiar</span></span>
+  </a>
+  <a href="index.html" class="back-btn">
+    <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    Wróć do sklepu
+  </a>
+</header>
+
+<div class="doc-wrap">
+
+  <!-- NAGŁÓWEK -->
+  <div class="doc-header">
+    <div class="doc-tag">🔒 RODO</div>
+    <h1>Polityka Prywatności</h1>
+    <p class="subtitle">Informacje o tym, jak przetwarzamy Twoje dane osobowe w związku z korzystaniem ze sklepu internetowego.</p>
+    <div class="doc-meta">
+      <div class="doc-meta-item">Obowiązuje od: <strong>23 marca 2026</strong></div>
+      <div class="doc-meta-item">Administrator: <strong>Nowy Wymiar</strong></div>
+      <div class="doc-meta-item">Podstawa prawna: <strong>RODO (UE 2016/679)</strong></div>
+    </div>
+  </div>
+
+  <!-- TOC -->
+  <div class="toc">
+    <p>Spis treści</p>
+    <ol>
+      <li><a href="#s1">Administrator danych osobowych</a></li>
+      <li><a href="#s2">Jakie dane zbieramy</a></li>
+      <li><a href="#s3">Cel i podstawa prawna przetwarzania</a></li>
+      <li><a href="#s4">Komu przekazujemy dane</a></li>
+      <li><a href="#s5">Jak długo przechowujemy dane</a></li>
+      <li><a href="#s6">Twoje prawa</a></li>
+      <li><a href="#s7">Pliki cookies i Google Analytics</a></li>
+      <li><a href="#s8">Prawo do złożenia skargi</a></li>
+    </ol>
+  </div>
+
+  <!-- 1 -->
+  <div class="doc-section" id="s1">
+    <h2><span class="sec-num">1</span> Administrator danych osobowych</h2>
+    <p>Administratorem Twoich danych osobowych jest firma <strong>Nowy Wymiar Damian Maga</strong>, z siedzibą pod adresem <strong>Tywonia 65aa, 37-500 Jarosław</strong>, NIP: <strong>7922074097</strong>, REGON: <strong>364201363</strong>.</p>
+    <p>W sprawach dotyczących ochrony danych osobowych możesz skontaktować się z nami pod adresem e-mail: <strong>regaliki.pl@gmail.com</strong>. Odpowiemy w ciągu 30 dni, a w pilnych sprawach — znacznie szybciej.</p>
+    <p>Dokładamy wszelkich starań, aby Twoje dane były przetwarzane bezpiecznie i zgodnie z Rozporządzeniem Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r. (RODO).</p>
+  </div>
+
+  <!-- 2 -->
+  <div class="doc-section" id="s2">
+    <h2><span class="sec-num">2</span> Jakie dane zbieramy</h2>
+    <p>W związku z realizacją zamówień zbieramy wyłącznie dane niezbędne do tego celu:</p>
+    <table>
+      <thead><tr><th>Kategoria danych</th><th>Przykłady</th><th>Cel</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Dane identyfikacyjne</strong></td><td>Imię, nazwisko</td><td>Realizacja zamówienia</td></tr>
+        <tr><td><strong>Dane kontaktowe</strong></td><td>Adres e-mail, telefon</td><td>Potwierdzenie zamówienia, kontakt w sprawie dostawy</td></tr>
+        <tr><td><strong>Adres dostawy</strong></td><td>Ulica, kod pocztowy, miasto</td><td>Wysyłka produktu przez kuriera</td></tr>
+        <tr><td><strong>Dane transakcyjne</strong></td><td>Numer zamówienia, kwota, data</td><td>Obsługa zamówienia, reklamacje, rozliczenia</td></tr>
+        <tr><td><strong>Dane techniczne</strong></td><td>Zanonimizowany adres IP</td><td>Statystyki odwiedzin (Google Analytics)</td></tr>
+      </tbody>
+    </table>
+    <p>Nie zbieramy danych wrażliwych, danych dzieci ani danych zbędnych do realizacji zamówienia.</p>
+  </div>
+
+  <!-- 3 -->
+  <div class="doc-section" id="s3">
+    <h2><span class="sec-num">3</span> Cel i podstawa prawna przetwarzania</h2>
+    <p>Twoje dane przetwarzamy w następujących celach i na następujących podstawach prawnych:</p>
+    <ul>
+      <li><strong>Realizacja zamówienia</strong> — przetwarzanie niezbędne do wykonania umowy sprzedaży (art. 6 ust. 1 lit. b RODO).</li>
+      <li><strong>Obsługa reklamacji i rękojmi</strong> — wypełnienie obowiązku prawnego (art. 6 ust. 1 lit. b i c RODO).</li>
+      <li><strong>Wysyłka paczki</strong> — przekazanie danych kurierowi, niezbędne do wykonania umowy (art. 6 ust. 1 lit. b RODO).</li>
+      <li><strong>Obowiązki podatkowe i rachunkowe</strong> — wymagane przez prawo, przez okres 5 lat (art. 6 ust. 1 lit. c RODO).</li>
+      <li><strong>Statystyki odwiedzin</strong> — Google Analytics na podstawie zgody wyrażonej przez akceptację cookies (art. 6 ust. 1 lit. a RODO).</li>
+    </ul>
+    <p>Nie przetwarzamy Twoich danych w celach marketingowych ani nie wysyłamy newsletterów bez Twojej wyraźnej zgody.</p>
+  </div>
+
+  <!-- 4 -->
+  <div class="doc-section" id="s4">
+    <h2><span class="sec-num">4</span> Komu przekazujemy dane</h2>
+    <p>Twoje dane osobowe <strong>nie są sprzedawane</strong> ani udostępniane podmiotom trzecim w celach marketingowych. Przekazujemy je wyłącznie podmiotom niezbędnym do realizacji zamówienia:</p>
+    <table>
+      <thead><tr><th>Podmiot</th><th>Zakres danych</th><th>Cel</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Firma kurierska</strong></td><td>Imię, nazwisko, adres, telefon</td><td>Dostawa produktu</td></tr>
+        <tr><td><strong>BaseLinker sp. z o.o.</strong></td><td>Dane zamówienia, dane kontaktowe</td><td>System zarządzania zamówieniami</td></tr>
+        <tr><td><strong>Google LLC</strong></td><td>Zanonimizowany adres IP</td><td>Statystyki (Google Analytics)</td></tr>
+        <tr><td><strong>mBank S.A.</strong></td><td>Dane transakcji</td><td>Obsługa płatności przelewem</td></tr>
+      </tbody>
+    </table>
+    <p>Dane nie są przekazywane poza Europejski Obszar Gospodarczy, z wyjątkiem Google Analytics — transfer do Google LLC (USA) odbywa się na podstawie standardowych klauzul umownych zatwierdzonych przez Komisję Europejską.</p>
+  </div>
+
+  <!-- 5 -->
+  <div class="doc-section" id="s5">
+    <h2><span class="sec-num">5</span> Jak długo przechowujemy dane</h2>
+    <p>Przechowujemy Twoje dane przez czas niezbędny do realizacji celu, w jakim zostały zebrane:</p>
+    <ul>
+      <li><strong>Dane zamówienia</strong> — przez czas realizacji zamówienia oraz przez 2 lata od dostawy (okres rękojmi).</li>
+      <li><strong>Dokumenty księgowe i podatkowe</strong> — przez 5 lat od końca roku podatkowego, w którym doszło do transakcji (wymóg prawny).</li>
+      <li><strong>Dane analityczne (Google Analytics)</strong> — do 26 miesięcy od ostatniej aktywności (konfiguracja domyślna Google).</li>
+    </ul>
+    <p>Po upływie powyższych terminów dane są trwale usuwane lub anonimizowane.</p>
+  </div>
+
+  <!-- 6 -->
+  <div class="doc-section" id="s6">
+    <h2><span class="sec-num">6</span> Twoje prawa</h2>
+    <p>Jako osoba, której dane dotyczą, przysługują Ci następujące prawa wynikające z RODO:</p>
+    <ul>
+      <li><strong>Prawo dostępu</strong> — możesz dowiedzieć się, jakie dane przechowujemy i otrzymać ich kopię.</li>
+      <li><strong>Prawo do sprostowania</strong> — możesz poprawić nieprawidłowe lub uzupełnić niekompletne dane.</li>
+      <li><strong>Prawo do usunięcia</strong> — możesz żądać usunięcia danych ("prawo do bycia zapomnianym"), o ile nie stoją temu na przeszkodzie inne przepisy prawa.</li>
+      <li><strong>Prawo do ograniczenia przetwarzania</strong> — możesz żądać wstrzymania przetwarzania danych w określonych przypadkach.</li>
+      <li><strong>Prawo do przenoszenia danych</strong> — możesz otrzymać swoje dane w ustrukturyzowanym formacie i przekazać je innemu administratorowi.</li>
+      <li><strong>Prawo do sprzeciwu</strong> — możesz sprzeciwić się przetwarzaniu danych w celach innych niż realizacja umowy.</li>
+      <li><strong>Prawo do wycofania zgody</strong> — jeśli przetwarzanie odbywa się na podstawie zgody, możesz ją w każdej chwili wycofać, bez wpływu na legalność przetwarzania przed wycofaniem.</li>
+    </ul>
+    <p>Aby skorzystać z przysługujących Ci praw, skontaktuj się z nami pod adresem <strong>regaliki.pl@gmail.com</strong>. Odpowiemy w ciągu 30 dni od otrzymania żądania.</p>
+  </div>
+
+  <!-- 7 -->
+  <div class="doc-section" id="s7">
+    <h2><span class="sec-num">7</span> Pliki cookies i Google Analytics</h2>
+    <p>Nasza strona używa plików cookies — małych plików tekstowych zapisywanych na Twoim urządzeniu przez przeglądarkę. Używamy dwóch rodzajów cookies:</p>
+    <ul>
+      <li><strong>Niezbędne</strong> — zapewniają poprawne działanie strony i koszyka zakupowego. Są aktywne przez czas sesji przeglądarki i nie wymagają zgody.</li>
+      <li><strong>Analityczne (Google Analytics)</strong> — zbierają zanonimizowane informacje o sposobie korzystania ze strony (odwiedzone podstrony, czas wizyty, źródło wejścia). Adres IP jest anonimizowany przed wysłaniem do serwerów Google.</li>
+    </ul>
+    <p>Możesz zablokować lub usunąć cookies w ustawieniach swojej przeglądarki. Wyłączenie cookies analitycznych nie wpłynie na korzystanie ze sklepu. Możesz też zrezygnować ze śledzenia przez Google Analytics instalując dodatek do przeglądarki dostępny pod adresem <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" class="ext">tools.google.com/dlpage/gaoptout</a>.</p>
+    <p>Więcej informacji o tym, jak Google przetwarza dane, znajdziesz na stronie <a href="https://policies.google.com/privacy" target="_blank" class="ext">policies.google.com/privacy</a>.</p>
+  </div>
+
+  <!-- 8 -->
+  <div class="doc-section" id="s8">
+    <h2><span class="sec-num">8</span> Prawo do złożenia skargi</h2>
+    <p>Jeśli uważasz, że przetwarzanie Twoich danych osobowych narusza przepisy RODO, masz prawo wnieść skargę do organu nadzorczego — w Polsce jest nim <strong>Prezes Urzędu Ochrony Danych Osobowych (PUODO)</strong>, ul. Stawki 2, 00-193 Warszawa, <a href="https://uodo.gov.pl" target="_blank" class="ext">uodo.gov.pl</a>.</p>
+    <p>Zachęcamy jednak do wcześniejszego kontaktu z nami pod adresem <strong>regaliki.pl@gmail.com</strong> — postaramy się rozwiązać każdą sprawę bezpośrednio i jak najszybciej.</p>
+  </div>
+
+</div>
+

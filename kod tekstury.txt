@@ -1,0 +1,28 @@
+// Skala tekstury
+let SHELF3D_SCALE_HORIZ = 11.0;
+let SHELF3D_SCALE_SIDE  = 11.0;
+
+// Kolor drewna (R, G, B osobno)
+let SHELF3D_MAT_COLOR_R = 0.52;
+let SHELF3D_MAT_COLOR_G = 0.58;
+let SHELF3D_MAT_COLOR_B = 0.62;
+
+// Materiał
+let SHELF3D_MAT_ROUGHNESS = 0.62;
+let SHELF3D_MAT_NORMAL    = 0.85;
+let SHELF3D_MAT_ENV       = 0.80;
+let SHELF3D_MAT_CLEARCOAT = 0.27;
+let SHELF3D_MAT_CC_ROUGH  = 0.50;
+let SHELF3D_MAT_SHEEN_ON  = false;
+
+// Obraz
+renderer.toneMappingExposure = 1.42;
+let SHELF3D_CANVAS_CONTRAST = 1.12;
+let SHELF3D_CANVAS_SAT      = 0.85;
+let SHELF3D_CANVAS_HUE      = -8;   // stopnie
+
+// Cień
+let SHELF3D_SHADOW_OPACITY = 0.22;
+
+// Oświetlenie
+Hemi: 0.50; Key: 2.00; Fill: 0.55; Rim: 0.60;
