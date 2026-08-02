@@ -24,16 +24,19 @@
     <meta property="og:url" content="https://regaliki.pl/">
     <meta property="og:type" content="website">
     <meta name="robots" content="index, follow">
-    <script src="wzory.js?v=20260621w1"></script>
+    <!-- defer: te skrypty nie blokują już parsowania/renderowania strony.
+         Kolejność wykonania (deferred = zawsze w kolejności dokumentu, tuż przed DOMContentLoaded)
+         zostaje zachowana, więc THREE nadal ładuje się przed shelf3d.js i configurator.js. -->
+    <script src="wzory.js?v=20260621w1" defer></script>
     <!-- THREE musi być przed shelf3d.js (shelf3d.js używa THREE na poziomie modułu) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-    <script src="shelf3d.js?v=20260615mug31"></script>
-    <script src="print_template.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js" defer></script>
+    <script src="shelf3d.js?v=20260615mug31" defer></script>
+    <script src="print_template.js" defer></script>
     <!-- ceny.js scalone z wzory.js -->
-    <script src="js/cart.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+    <script src="js/cart.js" defer></script>
+    <link rel="stylesheet" href="css/tailwind.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js" defer></script>
     <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
     <link rel="stylesheet" href="vendor/photoswipe/photoswipe.css" />
     <link rel="stylesheet" href="css/main.css">
@@ -1580,7 +1583,7 @@ body {
   // Bardzo stara przeglądarka bez wsparcia ES modules — od razu fallback
   window.__pswpFailed = true;
 </script>
-<script src="js/configurator.js?v=20260615zs69"></script>
+<script src="js/configurator.js?v=20260615zs69" defer></script>
 <script>
 (function initMountSliders() {
   function tryInit() {
@@ -1599,7 +1602,7 @@ body {
 </script>
     
 <div id="snapZoom" style="position:fixed;z-index:9999;width:280px;height:280px;background:#f0f0f0;border-radius:14px;border:1px solid #e5e7eb;box-shadow:0 12px 40px rgba(0,0,0,.22);overflow:hidden;display:none;pointer-events:none;transition:opacity .18s ease,transform .18s ease;"><img id="snapZoomImg" src="" style="width:100%;height:100%;object-fit:contain;-webkit-user-select:none;user-select:none;pointer-events:none;-webkit-touch-callout:none;"></div>
-<script src="js/snap-zoom.js"></script>
+<script src="js/snap-zoom.js" defer></script>
 
 <!-- ZOOM INFOGRAFIKI PŁYTY — klik/tap otwiera kartę: duża infografika + próbki materiałów -->
 <style>
