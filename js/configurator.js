@@ -6889,7 +6889,7 @@ function generateOrderCode() { const shelfTypeVal = shelfTypeSelect.value; const
                     if(cartSummaryGoToAllegroBtn) cartSummaryGoToAllegroBtn.addEventListener('click', () => {
                         const ta = document.getElementById('cartSummaryAllCodes');
                         navigator.clipboard.writeText(ta ? ta.value : '').then(() => {
-                            window.open("https://allegro.pl/uzytkownik/kuchenneregaliki", "_blank");
+                            window.open("https://allegro.pl/oferta/zaprojektuj-wlasna-polke-podaj-wymiar-i-wybierz-kolory-pod-zamowienie-17253898746#ask-question", "_blank");
                             closeCartSummaryModal();
                         }).catch(() => {
                             alert('Nie udało się skopiować kodów. Spróbuj ręcznie, używając przycisku obok pola z kodami.');
